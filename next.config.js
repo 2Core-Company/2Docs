@@ -12,7 +12,6 @@ const nextConfig = {
       { loader: '@next/font/google', options: { subsets: ['latin'] } },
     ],
   },
-  reactStrictMode: false
 }
 
 

@@ -3,9 +3,10 @@ import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 
-  function UploadFile(props) {
+  
+  function UploadFiles(props) {
     const file = props.data.file
-    for(var i = 0; i < file.length; i++) {
+    for (var i = 0; i < file.length; i++) {
       const type = file[i].type
       const name = file[i].name
       const size = file[i].size
@@ -23,7 +24,7 @@ import { toast } from 'react-toastify';
           }); 
         })
         .catch((error) => {
-          toast.error("Não foi possivel armazenar o " + name)
+          console.log(error)
       });
     }
   }
@@ -75,7 +76,7 @@ import { toast } from 'react-toastify';
         folder: props.folder,
         from: props.from
       }
-      toast.success("O " + props.name + " foi armazenado com sucesso.")
+      toast.success("Arquivos armazenado com sucesso.")
       props.function(data)
     } catch (e) {
       toast.error("Não foi possivel armazenar o " + props.name)
@@ -84,4 +85,4 @@ import { toast } from 'react-toastify';
   }
   
 
-export default UploadFile;
+export default UploadFiles;

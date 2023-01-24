@@ -33,7 +33,9 @@ function ComponentUpload(){
   const trash = params.get("trash")
   const id = params.get("id")
   const folderName = params.get("folder")
-  const [user, setUser] = useState()
+  const [user, setUser] = useState<User | any>()
+
+  interface User{folders:Array<{name:string, color:string}>}
 
   async function GetUser(){
       var q = query(collection(db, "users"), where("id", "==", id))
@@ -83,7 +85,7 @@ function ComponentUpload(){
     }
   },[searchFile])
 
-  async function SelectFile(index){
+  async function SelectFile(index:number){
     const files = [...filesFilter]
     files[index].checked = !files[index].checked
     const fileSelect = files.filter(file => file.checked === true);
@@ -92,10 +94,10 @@ function ComponentUpload(){
   }
 
   // <--------------------------------- Upload File --------------------------------->
-  const changeHandler = (e) => {
+  const changeHandler = (e:any) => {
     for(let i = 0; i < e.target.files.length; i++){
       if(e.target.files[i].size > 2000000){
-        e.target.value = null
+        e.target.value = false
         return toast.error("Os arquivos só podem ter no maximo 2mb.")
       }
     }
@@ -105,12 +107,11 @@ function ComponentUpload(){
       folder: folderName,
       from: "admin"
     }
-    toast.info("Armazenando arquivos...")
     UploadFile({data, childToParentUpload})
-    e.target.value = null
+    e.target.value = false
   }
 
-  const childToParentUpload = (childdata) => {
+  const childToParentUpload = (childdata:object) => {
     files.push(childdata)
     ResetConfig(files)
   }
@@ -132,24 +133,22 @@ function ComponentUpload(){
   const childModal = () => {
     setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
       if(trash){
-        toast.info("Deletando usuários, aguarde.")
         DeletFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig})
       } else {
-        toast.info("Deletando usuários, aguarde.")
-        DisableFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig})
+        toast.promise(DisableFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
   }
 
   // <--------------------------------- Enable File --------------------------------->
   function ConfirmationEnableFile(){
     if(selectFiles.length > 0){
-      EnableFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig, folders: user.folders})
+      toast.promise(EnableFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig, folders: user.folders}),{pending:"Restaurando arquivos.", success:"Arquivos restaurados.", error:"Não foi possivel restaurar os arquivos."})
     } else {
       toast.error("Selecione um arquivo para deletar.")
     }
   }
 
-  function ResetConfig(files){
+  function ResetConfig(files:Array<string>){
     setPages(Math.ceil(files.length / 10))
     setMenu(true)
     setFilesFilter(files)
@@ -180,7 +179,9 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
+                <button onClick={() => toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig}),{pending:"Fazendo download dos arquivos.", success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
+                  Download
+                </button>
                 <button onClick={() => ConfirmationDeleteFile()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 {trash ? 
                   <button onClick={() => ConfirmationEnableFile()} className={`bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
@@ -189,7 +190,7 @@ return (
                 : 
                   <label className={`${folderName === "Cliente" ? "hidden" : <></>} bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
                     <p>Upload</p>
-                    <input onChange={changeHandler} multiple="multiple" type="file" name="document" id="document" className='hidden w-full h-full' />
+                    <input onChange={changeHandler} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
                   </label>
                 }
               </div>

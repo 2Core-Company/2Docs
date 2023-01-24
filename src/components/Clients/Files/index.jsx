@@ -87,7 +87,6 @@ function ComponentUpload(){
       folder: folderName,
       from: "user"
     }
-    toast.info("Armazenando arquivos...")
     UploadFile({data, childToParentUpload})
     e.target.value = null
   }
@@ -111,13 +110,12 @@ function ComponentUpload(){
   }
 
   const childModal = () => {
-    toast.info("Deletando pasta e arquivos, aguarde.")
     setModal({...modal, status:false})
-    deletFile()
+    toast.promise(deletFile(),{pending:"Deletando arquivos.", success:"Arquivos deletados com sucesso.", error:"Não foi possivel deletar os arquivos."})
   }
 
-  function deletFile(){
-    DeletFiles({files:files, selectFiles:[filesFilter[indexFile]], ResetConfig:ResetConfig})
+  async function deletFile(){
+    await DeletFiles({files:files, selectFiles:[filesFilter[indexFile]], ResetConfig:ResetConfig})
   }
 
 return (

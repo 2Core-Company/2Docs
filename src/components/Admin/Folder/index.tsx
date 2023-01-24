@@ -22,12 +22,19 @@ import {toast} from 'react-toastify'
     const [files, setFiles] = useState([])
     const [recentsFile, setRecentsFile] = useState([])
     const [createFolder, setCreateFolder] = useState(false)
-    const [user, setUser] = useState()
+    const [user, setUser] = useState<object>()
     const [folders, setFolders] = useState([])
     const [foldersFilter, setFoldersFilter] = useState([])
-    const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: ""})
+    const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
     const [searchFolders, setSearchFolders] = useState("")
-    const [deletFolder, setDeletFolder] = useState()
+    const [deletFolder, setDeletFolder] = useState<string>()
+
+    interface Modal {
+      status: boolean,
+      message: string,
+      subMessage1: string,
+      subMessage2:string
+    }
 
     useEffect(() =>{
       context.setLoading(true)
@@ -68,10 +75,10 @@ import {toast} from 'react-toastify'
         });
     }
 
-    async function FilterDate(getFiles){
+    async function FilterDate(getFiles:Array<{trash:boolean, from:string}>){
       const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
       const recents = []
-      filesHere.sort(function(a,b) { 
+      filesHere.sort(function(a: {date: Date} ,b:{date: Date}):any { 
         a.date = new Date(a.date)
         b.date = new Date(b.date)
         return (a.date.getTime() - b.date.getTime()) + ""
@@ -87,13 +94,12 @@ import {toast} from 'react-toastify'
       return files.filter(file => file.trash === true)
     }
 
-    function ConfirmationDeleteFolder(name){
+    function ConfirmationDeleteFolder(name:string){
       setDeletFolder(name)
-      setModal({...modal, status:true, message: "Tem certeza que deseja excluir está Pasta?", subMessage1: "Todos os arquivos irão para a lixeira.", type:"error", size:"big"})
+      setModal({...modal, status:true, message: "Tem certeza que deseja excluir está Pasta?", subMessage1: "Todos os arquivos irão para a lixeira."})
     }
 
     const childModal = () => {
-      toast.info("Deletando pasta e arquivos, aguarde.")
       setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
       DeleteFolderAndFiles()
     }
@@ -101,7 +107,7 @@ import {toast} from 'react-toastify'
     async function DeleteFolderAndFiles(){
       const name = deletFolder
       const filesHere = [...files]
-      DeleteFolder({folders:folders, name:name, setFoldersFilter:setFoldersFilter, setFolders:setFolders, id:id})
+      toast.promise(DeleteFolder({folders:folders, name:name, setFoldersFilter:setFoldersFilter, setFolders:setFolders, id:id}),{pending:"Deletando pasta.", success:"Pasta deletada.", error:"Não foi possivel deletar esta pasta."})
       const filesToTrash = files.filter(file => file.folder === name)
       for (var i = 0; i < filesToTrash.length; i++){
         await updateDoc(doc(db, 'files', filesToTrash[i].id_file), {
@@ -110,7 +116,6 @@ import {toast} from 'react-toastify'
         const index = filesHere.findIndex(file => file.id_file === filesToTrash[i].id_file)
         filesHere[index].trash = true
       }
-      toast.success("Pasta e arquivos deletados.")
       setFiles(filesHere)
     }
 
@@ -184,7 +189,7 @@ import {toast} from 'react-toastify'
             </Link>
           </div>
           {createFolder ? <CreateFolder  folder={setCreateFolder} idUser={id} user={user} setFolders={setFolders}  setFoldersFilter={setFoldersFilter}/> : <></>}
-          {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} files={modal.files} childModal={childModal}/> : <></>}
+          {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
     )
   }

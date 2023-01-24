@@ -9,20 +9,20 @@ import { doc, updateDoc } from "firebase/firestore";
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
-import InputMask from 'react-input-mask';
 import { toast } from 'react-toastify';
 
 
-function EditUser(props){
-  const user = props.user
+function EditUser(props:object | any){
+  console.log(props)
+  const user : {id:string, name:string, email:string, cnpj:string, phone:string, password:string, company:string, nameImage:string, image:string, date:string, status:boolean} = props.user
   const imageMimeType = /image\/(png|jpg|jpeg)/i;
   const [dataUser, setDataUser] = useState({id:user.id, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, company:user.company, imageName: user.nameImage, urlImage: user.image, date: user.date})
-  const [file, setFile] = useState({name: "padrao.png"})
+  const [file, setFile] : Array<{name:string}> | any  = useState({name: "padrao.png"})
   const [fileDataURL, setFileDataURL] = useState(user.image);
   const [eye , setEye] = useState(false)
   const domain = new URL(window.location.href).origin
 
-  async function VerifyCnpj(e){
+  async function VerifyCnpj(e: { preventDefault: () => void; }){
     e.preventDefault()
     if(dataUser.cnpj != props.user.cnpj){
       var user = undefined
@@ -32,10 +32,10 @@ function EditUser(props){
       if(user != undefined){
         toast.error("Este CNPJ já está cadastrado.")
       } else {
-        toast.promise(UpdateDataUser(),{pending:"Salvando usuário..."})
+        UpdateDataUser()
       }
     } else {
-      toast.promise(UpdateDataUser(),{pending:"Salvando usuário..."})
+      UpdateDataUser()
     }
 
   }
@@ -91,14 +91,13 @@ function EditUser(props){
     if(user.nameImage != "padrao.png"){
       const desertRef = ref(storage, 'images/' + user.nameImage);
       deleteObject(desertRef).then((result) => {
-        console.log(result);
       }).catch((error) => {
         console.log(error);
       });
     }
   }
 
-  async function UpdateBdUser(data){
+  async function UpdateBdUser(data:{urlImage: string, imageName: string}){
     const userAfterEdit = {
       id: user.id,
       name: dataUser.name,
@@ -111,10 +110,11 @@ function EditUser(props){
       nameImage: data.imageName,
       status: user.status,
       admin:false,
-      date: user.date
+      date: user.date,
+      checked: false
     }
 
-    await updateDoc(doc(db, 'users', user.id), {
+    await toast.promise(updateDoc(doc(db, 'users', user.id), {
       name: dataUser.name,
       email: dataUser.email,
       cnpj: dataUser.cnpj,
@@ -124,11 +124,11 @@ function EditUser(props){
       image: data.urlImage,
       nameImage: data.imageName,
       admin:false
-    })
+    }),{pending:"Editando usuário...", success:"Usuário editado com sucesso", error:"Não foi possivel editar o usuário"})
     props.childToParentEdit(userAfterEdit)
   }
   
-  const phoneMask = (value) => {
+  const phoneMask = (value:string) => {
     if(value != undefined){
       return value
       .replaceAll("(", "")
@@ -172,6 +172,15 @@ function EditUser(props){
     }
   }, [file]);
 
+  const cnpjMask = (value:string) => {
+    return value
+    .replace(/\D+/g, '')
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2")
+  }
+
 return (
       <>
         <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen absolute pb-[100px] right-0 flex flex-col items-center max-sm:z-10'>
@@ -197,8 +206,8 @@ return (
             </label>
             <div className='flex max-sm:flex-col justify-between gap-[5px] '>
               <label className='flex flex-col'>
-                CNPJ
-                <InputMask  required  value={dataUser.cnpj} mask="99.999.999/9999-99" onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o cnpj'/>
+                Cnpj
+                <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
               </label>
 
               <label className='flex flex-col'>

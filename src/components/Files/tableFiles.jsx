@@ -190,7 +190,7 @@ export default function TableFiles(props) {
         </table>
       : 
         <div className='w-full h-full flex justify-center items-center flex-col'>
-            <Image src={props.files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="clique para enviar um arquivo" className='w-[170px] h-[170px]'/>
+            <Image src={props.files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="clique para enviar um arquivo" priority className='w-[170px] h-[170px]'/>
           {trash ? 
             <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {props.filesFilter.length <= 0 ? "Nenhum arquivo deletado encontrado." : "Nenhum resultado foi encontrado."} </p>
           :

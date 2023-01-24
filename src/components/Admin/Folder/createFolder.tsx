@@ -5,9 +5,10 @@ import {db} from '../../../../firebase'
 import { toast } from 'react-toastify';
 
 function CreateFolder(props) {
-    const folders = props.user.folders
-    const [color, setColor] = useState()
-    const [nameFolder, setNameFolder] = useState()
+    const folders:Array<{name:string, color:string}> = props.user.folders
+    const [color, setColor] = useState<string>()
+    const [nameFolder, setNameFolder] = useState<string>()
+    
     async function CreateFolder(){
         const result = folders.findIndex(folder => folder.name === nameFolder)
         if(result === -1){
@@ -32,8 +33,6 @@ function CreateFolder(props) {
 
     }
 
-
-
   return (
     <div className='w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black z-50'>
         <div className='bg-primary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
@@ -54,7 +53,7 @@ function CreateFolder(props) {
             </div>
             <div className='flex w-full justify-end gap-4 bg-hilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
                 <button onClick={() => props.folder(false)} className='bg-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Cancelar</button>
-                <button onClick={() => CreateFolder()} className='bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Confirmar</button>
+                <button onClick={() => toast.promise(CreateFolder(),{pending:"Criando pasta.", success:"Pasta criada.", error:"Não foi possivel criar esta pasta."})} className='bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Confirmar</button>
             </div>
         </div>
     </div>

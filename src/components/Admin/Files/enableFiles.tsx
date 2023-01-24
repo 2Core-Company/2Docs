@@ -3,7 +3,7 @@ import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify'; 
 
-async function EnableFiles(props) {
+async function EnableFiles(props:{files:Array<{id_file:string,}>, selectFiles:Array<{folder:string, id_file:string, id_user:string}>, folders:Array<{name:string, color:string}>, ResetConfig:any}) {
     const files = props.files
     const selectFiles = props.selectFiles
     const folders = props.folders
@@ -24,7 +24,6 @@ async function EnableFiles(props) {
           files.splice(index, 1);
         } 
         props.ResetConfig(files)
-        toast.success("Seu arquivo foi recuperado.")
     }catch(e) {
         console.log(e)
         toast.error("Não Foi possivel recuperar este arquivo.")

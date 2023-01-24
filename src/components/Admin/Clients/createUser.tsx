@@ -9,19 +9,18 @@ import { doc, setDoc } from "firebase/firestore";
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
-import InputMask from 'react-input-mask';
 import { toast } from 'react-toastify';
 
 
 function CreateUser({childToParentCreate, closedWindow}){
   const imageMimeType = /image\/(png|jpg|jpeg)/i;
   const [dataUser, setDataUser] = useState({id:"", name: "", email:"", cnpj: "", phone:"", password:"", company:""})
-  const [file, setFile] = useState({name: "padrao.png"})
+  const [file, setFile] : Array<{name:string}> | any = useState({name: "padrao.png"})
   const [fileDataURL, setFileDataURL] = useState(null);
   const [eye , setEye] = useState(true)
   const domain = new URL(window.location.href).origin
 
-  async function VerifyCnpj(e){
+  async function VerifyCnpj(e: { preventDefault: () => void; }){
     e.preventDefault()
     var user = undefined
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj));
@@ -30,11 +29,11 @@ function CreateUser({childToParentCreate, closedWindow}){
     if(user != undefined){
       toast.error("Este CNPJ já está cadastrado.")
     } else {
-      toast.promise(SignUp(),{pending:"Criando usuário..."})
+      toast.promise(SignUp(),{pending: "Criando usuário.", success:"Usuário criado com sucesso", error:"Não foi possivel criar um usuário"})
     }
   }
 
-  async function UploadPhoto(id) {
+  async function UploadPhoto(id:string) {
     const referencesFile = Math.floor(Math.random() * 65536) + file.name;
     if(file.name != "padrao.png"){
       const storageRef = ref(storage, "images/" + referencesFile);
@@ -60,7 +59,7 @@ function CreateUser({childToParentCreate, closedWindow}){
     }
   }
   
-  async function SignUpDb(image){
+  async function SignUpDb(image:{id:string, url:string, referencesFile:string}){
     var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
     var date = new Date() + ""
     const data = {
@@ -122,14 +121,14 @@ function CreateUser({childToParentCreate, closedWindow}){
 
   }
 
-  const phoneMask = (value) => {
+  const phoneMask = (value:string) => {
   return value
     .replace(/\D+/g, '') // não deixa ser digitado nenhuma letra
     .replace(/^(\d{2})(\d)/g,"($1) $2")
     .replace(/(\d)(\d{4})$/,"$1-$2")// captura 2 grupos de número o primeiro com 2 digitos e o segundo de com 3 digitos, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de número
   }
 
-  const changeHandler = (e) => {
+  const changeHandler = (e : any) => {
     const file = e.target.files[0];
     if (!file.type.match(imageMimeType)) {
       return toast.error("Não é permitido armazenar este tipo de arquivo, escolha uma imagem.")
@@ -165,6 +164,15 @@ function CreateUser({childToParentCreate, closedWindow}){
     setDataUser({...dataUser, password: password})
   },[dataUser.name])
 
+  const cnpjMask = (value:string) => {
+    return value
+    .replace(/\D+/g, '')
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2")
+  }
+
 return (
     <>
       <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen pb-[100px] absolute right-0 flex flex-col items-center'>
@@ -195,8 +203,8 @@ return (
           </label>
           <div className='flex max-sm:flex-col justify-between gap-[5px] '>
             <label className='flex flex-col'>
-              CNPJ
-              <InputMask  required  mask="99.999.999/9999-99" value={dataUser.cnpj} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o cnpj'/>
+              Cnpj
+              <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
             </label>
 
             <label className='flex flex-col'>
