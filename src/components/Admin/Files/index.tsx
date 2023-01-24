@@ -21,21 +21,36 @@ import DownloadsFile from '../../Files/dowloadFiles';
 
 function ComponentUpload(){
   const context = useContext(AppContext)
-  const [files, setFiles] = useState([])
-  const [filesFilter, setFilesFilter] = useState([])
-  const [searchFile, setSearchFile] = useState("")
-  const [selectFiles, setSelectFiles] = useState([])
-  const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: ""})
-  const [pages, setPages] = useState(0)
-  const [menu, setMenu] = useState(true)
-  const [documents, setDocuments] = useState({view: false, url: ""})
+  const [files, setFiles] = useState<Files[]>([])
+  const [filesFilter, setFilesFilter] = useState<Files[]>([])
+  const [searchFile, setSearchFile] = useState<string>("")
+  const [selectFiles, setSelectFiles] = useState<Files[]>([])
+  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
+  const [pages, setPages] = useState<number>(0)
+  const [menu, setMenu] = useState<boolean>(true)
+  const [documents, setDocuments] = useState<{view:boolean, url:string}>({view: false, url: ""})
   const params = useSearchParams()
-  const trash = params.get("trash")
-  const id = params.get("id")
-  const folderName = params.get("folder")
-  const [user, setUser] = useState<User | any>()
+  const trash:string = params.get("trash")
+  const id:string  = params.get("id")
+  const folderName:string  = params.get("folder")
+  const [user, setUser] = useState<User>()
 
-  interface User{folders:Array<{name:string, color:string}>}
+  interface Files{
+    name?:string,
+    id_file?:string
+    checked?:boolean
+  }
+
+  interface Modal{
+    status:boolean,
+    message:string,
+    subMessage1:string,
+    subMessage2:string,
+  }
+
+  interface User{
+    folders?:{ name:string, color:string}[]
+  }
 
   async function GetUser(){
       var q = query(collection(db, "users"), where("id", "==", id))
@@ -148,7 +163,7 @@ function ComponentUpload(){
     }
   }
 
-  function ResetConfig(files:Array<string>){
+  function ResetConfig(files:Files[]){
     setPages(Math.ceil(files.length / 10))
     setMenu(true)
     setFilesFilter(files)

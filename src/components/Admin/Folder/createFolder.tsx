@@ -4,11 +4,15 @@ import { doc, updateDoc } from "firebase/firestore";
 import {db} from '../../../../firebase'
 import { toast } from 'react-toastify';
 
-function CreateFolder(props) {
-    const folders:Array<{name:string, color:string}> = props.user.folders
+interface User{
+    folders?:Array<{name:string, color:string}>
+}
+
+function CreateFolder(props:{user:User, idUser:string, setFolders:Function, setFoldersFilter:Function, setCreateFolder:Function}) {
+    const folders = props.user.folders
     const [color, setColor] = useState<string>()
     const [nameFolder, setNameFolder] = useState<string>()
-    
+
     async function CreateFolder(){
         const result = folders.findIndex(folder => folder.name === nameFolder)
         if(result === -1){
@@ -20,7 +24,7 @@ function CreateFolder(props) {
                     })
                     props.setFolders(folders)
                     props.setFoldersFilter(folders)
-                    props.folder(false)
+                    props.setCreateFolder(false)
                 } catch(err){
                     console.log(err)
                 }
@@ -52,7 +56,7 @@ function CreateFolder(props) {
                 </div>
             </div>
             <div className='flex w-full justify-end gap-4 bg-hilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-                <button onClick={() => props.folder(false)} className='bg-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Cancelar</button>
+                <button onClick={() => props.setCreateFolder(false)} className='bg-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Cancelar</button>
                 <button onClick={() => toast.promise(CreateFolder(),{pending:"Criando pasta.", success:"Pasta criada.", error:"Não foi possivel criar esta pasta."})} className='bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Confirmar</button>
             </div>
         </div>

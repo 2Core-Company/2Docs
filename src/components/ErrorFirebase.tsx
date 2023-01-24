@@ -1,6 +1,6 @@
 import {toast} from 'react-toastify'
 
-function ErrorFirebase(props) {
+function ErrorFirebase(props:{message?:string, code?:string}) {
     const errors = props
     var message = errors.message
       if(errors.code === "auth/too-many-requests"){

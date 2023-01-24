@@ -55,7 +55,7 @@ function NavBar(props) {
                 </Tooltip.Portal>
             </Tooltip.Root>
         </Tooltip.Provider>
-        <div className={`bg-primary w-[100px]  fixed max-sm:max-w-[70px] h-full  ${menu ? "max-lg:hidden" : "flex"}  flex-col items-center border-r-2 border-terciary`}> 
+        <div className={`bg-primary w-[100px]  fixed max-sm:max-w-[70px] h-full  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 flex-col items-center border-r-2 border-terciary`}> 
             <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>

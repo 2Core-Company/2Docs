@@ -1,6 +1,6 @@
 import * as Tabs from '@radix-ui/react-tabs';
 import styles from "./signIn.module.css"
-import { CheckIcon, EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
+import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { useState, useContext} from 'react';
 import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
@@ -142,7 +142,7 @@ function Signin(){
           <Tabs.Content className="mt-[20px] TabsContent" value="tab2">
           <form onSubmit={SignInCnpj} className="">
               <fieldset className="flex flex-col">
-                <label className='flex flex-col'>
+                <label className='text-[18px]'>
                   Cnpj
                   <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='w-full text-[18px] bg-[#0000] outline-none py-[10px] flex pl-[5px] border-[1px] border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
                 </label>
