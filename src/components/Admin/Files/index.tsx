@@ -107,12 +107,12 @@ function ComponentUpload(){
     setSelectFiles(fileSelect)
     setFilesFilter(files)
   }
-
+  
   // <--------------------------------- Upload File --------------------------------->
-  const changeHandler = (e:any) => {
+  const changeHandler = (e) => {
     for(let i = 0; i < e.target.files.length; i++){
       if(e.target.files[i].size > 2000000){
-        e.target.value = false
+        e.target.value = null
         return toast.error("Os arquivos só podem ter no maximo 2mb.")
       }
     }
@@ -123,14 +123,13 @@ function ComponentUpload(){
       from: "admin"
     }
     UploadFile({data, childToParentUpload})
-    e.target.value = false
+    e.target.value = null
   }
 
   const childToParentUpload = (childdata:object) => {
     files.push(childdata)
     ResetConfig(files)
   }
- 
   // <--------------------------------- Delet Files --------------------------------->
 
   function ConfirmationDeleteFile(){
@@ -141,7 +140,7 @@ function ComponentUpload(){
         setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivos?", subMessage1: "Estes arquivos vão para a lixeira.", subMessage2:undefined})
       }
     } else {
-      toast.error("Selecione um arquivo para deletar.")    
+      throw toast.error("Selecione um arquivo para deletar.")    
     }
   }
 
@@ -171,6 +170,14 @@ function ComponentUpload(){
     setFiles(files)
   }
 
+  function DowloadFiles(){
+    if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
+    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig}),
+    {pending:"Fazendo download dos arquivos.", 
+    success:"Download feito com sucesso", 
+    error:"Não foi possivel fazer o download."})
+  }
+
 return (
       <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
@@ -194,7 +201,7 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig}),{pending:"Fazendo download dos arquivos.", success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
+                <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
                   Download
                 </button>
                 <button onClick={() => ConfirmationDeleteFile()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
