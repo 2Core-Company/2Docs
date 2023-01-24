@@ -75,13 +75,13 @@ import {toast} from 'react-toastify'
         });
     }
 
-    async function FilterDate(getFiles:Array<{trash:boolean, from:string}>){
+    async function FilterDate(getFiles:Array<{trash:boolean, from:string, date:Date}>){
       const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
       const recents = []
-      filesHere.sort(function(a: {date: Date} ,b:{date: Date}):any { 
+      filesHere.sort((a, b) =>{ 
         a.date = new Date(a.date)
         b.date = new Date(b.date)
-        return (a.date.getTime() - b.date.getTime()) + ""
+        return (a.date.getTime() - b.date.getTime())
       });
       for (var i = 0; 3 > i && i < (filesHere.length); i++) {
         recents.push(filesHere[i])
