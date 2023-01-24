@@ -77,12 +77,11 @@ function ComponentClients(){
     setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   }
 
-  const childToParentDelet = (childdata) => {
+  const childToParentDelet = (childdata : {data:string}) => {
     if(childdata.data){
       ErrorFirebase(childdata.data)
     } else {
       ResetConfig(childdata)
-      toast.success("Usuário deletado.")
     }
   }
   // <--------------------------------- Disable User --------------------------------->
@@ -110,13 +109,13 @@ function ComponentClients(){
       }
     } else {
       toast.error("Nenhum usuário foi selecionado")
-      throw error
+      throw Error
     }
   }
 
   // <--------------------------------- Select User --------------------------------->
 
-  async function SelectUsers(index){
+  async function SelectUsers(index:number){
     const users = [...usersFilter]
     users[index].checked = !users[index].checked
     const userSelect = users.filter(user => user.checked === true);
@@ -125,11 +124,10 @@ function ComponentClients(){
   }
 
   // <--------------------------------- Create User --------------------------------->
-  const childToParentCreate = (childdata) => {
+  const childToParentCreate = (childdata:string) => {
     const users = [...usersFilter]
     users.push(childdata)
     ResetConfig(users)
-    toast.success("Usuário criado com sucesso.")
   }
 
   const closedWindow = () => {
@@ -138,17 +136,17 @@ function ComponentClients(){
 
   // <--------------------------------- Edit User --------------------------------->
 
-  const childToParentEdit = (childdata) => {
+  const childToParentEdit = (childdata: {id:string}) => {
     const users = [...usersFilter]
     const index = users.findIndex(user => user.id == childdata.id)
     users.splice(index, 1)
     users.push(childdata)
     ResetConfig(users)
-    toast.success("Usuário editado com sucesso")
   }
   
-  function ResetConfig(users){
+  function ResetConfig(users:Array<string> | any){
   setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
+  console.log(users)
   setUsersFilter(users)
   setPages(Math.ceil(users.length / 10))
   setMenu(true)
@@ -173,7 +171,7 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => toast.promise(DisableUser(),{pending:"Trocando status do usuário.", success:"Status trocado com sucesso."})} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
+                <button onClick={() => toast.promise(DisableUser(),{pending:"Trocando status do usuário.", success:"Status trocado com sucesso.", error:"Não foi possivel trocar o status do usuário"})} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
                 <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>

@@ -8,7 +8,6 @@ async function DownloadsFile(props){
   const filesDownloaded = props.filesDownloaded
   const files = props.files
   if(filesDownloaded.length === 0) return toast.error("Selecione um arquivo para baixar.")
-  toast.info("Baixando os arquivos...")
   for(var i = 0; i < filesDownloaded.length; i++){
     let blob = await fetch(filesDownloaded[i].url).then(r => r.blob());
     filesDownloaded[i].urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
@@ -44,7 +43,6 @@ async function DownloadsFile(props){
       if(props.ResetConfig != undefined){
         props.ResetConfig(files)
       }
-      toast.success("Arquivos baixados com sucesso.")
   } catch(e) {
     console.log(e)
     toast.error("Não foi possivél baixar os arquivos.")

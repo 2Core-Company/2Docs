@@ -42,7 +42,7 @@ function TableClients(props) {
 
   function filterDate(){
     var users = props.searchUser.length == 0 ? [...props.users ] : [...props.Filter]
-    users.sort(function(a,b) { 
+    users.sort(function(a: {date: Date} ,b:{date: Date}) : any { 
       a.date = new Date(a.date)
       b.date = new Date(b.date)
       if(filter.date){
@@ -57,7 +57,7 @@ function TableClients(props) {
     props.setUsersFilter(users)
   }
 
-  function formatDate(date){
+  function formatDate(date:string){
     var newDate = new Date(date)
     if(window.screen.width > 1250){
       var month = newDate.getMonth()
@@ -108,7 +108,7 @@ function TableClients(props) {
 
           {/* <--------------------------------- BodyTable ---------------------------------> */}
           <tbody>
-          {props.usersFilter.map((user, index) =>{
+          {props.usersFilter.map((user:{checked: boolean | any, id:string,  name: string, email:string, date:string, status:boolean, image:string}, index:number) =>{
             var checked = user.checked
 
             if( showItens.min < index && index < showItens.max){
@@ -157,7 +157,7 @@ function TableClients(props) {
         </table>
       : 
           <div className='w-full h-full flex justify-center items-center flex-col'>
-            <Image src={props.users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({...windowsAction, createUser: true})}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
+            <Image src={props.users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => props.setWindowsAction({...props.windowsAction, createUser: true})}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
             <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {props.users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
           </div>
       }

@@ -8,24 +8,30 @@ import { auth, db} from '../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import ErrorFirebase from '../ErrorFirebase'
 import { useRouter } from 'next/navigation';
-import InputMask from 'react-input-mask';
 import Image from 'next/image';
 import Logo from '../../../public/image/2core.png'
 import { toast } from 'react-toastify';
 
 function Signin(){
-  const context = useContext(AppContext)
-  const [dataUser, setDataUser] = useState({email: "", password: "", cnpj:"", checked: false})
+  const context = useContext<{setLoading:Function}>(AppContext)
+  const [dataUser, setDataUser] = useState<DataUser>({email: "", password: "", cnpj:"", checked: false})
   const [eye, setEye] = useState(false)
   const router = useRouter()
+  
+  interface DataUser{
+    email: string,
+    password: string,
+    cnpj: string,
+    checked: boolean
+  }
 
-  function SignInEmail(e){
+  function SignInEmail(e: { preventDefault: () => void; }){
     e.preventDefault()
     context.setLoading(true)
     SignIn(dataUser.email)
   }
 
-  async function SignInCnpj(e){
+  async function SignInCnpj(e: { preventDefault: () => void; }){
     e.preventDefault()
     context.setLoading(true)
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
@@ -41,7 +47,7 @@ function Signin(){
     }
   }
   
-  function SignIn(email){
+  function SignIn(email:string){
     signInWithEmailAndPassword(auth, email, dataUser.password)
       .then((userCredential) => {
         context.setLoading(false)
@@ -53,7 +59,7 @@ function Signin(){
       });
   }
 
-  function AlterPassword(email){
+  function AlterPassword(email:string){
     if(dataUser.email === ""){
       return toast.error("Preencha o campo de email.")
     }
@@ -66,6 +72,15 @@ function Signin(){
       context.setLoading(false)
       ErrorFirebase(error)
     });
+  }
+
+  const cnpjMask = (value:string) => {
+    return value
+    .replace(/\D+/g, '')
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2")
   }
 
   async function AlterPasswordCnpj(){
@@ -84,6 +99,7 @@ function Signin(){
       });
     }
   }
+
     return (
       <section className="bg-primary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
         <Image src={Logo} alt="Logo da empresa" height={150} width={150} className='rounded-full'/>
@@ -126,10 +142,10 @@ function Signin(){
           <Tabs.Content className="mt-[20px] TabsContent" value="tab2">
           <form onSubmit={SignInCnpj} className="">
               <fieldset className="flex flex-col">
-              <label className='flex flex-col'>
-                CNPJ
-                <InputMask  required  mask="99.999.999/9999-99" value={dataUser.cnpj} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='w-full text-[18px] bg-[#0000] outline-none py-[10px] border-[1px] border-black rounded-[8px] pl-[5px]' placeholder='Digite o cnpj'/>
-              </label>
+                <label className='flex flex-col'>
+                  Cnpj
+                  <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='w-full text-[18px] bg-[#0000] outline-none py-[10px] flex pl-[5px] border-[1px] border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
+                </label>
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
                 <label className="text-[18px]" htmlFor="username">

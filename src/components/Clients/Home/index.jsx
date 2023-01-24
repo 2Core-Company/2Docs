@@ -90,7 +90,7 @@ function ComponentHome () {
                     data.contact.map((contact) => {
                       const linkWhatsApp = "https://wa.me/55" +  contact.replaceAll("(", "").replaceAll( ")", "").replaceAll( "-", "").replaceAll( " ", "")
                       return(
-                        <a key={contact} href={linkWhatsApp } className="flex items-center gap-[10px] mt-[10px] h-[50px]">
+                        <a key={contact} href={linkWhatsApp } className="flex items-center gap-[10px] mt-[10px] h-[50px] underline underline-offset-[8px]">
                           <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                           <p type="text" className='text-[20px] text-ellipsis pl-[5px] white-space'>{contact}</p>
                         </a> 
