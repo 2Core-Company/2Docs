@@ -15,15 +15,38 @@ import TableClients from './tableClients';
 
 function ComponentClients(){
   const context = useContext(AppContext)
-  const [users, setUsers] = useState([])
-  const [usersFilter, setUsersFilter] = useState([])
-  const [searchUser, setSearchUser] = useState("")
-  const [userEdit, setUserEdit] = useState()
-  const [selectUsers, setSelectUsers] = useState([])
-  const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
-  const [windowsAction, setWindowsAction] = useState({createUser: false, updateUser: false, deletUser: false})
-  const [pages, setPages] = useState(0)
-  const [menu, setMenu] = useState(true)
+  const [users, setUsers] = useState<Users[]>([])
+  const [usersFilter, setUsersFilter] = useState<Users[]>([])
+  const [searchUser, setSearchUser] = useState<string>("")
+  const [userEdit, setUserEdit] = useState<{}>()
+  const [selectUsers, setSelectUsers] = useState<Users[]>([])
+  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
+  const [windowsAction, setWindowsAction] = useState<WindowsAction>({createUser: false, updateUser: false, deletUser: false})
+  const [pages, setPages] = useState<number>(0)
+  const [menu, setMenu] = useState<boolean>(true)
+
+  interface WindowsAction{
+    createUser: boolean,
+    updateUser: boolean,
+    deletUser: boolean
+  }
+
+  interface Users{
+    id?:string, 
+    status?:boolean, 
+    checked?:boolean,
+    length?: number,
+    date?:Date,
+    name?: string
+  }
+
+  interface Modal{
+    status:boolean,
+    message:string,
+    subMessage1:string,
+    subMessage2:string,
+    user:string
+  }
 
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() =>{
@@ -32,12 +55,10 @@ function ComponentClients(){
   },[])
 
   async function GetUsers(){
-    const getUsers = []
+    const getUsers:Array<{checked?:boolean}> = []
       const q = query(collection(db, "users"), where("admin", "!=", true));
       const querySnapshot = await getDocs(q);
-      const a = querySnapshot.forEach((doc) => {
-        getUsers.push(doc.data())
-      });
+      const a = querySnapshot.forEach((doc) =>  getUsers.push(doc.data()));
     for(var i = 0; i < getUsers.length; i++){
       getUsers[i].checked = false
     }
@@ -49,7 +70,7 @@ function ComponentClients(){
 
   useEffect(() => {
     if(searchUser != null){
-      const searchUserFilter = []
+      const searchUserFilter:Array<object> = []
       for (var i = 0; i < users.length; i++) {
         if(users[i].name.toLowerCase().includes(searchUser.toLowerCase().trim())){
           searchUserFilter.push(users[i])
@@ -77,18 +98,14 @@ function ComponentClients(){
     setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   }
 
-  const childToParentDelet = (childdata : {data:string}) => {
-    if(childdata.data){
-      ErrorFirebase(childdata.data)
-    } else {
+  const childToParentDelet = (childdata : Array<{}>) => {
       ResetConfig(childdata)
-    }
   }
   // <--------------------------------- Disable User --------------------------------->
 
   async function DisableUser(){
     const usersHere = [...usersFilter]
-    const domain = new URL(window.location.href).origin
+    const domain:string = new URL(window.location.href).origin
     if(selectUsers.length > 0){
       const result = await axios.post(`${domain}/api/users/disableUser`, {users: selectUsers, uid: auth.currentUser.uid})
       if(result.data.type === 'success'){
@@ -124,7 +141,7 @@ function ComponentClients(){
   }
 
   // <--------------------------------- Create User --------------------------------->
-  const childToParentCreate = (childdata:string) => {
+  const childToParentCreate = (childdata:{}) => {
     const users = [...usersFilter]
     users.push(childdata)
     ResetConfig(users)
@@ -138,20 +155,20 @@ function ComponentClients(){
 
   const childToParentEdit = (childdata: {id:string}) => {
     const users = [...usersFilter]
-    const index = users.findIndex(user => user.id == childdata.id)
+    const index:number = users.findIndex(user => user.id == childdata.id)
     users.splice(index, 1)
     users.push(childdata)
     ResetConfig(users)
   }
   
-  function ResetConfig(users:Array<string> | any){
-  setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
-  console.log(users)
-  setUsersFilter(users)
-  setPages(Math.ceil(users.length / 10))
-  setMenu(true)
-  setSelectUsers([])
-  setUsers(users)
+  function ResetConfig(users:Array<{}>){
+    setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
+    console.log(users)
+    setUsersFilter(users)
+    setPages(Math.ceil(users.length / 10))
+    setMenu(true)
+    setSelectUsers([])
+    setUsers(users)
   }
 
 return (

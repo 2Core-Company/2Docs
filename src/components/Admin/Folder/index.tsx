@@ -18,15 +18,15 @@ import {toast} from 'react-toastify'
   function ComponentFolder(){
     const context = useContext(AppContext)
     const params = useSearchParams()
-    const id = params.get('id')
-    const [files, setFiles] = useState([])
-    const [recentsFile, setRecentsFile] = useState([])
-    const [createFolder, setCreateFolder] = useState(false)
+    const id:string = params.get('id')
+    const [files, setFiles] = useState<Files[]>([])
+    const [recentsFile, setRecentsFile] = useState<Files[]>([])
+    const [createFolder, setCreateFolder] = useState<boolean>(false)
     const [user, setUser] = useState<object>()
-    const [folders, setFolders] = useState([])
+    const [folders, setFolders] = useState<{color:string, name:string}[]>([])
     const [foldersFilter, setFoldersFilter] = useState([])
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
-    const [searchFolders, setSearchFolders] = useState("")
+    const [searchFolders, setSearchFolders] = useState<string>("")
     const [deletFolder, setDeletFolder] = useState<string>()
 
     interface Modal {
@@ -34,6 +34,14 @@ import {toast} from 'react-toastify'
       message: string,
       subMessage1: string,
       subMessage2:string
+    }
+
+    interface Files{
+      id_file:string,
+      folder:string,
+      trash:boolean,
+      type:string,
+      name:string
     }
 
     useEffect(() =>{
@@ -188,7 +196,7 @@ import {toast} from 'react-toastify'
               <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>Excluidos</p>
             </Link>
           </div>
-          {createFolder ? <CreateFolder  folder={setCreateFolder} idUser={id} user={user} setFolders={setFolders}  setFoldersFilter={setFoldersFilter}/> : <></>}
+          {createFolder ? <CreateFolder  setCreateFolder={setCreateFolder} idUser={id} user={user} setFolders={setFolders}  setFoldersFilter={setFoldersFilter}/> : <></>}
           {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
     )

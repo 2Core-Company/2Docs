@@ -1,4 +1,4 @@
-function Modal(props) {
+function Modal(props:{message: string, subMessage1?:string, subMessage2?:string, user?:string, setModal:Function, childModal:Function}) {
   const subMessage1 = props.subMessage1
   const subMessage2 = props.subMessage2
     return (
