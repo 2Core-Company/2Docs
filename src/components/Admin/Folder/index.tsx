@@ -44,7 +44,7 @@ import {toast} from 'react-toastify'
       name:string
     }
 
-    useEffect(() =>{
+    useLayoulyEffect(() =>{
       context.setLoading(true)
       GetFiles()
       GetUser()
@@ -60,7 +60,7 @@ import {toast} from 'react-toastify'
         }
         setFoldersFilter(searchFoldersFilter)
       }
-    },[searchFolders])
+    },[folders, searchFolders])
 
     async function GetFiles(){
       const getFiles = []
@@ -202,3 +202,7 @@ import {toast} from 'react-toastify'
     )
   }
 export default ComponentFolder;
+
+function useLayoulyEffect(arg0: () => void, arg1: undefined[]) {
+  throw new Error('Function not implemented.');
+}

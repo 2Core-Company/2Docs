@@ -11,17 +11,26 @@ import DownloadsFile from '../../Files/dowloadFiles';
 
   function ComponentFolder(){
     const context = useContext(AppContext)
-    const [files, setFiles] = useState([])
-    const [recentsFile, setRecentsFile] = useState([])
+    const [files, setFiles] = useState<Files[]>([])
+    const [recentsFile, setRecentsFile] = useState<Files[]>([])
     const [folders, setFolders] = useState([])
-    const [foldersFilter, setFoldersFilter] = useState([])
-    const [searchFolders, setSearchFolders] = useState("")
-    const id = auth.currentUser.uid
+    const [foldersFilter, setFoldersFilter] = useState<{color:string, name:string}[]>([])
+    const [searchFolders, setSearchFolders] = useState<string>("")
+    const id:string = auth.currentUser.uid
+
+    interface Files{
+      id_file:string,
+      folder:string,
+      trash:boolean,
+      type:string,
+      name:string
+    }
 
     useEffect(() =>{
       context.setLoading(true)
       GetFiles()
       GetUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     useEffect(() => {
@@ -34,7 +43,7 @@ import DownloadsFile from '../../Files/dowloadFiles';
         }
         setFoldersFilter(searchFoldersFilter)
       }
-    },[searchFolders])
+    },[folders, searchFolders])
 
     async function GetFiles(){
       const getFiles = []
@@ -56,16 +65,16 @@ import DownloadsFile from '../../Files/dowloadFiles';
         });
     }
 
-    async function FilterDate(getFiles){
-      const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "admin")
+    async function FilterDate(getFiles:Array<{trash:boolean, from:string, date:Date}>){
+      const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
       const recents = []
-      filesHere.sort(function(a,b) { 
+      filesHere.sort((a, b) =>{ 
         a.date = new Date(a.date)
         b.date = new Date(b.date)
-        return (a.date.getTime() - b.date.getTime()) + ""
+        return (a.date.getTime() - b.date.getTime())
       });
       for (var i = 0; 3 > i && i < (filesHere.length); i++) {
-          recents.push(filesHere[i])
+        recents.push(filesHere[i])
       }
       context.setLoading(false)
       setRecentsFile(recents)
@@ -126,3 +135,7 @@ import DownloadsFile from '../../Files/dowloadFiles';
     )
   }
 export default ComponentFolder;
+
+function useLayoultEffect(arg0: () => void, arg1: undefined[]) {
+  throw new Error('Function not implemented.');
+}

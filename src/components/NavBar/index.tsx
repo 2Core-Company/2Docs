@@ -4,22 +4,22 @@ import { HomeIcon, FileTextIcon, PersonIcon } from '@radix-ui/react-icons';
 import * as Avatar from '@radix-ui/react-avatar';
 import iconExit from '../../../public/icons/exit.svg'
 import Image from 'next/image'
-import Modals from '../../components/Modals'
+import Modals from '../Modals'
 import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
 import { auth } from '../../../firebase'
 import { useRouter } from 'next/navigation';
 
 
-function NavBar(props) {
+function NavBar(props:{user:string, image:string}) {
     const path = usePathname()
     const [menu, setMenu] = useState(true)
-    const [modal, setModal] = useState({status: false, message: "", type:"", size:""})
+    const [modal, setModal] = useState<{status:boolean, message:string}>({status: false, message: ""})
     const router = useRouter()
  
     const childModal = () => {
         signOut(auth).then(() => {
-            setModal({status: false, message: "", type:"", size:""})
+            setModal({status: false, message: ""})
             router.push("/")
         }).catch((error) => {
             console.log(error)
@@ -124,7 +124,7 @@ function NavBar(props) {
                 </Tooltip.Root>
             </Tooltip.Provider>
             </div>
-            {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={undefined} subMessage2={undefined} user={modal.user} childModal={childModal}/> : <></>}
+            {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={undefined} subMessage2={undefined} childModal={childModal}/> : <></>}
     </div>
   )
 }
