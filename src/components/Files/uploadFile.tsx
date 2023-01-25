@@ -3,8 +3,17 @@ import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 
-  
-  function UploadFiles(props) {
+  interface Props{
+    data:{
+      file:any
+      from:string
+      folder:string
+      id:string
+  }
+  childToParentUpload:Function
+  }
+  function UploadFiles(props:Props) {
+    console.log(props)
     const file = props.data.file
     for (var i = 0; i < file.length; i++) {
       const type = file[i].type

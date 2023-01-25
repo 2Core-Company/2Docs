@@ -109,7 +109,7 @@ function ComponentUpload(){
   }
   
   // <--------------------------------- Upload File --------------------------------->
-  const changeHandler = (e) => {
+  const changeHandler = (e:any) => {
     for(let i = 0; i < e.target.files.length; i++){
       if(e.target.files[i].size > 2000000){
         e.target.value = null

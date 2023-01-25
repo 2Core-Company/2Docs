@@ -6,13 +6,23 @@ import Image from 'next/image'
 import { DownloadIcon, EyeOpenIcon, TrashIcon} from '@radix-ui/react-icons';
 import DownloadsFile from './dowloadFiles'
 
-export default function TableFiles(props) {
-  const [filter, setFilter] = useState({name: false, size:false, date:false, status:false})
+export default function TableFiles(props:any) {
+  console.log(props)
+  const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
   const [showItens, setShowItens] = useState({min:-1, max:10})
   const url = window.location.href
   const trash = props.trash
-  const [messageEmpty, setMessageEmpty] = useState()
+  const [messageEmpty, setMessageEmpty] = useState<string>()
+
+  interface Filter {
+    name:boolean,
+    size:boolean,
+    date:boolean,
+    status:boolean
+  }
+
+
   useEffect(() => {
     console.log(props.folderName)
     if(url.includes("Clientes") === true  && props.folderName === "Cliente" ){
@@ -20,6 +30,7 @@ export default function TableFiles(props) {
     } else if(url.includes("Admin") === true  && props.folderName != "Cliente") {
       setMessageEmpty("Envie seu primeiro arquivo!")
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   function filterName(){
@@ -66,13 +77,13 @@ export default function TableFiles(props) {
 
   function filterDate(){
     const filesDate = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
-    filesDate.sort(function(a,b) { 
+    filesDate.sort((a,b) => { 
       a.date = new Date(a.date)
       b.date = new Date(b.date)
       if(filter.date){
-       return (b.date.getTime() - a.date.getTime()) + ""
+       return (b.date.getTime() - a.date.getTime())
       } else {
-       return (a.date.getTime() - b.date.getTime()) + ""
+       return (a.date.getTime() - b.date.getTime())
       }
     });
     for (var i = 0; i < filesDate.length; i++) {
