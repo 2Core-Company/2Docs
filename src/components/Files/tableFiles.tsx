@@ -8,18 +8,18 @@ import DownloadsFile from './dowloadFiles'
 import { Filter, Files } from '../../types/interfaces'
 
 interface Props{ 
-  setFilesFilter: Function, 
-  SelectFile: Function, 
-  ConfirmationDeleteFile:Function, 
-  ResetConfig: Function, 
-  setDocuments: Function, 
-  documents: any, 
-  pages: number,
-  trash: boolean,
-  filesFilter:Files[],
-  files:Files[],
-  folderName:string,
-  searchFile:string
+  setFilesFilter?: Function, 
+  SelectFile?: Function, 
+  ConfirmationDeleteFile?:Function, 
+  ResetConfig?: Function, 
+  setDocuments?: Function, 
+  documents?: any, 
+  pages?: number,
+  trash?: string,
+  filesFilter?:Files[],
+  files?:Files[],
+  folderName?:string,
+  searchFile?:string
  }
 
 export default function TableFiles(props:Props) {

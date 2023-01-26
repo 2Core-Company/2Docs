@@ -65,7 +65,7 @@ export interface Modal{
     size?:string
     url?:string
     viwed?:boolean
-    from:string,
+    from?:string,
     urlDownload?:string
   }
 
