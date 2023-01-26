@@ -1,8 +1,9 @@
 import {db, storage} from '../../../../firebase'
 import { doc,deleteDoc} from "firebase/firestore";  
 import { ref, deleteObject} from "firebase/storage";
+import { Files } from '../../../types/interfaces'
 
-async function deletFiles(props:{files:Array<{id_file?:string}>, selectFiles:Array<{id_file?: string}>, ResetConfig:Function},) {
+async function deletFiles(props:{files:Files[], selectFiles:Files[], ResetConfig:Function},) {
     const filesHere = props.files
     const selectFiles = props.selectFiles
     try{

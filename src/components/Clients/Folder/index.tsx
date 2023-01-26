@@ -8,6 +8,7 @@ import { collection, where, getDocs, query } from "firebase/firestore";
 import { db, auth } from '../../../../firebase'
 import Link from 'next/link';
 import DownloadsFile from '../../Files/dowloadFiles';
+import { Files } from '../../../types/interfaces' 
 
   function ComponentFolder(){
     const context = useContext(AppContext)
@@ -17,14 +18,6 @@ import DownloadsFile from '../../Files/dowloadFiles';
     const [foldersFilter, setFoldersFilter] = useState<{color:string, name:string}[]>([])
     const [searchFolders, setSearchFolders] = useState<string>("")
     const id:string = auth.currentUser.uid
-
-    interface Files{
-      id_file:string,
-      folder:string,
-      trash:boolean,
-      type:string,
-      name:string
-    }
 
     useEffect(() =>{
       context.setLoading(true)

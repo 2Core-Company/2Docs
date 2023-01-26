@@ -1,7 +1,8 @@
 import {db } from '../../../../firebase'
-import { doc, updateDoc } from "firebase/firestore";  
+import { doc, updateDoc } from "firebase/firestore"; 
+import { Folders, DataUser} from '../../../types/interfaces' 
 
-async function DeletFolder(props:{folders:Array<{name:string}>, name:string, id:string, setFoldersFilter:any, setFolders:any}) {
+async function DeletFolder(props:{folders:Folders[], name:string, id:string, setFoldersFilter:Function, setFolders:Function}) {
     const folders = props.folders
     const index = folders.findIndex(folder => folder.name === props.name)
     folders.splice(index, 1);

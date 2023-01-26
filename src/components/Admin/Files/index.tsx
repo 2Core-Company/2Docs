@@ -18,6 +18,7 @@ import DisableFiles from './disableFiles'
 import EnableFiles from './enableFiles'
 import TableFiles from '../../Files/tableFiles'
 import DownloadsFile from '../../Files/dowloadFiles';
+import { Files, Modal, DataUser } from '../../../types/interfaces'
 
 function ComponentUpload(){
   const context = useContext(AppContext)
@@ -33,24 +34,8 @@ function ComponentUpload(){
   const trash:string = params.get("trash")
   const id:string  = params.get("id")
   const folderName:string  = params.get("folder")
-  const [user, setUser] = useState<User>()
+  const [user, setUser] = useState<DataUser>()
 
-  interface Files{
-    name?:string,
-    id_file?:string
-    checked?:boolean
-  }
-
-  interface Modal{
-    status:boolean,
-    message:string,
-    subMessage1:string,
-    subMessage2:string,
-  }
-
-  interface User{
-    folders?:{ name:string, color:string}[]
-  }
 
   async function GetUser(){
       var q = query(collection(db, "users"), where("id", "==", id))
@@ -64,6 +49,7 @@ function ComponentUpload(){
   useEffect(() =>{
       context.setLoading(true)
       GetFiles()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   async function GetFiles(){
@@ -98,7 +84,7 @@ function ComponentUpload(){
       }
       setFilesFilter(searchFilesFilter)
     }
-  },[searchFile])
+  },[files, searchFile])
 
   async function SelectFile(index:number){
     const files = [...filesFilter]

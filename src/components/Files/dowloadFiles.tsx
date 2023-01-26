@@ -1,9 +1,10 @@
 import { db } from '../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
+import { Files } from '../../types/interfaces'
 
 
-async function DownloadsFile(props){
+async function DownloadsFile(props:{filesDownloaded:Files[], files:Files[], ResetConfig:Function  }){
   const page = window.location.pathname
   const filesDownloaded = props.filesDownloaded
   const files = props.files

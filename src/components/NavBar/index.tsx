@@ -9,12 +9,13 @@ import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
 import { auth } from '../../../firebase'
 import { useRouter } from 'next/navigation';
+import { Modal } from '../../types/interfaces'
 
 
 function NavBar(props:{user:string, image:string}) {
     const path = usePathname()
     const [menu, setMenu] = useState(true)
-    const [modal, setModal] = useState<{status:boolean, message:string}>({status: false, message: ""})
+    const [modal, setModal] = useState<Modal>({status: false, message: ""})
     const router = useRouter()
  
     const childModal = () => {
@@ -24,7 +25,7 @@ function NavBar(props:{user:string, image:string}) {
         }).catch((error) => {
             console.log(error)
         });
-      }
+    }
 
     async function setAdminAuth(){
     // const id = "BSpONHzk8kPfOzvGQuZ9ov6GJuH3"

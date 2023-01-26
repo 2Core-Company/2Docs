@@ -12,11 +12,12 @@ import axios from 'axios';
 import ErrorFirebase from '../../ErrorFirebase';
 import { toast } from 'react-toastify';
 import TableClients from './tableClients';
+import {Users, Modal, WindowsAction, UsersFilter} from '../../../types/interfaces'
 
 function ComponentClients(){
   const context = useContext(AppContext)
   const [users, setUsers] = useState<Users[]>([])
-  const [usersFilter, setUsersFilter] = useState<Users[]>([])
+  const [usersFilter, setUsersFilter] = useState<UsersFilter[]>([])
   const [searchUser, setSearchUser] = useState<string>("")
   const [userEdit, setUserEdit] = useState<{}>()
   const [selectUsers, setSelectUsers] = useState<Users[]>([])
@@ -25,33 +26,11 @@ function ComponentClients(){
   const [pages, setPages] = useState<number>(0)
   const [menu, setMenu] = useState<boolean>(true)
 
-  interface WindowsAction{
-    createUser: boolean,
-    updateUser: boolean,
-    deletUser: boolean
-  }
-
-  interface Users{
-    id?:string, 
-    status?:boolean, 
-    checked?:boolean,
-    length?: number,
-    date?:Date,
-    name?: string
-  }
-
-  interface Modal{
-    status:boolean,
-    message:string,
-    subMessage1:string,
-    subMessage2:string,
-    user:string
-  }
-
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() =>{
       context.setLoading(true)
       GetUsers()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   async function GetUsers(){
@@ -78,7 +57,7 @@ function ComponentClients(){
       }
       setUsersFilter(searchUserFilter)
     }
-  },[searchUser])
+  },[searchUser, users])
 
    // <--------------------------------- Delete User --------------------------------->
    function ConfirmationDeleteUser(){
@@ -153,7 +132,7 @@ function ComponentClients(){
 
   // <--------------------------------- Edit User --------------------------------->
 
-  const childToParentEdit = (childdata: {id:string}) => {
+  const childToParentEdit = (childdata:{id:string}) => {
     const users = [...usersFilter]
     const index:number = users.findIndex(user => user.id == childdata.id)
     users.splice(index, 1)
