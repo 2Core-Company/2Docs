@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
@@ -10,6 +11,7 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { DataUser } from '../../../types/interfaces'
 
 
 function CreateUser({childToParentCreate, closedWindow}){
@@ -19,16 +21,6 @@ function CreateUser({childToParentCreate, closedWindow}){
   const [fileDataURL, setFileDataURL] = useState<string>(undefined);
   const [eye , setEye] = useState(true)
   const domain:string = new URL(window.location.href).origin
-
-  interface DataUser{
-    id:string,
-    name:string,
-    email:string,
-    cnpj:string,
-    phone:string,
-    password: string,
-    company:string,
-  }
 
   async function VerifyCnpj(e: { preventDefault: () => void; }){
     e.preventDefault()
@@ -170,7 +162,6 @@ function CreateUser({childToParentCreate, closedWindow}){
 
   useEffect(() => {
     const password = dataUser.name.substr(0, 5).replace(/\s+/g, '') + Math.floor(Math.random() * 100000)
-    
     setDataUser({...dataUser, password: password})
   },[dataUser.name])
 

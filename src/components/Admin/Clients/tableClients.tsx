@@ -5,15 +5,18 @@ import Image from 'next/image'
 import iconNullClient from '../../../../public/icons/nullClient.svg'
 import iconSearchUser from '../../../../public/icons/searchUser.svg'
 import Link from 'next/link'
+import { UsersFilter, WindowsAction } from '../../../types/interfaces'
 
 interface Props { 
-  searchUser: string | any[],
+  searchUser: string,
   users: {length?: number, date?:Date}[],
   setUsersFilter: (arg0: any[]) => void,
-  usersFilter: {id?:string,  status?:boolean, checked?:boolean, date?:Date | string}[],
-  SelectUsers: (arg0: number) => void,
+  usersFilter: UsersFilter[],
+  pages: number,
+  windowsAction:WindowsAction,
+  SelectUsers: Function,
   setUserEdit: Function,
-  setWindowsAction: (arg0: any) => void; windowsAction: any; pages: number;
+  setWindowsAction:Function;
 }
 
 function TableClients(props: Props) {
@@ -118,14 +121,14 @@ function TableClients(props: Props) {
 
           {/* <--------------------------------- BodyTable ---------------------------------> */}
           <tbody>
-          {props.usersFilter.map((user:{checked: boolean | any, id:string,  name: string, email:string, date:string, status:boolean, image:string}, index:number) =>{
+          {props.usersFilter.map((user, index) =>{
             var checked = user.checked
 
             if( showItens.min < index && index < showItens.max){
           return(
           <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
               <th className='h-[50px] max-sm:h-[40px]'>
-                <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => props.SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
+                <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
               </th>
 
               <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>

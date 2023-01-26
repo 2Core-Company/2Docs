@@ -10,22 +10,10 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { DataUser } from '../../../types/interfaces'
 
-interface User{
-  id?:string, 
-  name?:string, 
-  email?:string, 
-  cnpj?:string, 
-  phone?:string, 
-  password?:string, 
-  company?:string, 
-  nameImage?:string, 
-  image?:string, 
-  date?:string, 
-  status?:boolean
-}
 
-function EditUser(props:{closedWindow:Function, childToParentEdit:Function, user:User}){
+function EditUser(props:{closedWindow:Function, childToParentEdit:Function, user:DataUser}){
   const user = props.user
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
   const [dataUser, setDataUser] = useState<DataUser>({id:user.id, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, company:user.company, imageName: user.nameImage, urlImage: user.image, date: user.date})

@@ -3,12 +3,9 @@ import { useState } from 'react'
 import { doc, updateDoc } from "firebase/firestore";  
 import {db} from '../../../../firebase'
 import { toast } from 'react-toastify';
+import { Folders } from '../../../types/interfaces'
 
-interface User{
-    folders?:Array<{name:string, color:string}>
-}
-
-function CreateFolder(props:{user:User, idUser:string, setFolders:Function, setFoldersFilter:Function, setCreateFolder:Function}) {
+function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setFolders:Function, setFoldersFilter:Function, setCreateFolder:Function}) {
     const folders = props.user.folders
     const [color, setColor] = useState<string>()
     const [nameFolder, setNameFolder] = useState<string>()

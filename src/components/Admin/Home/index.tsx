@@ -6,29 +6,19 @@ import styles from './home.module.css'
 import { toast } from 'react-toastify';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import DownloadFiles from '../../Files/dowloadFiles'
+import { Files, CommonQuestions} from '../../../types/interfaces' 
 
 function ComponentHome () {
   const [urlImage, setUrlImage] = useState<string>()
   const [gb, setGb] = useState<number>()
   const [gbPorcentage, setGbPorcentage] = useState<string>("w-[1%]")
-  const [recentsFile, setRecentsFile]= useState<recentFile[]>([])
-  const [data, setData] = useState<Data>({contact:[], question:[]})
-
-  interface Data{
-    id?:string,
-    contact:Array<string>,
-    question:Array<{response:string, question:string}>
-  }
-
-  interface recentFile{
-    id_file:string,
-    type:string,
-    name:string
-  }
+  const [recentsFile, setRecentsFile]= useState<Files[]>([])
+  const [commonQuestions, setCommonQuestions] = useState<CommonQuestions>({contact:[], question:[]})
 
    useLayoutEffect(() => {
     GetUsers()
     GetFiles()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   async function GetUsers(){
@@ -80,14 +70,14 @@ function ComponentHome () {
     const q = query(collection(db, "data"));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      setData({...data, contact:doc.data().contact, id:doc.data().id, question:doc.data().question})
+      setCommonQuestions({...commonQuestions, contact:doc.data().contact, id:doc.data().id, question:doc.data().question})
     });
   }
 
   function ChangeContact(content:{index:number, text:string}){
-    const contacts = [...data.contact]
+    const contacts = [...commonQuestions.contact]
     contacts[content.index] = content.text
-    setData({...data, contact:contacts})
+    setCommonQuestions({...commonQuestions, contact:contacts})
   }
 
   const phoneMask = (value:string) => {
@@ -106,8 +96,8 @@ function ComponentHome () {
   }
 
   async function UpdateBdContact(){
-    await updateDoc(doc(db, 'data', data.id.trim()), {
-      contact: data.contact
+    await updateDoc(doc(db, 'data', commonQuestions.id.trim()), {
+      contact: commonQuestions.contact
     })
     .then(() => {
       toast.success("As informações foram salvas com sucesso.")
@@ -119,24 +109,24 @@ function ComponentHome () {
   }
 
   function ChangeQuestion(content:{index: number, text:string}){
-    var question = [...data.question]
+    var question = [...commonQuestions.question]
     if(question[content.index] === undefined){
       question.push({question:content.text, response: ""})
     } else {
       question[content.index].question = content.text
     }
-    setData({...data, question:question})
+    setCommonQuestions({...commonQuestions, question:question})
   }
 
   function ChangeResponse(content:{index: number, text:string}){
-    var question = [...data.question]
+    var question = [...commonQuestions.question]
     question[content.index].response = content.text
-    setData({...data, question:question})
+    setCommonQuestions({...commonQuestions, question:question})
   }
 
   async function UpdateBdQuestion(){
-    await updateDoc(doc(db, 'data', data.id.trim()), {
-      question: data.question
+    await updateDoc(doc(db, 'data', commonQuestions.id.trim()), {
+      question: commonQuestions.question
     })
     .then(() => {
       toast.success("As informações foram salvas com sucesso.")
@@ -186,17 +176,17 @@ function ComponentHome () {
               <div id={styles.boxFiles} className='h-full overflow-y-scroll px-[5px] flex flex-col'>
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(data.contact[0])} onChange={(text) => ChangeContact({index:0, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(commonQuestions.contact[0])} onChange={(text) => ChangeContact({index:0, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
                 </div>
 
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(data.contact[1])} onChange={(text) => ChangeContact({index:1, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(commonQuestions.contact[1])} onChange={(text) => ChangeContact({index:1, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
                 </div>
 
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(data.contact[2])} onChange={(text) => ChangeContact({index:2, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(commonQuestions.contact[2])} onChange={(text) => ChangeContact({index:2, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
                 </div>
 
                 <button onClick={() => UpdateBdContact()} className="flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center mb-[10px]" >
@@ -214,9 +204,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={data.question.length > 0  ? data.question[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question.length > 0  ? commonQuestions.question[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea  id={styles.boxFiles} rows={3} value={data.question.length > 0 ? data.question[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea  id={styles.boxFiles} rows={3} value={commonQuestions.question.length > 0 ? commonQuestions.question[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
 
@@ -224,9 +214,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px] "/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={data.question[1] ? data.question[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question[1] ? commonQuestions.question[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={data.question[1] ? data.question[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question[1] ? commonQuestions.question[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
 
@@ -234,9 +224,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={data.question[2] ? data.question[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question[2] ? commonQuestions.question[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={data.question[2] ? data.question[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question[2] ? commonQuestions.question[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
             <button onClick={() => UpdateBdQuestion()} className="flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center" >

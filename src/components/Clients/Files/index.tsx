@@ -16,6 +16,7 @@ import TableFiles from '../../Files/tableFiles'
 import DownloadsFile from '../../Files/dowloadFiles';
 import Modals from '../../Modals'
 import DeletFiles from '../../Admin/Files/deletFiles';
+import { Files, Modal} from '../../../types/interfaces' 
 
 function ComponentUpload(){
   const context = useContext(AppContext)
@@ -30,18 +31,6 @@ function ComponentUpload(){
   const folderName:string = params.get("folder")
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""})
   const [indexFile, setIndexFile] = useState<number>()
-
-  interface Files{
-    name?:string,
-    id_file?:string
-    checked?:boolean
-  }
-
-  interface Modal{
-    status:boolean,
-    message:string,
-    subMessage1:string,
-  }
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{

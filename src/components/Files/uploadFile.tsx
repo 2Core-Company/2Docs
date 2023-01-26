@@ -3,6 +3,7 @@ import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 
+
   interface Props{
     data:{
       file:any

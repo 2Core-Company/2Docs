@@ -2,8 +2,9 @@
 import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify'; 
+import { Files, Folders } from '../../../types/interfaces'
 
-async function EnableFiles(props:{files:Array<{id_file?:string,}>, selectFiles:Array<{folder?:string, id_file?:string, id_user?:string}>, folders:Array<{name:string, color:string}>, ResetConfig:Function}) {
+async function EnableFiles(props:{files:Files[], selectFiles:Files[], folders:Folders[], ResetConfig:Function}) {
     const files = props.files
     const selectFiles = props.selectFiles
     const folders = props.folders

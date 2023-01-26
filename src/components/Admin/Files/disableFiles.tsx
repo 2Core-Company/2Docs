@@ -2,8 +2,9 @@
 import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify'; 
+import { Files } from '../../../types/interfaces'
 
-async function DisableFiles(props:{files:Array<{id_file?:string}>, selectFiles:Array<{id_file?: string}>, ResetConfig:Function}) {
+async function DisableFiles(props:{files:Files[], selectFiles:Files[], ResetConfig:Function}) {
     const files = props.files
     const selectFiles = props.selectFiles
       try{

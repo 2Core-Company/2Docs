@@ -14,6 +14,7 @@ import DownloadsFile from '../../Files/dowloadFiles';
 import { doc, updateDoc } from "firebase/firestore";  
 import Modals from '../../Modals'
 import {toast} from 'react-toastify'
+import { Files, Modal} from '../../../types/interfaces' 
 
   function ComponentFolder(){
     const context = useContext(AppContext)
@@ -28,21 +29,6 @@ import {toast} from 'react-toastify'
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
     const [searchFolders, setSearchFolders] = useState<string>("")
     const [deletFolder, setDeletFolder] = useState<string>()
-
-    interface Modal {
-      status: boolean,
-      message: string,
-      subMessage1: string,
-      subMessage2:string
-    }
-
-    interface Files{
-      id_file:string,
-      folder:string,
-      trash:boolean,
-      type:string,
-      name:string
-    }
 
     useLayoulyEffect(() =>{
       context.setLoading(true)
