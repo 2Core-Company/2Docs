@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
@@ -10,15 +11,16 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { DataUser } from '../../../types/interfaces'
 
 
 function CreateUser({childToParentCreate, closedWindow}){
-  const imageMimeType = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState({id:"", name: "", email:"", cnpj: "", phone:"", password:"", company:""})
-  const [file, setFile] : Array<{name:string}> | any = useState({name: "padrao.png"})
-  const [fileDataURL, setFileDataURL] = useState(null);
+  const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
+  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", company:""})
+  const [file, setFile] = useState<{name: string} | any>({name: "padrao.png"})
+  const [fileDataURL, setFileDataURL] = useState<string>(undefined);
   const [eye , setEye] = useState(true)
-  const domain = new URL(window.location.href).origin
+  const domain:string = new URL(window.location.href).origin
 
   async function VerifyCnpj(e: { preventDefault: () => void; }){
     e.preventDefault()
@@ -160,7 +162,6 @@ function CreateUser({childToParentCreate, closedWindow}){
 
   useEffect(() => {
     const password = dataUser.name.substr(0, 5).replace(/\s+/g, '') + Math.floor(Math.random() * 100000)
-    
     setDataUser({...dataUser, password: password})
   },[dataUser.name])
 
@@ -175,16 +176,16 @@ function CreateUser({childToParentCreate, closedWindow}){
 
 return (
     <>
-      <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen pb-[100px] absolute right-0 flex flex-col items-center'>
+      <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen pb-[100px] absolute right-0 duration-300 flex flex-col items-center'>
         <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full max-sm:z-50'>
           <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]'/>
           <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex'>Cadastrar</p>
         </div>
         <form  onSubmit={VerifyCnpj} className='w-full px-[10%] flex flex-col gap-y-[20px] max-sm:gap-y-[5px] text-[20px] max-sm:text-[18px]'>
-        {fileDataURL ? 
-          <div className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[30px] max-sm:mt-[15px] relative'>
-            <Image src={fileDataURL} width={180} height={180} alt="preview" className='w-full h-full rounded-full'/> 
-            <div onClick={()=> (setFileDataURL(false), setFile({name:"padrao.png"}))} className='absolute right-[-10px] top-[5px] w-[30px] h-[4px] bg-strong rotate-45 after:w-[30px] after:h-[4px] after:bg-strong after:block after:rotate-90 '></div>
+        {fileDataURL != undefined ?
+          <div className='self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[30px] max-sm:mt-[15px] relative'>
+            <Image src={fileDataURL} width={180} height={180} alt="preview" className='border-[2px] w-full h-full rounded-full'/> 
+            <div onClick={()=> (setFileDataURL(undefined), setFile({name:"padrao.png"}))} className='cursor-pointer absolute right-[-10px] top-[5px] w-[30px] h-[4px] bg-strong rotate-45 after:w-[30px] after:h-[4px] after:bg-strong after:block after:rotate-90 '></div>
           </div>
         : 
           <label  className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] bg-gradient-to-b from-[#D2D2D2] to-[#9E9E9E] rounded-full mt-[30px] max-sm:mt-[15px]'>
@@ -201,20 +202,20 @@ return (
             Email
             <input required  maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o email'/>
           </label>
-          <div className='flex max-sm:flex-col justify-between gap-[5px] '>
-            <label className='flex flex-col'>
+          <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
+            <label className='flex flex-col w-[50%] max-sm:w-full' >
               Cnpj
-              <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
+              <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className=' outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
             </label>
 
-            <label className='flex flex-col'>
+            <label className='flex flex-col w-[50%] max-sm:w-full'>
               Telefone
               <input maxLength={15} required  value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o telefone'/>
             </label>
           </div>
 
-          <div className='flex max-sm:flex-col justify-between gap-[5px]'>
-            <label className='flex flex-col '>
+          <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
+            <label className='flex flex-col w-[50%] max-sm:w-full'>
               Senha Provisória
               {eye ?
                 <div className='border-2 border-black rounded-[8px] flex items-center'>

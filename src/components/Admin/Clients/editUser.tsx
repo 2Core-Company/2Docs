@@ -10,22 +10,51 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { DataUser } from '../../../types/interfaces'
 
 
-function EditUser(props:object | any){
-  console.log(props)
-  const user : {id:string, name:string, email:string, cnpj:string, phone:string, password:string, company:string, nameImage:string, image:string, date:string, status:boolean} = props.user
-  const imageMimeType = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState({id:user.id, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, company:user.company, imageName: user.nameImage, urlImage: user.image, date: user.date})
+function EditUser(props:{closedWindow:Function, childToParentEdit:Function, user:DataUser}){
+  const user = props.user
+  const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
+  const [dataUser, setDataUser] = useState<DataUser>({id:user.id, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, company:user.company, imageName: user.nameImage, urlImage: user.image, date: user.date})
   const [file, setFile] : Array<{name:string}> | any  = useState({name: "padrao.png"})
   const [fileDataURL, setFileDataURL] = useState(user.image);
   const [eye , setEye] = useState(false)
   const domain = new URL(window.location.href).origin
 
+  interface DataUser{
+    id:string,
+    name:string,
+    email:string,
+    cnpj:string,
+    phone:string,
+    password: string,
+    company:string,
+    imageName:string,
+    urlImage:string,
+    date:string
+  }
+
+  interface UserAfterEdit{
+    id:string, 
+    name:string, 
+    email: string, 
+    cnpj: string, 
+    password: string, 
+    phone: string, 
+    company: string, 
+    image: string, 
+    nameImage: string, 
+    status: boolean, 
+    admin:boolean, 
+    date: string, 
+    checked: boolean
+  }
+
   async function VerifyCnpj(e: { preventDefault: () => void; }){
     e.preventDefault()
-    if(dataUser.cnpj != props.user.cnpj){
-      var user = undefined
+    if(dataUser.cnpj != user.cnpj){
+      let user:{} = undefined
       const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj));
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {user = doc.data() });
@@ -42,7 +71,7 @@ function EditUser(props:object | any){
 
   async function UpdateDataUser() {
     if(dataUser.email != user.email){
-      const result = await axios.post(`${domain}/api/users/updateUser`, {userId: user.id, data:{email: dataUser.email}, uid: auth.currentUser.uid})
+      const result:{data:{uid?:string, message: string; code: string; }} = await axios.post(`${domain}/api/users/updateUser`, {userId: user.id, data:{email: dataUser.email}, uid: auth.currentUser.uid})
       if(result.data.uid){
         UpdatePhoto()
       } else {
@@ -55,7 +84,7 @@ function EditUser(props:object | any){
 
   function UpdatePhoto(){
     if(fileDataURL != user.image){
-      const referencesFile = Math.floor(Math.random() * 65536) + file.name;
+      const referencesFile:string = Math.floor(Math.random() * 65536) + file.name;
       if(file.name != "padrao.png"){
 
         DeletePhoto()
@@ -98,7 +127,7 @@ function EditUser(props:object | any){
   }
 
   async function UpdateBdUser(data:{urlImage: string, imageName: string}){
-    const userAfterEdit = {
+    const userAfterEdit:UserAfterEdit = {
       id: user.id,
       name: dataUser.name,
       email: dataUser.email,
@@ -152,10 +181,10 @@ function EditUser(props:object | any){
 
   useEffect(() => {
     if(file.name != "padrao.png"){
-      let fileReader, isCancel = false;
+      let fileReader: FileReader, isCancel = false;
       if (file) {
         fileReader = new FileReader();
-        fileReader.onload = (e) => {
+        fileReader.onload = (e: { target: { result: any; }; }) => {
           const { result } = e.target;
           if (result && !isCancel) {
             setFileDataURL(result)

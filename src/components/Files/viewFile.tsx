@@ -1,6 +1,6 @@
 import React from 'react'
 
-function ViewFile(props) {
+function ViewFile(props:{setDocuments: Function, document:{url:string}}) {
   return (
     <div className='h-screen w-screen fixed bg-black/30 z-50 backdrop-blur-sm flex items-center justify-center'>
       <div className='bg-primary flex flex-col min-h-[90%] h-full w-[40%] max-sm:w-full px-[5px]'>

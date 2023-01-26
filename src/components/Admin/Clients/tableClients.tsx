@@ -5,15 +5,28 @@ import Image from 'next/image'
 import iconNullClient from '../../../../public/icons/nullClient.svg'
 import iconSearchUser from '../../../../public/icons/searchUser.svg'
 import Link from 'next/link'
+import { UsersFilter, WindowsAction } from '../../../types/interfaces'
 
-function TableClients(props) {
-    const [showItens, setShowItens] = useState({min:-1, max:10})
-    const [filter, setFilter] = useState({name: false, date:false, status:false})
-    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+interface Props { 
+  searchUser: string,
+  users: {length?: number, date?:Date}[],
+  setUsersFilter: (arg0: any[]) => void,
+  usersFilter: UsersFilter[],
+  pages: number,
+  windowsAction:WindowsAction,
+  SelectUsers: Function,
+  setUserEdit: Function,
+  setWindowsAction:Function;
+}
+
+function TableClients(props: Props) {
+    const [showItens, setShowItens] = useState<{min:number, max:number}>({min:-1, max:10})
+    const [filter, setFilter] = useState<{name:boolean, date:boolean, status:boolean}>({name: false, date:false, status:false})
+    const months:Array<string> = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
 // <--------------------------------- Filters Table --------------------------------->
 
   function filterName(){
-    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.Filter]
+    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.usersFilter]
     users.sort(function (x, y){
       let a = x.name.toUpperCase()
       let b = y.name.toUpperCase()
@@ -27,7 +40,7 @@ function TableClients(props) {
   }
 
   function filterStatus(){
-    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.Filter]
+    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.usersFilter]
     users.sort(function (x, y){
       let a = x.status
       let b = y.status
@@ -41,14 +54,14 @@ function TableClients(props) {
   }
 
   function filterDate(){
-    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.Filter]
-    users.sort(function(a: {date: Date} ,b:{date: Date}) : any { 
+    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.usersFilter]
+    users.sort((a: {date?: string | number | Date; }, b: { date?: string | number | Date; }) =>{ 
       a.date = new Date(a.date)
       b.date = new Date(b.date)
       if(filter.date){
-       return (b.date.getTime() - a.date.getTime()) + ""
+       return (b.date.getTime() - a.date.getTime())
       } else {
-       return (a.date.getTime() - b.date.getTime()) + ""
+       return (a.date.getTime() - b.date.getTime())
       }
     });
     for (var i = 0; i < users .length; i++) {
@@ -108,14 +121,14 @@ function TableClients(props) {
 
           {/* <--------------------------------- BodyTable ---------------------------------> */}
           <tbody>
-          {props.usersFilter.map((user:{checked: boolean | any, id:string,  name: string, email:string, date:string, status:boolean, image:string}, index:number) =>{
+          {props.usersFilter.map((user, index) =>{
             var checked = user.checked
 
             if( showItens.min < index && index < showItens.max){
           return(
           <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
               <th className='h-[50px] max-sm:h-[40px]'>
-                <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => props.SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
+                <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
               </th>
 
               <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>

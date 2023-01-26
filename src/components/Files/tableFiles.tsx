@@ -5,14 +5,31 @@ import iconSearchFile from '../../../public/icons/searchFile.svg'
 import Image from 'next/image'
 import { DownloadIcon, EyeOpenIcon, TrashIcon} from '@radix-ui/react-icons';
 import DownloadsFile from './dowloadFiles'
+import { Filter, Files } from '../../types/interfaces'
 
-export default function TableFiles(props) {
-  const [filter, setFilter] = useState({name: false, size:false, date:false, status:false})
+interface Props{ 
+  setFilesFilter?: Function, 
+  SelectFile?: Function, 
+  ConfirmationDeleteFile?:Function, 
+  ResetConfig?: Function, 
+  setDocuments?: Function, 
+  documents?: any, 
+  pages?: number,
+  trash?: string,
+  filesFilter?:Files[],
+  files?:Files[],
+  folderName?:string,
+  searchFile?:string
+ }
+
+export default function TableFiles(props:Props) {
+  const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
   const [showItens, setShowItens] = useState({min:-1, max:10})
   const url = window.location.href
   const trash = props.trash
-  const [messageEmpty, setMessageEmpty] = useState()
+  const [messageEmpty, setMessageEmpty] = useState<string>()
+
   useEffect(() => {
     console.log(props.folderName)
     if(url.includes("Clientes") === true  && props.folderName === "Cliente" ){
@@ -20,6 +37,7 @@ export default function TableFiles(props) {
     } else if(url.includes("Admin") === true  && props.folderName != "Cliente") {
       setMessageEmpty("Envie seu primeiro arquivo!")
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   function filterName(){
@@ -66,17 +84,17 @@ export default function TableFiles(props) {
 
   function filterDate(){
     const filesDate = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
-    filesDate.sort(function(a,b) { 
+    filesDate.sort((a,b) => { 
       a.date = new Date(a.date)
       b.date = new Date(b.date)
       if(filter.date){
-       return (b.date.getTime() - a.date.getTime()) + ""
+       return (b.date.getTime() - a.date.getTime())
       } else {
-       return (a.date.getTime() - b.date.getTime()) + ""
+       return (a.date.getTime() - b.date.getTime())
       }
     });
     for (var i = 0; i < filesDate.length; i++) {
-      filesDate[i].date = filesDate[i].date + ""
+      filesDate[i].date = filesDate[i].date
     }
     props.setFilesFilter(filesDate)
   }
@@ -141,7 +159,7 @@ export default function TableFiles(props) {
                     return(
                     <tr key={file.id_file} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
                         <th className='h-[50px] max-sm:h-[40px]'>
-                            <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
+                            <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
                         </th>
 
                         <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
@@ -150,7 +168,7 @@ export default function TableFiles(props) {
                         </th>
 
                         <th className='font-[400] text-left pl-[20px] max-md:hidden w-50'>
-                            <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{parseInt(file.size) < 1000 ? file.size + " KB"  : Math.ceil(file.size / 1000) + " MB"} </p>
+                            <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{parseInt(file.size) < 1000 ? file.size + " KB"  : Math.ceil(parseInt(file.size) / 1000) + " MB"} </p>
                         </th>
 
                         <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.date)}</th>

@@ -4,16 +4,18 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react'
 import styles from './home.module.css'
 import DownloadFiles from '../../Files/dowloadFiles'
+import { Files, CommonQuestions} from '../../../types/interfaces' 
 
 
 function ComponentHome () {
-  const [urlImage, setUrlImage] = useState()
-  const [recentsFile, setRecentsFile] = useState([])
-  const [data, setData] = useState({contact:[], question:[]})
+  const [urlImage, setUrlImage] = useState<string>()
+  const [recentsFile, setRecentsFile] = useState<Files[]>([])
+  const [data, setData] = useState<CommonQuestions>({contact:[], question:[]})
 
    useEffect(() => {
     GetUsers()
     GetFiles()
+   // eslint-disable-next-line react-hooks/exhaustive-deps
    },[])
 
   async function GetUsers(){
@@ -39,17 +41,17 @@ function ComponentHome () {
     const q = query(collection(db, "data"));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      setData({...data, contact:doc.data().contact, id:doc.data().id, question:doc.data().question, response: doc.data().response})
+      setData({...data, contact:doc.data().contact, id:doc.data().id, question:doc.data().question})
     });
   }
 
-  async function FilterDate(getFiles){
-    const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "admin")
+  async function FilterDate(getFiles:Array<{trash:boolean, from: string, date:Date }>){
+    const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
     const recents = []
-    filesHere.sort(function(a,b) { 
+    filesHere.sort((a, b) =>{ 
       a.date = new Date(a.date)
       b.date = new Date(b.date)
-      return (a.date.getTime() - b.date.getTime()) + ""
+      return (a.date.getTime() - b.date.getTime())
     });
     for (var i = 0; 5 > i && i < (filesHere.length); i++) {
       recents.push(filesHere[i])
@@ -60,7 +62,7 @@ function ComponentHome () {
   return (
     <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-        {urlImage != undefined ? <Image src={urlImage} alt="Logo da empresa" width={100} height={100} className="max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]"/> : <></>}
+        {urlImage != undefined ? <Image src={urlImage} alt="Logo da empresa" width={100} height={100} className="w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]"/> : <></>}
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Home</p>
           <p  className='text-[18px] flex mx-[5px] text-secondary'>Home</p> 
           <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
@@ -92,7 +94,7 @@ function ComponentHome () {
                       return(
                         <a key={contact} href={linkWhatsApp } className="flex items-center gap-[10px] mt-[10px] h-[50px] underline underline-offset-[8px]">
                           <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                          <p type="text" className='text-[20px] text-ellipsis pl-[5px] white-space'>{contact}</p>
+                          <p  className='text-[20px] text-ellipsis pl-[5px] white-space'>{contact}</p>
                         </a> 
                       )
                     })
@@ -110,7 +112,7 @@ function ComponentHome () {
                   <div key={question.question} className="w-full">
                     <details>
                       <summary className='text-[18px] font-[600] whitespace-pre-line'>{question.question}</summary>
-                      <p type="text" className='text-[18px] pl-[5px] pb-[15px] whitespace-pre-wrap w-full'>{question.response}</p>
+                      <p className='text-[18px] pl-[5px] pb-[15px] whitespace-pre-wrap w-full'>{question.response}</p>
                     </details> 
                   </div>
                 )

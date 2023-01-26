@@ -18,24 +18,24 @@ import DisableFiles from './disableFiles'
 import EnableFiles from './enableFiles'
 import TableFiles from '../../Files/tableFiles'
 import DownloadsFile from '../../Files/dowloadFiles';
+import { Files, Modal, DataUser } from '../../../types/interfaces'
 
 function ComponentUpload(){
   const context = useContext(AppContext)
-  const [files, setFiles] = useState([])
-  const [filesFilter, setFilesFilter] = useState([])
-  const [searchFile, setSearchFile] = useState("")
-  const [selectFiles, setSelectFiles] = useState([])
-  const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: ""})
-  const [pages, setPages] = useState(0)
-  const [menu, setMenu] = useState(true)
-  const [documents, setDocuments] = useState({view: false, url: ""})
+  const [files, setFiles] = useState<Files[]>([])
+  const [filesFilter, setFilesFilter] = useState<Files[]>([])
+  const [searchFile, setSearchFile] = useState<string>("")
+  const [selectFiles, setSelectFiles] = useState<Files[]>([])
+  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
+  const [pages, setPages] = useState<number>(0)
+  const [menu, setMenu] = useState<boolean>(true)
+  const [documents, setDocuments] = useState<{view:boolean, url:string}>({view: false, url: ""})
   const params = useSearchParams()
-  const trash = params.get("trash")
-  const id = params.get("id")
-  const folderName = params.get("folder")
-  const [user, setUser] = useState<User | any>()
+  const trash:string = params.get("trash")
+  const id:string  = params.get("id")
+  const folderName:string  = params.get("folder")
+  const [user, setUser] = useState<DataUser>()
 
-  interface User{folders:Array<{name:string, color:string}>}
 
   async function GetUser(){
       var q = query(collection(db, "users"), where("id", "==", id))
@@ -49,6 +49,7 @@ function ComponentUpload(){
   useEffect(() =>{
       context.setLoading(true)
       GetFiles()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   async function GetFiles(){
@@ -83,7 +84,7 @@ function ComponentUpload(){
       }
       setFilesFilter(searchFilesFilter)
     }
-  },[searchFile])
+  },[files, searchFile])
 
   async function SelectFile(index:number){
     const files = [...filesFilter]
@@ -92,12 +93,12 @@ function ComponentUpload(){
     setSelectFiles(fileSelect)
     setFilesFilter(files)
   }
-
+  
   // <--------------------------------- Upload File --------------------------------->
   const changeHandler = (e:any) => {
     for(let i = 0; i < e.target.files.length; i++){
       if(e.target.files[i].size > 2000000){
-        e.target.value = false
+        e.target.value = null
         return toast.error("Os arquivos só podem ter no maximo 2mb.")
       }
     }
@@ -108,14 +109,13 @@ function ComponentUpload(){
       from: "admin"
     }
     UploadFile({data, childToParentUpload})
-    e.target.value = false
+    e.target.value = null
   }
 
   const childToParentUpload = (childdata:object) => {
     files.push(childdata)
     ResetConfig(files)
   }
- 
   // <--------------------------------- Delet Files --------------------------------->
 
   function ConfirmationDeleteFile(){
@@ -126,7 +126,7 @@ function ComponentUpload(){
         setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivos?", subMessage1: "Estes arquivos vão para a lixeira.", subMessage2:undefined})
       }
     } else {
-      toast.error("Selecione um arquivo para deletar.")    
+      throw toast.error("Selecione um arquivo para deletar.")    
     }
   }
 
@@ -148,12 +148,20 @@ function ComponentUpload(){
     }
   }
 
-  function ResetConfig(files:Array<string>){
+  function ResetConfig(files:Files[]){
     setPages(Math.ceil(files.length / 10))
     setMenu(true)
     setFilesFilter(files)
     setSelectFiles([])
     setFiles(files)
+  }
+
+  function DowloadFiles(){
+    if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
+    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig}),
+    {pending:"Fazendo download dos arquivos.", 
+    success:"Download feito com sucesso", 
+    error:"Não foi possivel fazer o download."})
   }
 
 return (
@@ -179,7 +187,7 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig}),{pending:"Fazendo download dos arquivos.", success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
+                <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
                   Download
                 </button>
                 <button onClick={() => ConfirmationDeleteFile()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
@@ -196,7 +204,7 @@ return (
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} document={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} trash={trash} searchFile={searchFile} folderName={folderName}/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} trash={trash} searchFile={searchFile} folderName={folderName}/>
           </div>
         </div>
         {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}

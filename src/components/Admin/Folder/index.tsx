@@ -14,29 +14,23 @@ import DownloadsFile from '../../Files/dowloadFiles';
 import { doc, updateDoc } from "firebase/firestore";  
 import Modals from '../../Modals'
 import {toast} from 'react-toastify'
+import { Files, Modal} from '../../../types/interfaces' 
 
   function ComponentFolder(){
     const context = useContext(AppContext)
     const params = useSearchParams()
-    const id = params.get('id')
-    const [files, setFiles] = useState([])
-    const [recentsFile, setRecentsFile] = useState([])
-    const [createFolder, setCreateFolder] = useState(false)
+    const id:string = params.get('id')
+    const [files, setFiles] = useState<Files[]>([])
+    const [recentsFile, setRecentsFile] = useState<Files[]>([])
+    const [createFolder, setCreateFolder] = useState<boolean>(false)
     const [user, setUser] = useState<object>()
-    const [folders, setFolders] = useState([])
+    const [folders, setFolders] = useState<{color:string, name:string}[]>([])
     const [foldersFilter, setFoldersFilter] = useState([])
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
-    const [searchFolders, setSearchFolders] = useState("")
+    const [searchFolders, setSearchFolders] = useState<string>("")
     const [deletFolder, setDeletFolder] = useState<string>()
 
-    interface Modal {
-      status: boolean,
-      message: string,
-      subMessage1: string,
-      subMessage2:string
-    }
-
-    useEffect(() =>{
+    useLayoulyEffect(() =>{
       context.setLoading(true)
       GetFiles()
       GetUser()
@@ -52,7 +46,7 @@ import {toast} from 'react-toastify'
         }
         setFoldersFilter(searchFoldersFilter)
       }
-    },[searchFolders])
+    },[folders, searchFolders])
 
     async function GetFiles(){
       const getFiles = []
@@ -75,13 +69,13 @@ import {toast} from 'react-toastify'
         });
     }
 
-    async function FilterDate(getFiles:Array<{trash:boolean, from:string}>){
+    async function FilterDate(getFiles:Array<{trash:boolean, from:string, date:Date}>){
       const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
       const recents = []
-      filesHere.sort(function(a: {date: Date} ,b:{date: Date}):any { 
+      filesHere.sort((a, b) =>{ 
         a.date = new Date(a.date)
         b.date = new Date(b.date)
-        return (a.date.getTime() - b.date.getTime()) + ""
+        return (a.date.getTime() - b.date.getTime())
       });
       for (var i = 0; 3 > i && i < (filesHere.length); i++) {
         recents.push(filesHere[i])
@@ -188,9 +182,13 @@ import {toast} from 'react-toastify'
               <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>Excluidos</p>
             </Link>
           </div>
-          {createFolder ? <CreateFolder  folder={setCreateFolder} idUser={id} user={user} setFolders={setFolders}  setFoldersFilter={setFoldersFilter}/> : <></>}
+          {createFolder ? <CreateFolder  setCreateFolder={setCreateFolder} idUser={id} user={user} setFolders={setFolders}  setFoldersFilter={setFoldersFilter}/> : <></>}
           {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
     )
   }
 export default ComponentFolder;
+
+function useLayoulyEffect(arg0: () => void, arg1: undefined[]) {
+  throw new Error('Function not implemented.');
+}

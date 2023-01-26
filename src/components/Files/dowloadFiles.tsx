@@ -1,13 +1,13 @@
 import { db } from '../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
+import { Files } from '../../types/interfaces'
 
 
-async function DownloadsFile(props){
+async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], ResetConfig?:Function  }){
   const page = window.location.pathname
   const filesDownloaded = props.filesDownloaded
   const files = props.files
-  if(filesDownloaded.length === 0) return toast.error("Selecione um arquivo para baixar.")
   for(var i = 0; i < filesDownloaded.length; i++){
     let blob = await fetch(filesDownloaded[i].url).then(r => r.blob());
     filesDownloaded[i].urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)

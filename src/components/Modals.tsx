@@ -1,4 +1,6 @@
-function Modal(props) {
+import { Modal } from '../types/interfaces'
+
+function Modal(props:Modal) {
   const subMessage1 = props.subMessage1
   const subMessage2 = props.subMessage2
     return (

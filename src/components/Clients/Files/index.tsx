@@ -16,25 +16,27 @@ import TableFiles from '../../Files/tableFiles'
 import DownloadsFile from '../../Files/dowloadFiles';
 import Modals from '../../Modals'
 import DeletFiles from '../../Admin/Files/deletFiles';
+import { Files, Modal} from '../../../types/interfaces' 
 
 function ComponentUpload(){
   const context = useContext(AppContext)
-  const [files, setFiles] = useState([])
-  const [filesFilter, setFilesFilter] = useState([])
-  const [searchFile, setSearchFile] = useState("")
+  const [files, setFiles] = useState<Files[]>([])
+  const [filesFilter, setFilesFilter] = useState<Files[]>([])
+  const [searchFile, setSearchFile] = useState<string>("")
   const [selectFiles, setSelectFiles] = useState([])
-  const [pages, setPages] = useState(0)
-  const [menu, setMenu] = useState(true)
-  const [documents, setDocuments] = useState({view: false, url: ""})
+  const [pages, setPages] = useState<number>(0)
+  const [menu, setMenu] = useState<boolean>(true)
+  const [documents, setDocuments] = useState<{view:boolean, url:string}>({view: false, url: ""})
   const params = useSearchParams()
-  const folderName = params.get("folder")
-  const [modal, setModal] = useState({status: false, message: "", subMessage1: ""})
-  const [indexFile, setIndexFile] = useState()
+  const folderName:string = params.get("folder")
+  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""})
+  const [indexFile, setIndexFile] = useState<number>()
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
       context.setLoading(true)
       GetFiles()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   async function GetFiles(){
@@ -63,9 +65,9 @@ function ComponentUpload(){
       }
       setFilesFilter(searchFilesFilter)
     }
-  },[searchFile])
+  },[files, searchFile])
 
-  async function SelectFile(index){
+  async function SelectFile(index:number){
     const files = [...filesFilter]
     files[index].checked = !files[index].checked
     const fileSelect = files.filter(file => file.checked === true);
@@ -74,7 +76,7 @@ function ComponentUpload(){
   }
 
   // <--------------------------------- Upload File --------------------------------->
-  const changeHandler = (e) => {
+  const changeHandler = (e:any) => {
     for(let i = 0; i < e.target.files.length; i++){
       if(e.target.files[i].size > 2000000){
         e.target.value = null
@@ -91,12 +93,12 @@ function ComponentUpload(){
     e.target.value = null
   }
 
-  const childToParentUpload = (childdata) => {
+  const childToParentUpload = (childdata:{}) => {
     files.push(childdata)
     ResetConfig(files)
   }
 
-  function ResetConfig(files){
+  function ResetConfig(files:Files[]){
     setPages(Math.ceil(files.length / 10))
     setMenu(true)
     setFilesFilter(files)
@@ -104,7 +106,7 @@ function ComponentUpload(){
     setFiles(files)
   }
 
-  function ConfirmationDeleteFile(index){
+  function ConfirmationDeleteFile(index:number){
     setIndexFile(index)
     setModal({...modal, status:true, message: "Tem certeza que deseja excluir este arquivo?", subMessage1: "Não será possivel recuperar."})
   }
@@ -144,16 +146,16 @@ return (
                 <button onClick={() => DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
                   <label className={`${folderName != "Cliente" ? "hidden" : <></>} bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
                     Upload
-                    <input onChange={changeHandler} multiple="multiple" type="file" name="document" id="document" className='hidden w-full h-full' />
+                    <input onChange={changeHandler} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
                   </label>
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} document={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName}/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} trash={"false"}/>
           </div>
         </div>
         {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}
-        {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} files={modal.files} childModal={childModal}/> : <></>}
+        {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
   )
   }
