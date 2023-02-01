@@ -4,12 +4,12 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { useState, useContext} from 'react';
 import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth, db} from '../../../firebase'
+import { auth, db } from '../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import ErrorFirebase from '../ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Logo from '../../../public/image/2core.png'
+import Logo from '../../../public/image/2core.png';
 import { toast } from 'react-toastify';
 
 function Signin(){
@@ -17,25 +17,26 @@ function Signin(){
   const [dataUser, setDataUser] = useState<DataUser>({email: "", password: "", cnpj:"", checked: false})
   const [eye, setEye] = useState(false)
   const router = useRouter()
-  
-  interface DataUser{
+
+  interface DataUser {
     email: string,
     password: string,
     cnpj: string,
     checked: boolean
   }
 
-  function SignInEmail(e: { preventDefault: () => void; }){
+  function SignInEmail(e: { preventDefault: () => void; }) {
     e.preventDefault()
     context.setLoading(true)
     SignIn(dataUser.email)
   }
 
-  async function SignInCnpj(e: { preventDefault: () => void; }){
+  async function SignInCnpj(e: { preventDefault: () => void; }) {
     e.preventDefault()
     context.setLoading(true)
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
     const data = await getDocs(q);
+
     if(data.docs[0] === undefined){
       context.setLoading(false)
       toast.error("Este usuário não foi cadastrado.")
@@ -45,8 +46,8 @@ function Signin(){
       });
     }
   }
-  
-  function SignIn(email:string){
+
+  function SignIn(email: string) {
     signInWithEmailAndPassword(auth, email, dataUser.password)
       .then((userCredential) => {
         context.setLoading(false)
@@ -57,7 +58,6 @@ function Signin(){
         ErrorFirebase(error)
       });
   }
-
   function AlterPassword(email:string){
     if(dataUser.email === ""){
       return toast.error("Preencha o campo de email.")
@@ -156,7 +156,6 @@ function Signin(){
                   <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
                 </div>
               </fieldset>
-              <button type="button" onClick={() => AlterPasswordCnpj()} className='w-full flex justify-end underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
               </button>
@@ -165,6 +164,6 @@ function Signin(){
         </Tabs.Root>
       </section>
   )
-  }
+}
 
 export default Signin;
