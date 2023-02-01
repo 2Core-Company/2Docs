@@ -40,9 +40,9 @@ function ComponentHome () {
   async function GetContact(){
     const q = query(collection(db, "data"));
     const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      setData({...data, contact:doc.data().contact, id:doc.data().id, question:doc.data().question})
-    });
+    // querySnapshot.forEach((doc) => {
+    //   setData({...data, contact:doc.data().contact, id:doc.data().id, question:doc.data().question})
+    // });
   }
 
   async function FilterDate(getFiles:Array<{trash:boolean, from: string, date:Date }>){
