@@ -24,18 +24,19 @@ export interface Modal{
   }
 
   export interface DataUser{
-    id?:string,
-    name?:string,
-    email?:string,
-    cnpj?:string,
-    phone?:string,
-    password?: string,
-    company?:string,
-    nameImage?:string, 
-    image?:string, 
-    date?:string, 
-    status?:boolean,
-    folders?:[]
+    cnpj?:string 
+    created_date?:string 
+    email?:string 
+    id?:string 
+    id_company?:string 
+    name?:string 
+    nameImage?:string 
+    password?:string     
+    permission?:number
+    folders?: Array<{ name:string, color:string}>
+    phone?:string 
+    photo_url?:string 
+    status?:boolean
   }
 
   export interface UsersFilter{
@@ -47,8 +48,8 @@ export interface Modal{
     password?: string,
     company?:string,
     nameImage?:string, 
-    image?:string, 
-    date?:Date | any, 
+    photo_url?:string, 
+    created_date?:Date | any, 
     status?:boolean,
     checked?:boolean
   }
@@ -61,12 +62,13 @@ export interface Modal{
     folder?:string
     type?:string
     trash?:boolean
-    date?:Date,
+    created_date?:any,
     size?:string
     url?:string
     viwed?:boolean
     from?:string,
     urlDownload?:string
+    id_company?:string
   }
 
   export interface Folders{
@@ -74,10 +76,10 @@ export interface Modal{
     color:string
   }
 
-  export interface CommonQuestions{
+  export interface DataCompany{
     id?:string,
     contact:Array<string>,
-    question:Array<{response:string, question:string}>
+    questions:Array<{response:string, question:string}>
   }
 
   export interface Filter {

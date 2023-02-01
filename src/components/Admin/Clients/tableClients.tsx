@@ -9,7 +9,7 @@ import { UsersFilter, WindowsAction } from '../../../types/interfaces'
 
 interface Props { 
   searchUser: string,
-  users: {length?: number, date?:Date}[],
+  users: {length?: number, created_date?:Date}[],
   setUsersFilter: (arg0: any[]) => void,
   usersFilter: UsersFilter[],
   pages: number,
@@ -55,9 +55,9 @@ function TableClients(props: Props) {
 
   function filterDate(){
     var users = props.searchUser.length == 0 ? [...props.users ] : [...props.usersFilter]
-    users.sort((a: {date?: string | number | Date; }, b: { date?: string | number | Date; }) =>{ 
-      a.date = new Date(a.date)
-      b.date = new Date(b.date)
+    users.sort((a, b) =>{ 
+      a.date = new Date(a.created_date)
+      b.date = new Date(b.created_date)
       if(filter.date){
        return (b.date.getTime() - a.date.getTime())
       } else {
@@ -65,7 +65,7 @@ function TableClients(props: Props) {
       }
     });
     for (var i = 0; i < users .length; i++) {
-        users[i].date = users[i].date + ""
+        users[i].created_date = users[i].created_date
     }
     props.setUsersFilter(users)
   }
@@ -78,7 +78,6 @@ function TableClients(props: Props) {
     } else {
       return newDate.toLocaleDateString()
     }
-
   }
 
   return (
@@ -132,7 +131,7 @@ function TableClients(props: Props) {
               </th>
 
               <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
-                <Image src={user.image} width={40} height={40} alt="Perfil"  className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
+                <Image src={user.photo_url} width={40} height={40} alt="Perfil"  className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
                 <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{user.name}</p>
               </th>
 
@@ -140,7 +139,7 @@ function TableClients(props: Props) {
                 <p className='overflow-hidden whitespace-nowrap text-ellipsis max-w-[250px]'>{user.email}</p>
               </th>
 
-              <th className='font-[400] max-lg:hidden text-left'>{formatDate(user.date)}</th>
+              <th className='font-[400] max-lg:hidden text-left'>{formatDate(user.created_date)}</th>
 
               <th className='font-[400] w-[80px] max-lg:w-[70px]'>
                 {user.status  ? 

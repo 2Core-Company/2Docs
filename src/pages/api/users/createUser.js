@@ -7,7 +7,8 @@ export default async function CreateUser(req, res) {
         const response = await getAuth()
         .createUser({
             email: req.body.data.email,
-            password: req.body.data.password
+            password: req.body.data.password,
+            displayName:req.body.data.id_company
         })
         return res.json(response)
       } catch (e) {

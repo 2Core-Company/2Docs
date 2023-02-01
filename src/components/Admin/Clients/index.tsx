@@ -28,14 +28,16 @@ function ComponentClients(){
 
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() =>{
+    if(context.dataUser){
       context.setLoading(true)
       GetUsers()
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[context.dataUser])
 
   async function GetUsers(){
     const getUsers:Array<{checked?:boolean}> = []
-      const q = query(collection(db, "users"), where("admin", "!=", true));
+      const q = query(collection(db, "users", context.dataUser.id_company, "Clientes" ), where("permission", "==", 0));
       const querySnapshot = await getDocs(q);
       const a = querySnapshot.forEach((doc) =>  getUsers.push(doc.data()));
     for(var i = 0; i < getUsers.length; i++){
@@ -63,9 +65,9 @@ function ComponentClients(){
    function ConfirmationDeleteUser(){
     if(selectUsers.length > 0){
       if(selectUsers.length === 1){
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuário", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user: selectUsers[0].name + "?"})
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuário:", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user: selectUsers[0].name + "?"})
       } else {
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes usuários", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user:null})
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes usuários?", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user:null})
       }
     } else {
       toast.error("Selecione um usuário para deletar.")
@@ -89,7 +91,7 @@ function ComponentClients(){
       const result = await axios.post(`${domain}/api/users/disableUser`, {users: selectUsers, uid: auth.currentUser.uid})
       if(result.data.type === 'success'){
         for (let i = 0; i < selectUsers.length; i++){
-          await updateDoc(doc(db, 'users', selectUsers[i].id), {
+          await updateDoc(doc(db, 'users', context.dataUser.id_company, "Clientes", selectUsers[i].id), {
             status: !selectUsers[i].status,
           })
           const index = usersHere.findIndex( element => element.id === selectUsers[i].id)
@@ -142,7 +144,6 @@ function ComponentClients(){
   
   function ResetConfig(users:Array<{}>){
     setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
-    console.log(users)
     setUsersFilter(users)
     setPages(Math.ceil(users.length / 10))
     setMenu(true)
@@ -161,7 +162,7 @@ return (
                 <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px]"/>
                 <input type="text" value={searchUser} onChange={(Text) => setSearchUser(Text.target.value)}  className='w-[300px] text-black max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px]' placeholder='Buscar' ></input>
               </div>
-              <div className={`flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${menu ? "" : "max-lg:bg-[#959595]"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
+              <div className={`flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${menu ? "" : "max-lg:bg-[#b1b0b0]"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
                 <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`flex-col self-center hidden max-lg:flex ${menu ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>

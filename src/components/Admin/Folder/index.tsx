@@ -5,7 +5,7 @@ import { TrashIcon, DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-ic
 import { useSearchParams } from 'next/navigation';
 import React, {useEffect, useContext, useState} from 'react'
 import AppContext from '../../AppContext';
-import { collection, where, getDocs, query } from "firebase/firestore";  
+import { collection, where, getDocs, query, getDoc } from "firebase/firestore";  
 import { db } from '../../../../firebase'
 import CreateFolder from './createFolder';
 import DeleteFolder from './deletFolder';
@@ -14,7 +14,7 @@ import DownloadsFile from '../../Files/dowloadFiles';
 import { doc, updateDoc } from "firebase/firestore";  
 import Modals from '../../Modals'
 import {toast} from 'react-toastify'
-import { Files, Modal} from '../../../types/interfaces' 
+import { DataUser, Files, Modal} from '../../../types/interfaces' 
 
   function ComponentFolder(){
     const context = useContext(AppContext)
@@ -23,64 +23,56 @@ import { Files, Modal} from '../../../types/interfaces'
     const [files, setFiles] = useState<Files[]>([])
     const [recentsFile, setRecentsFile] = useState<Files[]>([])
     const [createFolder, setCreateFolder] = useState<boolean>(false)
-    const [user, setUser] = useState<object>()
-    const [folders, setFolders] = useState<{color:string, name:string}[]>([])
+    const [user, setUser] = useState<DataUser>()
     const [foldersFilter, setFoldersFilter] = useState([])
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
     const [searchFolders, setSearchFolders] = useState<string>("")
     const [deletFolder, setDeletFolder] = useState<string>()
 
-    useLayoulyEffect(() =>{
-      context.setLoading(true)
-      GetFiles()
-      GetUser()
-    },[])
+    useEffect(() =>{
+      if(context.dataUser != undefined){
+        GetFiles()
+        GetUser()
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[context.dataUser])
+
+    async function GetUser(){
+      const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
+      const docSnap = await getDoc(docRef)
+      setUser(docSnap.data())
+      setFoldersFilter(docSnap.data().folders)
+  }
 
     useEffect(() => {
-      if(searchFolders != null){
+      if(searchFolders != null && context.dataUser != undefined && user != undefined){
         const searchFoldersFilter = []
-        for (var i = 0; i < folders.length; i++) {
-          if(folders[i].name.toLowerCase().includes(searchFolders.toLowerCase().trim())){
-            searchFoldersFilter.push(folders[i])
+        for (var i = 0; i < user.folders.length; i++) {
+          if(user.folders[i].name.toLowerCase().includes(searchFolders.toLowerCase().trim())){
+            searchFoldersFilter.push(user.folders[i])
           }
         }
         setFoldersFilter(searchFoldersFilter)
       }
-    },[folders, searchFolders])
+    },[user, searchFolders, context.dataUser])
 
     async function GetFiles(){
-      const getFiles = []
-        const q = query(collection(db, "files"), where("id_user", "==", id));
-        const querySnapshot = await getDocs(q);
-        const a = querySnapshot.forEach((doc) => {
-          getFiles.push(doc.data())
-        });
-      setFiles(getFiles)
-      FilterDate(getFiles)
+      const files = context.allFiles.filter( file => file.id_user === id)
+      setFiles(files)
+      FilterDate(files)
     }
 
-    async function GetUser(){
-        const q = query(collection(db, "users"), where("id", "==", id));
-        const querySnapshot = await getDocs(q);
-        const a = querySnapshot.forEach((doc) => {
-          setUser(doc.data())
-          setFolders(doc.data().folders)
-          setFoldersFilter(doc.data().folders)
-        });
-    }
-
-    async function FilterDate(getFiles:Array<{trash:boolean, from:string, date:Date}>){
+    async function FilterDate(getFiles:Files[]){
       const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
       const recents = []
       filesHere.sort((a, b) =>{ 
-        a.date = new Date(a.date)
-        b.date = new Date(b.date)
-        return (a.date.getTime() - b.date.getTime())
+        a.created_date = new Date(a.created_date)
+        b.created_date = new Date(b.created_date)
+        return (a.created_date.getTime() - b.created_date.getTime())
       });
       for (var i = 0; 3 > i && i < (filesHere.length); i++) {
         recents.push(filesHere[i])
       }
-      context.setLoading(false)
       setRecentsFile(recents)
     }
 
@@ -101,10 +93,10 @@ import { Files, Modal} from '../../../types/interfaces'
     async function DeleteFolderAndFiles(){
       const name = deletFolder
       const filesHere = [...files]
-      toast.promise(DeleteFolder({folders:folders, name:name, setFoldersFilter:setFoldersFilter, setFolders:setFolders, id:id}),{pending:"Deletando pasta.", success:"Pasta deletada.", error:"Não foi possivel deletar esta pasta."})
+      toast.promise(DeleteFolder({user:user, name:name, setFoldersFilter:setFoldersFilter, setUser:setUser, id:id, id_company:context.dataUser.id_company}),{pending:"Deletando pasta.", success:"Pasta deletada.", error:"Não foi possivel deletar esta pasta."})
       const filesToTrash = files.filter(file => file.folder === name)
       for (var i = 0; i < filesToTrash.length; i++){
-        await updateDoc(doc(db, 'files', filesToTrash[i].id_file), {
+        await updateDoc(doc(db, 'files', context.dataUser.id_company, "Arquivos", filesToTrash[i].id_file), {
           trash: true
         })
         const index = filesHere.findIndex(file => file.id_file === filesToTrash[i].id_file)
@@ -182,13 +174,9 @@ import { Files, Modal} from '../../../types/interfaces'
               <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>Excluidos</p>
             </Link>
           </div>
-          {createFolder ? <CreateFolder  setCreateFolder={setCreateFolder} idUser={id} user={user} setFolders={setFolders}  setFoldersFilter={setFoldersFilter}/> : <></>}
+          {createFolder ? <CreateFolder  setCreateFolder={setCreateFolder} idUser={id} user={user} setUser={setUser} setFoldersFilter={setFoldersFilter} id_company={context.dataUser.id_company}/> : <></>}
           {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
     )
   }
 export default ComponentFolder;
-
-function useLayoulyEffect(arg0: () => void, arg1: undefined[]) {
-  throw new Error('Function not implemented.');
-}

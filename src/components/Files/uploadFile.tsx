@@ -3,40 +3,42 @@ import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 
-
   interface Props{
     data:{
       file:any
       from:string
       folder:string
       id:string
+    }
+    childToParentUpload:Function
+    id_company:string
+    id_user:string
   }
-  childToParentUpload:Function
-  }
+
   function UploadFiles(props:Props) {
-    console.log(props)
     const file = props.data.file
     for (var i = 0; i < file.length; i++) {
       const type = file[i].type
       const name = file[i].name
       const size = file[i].size
       const referencesFile = Math.floor(Math.random() * 65536) + file[i].name;
-        const storageRef = ref(storage, "files/" + referencesFile);
+        const storageRef = ref(storage, props.id_company + "/files/" + props.id_user+ "/" + referencesFile);
         uploadBytes(storageRef, file[i])
         .then((snapshot) => {
-          getDownloadURL(ref(storage, 'files/' + referencesFile))
+          getDownloadURL(ref(storage, props.id_company + "/files/" + props.id_user+ "/" + referencesFile))
           .then((url) => { 
-            UploadFilestore({from:props.data.from, folder:props.data.folder, url, nameFile:referencesFile, name:name, size:size, id:props.data.id, file: type, function: props.childToParentUpload})
+            UploadFilestore({id_company:props.id_company, from:props.data.from, folder:props.data.folder, url, nameFile:referencesFile, name:name, size:size, id:props.data.id, file: type, function: props.childToParentUpload})
           })
           .catch((error) => {
             toast.error("Não foi possivel armazenar o " + name)
-            console.log(error)
+            return console.log(error)
           }); 
         })
         .catch((error) => {
-          console.log(error)
+          return console.log(error)
       });
     }
+    toast.success("Arquivos armazenados com sucesso.")
   }
 
   async function UploadFilestore(props){
@@ -58,13 +60,14 @@ import { toast } from 'react-toastify';
 
     const date = new Date() + ""
     try {
-      const docRef = await setDoc(doc(db, "files", props.nameFile), {
+      const docRef = await setDoc(doc(db, "files", props.id_company, "Arquivos", props.nameFile), {
         id_user: props.id,
         id_file: props.nameFile,
+        id_company: props.id_company,
         url: props.url,
         name: props.name,
         size: Math.ceil(props.size / 1000),
-        date: date,
+        created_date: date,
         type:type, 
         trash: false,
         viwed: false,
@@ -75,18 +78,19 @@ import { toast } from 'react-toastify';
       const data = {
         id_user: props.id,
         id_file: props.nameFile,
+        id_company: props.id_company,
         url: props.url,
         name: props.name,
         size: Math.ceil(props.size / 1000),
-        date: date,
+        created_date: date,
         type:type,
         urlDownload: urlDownload,
         trash: false,
         viwed: false,
+        checked:false,
         folder: props.folder,
         from: props.from
       }
-      toast.success("Arquivos armazenado com sucesso.")
       props.function(data)
     } catch (e) {
       toast.error("Não foi possivel armazenar o " + props.name)

@@ -4,13 +4,13 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react'
 import styles from './home.module.css'
 import DownloadFiles from '../../Files/dowloadFiles'
-import { Files, CommonQuestions} from '../../../types/interfaces' 
+import { Files} from '../../../types/interfaces' 
 
 
 function ComponentHome () {
   const [urlImage, setUrlImage] = useState<string>()
   const [recentsFile, setRecentsFile] = useState<Files[]>([])
-  const [data, setData] = useState<CommonQuestions>({contact:[], question:[]})
+  const [data, setData] = useState({contact:[], question:[]})
 
    useEffect(() => {
     GetUsers()
@@ -40,9 +40,9 @@ function ComponentHome () {
   async function GetContact(){
     const q = query(collection(db, "data"));
     const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      setData({...data, contact:doc.data().contact, id:doc.data().id, question:doc.data().question})
-    });
+    // querySnapshot.forEach((doc) => {
+    //   setData({...data, contact:doc.data().contact, id:doc.data().id, question:doc.data().question})
+    // });
   }
 
   async function FilterDate(getFiles:Array<{trash:boolean, from: string, date:Date }>){

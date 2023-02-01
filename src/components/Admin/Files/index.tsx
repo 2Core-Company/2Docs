@@ -36,34 +36,32 @@ function ComponentUpload(){
   const folderName:string  = params.get("folder")
   const [user, setUser] = useState<DataUser>()
 
-
   async function GetUser(){
-      var q = query(collection(db, "users"), where("id", "==", id))
-      const querySnapshot = await getDocs(q);
-      const a = querySnapshot.forEach((doc) => {
-        setUser(doc.data())
-      });
+    var q = query(collection(db, "users"), where("id", "==", id))
+    const querySnapshot = await getDocs(q);
+    const a = querySnapshot.forEach((doc) => {
+      setUser(doc.data())
+    });
   }
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
+    if(context.allFiles != undefined){
       context.setLoading(true)
       GetFiles()
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[context.allFiles])
+  
 
   async function GetFiles(){
-    const getFiles = []
-    var q 
+    var getFiles
     if(trash){
-      q = query(collection(db, "files"), where("trash", "==", Boolean(trash)), where("id_user", "==", id))
+      getFiles = context.allFiles.filter(file => file.id_user === id && file.trash === true)
+      GetUser()
     } else {
-      q = query(collection(db, "files"), where("trash", "==", false) , where("folder", "==", folderName), where("id_user", "==", id));
+      getFiles = context.allFiles.filter(file => file.id_user === id && file.trash === false && file.folder == folderName)
     }
-      const querySnapshot = await getDocs(q);
-      const a = querySnapshot.forEach((doc) => {
-        getFiles.push(doc.data())
-      }); 
     for(var i = 0; i < getFiles.length; i++){
       getFiles[i].checked = false
     }
@@ -71,7 +69,6 @@ function ComponentUpload(){
     setFiles(getFiles)
     setFilesFilter(getFiles)
     context.setLoading(false)
-    GetUser()
   }
 
   useEffect(() => {
@@ -108,12 +105,13 @@ function ComponentUpload(){
       folder: folderName,
       from: "admin"
     }
-    UploadFile({data, childToParentUpload})
+    UploadFile({data, childToParentUpload, id_company:context.dataUser.id_company, id_user:id})
     e.target.value = null
   }
 
   const childToParentUpload = (childdata:object) => {
     files.push(childdata)
+    context.allFiles.push(childdata)
     ResetConfig(files)
   }
   // <--------------------------------- Delet Files --------------------------------->
@@ -135,8 +133,15 @@ function ComponentUpload(){
       if(trash){
         DeletFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig})
       } else {
-        toast.promise(DisableFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
+        toast.promise(DisableFiles({files:context.allFiles, selectFiles:selectFiles, childToParentDisable:childToParentDisable}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
+  }
+
+  function childToParentDisable(files){
+    context.setAllFiles(files)
+    GetFiles()
+    setMenu(true)
+    setSelectFiles([])
   }
 
   // <--------------------------------- Enable File --------------------------------->

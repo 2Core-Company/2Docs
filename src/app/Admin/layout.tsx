@@ -1,27 +1,26 @@
 'use client'
 import NavBar from '../../components/NavBar'
-import { onAuthStateChanged } from "firebase/auth";
-import React, {useState, useEffect} from 'react'
+import { onAuthStateChanged, User } from "firebase/auth";
+import React, {useState, useEffect, useContext} from 'react'
 import { useRouter } from 'next/navigation'
 import { auth, db } from '../../../firebase'
 import { collection, where, getDocs, query } from "firebase/firestore";
+import AppContext from '../../components/AppContext';
 
-export default function DashboardLayout({
-    children, // will be a page or nested layout
-  }: {
-    children: React.ReactNode,
-  }) {
+export default function DashboardLayout({ children,}: {children: React.ReactNode}) {
+    const context = useContext(AppContext)
     const [onLoad, setOnLoad] = useState(false)
     const router = useRouter()
     const [urlImageProfile, setUrlImageProfile] = useState(null)
 
-useEffect(() => {
+  useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         auth.currentUser.getIdTokenResult().then((idTokenResult) => {
           if(idTokenResult.claims.admin){
             setOnLoad(true)
-            GetUsers(user.email)
+            GetUsers(user)
+            GetFiles(user)
           } else {
             router.push("/Clientes")
           }
@@ -30,16 +29,28 @@ useEffect(() => {
         router.push("/")
       }
     });
-    },[])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
 
-  async function GetUsers(email:string){
-    const q = query(collection(db, "users"), where("email", "==", email));
+  async function GetUsers(user: User){
+    const q = query(collection(db, "users", user.displayName, "Clientes"), where("id", "==", user.uid));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      setUrlImageProfile(doc.data().image)
+      setUrlImageProfile(doc.data().photo_url)
+      context.setDataUser(doc.data())
     });
   }
 
+  async function GetFiles(user:User){
+    const files = []
+    const q = query(collection(db, "files", user.displayName, "Arquivos"));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      files.push(doc.data())
+    });
+    context.setAllFiles(files)
+  }
+  
     return (
       <section>
         {onLoad ? 

@@ -10,6 +10,7 @@ import Loading from '../components/Loading'
 import { useRouter } from 'next/navigation';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'
+import { DataUser, Files } from '../types/interfaces'
 
 const poiretOne = Poiret_One({
   display: 'swap',
@@ -23,13 +24,11 @@ const poppins = Poppins({
   variable: '--font-poppins',
 })
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({children,}: {children: React.ReactNode}) {
   
 const [loading, setLoading] = useState(false)
+const [dataUser, setDataUser] = useState<DataUser>()
+const [allFiles, setAllFiles] = useState<Files[]>()
 const router =  useRouter()
 
 useEffect(() => {
@@ -51,7 +50,7 @@ useEffect(() => {
       }
     }
   });
-},[auth, router, children])
+},[router, children])
 
 
   return (
@@ -60,7 +59,9 @@ useEffect(() => {
       <head />
       <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
       <AppContext.Provider value={{
-        loading, setLoading
+        loading, setLoading,
+        dataUser, setDataUser,
+        allFiles, setAllFiles
         }}>
           <Loading />
           {children}

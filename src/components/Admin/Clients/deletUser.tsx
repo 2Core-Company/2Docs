@@ -22,7 +22,7 @@ async function DeletUser({childToParentDelet, selectUsers, usersFilter}) {
     try{
       for(let i = 0; i < selectUsers.length; i++){
         if(selectUsers[i].nameImage != "padrao.png"){
-          const desertRef = ref(storage, 'images/' + selectUsers[i].nameImage);
+          const desertRef = ref(storage, selectUsers[0].id_company + '/images/' + selectUsers[i].nameImage);
           const result = await deleteObject(desertRef)
         }
       }
@@ -35,7 +35,7 @@ async function DeletUser({childToParentDelet, selectUsers, usersFilter}) {
   async function DeleteFile(){
     const users = [...usersFilter]
     for(let i = 0; i < selectUsers.length; i++){
-      const result = await deleteDoc(doc(db, "users", selectUsers[i].id))
+      const result = await deleteDoc(doc(db, "users",selectUsers[0].id_company, "Clientes", selectUsers[i].id))
       const index = users.findIndex(user => user.id === selectUsers[i].id)
       users.splice(index, 1);
       DeleteFiles(selectUsers[i].id)
