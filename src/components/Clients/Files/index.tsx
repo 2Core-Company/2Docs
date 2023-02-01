@@ -117,7 +117,7 @@ function ComponentUpload(){
   }
 
   async function deletFile(){
-    await DeletFiles({files:files, selectFiles:[filesFilter[indexFile]], ResetConfig:ResetConfig})
+    // await DeletFiles({files:files, selectFiles:[filesFilter[indexFile]], ResetConfig:ResetConfig})
   }
 
 return (
