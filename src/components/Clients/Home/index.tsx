@@ -4,13 +4,13 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react'
 import styles from './home.module.css'
 import DownloadFiles from '../../Files/dowloadFiles'
-import { Files, CommonQuestions} from '../../../types/interfaces' 
+import { Files} from '../../../types/interfaces' 
 
 
 function ComponentHome () {
   const [urlImage, setUrlImage] = useState<string>()
   const [recentsFile, setRecentsFile] = useState<Files[]>([])
-  const [data, setData] = useState<CommonQuestions>({contact:[], question:[]})
+  const [data, setData] = useState({contact:[], question:[]})
 
    useEffect(() => {
     GetUsers()
