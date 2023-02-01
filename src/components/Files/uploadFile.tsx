@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
     id_user:string
   }
 
-  function UploadFiles(props:Props) {
+  async function UploadFiles(props:Props) {
     const file = props.data.file
     for (var i = 0; i < file.length; i++) {
       const type = file[i].type
@@ -27,7 +27,7 @@ import { toast } from 'react-toastify';
         .then((snapshot) => {
           getDownloadURL(ref(storage, props.id_company + "/files/" + props.id_user+ "/" + referencesFile))
           .then((url) => { 
-            UploadFilestore({id_company:props.id_company, from:props.data.from, folder:props.data.folder, url, nameFile:referencesFile, name:name, size:size, id:props.data.id, file: type, function: props.childToParentUpload})
+             UploadFilestore({id_company:props.id_company, from:props.data.from, folder:props.data.folder, url, nameFile:referencesFile, name:name, size:size, id:props.data.id, file: type, function: props.childToParentUpload})
           })
           .catch((error) => {
             toast.error("Não foi possivel armazenar o " + name)
@@ -38,7 +38,6 @@ import { toast } from 'react-toastify';
           return console.log(error)
       });
     }
-    toast.success("Arquivos armazenados com sucesso.")
   }
 
   async function UploadFilestore(props){
