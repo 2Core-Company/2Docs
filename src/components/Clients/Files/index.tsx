@@ -89,7 +89,7 @@ function ComponentUpload(){
       folder: folderName,
       from: "user"
     }
-    UploadFile({data, childToParentUpload})
+    // UploadFile({data, childToParentUpload})
     e.target.value = null
   }
 
