@@ -103,7 +103,6 @@ function Signin(){
       <section className="bg-primary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
         <Image src={Logo} alt="Logo da empresa" priority height={150} width={150} className='rounded-full'/>
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
-  
           <p className="text-[40px] font-poiretOne">Login</p>
           <p className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
           <Tabs.List className="w-full mt-[20px] border-b-2 border-black flex justify-between" aria-label="Manage your account">

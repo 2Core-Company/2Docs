@@ -4,7 +4,7 @@ import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
 import AppContext from '../../AppContext';
 import {db} from '../../../../firebase'
-import { collection, where, query, getDocs} from "firebase/firestore";  
+import { doc, getDoc} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';
 import UploadFile from '../../Files/uploadFile'
 import Modals from '../../Modals'
@@ -37,11 +37,9 @@ function ComponentUpload(){
   const [user, setUser] = useState<DataUser>()
 
   async function GetUser(){
-    var q = query(collection(db, "users"), where("id", "==", id))
-    const querySnapshot = await getDocs(q);
-    const a = querySnapshot.forEach((doc) => {
-      setUser(doc.data())
-    });
+    const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
+    const docSnap = await getDoc(docRef);
+    setUser(docSnap.data())
   }
 
   // <--------------------------------- GetFiles --------------------------------->
@@ -113,6 +111,7 @@ function ComponentUpload(){
     files.push(childdata)
     context.allFiles.push(childdata)
     ResetConfig(files)
+    toast.success("Arquivos armazenados com sucesso.")
   }
   // <--------------------------------- Delet Files --------------------------------->
 
@@ -131,13 +130,20 @@ function ComponentUpload(){
   const childModal = () => {
     setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
       if(trash){
-        DeletFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig})
+        toast.promise(DeletFiles({files:context.allFiles, selectFiles:selectFiles, childToParentDelet:childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
       } else {
         toast.promise(DisableFiles({files:context.allFiles, selectFiles:selectFiles, childToParentDisable:childToParentDisable}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
   }
 
   function childToParentDisable(files){
+    context.setAllFiles(files)
+    GetFiles()
+    setMenu(true)
+    setSelectFiles([])
+  }
+
+  function childToParentDelet(files){
     context.setAllFiles(files)
     GetFiles()
     setMenu(true)

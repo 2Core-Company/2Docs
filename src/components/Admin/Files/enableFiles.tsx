@@ -14,11 +14,11 @@ async function EnableFiles(props:{files:Files[], selectFiles:Files[], folders?:F
           const folderStatus = folders.findIndex(folder => folder.name === selectFiles[i].folder)
           if(folderStatus  == -1){
             folders.push({name: selectFiles[i].folder, color: "#BE0000"})
-            await updateDoc(doc(db, 'users', selectFiles[i].id_user), {
+            await updateDoc(doc(db, 'users', selectFiles[i].id_company, "Clientes", selectFiles[i].id_user), {
               folders: folders
             })
           }
-          await updateDoc(doc(db, 'files', selectFiles[i].id_file), {
+          await updateDoc(doc(db, 'files', selectFiles[i].id_company, "Arquivos", selectFiles[i].id_file), {
             trash: false
           })
           const index = files.findIndex(file => file.id_file === selectFiles[i].id_file)

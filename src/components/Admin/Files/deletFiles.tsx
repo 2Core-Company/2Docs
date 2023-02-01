@@ -3,7 +3,7 @@ import { doc,deleteDoc} from "firebase/firestore";
 import { ref, deleteObject} from "firebase/storage";
 import { Files } from '../../../types/interfaces'
 
-async function deletFiles(props:{files:Files[], selectFiles:Files[], ResetConfig:Function},) {
+async function deletFiles(props:{files:Files[], selectFiles:Files[], childToParentDelet:Function},) {
     const filesHere = props.files
     const selectFiles = props.selectFiles
     try{
@@ -15,7 +15,7 @@ async function deletFiles(props:{files:Files[], selectFiles:Files[], ResetConfig
           const index:number = filesHere.findIndex(file => file.id_file === selectFiles[i].id_file)
           filesHere.splice(index, 1);
         }
-        props.ResetConfig(filesHere)
+        props.childToParentDelet(filesHere)
       }
     } catch(e) {
       console.log(e)

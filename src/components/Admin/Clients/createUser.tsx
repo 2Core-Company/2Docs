@@ -212,9 +212,9 @@ return (
           </label>
 
           <label className='flex flex-col w-full'>
-            Senha Provisória
+            Senha
             <div className='border-2 border-black rounded-[8px] flex items-center'>
-              <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>
+              <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha'/>
               {eye ?
                 <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
               : <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer" />
