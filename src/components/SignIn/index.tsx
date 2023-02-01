@@ -13,7 +13,7 @@ import Logo from '../../../public/image/2core.png'
 import { toast } from 'react-toastify';
 
 function Signin(){
-  const context = useContext<{setLoading:Function}>(AppContext)
+  const context = useContext(AppContext)
   const [dataUser, setDataUser] = useState<DataUser>({email: "", password: "", cnpj:"", checked: false})
   const [eye, setEye] = useState(false)
   const router = useRouter()
@@ -36,7 +36,6 @@ function Signin(){
     context.setLoading(true)
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
     const data = await getDocs(q);
-    console.log(data.docs[0])
     if(data.docs[0] === undefined){
       context.setLoading(false)
       toast.error("Este usuário não foi cadastrado.")
@@ -102,7 +101,7 @@ function Signin(){
 
     return (
       <section className="bg-primary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
-        <Image src={Logo} alt="Logo da empresa" height={150} width={150} className='rounded-full'/>
+        <Image src={Logo} alt="Logo da empresa" priority height={150} width={150} className='rounded-full'/>
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
   
           <p className="text-[40px] font-poiretOne">Login</p>

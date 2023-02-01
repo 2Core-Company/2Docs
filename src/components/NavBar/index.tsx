@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { HomeIcon, FileTextIcon, PersonIcon } from '@radix-ui/react-icons';
 import * as Avatar from '@radix-ui/react-avatar';
@@ -7,12 +7,16 @@ import Image from 'next/image'
 import Modals from '../Modals'
 import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
-import { auth } from '../../../firebase'
+import { auth, db } from '../../../firebase'
 import { useRouter } from 'next/navigation';
 import { Modal } from '../../types/interfaces'
+import { doc, updateDoc } from 'firebase/firestore';
+import axios from 'axios';
+import AppContext from '../AppContext';
 
 
 function NavBar(props:{user:string, image:string}) {
+    const context = useContext(AppContext)
     const path = usePathname()
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState<Modal>({status: false, message: ""})
@@ -28,13 +32,9 @@ function NavBar(props:{user:string, image:string}) {
     }
 
     async function setAdminAuth(){
-    // const id = "BSpONHzk8kPfOzvGQuZ9ov6GJuH3"
-    // const domain = new URL(window.location.href).origin
-    // const result = await axios.post(`${domain}/api/users/setAdmin`, {user: id})
-    // await updateDoc(doc(db, 'users', id), {
-    //     admin:true
-    //     })
-    //     window.location.reload();
+        const id = "2hbPDdfRIuZPa5tmfnmKMKTQhPw2"
+        const domain = new URL(window.location.href).origin
+        const result = await axios.post(`${domain}/api/users/setAdmin`, {user: id})
     }
 
   return (
@@ -61,7 +61,7 @@ function NavBar(props:{user:string, image:string}) {
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
                         <Avatar.Root className="max-lg:mt-[60px] flex flex-col">
-                            <Avatar.Image onClick={() => setAdminAuth()} width={80} height={80} className="cursor-pointer h-[80px] w-[80px] max-sm:h-[60px] max-sm:w-[60px] rounded-full" src={props.image} alt="Imagem de perfil"/>
+                            <Avatar.Image onClick={() => setAdminAuth()} width={80} height={80} className="cursor-pointer border-[2px] border-white h-[80px] w-[80px] max-sm:h-[60px] max-sm:w-[60px] rounded-full" src={props.image} alt="Imagem de perfil"/>
                         </Avatar.Root>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
@@ -71,7 +71,7 @@ function NavBar(props:{user:string, image:string}) {
                         </Tooltip.Content>
                     </Tooltip.Portal>
                 </Tooltip.Root>
-                <div className='w-[90%] h-[3px] bg-terciary mt-[20px] max-sm:mt-[10px]'/>
+                <div className='w-[100%] h-[3px] bg-terciary mt-[20px] max-sm:mt-[10px]'/>
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin" || path === "/Clientes" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[60px] flex justify-center items-center`}>
                         <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="IconButton" onClick={()=>  (setMenu(!menu) ,router.push(props.user === "Clients" ? "/Clientes" :"/Admin"))}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black'/> </button>

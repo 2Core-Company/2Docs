@@ -9,9 +9,9 @@ async function deletFiles(props:{files:Files[], selectFiles:Files[], ResetConfig
     try{
       if(selectFiles.length > 0) {
         for(let i = 0; i < selectFiles.length; i++){
-          const desertRef = ref(storage, 'files/' + selectFiles[i].id_file);
+          const desertRef = ref(storage, selectFiles[i].id_company + '/files/' + selectFiles[i].id_user + "/" + selectFiles[i].id_file);
           const result = await deleteObject(desertRef)
-          const response = await deleteDoc(doc(db, "files", selectFiles[i].id_file));
+          const response = await deleteDoc(doc(db, 'files', selectFiles[i].id_company, "Arquivos", selectFiles[i].id_file));
           const index:number = filesHere.findIndex(file => file.id_file === selectFiles[i].id_file)
           filesHere.splice(index, 1);
         }

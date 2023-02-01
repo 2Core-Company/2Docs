@@ -5,7 +5,7 @@ import {db} from '../../../../firebase'
 import { toast } from 'react-toastify';
 import { Folders } from '../../../types/interfaces'
 
-function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setFolders:Function, setFoldersFilter:Function, setCreateFolder:Function}) {
+function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setUser:Function, setFoldersFilter:Function, setCreateFolder:Function, id_company:string}) {
     const folders = props.user.folders
     const [color, setColor] = useState<string>()
     const [nameFolder, setNameFolder] = useState<string>()
@@ -16,10 +16,12 @@ function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setFolder
             if(color != undefined && nameFolder.length > 0 ){
                 folders.push({name: nameFolder, color: color})
                 try{
-                    await updateDoc(doc(db, 'users', props.idUser), {
-                        folders: props.user.folders
+                    console.log(props.idUser)
+                    await updateDoc(doc(db, 'users', props.id_company, "Clientes", props.idUser), {
+                        folders: folders
                     })
-                    props.setFolders(folders)
+                    console.log(updateDoc)
+                    props.setUser({...props.user, folders:folders})
                     props.setFoldersFilter(folders)
                     props.setCreateFolder(false)
                 } catch(err){

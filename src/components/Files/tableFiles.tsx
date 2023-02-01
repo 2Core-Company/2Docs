@@ -31,7 +31,6 @@ export default function TableFiles(props:Props) {
   const [messageEmpty, setMessageEmpty] = useState<string>()
 
   useEffect(() => {
-    console.log(props.folderName)
     if(url.includes("Clientes") === true  && props.folderName === "Cliente" ){
       setMessageEmpty("Envie seu primeiro arquivo!")
     } else if(url.includes("Admin") === true  && props.folderName != "Cliente") {
@@ -85,21 +84,21 @@ export default function TableFiles(props:Props) {
   function filterDate(){
     const filesDate = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
     filesDate.sort((a,b) => { 
-      a.date = new Date(a.date)
-      b.date = new Date(b.date)
+      a.created_date = new Date(a.created_date)
+      b.created_date = new Date(b.created_date)
       if(filter.date){
-       return (b.date.getTime() - a.date.getTime())
+       return (b.created_date.getTime() - a.created_date.getTime())
       } else {
-       return (a.date.getTime() - b.date.getTime())
+       return (a.created_date.getTime() - b.created_date.getTime())
       }
     });
     for (var i = 0; i < filesDate.length; i++) {
-      filesDate[i].date = filesDate[i].date
+      filesDate[i].created_date = filesDate[i].created_date + ""
     }
     props.setFilesFilter(filesDate)
   }
 
-  function formatDate(date){
+  function formatDate(date:string){
     var newDate = new Date(date)
     if(window.screen.width > 1250){
       var month = newDate.getMonth()
@@ -107,7 +106,6 @@ export default function TableFiles(props:Props) {
     } else {
       return newDate.toLocaleDateString()
     }
-
   }
 
   return (
@@ -171,7 +169,7 @@ export default function TableFiles(props:Props) {
                             <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{parseInt(file.size) < 1000 ? file.size + " KB"  : Math.ceil(parseInt(file.size) / 1000) + " MB"} </p>
                         </th>
 
-                        <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.date)}</th>
+                        <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.created_date)}</th>
 
                         <th className='font-[400] w-[80px] pr-[10px] max-sm:pr-[0px] max-sm:w-[70px] text-[18px] max-sm:text-[14px] '>
                           {file.viwed  ? 

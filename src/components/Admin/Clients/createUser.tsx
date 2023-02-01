@@ -2,7 +2,7 @@
 'use client'
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import ErrorFirebase from '../../ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
@@ -12,15 +12,22 @@ import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { DataUser } from '../../../types/interfaces'
+import AppContext from '../../AppContext';
 
 
 function CreateUser({childToParentCreate, closedWindow}){
+  const context = useContext(AppContext)
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", company:""})
+  const [dataUser, setDataUser] = useState<DataUser>({name: "", email:"", cnpj: "", phone:"", password:"", id_company:""})
   const [file, setFile] = useState<{name: string} | any>({name: "padrao.png"})
   const [fileDataURL, setFileDataURL] = useState<string>(undefined);
   const [eye , setEye] = useState(true)
   const domain:string = new URL(window.location.href).origin
+  const [right, setRight] = useState("right-[-600px]")
+
+  useEffect(() =>{
+    setRight("right-0")
+  },[])
 
   async function VerifyCnpj(e: { preventDefault: () => void; }){
     e.preventDefault()
@@ -38,10 +45,10 @@ function CreateUser({childToParentCreate, closedWindow}){
   async function UploadPhoto(id:string) {
     const referencesFile = Math.floor(Math.random() * 65536) + file.name;
     if(file.name != "padrao.png"){
-      const storageRef = ref(storage, "images/" + referencesFile);
+      const storageRef = ref(storage, `${context.dataUser.id_company }/images/` + referencesFile);
       uploadBytes(storageRef, file)
       .then((snapshot) => {
-        getDownloadURL(ref(storage, 'images/' + referencesFile))
+        getDownloadURL(ref(storage, `${context.dataUser.id_company }/images/` + referencesFile))
         .then((url) => { SignUpDb({url: url, referencesFile: referencesFile, id: id}) })
         .catch((error) => {
           console.log(error)
@@ -61,40 +68,40 @@ function CreateUser({childToParentCreate, closedWindow}){
     }
   }
   
-  async function SignUpDb(image:{id:string, url:string, referencesFile:string}){
+  async function SignUpDb(user:{id:string, url:string, referencesFile:string}){
     var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
     var date = new Date() + ""
     const data = {
-      id: image.id,
+      id: user.id,
       name: name,
       email: dataUser.email,
       cnpj: dataUser.cnpj,
       password: dataUser.password,
       phone: dataUser.phone,
-      company: dataUser.company,
-      image: image.url,
-      nameImage: image.referencesFile,
-      date: date,
+      id_company: context.dataUser.id_company,
+      photo_url: user.url,
+      nameImage: user.referencesFile,
+      created_date: date,
       status: false,
-      admin: false,
+      checked: false,
+      permission: 0,
       folders: [{color:"#005694", name: "Cliente"}]
     }
     childToParentCreate(data)
-
     try {
-      const docRef = await setDoc(doc(db, "users", image.id), {
-        id: image.id,
+      const docRef = await setDoc(doc(db, "users", context.dataUser.id_company, "Clientes", user.id), {
+        id: user.id,
         name: name,
         email: dataUser.email,
         cnpj: dataUser.cnpj,
         password: dataUser.password,
         phone: dataUser.phone,
-        company: dataUser.company,
-        image: image.url,
-        nameImage: image.referencesFile,
-        date: date,
+        id_company: context.dataUser.id_company,
+        photo_url: user.url,
+        nameImage: user.referencesFile,
+        created_date: date,
         status: false,
-        admin: false,
+        permission: 0,
         folders: [{color:"#005694", name: "Cliente"}]
       });
     } catch (e) {
@@ -106,7 +113,8 @@ function CreateUser({childToParentCreate, closedWindow}){
   async function SignUp() {
     const data ={
       email: dataUser.email,
-      password: dataUser.password
+      password: dataUser.password,
+      id_company:"0mBWrQ3mMMKjAi4aMd4k"
     }
     try{
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser.uid})
@@ -115,12 +123,12 @@ function CreateUser({childToParentCreate, closedWindow}){
         UploadPhoto(id)
       } else {
         ErrorFirebase(result.data)
-        throw "error"
+        throw Error
       }
     } catch (e){
       console.log(e)
+      throw Error
     }
-
   }
 
   const phoneMask = (value:string) => {
@@ -176,7 +184,7 @@ function CreateUser({childToParentCreate, closedWindow}){
 
 return (
     <>
-      <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen pb-[100px] absolute right-0 duration-300 flex flex-col items-center'>
+      <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] min-h-screen pb-[100px] ${right} duration-300 flex flex-col items-center`}>
         <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full max-sm:z-50'>
           <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]'/>
           <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex'>Cadastrar</p>
@@ -195,13 +203,25 @@ return (
 
           <label  className='flex flex-col max-sm'>
             Nome
-            <input type="text" maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o nome do cliente'/>
+            <input type="text" maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o nome da empresa'/>
           </label>
 
           <label className='flex flex-col'>
             Email
             <input required  maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o email'/>
           </label>
+
+          <label className='flex flex-col w-full'>
+            Senha Provisória
+            <div className='border-2 border-black rounded-[8px] flex items-center'>
+              <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>
+              {eye ?
+                <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
+              : <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer" />
+              }
+            </div>
+          </label>
+
           <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
             <label className='flex flex-col w-[50%] max-sm:w-full' >
               Cnpj
@@ -213,30 +233,6 @@ return (
               <input maxLength={15} required  value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o telefone'/>
             </label>
           </div>
-
-          <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
-            <label className='flex flex-col w-[50%] max-sm:w-full'>
-              Senha Provisória
-              {eye ?
-                <div className='border-2 border-black rounded-[8px] flex items-center'>
-                  <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>
-                  <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
-                </div>
-
-              : 
-                <div className='border-2 border-black rounded-[8px] flex items-center'>
-                  <input required type="password" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>
-                  <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer" />
-                </div>
-              }
-            </label>
-
-            <label className='flex flex-col'>
-              Empresa
-              <input required maxLength={25} value={dataUser.company} onChange={(Text) => setDataUser({...dataUser, company:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite a empresa'/>
-            </label>
-          </div>
-
           <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full max-sm:w-[80%] self-center h-[55px] max-sm:h-[50px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
               Salvar
           </button>

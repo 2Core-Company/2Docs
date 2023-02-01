@@ -1,64 +1,49 @@
-import { auth, db } from '../../../../firebase'
-import { collection, where, getDocs, query, doc, updateDoc } from "firebase/firestore";
+import { db } from '../../../../firebase'
+import { doc, updateDoc } from "firebase/firestore";
 import Image from 'next/image';
-import { useLayoutEffect, useState } from 'react'
+import { useContext, useLayoutEffect, useState } from 'react'
 import styles from './home.module.css'
 import { toast } from 'react-toastify';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import DownloadFiles from '../../Files/dowloadFiles'
-import { Files, CommonQuestions} from '../../../types/interfaces' 
+import { Files, DataCompany} from '../../../types/interfaces' 
+import AppContext from '../../AppContext';
+import { getDoc } from "firebase/firestore";  
 
 function ComponentHome () {
-  const [urlImage, setUrlImage] = useState<string>()
-  const [gb, setGb] = useState<number>()
-  const [gbPorcentage, setGbPorcentage] = useState<string>("w-[1%]")
+  const context = useContext(AppContext)
+  const [gb, setGb] = useState<string>()
+  const [gbPorcentage, setGbPorcentage] = useState<number>(0)
   const [recentsFile, setRecentsFile]= useState<Files[]>([])
-  const [commonQuestions, setCommonQuestions] = useState<CommonQuestions>({contact:[], question:[]})
+  const [dataCompany, setDataCompany] = useState<DataCompany>({contact:[], questions:[]})
 
-   useLayoutEffect(() => {
-    GetUsers()
-    GetFiles()
+  useLayoutEffect(() => {
+    if(context.dataUser != undefined){
+      CalculatingGb(context.allFiles)
+      FilterDate(context.allFiles)
+      GetContact()
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[context.dataUser])
 
-  async function GetUsers(){
-    const q = query(collection(db, "users"), where("email", "==", auth.currentUser.email));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      setUrlImage(doc.data().image)
-    });
-  }
-
-  async function GetFiles(){
-    const getFiles = []
-    var q = query(collection(db, "files"))
-      const querySnapshot = await getDocs(q);
-      const a = querySnapshot.forEach((doc) => {
-        getFiles.push(doc.data())
-      }); 
-    CalculatingGb(getFiles)
-    FilterDate(getFiles)
-    GetContact()
-  }
-
-  function CalculatingGb(files:Array<{size:string,}>){
+  function CalculatingGb(files:Files[]){
     const gbAll = 5000000
     var numbers: number | string | any  = 0
     for(var i = 0; i < files.length ; i++){
       numbers = numbers + files[i].size
     }
-    const porcentage = "w-[" +  Math.ceil((numbers * 100) / gbAll) + "%]"
+    const porcentage = (Math.ceil((numbers * 100) / gbAll))
     setGbPorcentage(porcentage)
-    setGb(Math.floor(numbers / 1000000))
+    setGb((numbers / 1000000).toFixed(1))
   }
-  
-  async function FilterDate(getFiles:Array<{trash:boolean, from: string, date:Date }>){
+
+  async function FilterDate(getFiles:Files[]){
     const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
     const recents = []
     filesHere.sort((a, b) =>{ 
-      a.date = new Date(a.date)
-      b.date = new Date(b.date)
-      return (a.date.getTime() - b.date.getTime())
+      a.created_date = new Date(a.created_date)
+      b.created_date = new Date(b.created_date)
+      return (a.created_date.getTime() - b.created_date.getTime())
     });
     for (var i = 0; 5 > i && i < (filesHere.length); i++) {
       recents.push(filesHere[i])
@@ -67,17 +52,20 @@ function ComponentHome () {
   }
 
   async function GetContact(){
-    const q = query(collection(db, "data"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      setCommonQuestions({...commonQuestions, contact:doc.data().contact, id:doc.data().id, question:doc.data().question})
-    });
+    const docRef = doc(db, "users", context.dataUser.id_company);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      setDataCompany({...dataCompany, contact:docSnap.data().contact, id:docSnap.data().id, questions:docSnap.data().questions})
+    } else {
+      console.log("No such document!");
+    }
   }
 
   function ChangeContact(content:{index:number, text:string}){
-    const contacts = [...commonQuestions.contact]
+    const contacts = [...dataCompany.contact]
     contacts[content.index] = content.text
-    setCommonQuestions({...commonQuestions, contact:contacts})
+    setDataCompany({...dataCompany, contact:contacts})
   }
 
   const phoneMask = (value:string) => {
@@ -92,63 +80,62 @@ function ComponentHome () {
       .replace(/(\d)(\d{4})$/,"$1-$2")// captura 2 grupos de número o primeiro com 2 digitos e o segundo de com 3 digitos, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de número
     }
     return ""
-
   }
 
   async function UpdateBdContact(){
-    await updateDoc(doc(db, 'data', commonQuestions.id.trim()), {
-      contact: commonQuestions.contact
+    await updateDoc(doc(db, 'users', context.dataUser.id_company), {
+      contact: dataCompany.contact
     })
     .then(() => {
       toast.success("As informações foram salvas com sucesso.")
     })
     .catch((e) => {
       console.log(e)
-      toast.success("Não foi possivel alterar as informações.")
+      toast.error("Não foi possivel alterar as informações.")
     }) 
   }
 
   function ChangeQuestion(content:{index: number, text:string}){
-    var question = [...commonQuestions.question]
-    if(question[content.index] === undefined){
-      question.push({question:content.text, response: ""})
+    var questions = [...dataCompany.questions]
+    if(questions[content.index] === undefined){
+      questions.push({question:content.text, response: ""})
     } else {
-      question[content.index].question = content.text
+      questions[content.index].question = content.text
     }
-    setCommonQuestions({...commonQuestions, question:question})
+    setDataCompany({...dataCompany, questions:questions})
   }
 
   function ChangeResponse(content:{index: number, text:string}){
-    var question = [...commonQuestions.question]
-    question[content.index].response = content.text
-    setCommonQuestions({...commonQuestions, question:question})
+    var questions = [...dataCompany.questions]
+    questions[content.index].response = content.text
+    setDataCompany({...dataCompany, questions:questions})
   }
 
   async function UpdateBdQuestion(){
-    await updateDoc(doc(db, 'data', commonQuestions.id.trim()), {
-      question: commonQuestions.question
+    await updateDoc(doc(db, 'users', context.dataUser.id_company), {
+      questions: dataCompany.questions
     })
     .then(() => {
       toast.success("As informações foram salvas com sucesso.")
     })
     .catch((e) => {
       console.log(e)
-      toast.success("Não foi possivel alterar as informações.")
+      toast.error("Não foi possivel alterar as informações.")
     }) 
   }
 
   return (
     <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
       <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-        {urlImage != undefined ? <Image src={urlImage} alt="Logo da empresa" width={100} height={100} className="max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]"/> : <></>}
+        {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="border-[2px] border-white w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]"/> : <></>}
         <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Home</p>
         <p  className='text-[18px] flex mx-[5px] text-secondary'>Home</p> 
         <p  className=' font-poiretOne mt-[20px] text-[40px] max-sm:text-[35px]'>Uso</p>
         <div className='flex items-center gap-[30px] max-md:gap-[10px]'>
           <div className='w-[250px] h-[15px] bg-hilight border-[2px] border-black rounded-[4px]'>
-          <div className={`${gbPorcentage} h-full bg-[#BB8702]`}/>
-        </div>
-          <p  className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] font-[600]'><span className='text-[#BB8702]'>{gb}</span>Gb/<span className='text-secondary'>5</span>Gb</p>
+            <div className="h-[11px] bg-[#BB8702] duration-700" style={{width:`${gbPorcentage}%`}}/>
+          </div>
+          <p className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] font-[600]'><span className='text-[#BB8702]'>{gb}</span>Gb/<span className='text-secondary'>5</span>Gb</p>
         </div>
 
         <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
@@ -176,17 +163,17 @@ function ComponentHome () {
               <div id={styles.boxFiles} className='h-full overflow-y-scroll px-[5px] flex flex-col'>
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(commonQuestions.contact[0])} onChange={(text) => ChangeContact({index:0, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[0])} onChange={(text) => ChangeContact({index:0, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
                 </div>
 
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(commonQuestions.contact[1])} onChange={(text) => ChangeContact({index:1, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[1])} onChange={(text) => ChangeContact({index:1, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
                 </div>
 
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(commonQuestions.contact[2])} onChange={(text) => ChangeContact({index:2, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[2])} onChange={(text) => ChangeContact({index:2, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
                 </div>
 
                 <button onClick={() => UpdateBdContact()} className="flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center mb-[10px]" >
@@ -204,9 +191,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question.length > 0  ? commonQuestions.question[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[0] ? dataCompany.questions[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea  id={styles.boxFiles} rows={3} value={commonQuestions.question.length > 0 ? commonQuestions.question[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea  id={styles.boxFiles} rows={3} value={dataCompany.questions[0]  ? dataCompany.questions[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
 
@@ -214,9 +201,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px] "/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question[1] ? commonQuestions.question[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[1] ? dataCompany.questions[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question[1] ? commonQuestions.question[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[1] ? dataCompany.questions[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
 
@@ -224,9 +211,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question[2] ? commonQuestions.question[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[2] ? dataCompany.questions[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={commonQuestions.question[2] ? commonQuestions.question[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[2] ? dataCompany.questions[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
             <button onClick={() => UpdateBdQuestion()} className="flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center" >
