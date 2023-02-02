@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { Files } from '../../types/interfaces'
 
 
-async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], ResetConfig?:Function  }){
+async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[]}){
   const page = window.location.pathname
   const filesDownloaded = props.filesDownloaded
   const files = props.files
@@ -28,21 +28,8 @@ async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], Re
         await updateDoc(doc(db, 'files', filesDownloaded[i].id_file), {
           viwed: true
         })
-        if(props.ResetConfig != undefined){
-          const index = files.findIndex(file => file.id_file === filesDownloaded[i].id_file)
-          files[index].checked = false
-          files[index].viwed = true
-        }
-      } else {
-        if(props.ResetConfig != undefined){
-          const index = files.findIndex(file => file.id_file === filesDownloaded[i].id_file)
-          files[index].checked = false
-        }
-      }
+      } 
     }
-      if(props.ResetConfig != undefined){
-        props.ResetConfig(files)
-      }
   } catch(e) {
     console.log(e)
     toast.error("Não foi possivél baixar os arquivos.")
