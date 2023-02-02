@@ -4,7 +4,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import React, {useState, useEffect, useContext} from 'react'
 import { useRouter } from 'next/navigation'
 import { auth, db } from '../../../firebase'
-import { collection, where, getDocs, getDoc, query, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, query, doc } from "firebase/firestore";
 import AppContext from '../../components/AppContext';
 
 export default function DashboardLayout({ children,}: {children: React.ReactNode}) {

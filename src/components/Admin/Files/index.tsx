@@ -90,28 +90,11 @@ function ComponentUpload(){
   }
   
   // <--------------------------------- Upload File --------------------------------->
-  const changeHandler = (e:any) => {
-    for(let i = 0; i < e.target.files.length; i++){
-      if(e.target.files[i].size > 2000000){
-        e.target.value = null
-        return toast.error("Os arquivos só podem ter no maximo 2mb.")
-      }
-    }
-    const data = {
-      file: e.target.files,
-      id: id,
-      folder: folderName,
-      from: "admin"
-    }
-    UploadFile({data, childToParentUpload, id_company:context.dataUser.id_company, id_user:id})
-    e.target.value = null
-  }
-
   const childToParentUpload = (childdata:object) => {
     files.push(childdata)
     context.allFiles.push(childdata)
-    ResetConfig(files)
-    toast.success("Arquivos armazenados com sucesso.")
+    GetFiles()
+    setMenu(true)
   }
   // <--------------------------------- Delet Files --------------------------------->
 
@@ -132,11 +115,11 @@ function ComponentUpload(){
       if(trash){
         toast.promise(DeletFiles({files:context.allFiles, selectFiles:selectFiles, childToParentDelet:childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
       } else {
-        toast.promise(DisableFiles({files:context.allFiles, selectFiles:selectFiles, childToParentDisable:childToParentDisable}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
+        toast.promise(DisableFiles({files:context.allFiles, selectFiles:selectFiles, childToParentDisable:childToChangeStatus}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
   }
 
-  function childToParentDisable(files){
+  function childToChangeStatus(files){
     context.setAllFiles(files)
     GetFiles()
     setMenu(true)
@@ -151,28 +134,18 @@ function ComponentUpload(){
   }
 
   // <--------------------------------- Enable File --------------------------------->
-  function ConfirmationEnableFile(){
-    if(selectFiles.length > 0){
-      toast.promise(EnableFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig, folders: user.folders}),{pending:"Restaurando arquivos.", success:"Arquivos restaurados.", error:"Não foi possivel restaurar os arquivos."})
-    } else {
-      toast.error("Selecione um arquivo para deletar.")
-    }
-  }
 
   function ResetConfig(files:Files[]){
     setPages(Math.ceil(files.length / 10))
     setMenu(true)
-    setFilesFilter(files)
     setSelectFiles([])
+    setFilesFilter(files)
     setFiles(files)
   }
 
   function DowloadFiles(){
     if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
-    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig}),
-    {pending:"Fazendo download dos arquivos.", 
-    success:"Download feito com sucesso", 
-    error:"Não foi possivel fazer o download."})
+    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})
   }
 
 return (
@@ -203,14 +176,9 @@ return (
                 </button>
                 <button onClick={() => ConfirmationDeleteFile()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 {trash ? 
-                  <button onClick={() => ConfirmationEnableFile()} className={`bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
-                    Recuperar
-                  </button>
+                  <EnableFiles menu={menu} selectFiles={selectFiles} childToChangeStatus={childToChangeStatus} folders={user?.folders} />
                 : 
-                  <label className={`${folderName === "Cliente" ? "hidden" : <></>} bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
-                    <p>Upload</p>
-                    <input onChange={changeHandler} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
-                  </label>
+                  <UploadFile folderName={folderName} childToParentUpload={childToParentUpload} id_user={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"}/>
                 }
               </div>
             </div>

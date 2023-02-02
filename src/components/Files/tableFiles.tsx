@@ -190,7 +190,7 @@ export default function TableFiles(props:Props) {
                                   <TrashIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
                                 </button>
                               :
-                                <button id="DowloadFile" aria-label="Botão de fazer dowload do documento." onClick={() => DownloadsFile({filesDownloaded:[file], files:props.files, ResetConfig:props.ResetConfig})} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
+                                <button id="DowloadFile" aria-label="Botão de fazer dowload do documento." onClick={() => DownloadsFile({filesDownloaded:[file], files:props.files})} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
                                   <DownloadIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
                                 </button>  
                               }
