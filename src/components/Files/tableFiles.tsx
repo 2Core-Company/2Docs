@@ -20,6 +20,8 @@ interface Props{
   files?:Files[],
   folderName?:string,
   searchFile?:string
+  from:string
+  childToParentDownload:Function
  }
 
 export default function TableFiles(props:Props) {
@@ -82,7 +84,7 @@ export default function TableFiles(props:Props) {
   }
 
   function filterDate(){
-    const filesDate = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
+    const filesDate = [...props.filesFilter]
     filesDate.sort((a,b) => { 
       a.created_date = new Date(a.created_date)
       b.created_date = new Date(b.created_date)
@@ -99,13 +101,15 @@ export default function TableFiles(props:Props) {
   }
 
   function formatDate(date:string){
-    var newDate = new Date(date)
-    if(window.screen.width > 1250){
-      var month = newDate.getMonth()
-      return date.substr(8, 2) + " de " + months[month] + " de " + date.substr(11, 4)
-    } else {
-      return newDate.toLocaleDateString()
-    }
+    if(date.length > 12){
+      var newDate = new Date(date)
+      if(window.screen.width > 1250){
+        var month = newDate.getMonth()
+        return date.substr(8, 2) + " de " + months[month] + " de " + date.substr(11, 4)
+      } else {
+        return newDate.toLocaleDateString()
+      }
+    } 
   }
 
   return (
@@ -132,7 +136,7 @@ export default function TableFiles(props:Props) {
               </th>
 
               <th className='font-[400] max-lg:hidden'>
-                <button id="filterData" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, date:! filter.date, status: false, name:false, size:false}) ,filterDate())} className='flex items-center cursor-pointer'>
+                <button id="filterData" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, date:! filter.date, status: false, name:false, size:false}), filterDate())} className='flex items-center cursor-pointer'>
                   <p className='text-left'>Data de upload</p>
                   <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
                 </button>
@@ -190,7 +194,7 @@ export default function TableFiles(props:Props) {
                                   <TrashIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
                                 </button>
                               :
-                                <button id="DowloadFile" aria-label="Botão de fazer dowload do documento." onClick={() => DownloadsFile({filesDownloaded:[file], files:props.files})} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
+                                <button id="DowloadFile" aria-label="Botão de fazer dowload do documento." onClick={() => DownloadsFile({filesDownloaded:[file], files:props.files, from:props.from, childToParentDownload:props.childToParentDownload})} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
                                   <DownloadIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
                                 </button>  
                               }
@@ -206,7 +210,7 @@ export default function TableFiles(props:Props) {
         </table>
       : 
         <div className='w-full h-full flex justify-center items-center flex-col'>
-            <Image src={props.files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="clique para enviar um arquivo" priority className='w-[170px] h-[170px]'/>
+            <Image src={props.files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="Imagem de 2 arquivos" priority className='w-[170px] h-[170px]'/>
           {trash ? 
             <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {props.filesFilter.length <= 0 ? "Nenhum arquivo deletado encontrado." : "Nenhum resultado foi encontrado."} </p>
           :

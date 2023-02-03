@@ -41,7 +41,6 @@ function ComponentUpload(){
     const docSnap = await getDoc(docRef);
     setUser(docSnap.data())
   }
-
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
     if(context.allFiles != undefined){
@@ -62,6 +61,7 @@ function ComponentUpload(){
     }
     for(var i = 0; i < getFiles.length; i++){
       getFiles[i].checked = false
+      getFiles[i].created_date = getFiles[i].created_date + ""
     }
     setPages(Math.ceil(getFiles.length / 10))
     setFiles(getFiles)
@@ -145,7 +145,14 @@ function ComponentUpload(){
 
   function DowloadFiles(){
     if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
-    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})
+    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"admin", childToParentDownload:childToParentDownload}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})
+  }
+
+  function childToParentDownload(files){
+    context.setAllFiles(files)
+    GetFiles()
+    setMenu(true)
+    setSelectFiles([])
   }
 
 return (
@@ -178,12 +185,12 @@ return (
                 {trash ? 
                   <EnableFiles menu={menu} selectFiles={selectFiles} childToChangeStatus={childToChangeStatus} folders={user?.folders} />
                 : 
-                  <UploadFile folderName={folderName} childToParentUpload={childToParentUpload} id_user={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"}/>
+                  <UploadFile folderName={folderName} childToParentUpload={childToParentUpload} permission={context?.dataUser?.permission} id={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"}/>
                 }
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} trash={trash} searchFile={searchFile} folderName={folderName}/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} ResetConfig={ResetConfig} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} searchFile={searchFile} folderName={folderName} from="admin"/>
           </div>
         </div>
         {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}

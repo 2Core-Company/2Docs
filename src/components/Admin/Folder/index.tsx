@@ -28,7 +28,6 @@ import { DataUser, Files, Modal} from '../../../types/interfaces'
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
     const [searchFolders, setSearchFolders] = useState<string>("")
     const [deletFolder, setDeletFolder] = useState<string>()
-
     useEffect(() =>{
       if(context.dataUser != undefined){
         GetFiles()
@@ -105,6 +104,10 @@ import { DataUser, Files, Modal} from '../../../types/interfaces'
       setFiles(filesHere)
     }
 
+    function childToParentDownload(files){
+      context.setAllFiles(files)
+    }
+
     return(
       <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
@@ -120,7 +123,7 @@ import { DataUser, Files, Modal} from '../../../types/interfaces'
               {recentsFile.map((file) =>{
                 return (
                   <div key={file.id_file} className='group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                    <button onClick={() => DownloadsFile({filesDownloaded:[file]})}>
+                    <button onClick={() => DownloadsFile({filesDownloaded:[file], files:context.allFiles, from:"admin", childToParentDownload:childToParentDownload})}>
                       <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                     </button>
                     <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>
