@@ -34,20 +34,20 @@ function ComponentUpload(){
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
-      context.setLoading(true)
+    context.setLoading(true)
+    if(context.allFiles != undefined){
       GetFiles()
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[context.allFiles])
 
   async function GetFiles(){
-    const getFiles = []
-      const q = query(collection(db, "files"), where("trash", "==", false), where("folder", "==", folderName), where("id_user", "==", auth.currentUser.uid));
-      const querySnapshot = await getDocs(q);
-      const a = querySnapshot.forEach((doc) => {
-        getFiles.push(doc.data())
-      }); 
+    var getFiles = []
+    getFiles = context.allFiles.filter(file => file.trash === false && file.folder == folderName)
+
     for(var i = 0; i < getFiles.length; i++){
       getFiles[i].checked = false
+      getFiles[i].created_date = getFiles[i].created_date + ""
     }
     setPages(Math.ceil(getFiles.length / 10))
     setFiles(getFiles)
@@ -76,26 +76,11 @@ function ComponentUpload(){
   }
 
   // <--------------------------------- Upload File --------------------------------->
-  const changeHandler = (e:any) => {
-    for(let i = 0; i < e.target.files.length; i++){
-      if(e.target.files[i].size > 2000000){
-        e.target.value = null
-        return toast.error("Os arquivos só podem ter no maximo 2mb.")
-      }
-    }
-    const data = {
-      file: e.target.files,
-      id: auth.currentUser.uid,
-      folder: folderName,
-      from: "user"
-    }
-    // UploadFile({data, childToParentUpload})
-    e.target.value = null
-  }
-
-  const childToParentUpload = (childdata:{}) => {
+  const childToParentUpload = (childdata:object) => {
     files.push(childdata)
-    ResetConfig(files)
+    context.allFiles.push(childdata)
+    GetFiles()
+    setMenu(true)
   }
 
   function ResetConfig(files:Files[]){
@@ -116,9 +101,29 @@ function ComponentUpload(){
     toast.promise(deletFile(),{pending:"Deletando arquivos.", success:"Arquivos deletados com sucesso.", error:"Não foi possivel deletar os arquivos."})
   }
 
-  async function deletFile(){
-    // await DeletFiles({files:files, selectFiles:[filesFilter[indexFile]], ResetConfig:ResetConfig})
+  function childToParentDelet(files){
+    context.setAllFiles(files)
+    GetFiles()
+    setMenu(true)
+    setSelectFiles([])
   }
+
+  async function deletFile(){
+    await DeletFiles({files:context.allFiles, selectFiles:[filesFilter[indexFile]], childToParentDelet})
+  }
+
+  function childToParentDownload(files){
+    context.setAllFiles(files)
+    GetFiles()
+    setMenu(true)
+    setSelectFiles([])
+  }
+
+  function DowloadFiles(){
+    if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
+    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"user", childToParentDownload:childToParentDownload}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})
+  }
+
 
 return (
       <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
@@ -143,15 +148,12 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => DownloadsFile({filesDownloaded:selectFiles, files:files})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
-                  <label className={`${folderName != "Cliente" ? "hidden" : <></>} bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
-                    Upload
-                    <input onChange={changeHandler} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
-                  </label>
+                <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
+                <UploadFile folderName={folderName} childToParentUpload={childToParentUpload} permission={context?.dataUser?.permission} id={context?.dataUser?.id} id_company={context?.dataUser?.id_company} menu={menu} from={"user"}/>
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} trash={"false"}/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} childToParentDownload={childToParentDownload} documents={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} trash={"false"} from={"user"}/>
           </div>
         </div>
         {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}

@@ -21,7 +21,6 @@ function ComponentHome () {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[context.dataUser])
 
-
   async function FilterDate(getFiles:Files[]){
     const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "admin")
     const recents = []
@@ -46,6 +45,10 @@ function ComponentHome () {
       console.log("No such document!");
     }
   }
+
+  function childToParentDownload(files){
+    context.setAllFiles(files)
+  }
   
   return (
     <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
@@ -60,7 +63,7 @@ function ComponentHome () {
                 <div id={styles.boxFiles} className='w-full h-full overflow-y-auto'>
                   {recentsFile?.map((file) =>{
                     return(
-                      <div onClick={() => DownloadFiles({filesDownloaded:[file]})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
+                      <div onClick={() => DownloadFiles({filesDownloaded:[file], files:context.allFiles, from:"user", childToParentDownload:childToParentDownload})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                         <p className='overflow-hidden whitespace-nowrap text-ellipsis'>{file.name}</p>
                       </div>

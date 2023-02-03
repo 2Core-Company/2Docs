@@ -4,8 +4,7 @@ import { toast } from 'react-toastify';
 import { Files } from '../../types/interfaces'
 
 
-async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[]}){
-  const page = window.location.pathname
+async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], childToParentDownload:Function, from:string}){
   const filesDownloaded = props.filesDownloaded
   const files = props.files
   for(var i = 0; i < filesDownloaded.length; i++){
@@ -24,11 +23,23 @@ async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[]}){
 
       element.parentNode.removeChild(element);
 
-      if(page.includes("Clientes")){
-        await updateDoc(doc(db, 'files', filesDownloaded[i].id_file), {
+      if(props.from === "user" && filesDownloaded[i].folder != "Cliente"){
+        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
           viwed: true
         })
-      } 
+        const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+        files[index].viwed = true
+      } else if(props.from === "admin" && filesDownloaded[i].folder == "Cliente"){
+        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
+          viwed: true
+        })
+        const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+        files[index].viwed = true
+      }
+      props.childToParentDownload(files)
+
+
+
     }
   } catch(e) {
     console.log(e)

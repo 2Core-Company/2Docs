@@ -4,7 +4,7 @@ function Modal(props:Modal) {
   const subMessage1 = props.subMessage1
   const subMessage2 = props.subMessage2
     return (
-      <div className='w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black z-50'>
+      <div className='w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black z-50 top-[0px] left-0'>
         <div className='bg-primary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
           <div  className='bg-red w-full h-[15px] rounded-t-[4px]'/>
           <div className=' px-[10px]'>

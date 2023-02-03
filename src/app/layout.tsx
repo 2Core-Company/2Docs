@@ -66,7 +66,9 @@ useEffect(() => {
           <Loading />
           {children}
       </AppContext.Provider>
-      <ToastContainer />
+      <ToastContainer
+      autoClose={3000}
+      />
       </body>
     </html>
   )

@@ -208,16 +208,17 @@ return (
 
           <label className='flex flex-col'>
             Email
-            <input required  maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o email'/>
+            <input required  maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full  p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o email'/>
           </label>
 
           <label className='flex flex-col w-full'>
             Senha
             <div className='border-2 border-black rounded-[8px] flex items-center'>
-              <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha'/>
+              <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full p-[5px] bg-transparent' placeholder='Senha'/>
               {eye ?
                 <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
-              : <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer" />
+              : 
+                <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer" />
               }
             </div>
           </label>
@@ -225,12 +226,12 @@ return (
           <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
             <label className='flex flex-col w-[50%] max-sm:w-full' >
               Cnpj
-              <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className=' outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
+              <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
             </label>
 
             <label className='flex flex-col w-[50%] max-sm:w-full'>
               Telefone
-              <input maxLength={15} required  value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o telefone'/>
+              <input maxLength={15} required  value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o telefone'/>
             </label>
           </div>
           <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full max-sm:w-[80%] self-center h-[55px] max-sm:h-[50px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>

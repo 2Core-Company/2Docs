@@ -6,13 +6,13 @@ import {db, auth} from '../../../../firebase'
 import { collection, where, getDocs, doc, updateDoc, query } from "firebase/firestore";  
 import EditUser from './editUser'
 import CreateUser from './createUser'
-import DeletUser from './deletUser'
-import Modals from '../../Modals'
+
 import axios from 'axios';
 import ErrorFirebase from '../../ErrorFirebase';
 import { toast } from 'react-toastify';
 import TableClients from './tableClients';
-import {Users, Modal, WindowsAction, UsersFilter} from '../../../types/interfaces'
+import {Users, WindowsAction, UsersFilter} from '../../../types/interfaces'
+import DeletUser from './deletUser';
 
 function ComponentClients(){
   const context = useContext(AppContext)
@@ -21,7 +21,6 @@ function ComponentClients(){
   const [searchUser, setSearchUser] = useState<string>("")
   const [userEdit, setUserEdit] = useState<{}>()
   const [selectUsers, setSelectUsers] = useState<Users[]>([])
-  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   const [windowsAction, setWindowsAction] = useState<WindowsAction>({createUser: false, updateUser: false, deletUser: false})
   const [pages, setPages] = useState<number>(0)
   const [menu, setMenu] = useState<boolean>(true)
@@ -62,25 +61,10 @@ function ComponentClients(){
   },[searchUser, users])
 
    // <--------------------------------- Delete User --------------------------------->
-   function ConfirmationDeleteUser(){
-    if(selectUsers.length > 0){
-      if(selectUsers.length === 1){
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuário:", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user: selectUsers[0].name + "?"})
-      } else {
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes usuários?", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user:null})
-      }
-    } else {
-      toast.error("Selecione um usuário para deletar.")
-    }
-  }
 
-  const childModal = () => {
-    DeletUser({childToParentDelet, selectUsers, usersFilter})
-    setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
-  }
 
   const childToParentDelet = (childdata : Array<{}>) => {
-      ResetConfig(childdata)
+    ResetConfig(childdata)
   }
   // <--------------------------------- Disable User --------------------------------->
 
@@ -168,8 +152,8 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
+                <DeletUser menu={menu} selectUsers={selectUsers} usersFilter={usersFilter} childToParentDelet={childToParentDelet}/>
                 <button onClick={() => toast.promise(DisableUser(),{pending:"Trocando status do usuário.", success:"Status trocado com sucesso.", error:"Não foi possivel trocar o status do usuário"})} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
-                <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
             </div>
@@ -178,8 +162,6 @@ return (
         </div>
         {windowsAction.createUser ? <CreateUser childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}
         {windowsAction.updateUser ? <EditUser user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow}/> : <></>}
-        {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} user={modal.user} childModal={childModal}/> : <></>}
-
       </section>
   )
   }

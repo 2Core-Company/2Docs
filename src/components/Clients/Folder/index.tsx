@@ -4,73 +4,53 @@ import Image from 'next/image'
 import { DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import React, {useEffect, useContext, useState} from 'react'
 import AppContext from '../../AppContext';
-import { collection, where, getDocs, query } from "firebase/firestore";  
-import { db, auth } from '../../../../firebase'
 import Link from 'next/link';
 import DownloadsFile from '../../Files/dowloadFiles';
 import { Files } from '../../../types/interfaces' 
 
   function ComponentFolder(){
     const context = useContext(AppContext)
-    const [files, setFiles] = useState<Files[]>([])
     const [recentsFile, setRecentsFile] = useState<Files[]>([])
-    const [folders, setFolders] = useState([])
     const [foldersFilter, setFoldersFilter] = useState<{color:string, name:string}[]>([])
     const [searchFolders, setSearchFolders] = useState<string>("")
-    const id:string = auth.currentUser.uid
-
     useEffect(() =>{
-      context.setLoading(true)
-      GetFiles()
-      GetUser()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
-
-    useEffect(() => {
-      if(searchFolders != null){
-        const searchFoldersFilter = []
-        for (var i = 0; i < folders.length; i++) {
-          if(folders[i].name.toLowerCase().includes(searchFolders.toLowerCase().trim())){
-            searchFoldersFilter.push(folders[i])
-          }
+      if(context.dataUser != undefined){
+        setFoldersFilter(context.dataUser.folders)
+        if(context.allFiles != undefined){
+          FilesRecents()
         }
-        setFoldersFilter(searchFoldersFilter)
       }
-    },[folders, searchFolders])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[context.dataUser])
 
-    async function GetFiles(){
-      const getFiles = []
-        const q = query(collection(db, "files"), where("id_user", "==", id), where("id_user", "==", id));
-        const querySnapshot = await getDocs(q);
-        const a = querySnapshot.forEach((doc) => {
-          getFiles.push(doc.data())
-        });
-      setFiles(getFiles)   
-      FilterDate(getFiles)
-    }
-
-    async function GetUser(){
-        const q = query(collection(db, "users"), where("id", "==", id));
-        const querySnapshot = await getDocs(q);
-        const a = querySnapshot.forEach((doc) => {
-          setFolders(doc.data().folders)
-          setFoldersFilter(doc.data().folders)
-        });
-    }
-
-    async function FilterDate(getFiles:Array<{trash:boolean, from:string, date:Date}>){
-      const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
+    function FilesRecents(){
+      const filesHere = [...context.allFiles].filter(file => file.trash === false && file.from === "admin")
       const recents = []
       filesHere.sort((a, b) =>{ 
-        a.date = new Date(a.date)
-        b.date = new Date(b.date)
-        return (a.date.getTime() - b.date.getTime())
+        a.created_date = new Date(a.created_date)
+        b.created_date = new Date(b.created_date)
+        return (a.created_date.getTime() - b.created_date.getTime())
       });
       for (var i = 0; 3 > i && i < (filesHere.length); i++) {
         recents.push(filesHere[i])
       }
-      context.setLoading(false)
       setRecentsFile(recents)
+    }
+
+    useEffect(() => {
+      if(searchFolders != null && context.dataUser != undefined){
+        const searchFoldersFilter = []
+        for (var i = 0; i < context.dataUser.folders.length; i++) {
+          if(context.dataUser.folders[i].name.toLowerCase().includes(searchFolders.toLowerCase().trim())){
+            searchFoldersFilter.push(context.dataUser.folders[i])
+          }
+        }
+        setFoldersFilter(searchFoldersFilter)
+      }
+    },[searchFolders, context.dataUser])
+
+    function childToParentDownload(files){
+      context.setAllFiles(files)
     }
 
     return(
@@ -88,7 +68,7 @@ import { Files } from '../../../types/interfaces'
               {recentsFile.map((file) =>{
                 return (
                   <div key={file.id_file} className='group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                    <button onClick={() => DownloadsFile({filesDownloaded:[file]})}>
+                    <button onClick={() => DownloadsFile({filesDownloaded:[file], files:context.allFiles, from:"user", childToParentDownload:childToParentDownload})}>
                       <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                     </button>
                     <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>
@@ -109,7 +89,7 @@ import { Files } from '../../../types/interfaces'
             <div className='flex flex-wrap mt-[10px]'>
               {foldersFilter.length > 0 ? 
               foldersFilter.map((folder) =>{
-                const qtdFiles = files.filter(file => file.folder === folder.name && file.trash === false)
+                const qtdFiles = context?.allFiles?.filter(file => file.folder === folder.name && file.trash === false)
                 return (
                   <Link href={{pathname: "/Clientes/Arquivos", query:{folder:folder.name}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
                     <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>
@@ -128,7 +108,3 @@ import { Files } from '../../../types/interfaces'
     )
   }
 export default ComponentFolder;
-
-function useLayoultEffect(arg0: () => void, arg1: undefined[]) {
-  throw new Error('Function not implemented.');
-}
