@@ -112,6 +112,17 @@ export default function TableFiles(props:Props) {
     } 
   }
 
+  function selectAllFiles(){
+    var i = showItens.max - 10
+    for(i; showItens.max > i; i++){
+      if(props.filesFilter[i]){
+        props.SelectFile(i)
+      } else{
+        break
+      }
+    }
+  }
+
   return (
     <>
     {props.filesFilter.length > 0 ?
@@ -119,7 +130,7 @@ export default function TableFiles(props:Props) {
           {/* <--------------------------------- HeadTable ---------------------------------> */}
           <thead>
             <tr className='bg-[#DDDDDD] border-b-[2px] border-t-[2px] border-terciary text-[20px] max-lg:text-[18px] max-md:text-[17px]'>
-              <th className='py-[10px]'><input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className='w-[20px] h-[20px]'/></th>
+              <th className='py-[10px]'><button aria-label="checkbox demonstrativo" onClick={() => selectAllFiles()} className='w-[22px] h-[22px] cursor-pointer bg-white rounded-[4px] ml-[5px] border-[1px] border-black'/></th>
               
               <th className='font-[400] text-left pl-[20px] max-lg:pl-[10px]'>
                 <button id="filterName" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, name:! filter.name, status: false, date:false, size:false}), filterName())} className='flex items-center cursor-pointer'>
@@ -161,7 +172,7 @@ export default function TableFiles(props:Props) {
                     return(
                     <tr key={file.id_file} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
                         <th className='h-[50px] max-sm:h-[40px]'>
-                            <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
+                          <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
                         </th>
 
                         <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
