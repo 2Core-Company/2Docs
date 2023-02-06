@@ -3,7 +3,7 @@
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
 import React, {useState, useEffect, useContext} from 'react'
-import ErrorFirebase from '../../ErrorFirebase';
+import ErrorFirebase from '../../Clients&Admin/ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";  
@@ -12,7 +12,7 @@ import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { DataUser } from '../../../types/interfaces'
-import AppContext from '../../AppContext';
+import AppContext from '../../Clients&Admin/AppContext';
 
 
 function CreateUser({childToParentCreate, closedWindow}){

@@ -4,12 +4,12 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { useState, useContext} from 'react';
 import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth, db } from '../../../firebase'
+import { auth, db} from '../../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import ErrorFirebase from '../ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Logo from '../../../public/image/2core.png';
+import Logo from '../../../../public/image/2core.png'
 import { toast } from 'react-toastify';
 
 function Signin(){

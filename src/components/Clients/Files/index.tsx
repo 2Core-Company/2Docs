@@ -2,19 +2,19 @@
 import { MagnifyingGlassIcon} from '@radix-ui/react-icons';
 import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
-import AppContext from '../../AppContext';
+import AppContext from '../../Clients&Admin/AppContext';
 import {db, auth} from '../../../../firebase'
 import { collection, where, query, getDocs} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';
-import UploadFile from '../../Files/uploadFile'
+import UploadFile from '../../Clients&Admin/Files/uploadFile'
 import { useSearchParams } from 'next/navigation';
-import ViewFile from '../../Files/viewFile';
+import ViewFile from '../../Clients&Admin/Files/viewFile';
 import { toast } from 'react-toastify';
 import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
-import TableFiles from '../../Files/tableFiles'
-import DownloadsFile from '../../Files/dowloadFiles';
-import Modals from '../../Modals'
+import TableFiles from '../../Clients&Admin/Files/tableFiles'
+import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
+import Modals from '../../Clients&Admin/Modals'
 import DeletFiles from '../../Admin/Files/deletFiles';
 import { Files, Modal} from '../../../types/interfaces' 
 

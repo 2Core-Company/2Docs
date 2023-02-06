@@ -1,14 +1,13 @@
 'use client'
 import { MagnifyingGlassIcon} from '@radix-ui/react-icons';
 import React, {useState, useContext, useEffect} from 'react'
-import AppContext from '../../AppContext';
+import AppContext from '../../Clients&Admin/AppContext';
 import {db, auth} from '../../../../firebase'
 import { collection, where, getDocs, doc, updateDoc, query } from "firebase/firestore";  
 import EditUser from './editUser'
 import CreateUser from './createUser'
-
 import axios from 'axios';
-import ErrorFirebase from '../../ErrorFirebase';
+import ErrorFirebase from '../../Clients&Admin/ErrorFirebase';
 import { toast } from 'react-toastify';
 import TableClients from './tableClients';
 import {Users, WindowsAction, UsersFilter} from '../../../types/interfaces'

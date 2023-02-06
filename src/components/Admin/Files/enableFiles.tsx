@@ -4,7 +4,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify'; 
 import { Files, Folders } from '../../../types/interfaces'
 import React, { useContext } from 'react'
-import AppContext from '../../AppContext';
+import AppContext from '../../Clients&Admin/AppContext';
 
 function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[], childToChangeStatus:Function}) {
     const context = useContext(AppContext)

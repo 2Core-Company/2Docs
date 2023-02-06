@@ -4,15 +4,15 @@ import Image from 'next/image'
 import { TrashIcon, DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useSearchParams } from 'next/navigation';
 import React, {useEffect, useContext, useState} from 'react'
-import AppContext from '../../AppContext';
-import { collection, where, getDocs, query, getDoc } from "firebase/firestore";  
+import AppContext from '../../Clients&Admin/AppContext';
+import { getDoc } from "firebase/firestore";  
 import { db } from '../../../../firebase'
 import CreateFolder from './createFolder';
 import DeleteFolder from './deletFolder';
 import Link from 'next/link';
-import DownloadsFile from '../../Files/dowloadFiles';
+import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { doc, updateDoc } from "firebase/firestore";  
-import Modals from '../../Modals'
+import Modals from '../../Clients&Admin/Modals'
 import {toast} from 'react-toastify'
 import { DataUser, Files, Modal} from '../../../types/interfaces' 
 

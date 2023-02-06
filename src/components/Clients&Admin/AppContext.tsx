@@ -1,5 +1,5 @@
 import {createContext} from 'react';
-import { DataUser, Files } from '../types/interfaces' 
+import { DataUser, Files } from '../../types/interfaces' 
 const AppContext = createContext<AllContextType | null>(null)
 
   interface AllContextType{

@@ -1,9 +1,9 @@
 'use client'
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import AppContext from '../../AppContext';
+import AppContext from '../../Clients&Admin/AppContext';
 import React, {useState, useEffect, useContext} from 'react'
-import ErrorFirebase from '../../ErrorFirebase';
+import ErrorFirebase from '../../Clients&Admin/ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { doc, updateDoc } from "firebase/firestore";  

@@ -1,7 +1,7 @@
-import { db } from '../../../firebase'
+import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
-import { Files } from '../../types/interfaces'
+import { Files } from '../../../types/interfaces'
 
 
 async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], childToParentDownload:Function, from:string}){
