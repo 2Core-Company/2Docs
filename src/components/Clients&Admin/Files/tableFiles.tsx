@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import iconAddFile from '../../../public/icons/addFile.svg'
-import ArrowFilter from '../../../public/icons/arrowFilter.svg'
-import iconSearchFile from '../../../public/icons/searchFile.svg' 
+import iconAddFile from '../../../../public/icons/addFile.svg'
+import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
+import iconSearchFile from '../../../../public/icons/searchFile.svg' 
 import Image from 'next/image'
 import { DownloadIcon, EyeOpenIcon, TrashIcon} from '@radix-ui/react-icons';
 import DownloadsFile from './dowloadFiles'
-import { Filter, Files } from '../../types/interfaces'
+import { Filter, Files } from '../../../types/interfaces'
 
 interface Props{ 
   setFilesFilter?: Function, 

@@ -28,10 +28,10 @@ function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setUser:F
                     console.log(err)
                 }
             } else{
-                toast.error("Escolha uma cor e um nome para a pasta.")
+                throw toast.error("Escolha uma cor e um nome para a pasta.")
             }
         } else{
-            toast.error("Já existe uma pasta com esse nome.")
+            throw toast.error("Já existe uma pasta com esse nome.")
         }
 
     }

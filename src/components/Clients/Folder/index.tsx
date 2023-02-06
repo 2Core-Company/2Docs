@@ -3,9 +3,9 @@ import IconFolder from '../../../../public/icons/folder.svg'
 import Image from 'next/image'
 import { DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import React, {useEffect, useContext, useState} from 'react'
-import AppContext from '../../AppContext';
+import AppContext from '../../Clients&Admin/AppContext';
 import Link from 'next/link';
-import DownloadsFile from '../../Files/dowloadFiles';
+import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Files } from '../../../types/interfaces' 
 
   function ComponentFolder(){
@@ -13,6 +13,7 @@ import { Files } from '../../../types/interfaces'
     const [recentsFile, setRecentsFile] = useState<Files[]>([])
     const [foldersFilter, setFoldersFilter] = useState<{color:string, name:string}[]>([])
     const [searchFolders, setSearchFolders] = useState<string>("")
+    
     useEffect(() =>{
       if(context.dataUser != undefined){
         setFoldersFilter(context.dataUser.folders)

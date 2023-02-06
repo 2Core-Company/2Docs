@@ -2,15 +2,14 @@ import React, {useEffect, useState, useContext} from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { HomeIcon, FileTextIcon, PersonIcon } from '@radix-ui/react-icons';
 import * as Avatar from '@radix-ui/react-avatar';
-import iconExit from '../../../public/icons/exit.svg'
+import iconExit from '../../../../public/icons/exit.svg'
 import Image from 'next/image'
 import Modals from '../Modals'
 import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
-import { auth, db } from '../../../firebase'
+import { auth, db } from '../../../../firebase'
 import { useRouter } from 'next/navigation';
-import { Modal } from '../../types/interfaces'
-import { doc, updateDoc } from 'firebase/firestore';
+import { Modal } from '../../../types/interfaces'
 import axios from 'axios';
 import AppContext from '../AppContext';
 

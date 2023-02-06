@@ -3,9 +3,9 @@ import { doc, getDoc } from "firebase/firestore";
 import Image from 'next/image';
 import { useLayoutEffect, useState, useContext } from 'react'
 import styles from './home.module.css'
-import DownloadFiles from '../../Files/dowloadFiles'
+import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
 import { Files, DataCompany} from '../../../types/interfaces' 
-import AppContext from '../../AppContext';
+import AppContext from '../../Clients&Admin/AppContext';
 
 
 function ComponentHome () {

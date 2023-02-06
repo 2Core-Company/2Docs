@@ -5,9 +5,9 @@ import { useContext, useLayoutEffect, useState } from 'react'
 import styles from './home.module.css'
 import { toast } from 'react-toastify';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
-import DownloadFiles from '../../Files/dowloadFiles'
+import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
 import { Files, DataCompany} from '../../../types/interfaces' 
-import AppContext from '../../AppContext';
+import AppContext from '../../Clients&Admin/AppContext';
 import { getDoc } from "firebase/firestore";  
 
 function ComponentHome () {

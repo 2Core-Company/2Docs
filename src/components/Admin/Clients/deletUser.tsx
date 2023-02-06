@@ -3,10 +3,10 @@ import {db, auth, storage } from '../../../../firebase'
 import { doc, deleteDoc, query,  where, collection, getDocs} from "firebase/firestore";
 import axios from 'axios'
 import { toast } from 'react-toastify';
-import ErrorFirebase from "../../ErrorFirebase";
-import AppContext from '../../AppContext';
+import ErrorFirebase from "../../Clients&Admin/ErrorFirebase";
+import AppContext from '../../Clients&Admin/AppContext';
 import { useContext, useState } from 'react'
-import Modals from '../../Modals'
+import Modals from '../../Clients&Admin/Modals'
 import { Modal } from '../../../types/interfaces'
 
 

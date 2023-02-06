@@ -3,10 +3,10 @@
 import {Poiret_One, Poppins } from '@next/font/google'
 import { useEffect, useState } from 'react';
 import "../../styles/globals.css";
-import AppContext from '../components/AppContext'
+import AppContext from '../components/Clients&Admin/AppContext'
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from '../../firebase'
-import Loading from '../components/Loading'
+import Loading from '../components/Clients&Admin/Loading'
 import { useRouter } from 'next/navigation';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'

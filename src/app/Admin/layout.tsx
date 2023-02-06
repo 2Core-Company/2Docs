@@ -1,11 +1,11 @@
 'use client'
-import NavBar from '../../components/NavBar'
+import NavBar from '../../components/Clients&Admin/NavBar'
 import { onAuthStateChanged, User } from "firebase/auth";
 import React, {useState, useEffect, useContext} from 'react'
 import { useRouter } from 'next/navigation'
 import { auth, db } from '../../../firebase'
 import { collection, getDocs, getDoc, query, doc } from "firebase/firestore";
-import AppContext from '../../components/AppContext';
+import AppContext from '../../components/Clients&Admin/AppContext';
 
 export default function DashboardLayout({ children,}: {children: React.ReactNode}) {
     const context = useContext(AppContext)
