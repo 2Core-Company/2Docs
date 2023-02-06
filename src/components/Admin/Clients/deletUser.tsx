@@ -15,11 +15,11 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
 
   function ConfirmationDeleteUser(){
-    if(selectUsers.length > 0){
+    if(selectUsers.length > 0 ){
       if(selectUsers.length === 1){
         setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuário:", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user: selectUsers[0].name + "?"})
-      } else {
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes usuários?", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user:null})
+      } else{
+        toast.error("Só é possivel deletar um usuário por vez.")
       }
     } else {
       toast.error("Selecione um usuário para deletar.")

@@ -61,7 +61,6 @@ function ComponentClients(){
 
    // <--------------------------------- Delete User --------------------------------->
 
-
   const childToParentDelet = (childdata : Array<{}>) => {
     ResetConfig(childdata)
   }
@@ -97,11 +96,15 @@ function ComponentClients(){
   // <--------------------------------- Select User --------------------------------->
 
   async function SelectUsers(index:number){
-    const users = [...usersFilter]
-    users[index].checked = !users[index].checked
-    const userSelect = users.filter(user => user.checked === true);
-    setSelectUsers(userSelect)
-    setUsersFilter(users)
+    if(usersFilter.filter(user => user.checked === true).length <= 9){
+      const users = [...usersFilter]
+      users[index].checked = !users[index].checked
+      const userSelect = users.filter(user => user.checked === true);
+      setSelectUsers(userSelect)
+      setUsersFilter(users)
+    } else {
+      toast.error("Você só pode selecionar 10 arquivos")
+    }
   }
 
   // <--------------------------------- Create User --------------------------------->
