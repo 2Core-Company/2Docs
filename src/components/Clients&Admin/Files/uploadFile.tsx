@@ -43,14 +43,18 @@ function UploadFiles(props:Props) {
     let blob = await fetch(params.url).then(r => r.blob());
     var urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
     var type = params.file.split('/')
+    var type2 = params.name.split('.')
+
     if (type.at(0) === 'image'){
       type = "images"
     } else if (type.at(1) === "pdf"){
       type = "pdfs"
-    } else if(type.at(1) === "x-zip-compressed") {
+    } else if(type.at(1) === "x-zip-compressed" || type2[1] === 'rar') {
       type = "zip"
     } else if(type.at(0) === "text") {
       type = "txt"
+    } else if(type[1] === "vnd.openxmlformats-officedocument.spreadsheetml.sheet" || type2[1] === 'xlsx'){
+      type = "excel"
     } else {
       type = "docs"
     }

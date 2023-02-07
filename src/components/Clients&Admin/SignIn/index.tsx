@@ -1,11 +1,9 @@
 import * as Tabs from '@radix-ui/react-tabs';
-import styles from "./signIn.module.css"
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { useState, useContext} from 'react';
 import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth, db} from '../../../../firebase'
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { auth } from '../../../../firebase'
 import ErrorFirebase from '../ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -24,14 +22,10 @@ function Signin(){
     checked: boolean
   }
 
-  function SignInEmail(e: { preventDefault: () => void; }) {
+  function SignIn(e: { preventDefault: () => void; }) {
     e.preventDefault()
     context.setLoading(true)
-    SignIn(dataUser.email)
-  }
-
-  function SignIn(email: string) {
-    signInWithEmailAndPassword(auth, email, dataUser.password)
+    signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
     .then((userCredential) => {
       context.setLoading(false)
       router.push("/Admin")
@@ -64,7 +58,7 @@ function Signin(){
           <p className="text-[40px] font-poiretOne">Login</p>
           <p className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
           <Tabs.Content className="mt-[20px]" value="tab1">
-            <form onSubmit={SignInEmail} className="outline-none">
+            <form onSubmit={SignIn} className="outline-none">
               <fieldset className="flex flex-col">
                 <label className="text-[18px]" htmlFor="Email">
                   Email

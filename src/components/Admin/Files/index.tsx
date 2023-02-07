@@ -56,6 +56,8 @@ function ComponentUpload(){
     if(trash){
       getFiles = context.allFiles.filter(file => file.id_user === id && file.trash === true)
       GetUser()
+    } else if(folderName === "Favoritos"){
+      getFiles = context.allFiles.filter(file => file.id_user === id && file.trash === false && file.favorite == true)
     } else {
       getFiles = context.allFiles.filter(file => file.id_user === id && file.trash === false && file.folder == folderName)
     }
@@ -98,10 +100,14 @@ function ComponentUpload(){
   }
   // <--------------------------------- Delet Files --------------------------------->
 
-  function ConfirmationDeleteFile(){
-    if(selectFiles.length > 0){
+  function ConfirmationDeleteFile(index:number){
+    if(index != undefined) {
+      SelectFile(index)
+    }
+
+    if(selectFiles.length > 0 || index != undefined){
       if(trash){
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir este arquivo?", subMessage1: "Será permanente.", subMessage2:"Não será possivel recuperar."})
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivo?", subMessage1: "Será permanente.", subMessage2:"Não será possivel recuperar."})
       } else {
         setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivos?", subMessage1: "Estes arquivos vão para a lixeira.", subMessage2:undefined})
       }
@@ -163,7 +169,7 @@ return (
             <Image src={folder} alt="Imagem de uma pasta"/> 
               <Link href={{pathname:"Admin/Pastas", query:{id:id}}}  className='text-[18px] flex mx-[5px] text-secondary'>{"Pastas    >"}</Link> 
             <FileIcon height={21} width={21}/>
-            <p  className='text-[18px] flex mx-[5px] text-secondary'>{"Fiscal"}</p> 
+            <p  className='text-[18px] flex mx-[5px] text-secondary'>{trash ? "Lixeira" : folderName}</p> 
           </div>
           <div className=' w-full relative border-[2px] border-terciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
@@ -181,7 +187,7 @@ return (
                 <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
                   Download
                 </button>
-                <button onClick={() => ConfirmationDeleteFile()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
+                <button onClick={() => ConfirmationDeleteFile(undefined)} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 {trash ? 
                   <EnableFiles menu={menu} selectFiles={selectFiles} childToChangeStatus={childToChangeStatus} folders={user?.folders} />
                 : 
@@ -190,10 +196,9 @@ return (
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} ResetConfig={ResetConfig} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} searchFile={searchFile} folderName={folderName} from="admin"/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} ResetConfig={ResetConfig} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} from="admin"/>
           </div>
         </div>
-        {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}
         {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}
       </div>
   )

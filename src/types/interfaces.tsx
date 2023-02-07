@@ -69,6 +69,7 @@ export interface Modal{
     from?:string,
     urlDownload?:string
     id_company?:string
+    favorite?:boolean
   }
 
   export interface Folders{
@@ -87,4 +88,10 @@ export interface Modal{
     size:boolean,
     date:boolean,
     status:boolean
+  }
+
+  export interface OptionsFiles{
+    url?:string,
+    viwed?:boolean
+    downlowed?: boolean
   }
