@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import iconAddFile from '../../../../public/icons/addFile.svg'
 import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
 import iconSearchFile from '../../../../public/icons/searchFile.svg' 
 import Image from 'next/image'
-import { DownloadIcon, EyeOpenIcon, TrashIcon} from '@radix-ui/react-icons';
 import DownloadsFile from './dowloadFiles'
-import { Filter, Files } from '../../../types/interfaces'
+import { Filter, Files,  OptionsFiles} from '../../../types/interfaces'
+import OptionsFile  from './options'
+import ViewFile from '../../Clients&Admin/Files/viewFile';
+import AppContext from '../../Clients&Admin/AppContext';
+import Favorite from './favorite'
+import Desfavorite from './desfavorite'
+
 
 interface Props{ 
   setFilesFilter?: Function, 
@@ -25,13 +30,14 @@ interface Props{
  }
 
 export default function TableFiles(props:Props) {
+  const context = useContext(AppContext)
   const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
   const [showItens, setShowItens] = useState({min:-1, max:10})
   const url = window.location.href
   const trash = props.trash
   const [messageEmpty, setMessageEmpty] = useState<string>()
-
+  const [viwedFile, setViwedFile] = useState<OptionsFiles>({viwed:false, url:""})
   useEffect(() => {
     if(url.includes("Clientes") === true  && props.folderName === "Cliente" ){
       setMessageEmpty("Envie seu primeiro arquivo!")
@@ -123,8 +129,27 @@ export default function TableFiles(props:Props) {
     }
   }
 
+  function DownloadFile(file){
+    DownloadsFile({filesDownloaded:[file], files:context.allFiles, from:props.from, childToParentDownload:props.childToParentDownload})
+  }
+
+  async function DeletFiles(index:number){
+    props.ConfirmationDeleteFile(index)
+  }
+
+  function FavoriteFile(file){
+    Favorite({favoriteFile:file, files:context.allFiles, from:props.from, childToParentDownload:props.childToParentDownload})
+  }
+
+  function DesfavoriteFile(file){
+    Desfavorite({desfavoriteFile:file, files:context.allFiles, from:props.from, childToParentDownload:props.childToParentDownload})
+  }
+
   return (
     <>
+    {viwedFile.viwed ? <ViewFile setViwedFile={setViwedFile} viwedFile={viwedFile} files={context.allFiles} from={props.from} childToParentDownload={props.childToParentDownload} /> : <></>}
+
+
     {props.filesFilter.length > 0 ?
         <table className='w-full mt-[10px] bg-transparent'>
           {/* <--------------------------------- HeadTable ---------------------------------> */}
@@ -171,50 +196,38 @@ export default function TableFiles(props:Props) {
                     if( showItens.min < index && index < showItens.max){
                     return(
                     <tr key={file.id_file} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
-                        <th className='h-[50px] max-sm:h-[40px]'>
-                          <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
-                        </th>
+                      <th className='h-[50px] max-sm:h-[40px]'>
+                        <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
+                      </th>
 
-                        <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
-                            <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={40} height={40}  className='text-[10px] mt-[3px] mr-[10px] w-[30px] max-lg:w-[25px]  h-[30px] max-lg:h-[25px]'/>
-                            <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{file.name}</p>
-                        </th>
+                      <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
+                        <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={40} height={40}  className='text-[10px] mt-[3px] mr-[10px] w-[30px] max-lg:w-[25px]  h-[30px] max-lg:h-[25px]'/>
+                        <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{file.name}</p>
+                      </th>
 
-                        <th className='font-[400] text-left pl-[20px] max-md:hidden w-50'>
-                            <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{parseInt(file.size) < 1000 ? file.size + " KB"  : Math.ceil(parseInt(file.size) / 1000) + " MB"} </p>
-                        </th>
+                      <th className='font-[400] text-left pl-[20px] max-md:hidden w-50'>
+                        <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{parseInt(file.size) < 1000 ? file.size + " KB"  : Math.ceil(parseInt(file.size) / 1000) + " MB"} </p>
+                      </th>
 
-                        <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.created_date)}</th>
+                      <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.created_date)}</th>
 
-                        <th className='font-[400] w-[80px] pr-[10px] max-sm:pr-[0px] max-sm:w-[70px] text-[18px] max-sm:text-[14px] '>
-                          {file.viwed  ? 
-                              <div className='bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-full px-[4px]'>
-                                  Visualizado
-                              </div>
-                          :
-                              <div className='bg-hilight max-sm:text-[12px] border-terciary text-secondary border-[1px]  px-[4px] rounded-full'>
-                                  Visualizado
-                              </div>
-                          }
-                        </th>
+                      <th className='font-[400] w-[80px] pr-[10px] max-sm:pr-[0px] max-sm:w-[70px] text-[18px] max-sm:text-[14px] '>
+                        {file.viwed  ? 
+                          <div className='bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-full px-[4px]'>
+                            Visualizado
+                          </div>
+                        :
+                          <div className='bg-hilight max-sm:text-[12px] border-terciary text-secondary border-[1px]  px-[4px] rounded-full'>
+                            Visualizado
+                          </div>
+                        }
+                      </th>
 
-                        <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
-                            <div className='flex justify-between'>
-                              {url.includes("/Clientes") && file.from === "user" ? 
-                                <button onClick={() => props.ConfirmationDeleteFile(index)} id="DeletFile" aria-label="Botão de deletar o documento."  className='cursor-pointer bg-red/30 p-[4px] flex justify-center items-center rounded-[8px]'>
-                                  <TrashIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
-                                </button>
-                              :
-                                <button id="DowloadFile" aria-label="Botão de fazer dowload do documento." onClick={() => DownloadsFile({filesDownloaded:[file], files:props.files, from:props.from, childToParentDownload:props.childToParentDownload})} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
-                                  <DownloadIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
-                                </button>  
-                              }
-
-                                <button onClick={() => props.setDocuments({...props.documents, view: true, url: file.url}) }title="Botão De ver documentos" aria-labelledby="labeldiv" className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
-                                    <EyeOpenIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
-                                </button>
-                            </div>
-                        </th>
+                      <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
+                          <div className='flex justify-center items-center'>
+                            <OptionsFile index={index} file={file} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile}/>
+                          </div>
+                      </th>
                     </tr>
                 )}})}
             </tbody>

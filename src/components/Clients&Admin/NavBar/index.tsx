@@ -63,7 +63,7 @@ function NavBar(props:{user:string, image:string}) {
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
-                            <p className='ml-[2px] text-[18px] font-[500] text-white px-[5px] rounded-[10px] bg-gray-700'>Foto de Perfil</p>
+                            <p className='ml-[2px] text-[18px] font-[500] text-white px-[5px] py-[2px] rounded-[10px] bg-gray-700'>Foto de Perfil</p>
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
@@ -77,7 +77,7 @@ function NavBar(props:{user:string, image:string}) {
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
-                            <p className='ml-[2px] text-[18px] font-[500] text-white px-[5px] rounded-[10px] bg-gray-700'>Pagina Inicial</p>
+                            <p className='ml-[2px] text-[18px] font-[500] text-white px-[5px] py-[2px] rounded-[10px] bg-gray-700'>Pagina Inicial</p>
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
@@ -90,7 +90,7 @@ function NavBar(props:{user:string, image:string}) {
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                             <Tooltip.Content  side="right" sideOffset={10}>
-                                <p className='ml-[2px] text-[18px] font-[500] text-white px-[5px] rounded-[10px] bg-gray-700'>Arquivos</p>
+                                <p className='ml-[2px] text-[18px] font-[500] text-white px-[5px] py-[2px] rounded-[10px] bg-gray-700'>Arquivos</p>
                                 <Tooltip.Arrow width={15} height={10}/>
                             </Tooltip.Content>
                         </Tooltip.Portal>
@@ -102,7 +102,7 @@ function NavBar(props:{user:string, image:string}) {
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                             <Tooltip.Content  side="right" sideOffset={10}>
-                                <p className='ml-[5px] text-[20px] font-[500] text-black'>Clientes</p>
+                                <p className='ml-[2px] text-[18px] font-[500] text-white px-[5px] py-[2px] rounded-[10px] bg-gray-700'>Clientes</p>
                                 <Tooltip.Arrow width={15} height={10}/>
                             </Tooltip.Content>
                         </Tooltip.Portal>
@@ -118,7 +118,7 @@ function NavBar(props:{user:string, image:string}) {
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                     <Tooltip.Content  side="right" sideOffset={10}>
-                        <p className='ml-[2px] text-[18px] font-[500] px-[5px] rounded-[10px] bg-gray-700 text-white'>Sair</p>
+                        <p className='ml-[2px] text-[18px] font-[500] px-[5px] py-[2px] rounded-[10px] bg-red text-white'>Sair</p>
                         <Tooltip.Arrow width={15} height={10} className="fill-red"/>
                     </Tooltip.Content>
                     </Tooltip.Portal>

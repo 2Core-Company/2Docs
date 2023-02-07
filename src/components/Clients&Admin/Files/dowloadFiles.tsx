@@ -37,14 +37,11 @@ async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], ch
         files[index].viwed = true
       }
       props.childToParentDownload(files)
-
-
-
     }
   } catch(e) {
     console.log(e)
     toast.error("Não foi possivél baixar os arquivos.")
   }
-  }
+}
 
   export default DownloadsFile

@@ -3,12 +3,9 @@ import { MagnifyingGlassIcon} from '@radix-ui/react-icons';
 import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
 import AppContext from '../../Clients&Admin/AppContext';
-import {db, auth} from '../../../../firebase'
-import { collection, where, query, getDocs} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';
 import UploadFile from '../../Clients&Admin/Files/uploadFile'
 import { useSearchParams } from 'next/navigation';
-import ViewFile from '../../Clients&Admin/Files/viewFile';
 import { toast } from 'react-toastify';
 import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
@@ -26,7 +23,6 @@ function ComponentUpload(){
   const [selectFiles, setSelectFiles] = useState([])
   const [pages, setPages] = useState<number>(0)
   const [menu, setMenu] = useState<boolean>(true)
-  const [documents, setDocuments] = useState<{view:boolean, url:string}>({view: false, url: ""})
   const params = useSearchParams()
   const folderName:string = params.get("folder")
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""})
@@ -43,7 +39,12 @@ function ComponentUpload(){
 
   async function GetFiles(){
     var getFiles = []
-    getFiles = context.allFiles.filter(file => file.trash === false && file.folder == folderName)
+    if(folderName === "Favoritos"){
+      getFiles = context.allFiles.filter(file => file.trash === false && file.favorite == true)
+    } else {
+      getFiles = context.allFiles.filter(file => file.trash === false && file.folder == folderName)
+    }
+
 
     for(var i = 0; i < getFiles.length; i++){
       getFiles[i].checked = false
@@ -95,6 +96,7 @@ function ComponentUpload(){
     setIndexFile(index)
     setModal({...modal, status:true, message: "Tem certeza que deseja excluir este arquivo?", subMessage1: "Não será possivel recuperar."})
   }
+  
 
   const childModal = () => {
     setModal({...modal, status:false})
@@ -153,10 +155,9 @@ return (
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} childToParentDownload={childToParentDownload} documents={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} trash={"false"} from={"user"}/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} childToParentDownload={childToParentDownload} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} trash={"false"} from={"user"}/>
           </div>
         </div>
-        {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}
         {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
   )
