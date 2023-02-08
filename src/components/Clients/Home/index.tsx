@@ -55,7 +55,6 @@ function ComponentHome () {
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]" /> : ""}
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Home</p>
-          <p  className='text-[18px] flex mx-[5px] text-secondary'>Home</p> 
           <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
             <div>
               <p  className='font-poiretOne text-[40px] max-sm:text-[35px] '>Uploads Recentes</p>

@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 function UploadFiles(props:Props) {
 
   async function UploadFile(files){
+
     for(let i = 0; i < files.length; i++){
       if(files[i].size > 30000000){
         files.value = null

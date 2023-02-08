@@ -10,6 +10,7 @@ async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], ch
   for(var i = 0; i < filesDownloaded.length; i++){
     let blob = await fetch(filesDownloaded[i].url).then(r => r.blob());
     filesDownloaded[i].urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
+    console.log((window.URL ? URL : webkitURL).createObjectURL(blob))
   }
   try{
     for(let i = 0; i < filesDownloaded.length; i++) {

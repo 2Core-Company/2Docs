@@ -206,7 +206,7 @@ export default function TableFiles(props:Props) {
                       </th>
 
                       <th className='font-[400] text-left pl-[20px] max-md:hidden w-50'>
-                        <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{parseInt(file.size) < 1000 ? file.size + " KB"  : Math.ceil(parseInt(file.size) / 1000) + " MB"} </p>
+                        <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{file.size < 1000 ? file.size + " KB"  : Math.ceil(file.size / 1000) + " MB"} </p>
                       </th>
 
                       <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.created_date)}</th>
@@ -225,7 +225,7 @@ export default function TableFiles(props:Props) {
 
                       <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                           <div className='flex justify-center items-center'>
-                            <OptionsFile index={index} file={file} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile}/>
+                            <OptionsFile index={index} file={file} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile} childToParentDownload={props.childToParentDownload}/>
                           </div>
                       </th>
                     </tr>

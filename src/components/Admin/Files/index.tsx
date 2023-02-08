@@ -50,7 +50,6 @@ function ComponentUpload(){
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[context.allFiles])
   
-
   async function GetFiles(){
     var getFiles
     if(trash){
