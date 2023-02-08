@@ -63,7 +63,7 @@ export interface Modal{
     type?:string
     trash?:boolean
     created_date?:any,
-    size?:string
+    size?:number
     url?:string
     viwed?:boolean
     from?:string,

@@ -62,7 +62,7 @@ function  CopyTo(props: Props) {
     async function UploadFilestore(params){
       let blob = await fetch(params.url).then(r => r.blob());
       var urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
-      const size = parseInt(props.file.size)
+      const size = props.file.size
       const date = new Date() + ""
       const files = context.allFiles
 
