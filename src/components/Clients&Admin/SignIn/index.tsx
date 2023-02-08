@@ -1,5 +1,6 @@
 import * as Tabs from '@radix-ui/react-tabs';
-import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
+import styles from "./signIn.module.css"
+import { EyeClosedIcon, EyeOpenIcon, SunIcon, MoonIcon } from '@radix-ui/react-icons';
 import { useState, useContext} from 'react';
 import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
@@ -7,8 +8,10 @@ import { auth } from '../../../../firebase'
 import ErrorFirebase from '../ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Logo from '../../../../public/image/2core.png'
+import LogoPretoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.png'
+import LogoBrancoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.png'
 import { toast } from 'react-toastify';
+import { useTheme } from "../../../hooks/useTheme"
 
 function Signin(){
   const context = useContext(AppContext)
@@ -51,28 +54,37 @@ function Signin(){
     });
   }
 
+  const { theme, setTheme } = useTheme();
+
     return (
-      <section className="bg-primary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
-        <Image src={Logo} alt="Logo da empresa" priority height={150} width={150} className='rounded-full'/>
+      <section className="bg-primary dark:bg-dprimary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
+        {theme == "light" ? (
+        <Image src={LogoPretoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='rounded-full'/>
+        ) : (
+        <Image src={LogoBrancoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='rounded-full'/>
+        )}
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
-          <p className="text-[40px] font-poiretOne">Login</p>
-          <p className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
+          <p className="text-[40px] font-poiretOne dark:text-white">Login</p>
+          <p className="text-[25px]  font-poiretOne dark:text-white">Entre com os dados enviados</p>
           <Tabs.Content className="mt-[20px]" value="tab1">
             <form onSubmit={SignIn} className="outline-none">
               <fieldset className="flex flex-col">
-                <label className="text-[18px]" htmlFor="Email">
+                <label className="text-[18px] dark:text-white" htmlFor="Email">
                   Email
                 </label>
-                <input required type="email" value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="w-full text-[18px] bg-[#0000] outline-none py-[10px] border-[1px] border-black rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
+                <input required type="email" value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
-                <label className="text-[18px]" htmlFor="username">
+                <label className="text-[18px] dark:text-white" htmlFor="username">
                   Senha
                 </label>
-                <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center'>
-                  <input required minLength={8} type={eye ? "text" : "password"} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className="w-full text-[18px] bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
-                  {eye ? <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer"/> :
-                  <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
+                <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center dark:border-white'>
+                  <input required minLength={8} type={eye ? "text" : "password"} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
+                  {eye ? (
+                  <EyeOpenIcon onClick={() => setEye(false)} width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
+                  ) : (
+                  <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
+                  )}
                 </div>
               </fieldset>
               <button type="button" onClick={() => AlterPassword(dataUser.email)} className='w-full flex justify-end underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>

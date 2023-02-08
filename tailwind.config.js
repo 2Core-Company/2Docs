@@ -4,6 +4,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -18,6 +19,7 @@ module.exports = {
       },
 
       colors:{
+        //!Light Theme
         primary:"#EBEBEB",
         secondary: "#AAAAAA",
         terciary: "#9E9E9E",
@@ -25,7 +27,16 @@ module.exports = {
         hilight: "#D9D9D9",
         red: "#BD0303",
         greenV: "#087E14",
-        blue: "#005694"
+        blue: "#005694",
+        //!Dark Theme
+        dprimary:"#181818",
+        dsecondary: "#494949",
+        dterciary: "#5C5C5C",
+        dstrong: "#8F8F8F",
+        dhilight: "#D9D9D9",
+        dred: "#BD0303",
+        dgreenV: "#087E14",
+        dblue: "#005694"
       }
 
     },

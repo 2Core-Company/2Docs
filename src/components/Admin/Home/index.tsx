@@ -9,6 +9,7 @@ import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
 import { Files, DataCompany} from '../../../types/interfaces' 
 import AppContext from '../../Clients&Admin/AppContext';
 import { getDoc } from "firebase/firestore";  
+import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 
 function ComponentHome () {
   const context = useContext(AppContext)
@@ -129,30 +130,30 @@ function ComponentHome () {
   }
 
   return (
-    <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
-      <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-        {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="border-[2px] border-white w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]"/> : <></>}
-        <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Home</p>
-        <p  className='text-[18px] flex mx-[5px] text-secondary'>Home</p> 
-        <p  className=' font-poiretOne mt-[20px] text-[40px] max-sm:text-[35px]'>Uso</p>
+    <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
+      <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>        
+        <LightModeSwitch />
+        {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="border-[2px] border-secondary dark:border-dsecondary w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]"/> : <></>}
+        <p  className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Home</p>        
+        <p  className=' font-poiretOne mt-[20px] text-[40px] max-sm:text-[35px] dark:text-white'>Uso</p>
         <div className='flex items-center gap-[30px] max-md:gap-[10px]'>
           <div className='w-[250px] h-[15px] bg-hilight border-[2px] border-black rounded-[4px]'>
             <div className="h-[11px] bg-[#BB8702] duration-700" style={{width:`${gbPorcentage}%`}}/>
           </div>
-          <p className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] font-[600]'><span className='text-[#BB8702]'>{gb}</span>Gb/<span className='text-secondary'>5</span>Gb</p>
+          <p className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] dark:text-[#b1b1b1] font-[600]'><span className='text-[#BB8702]'>{gb}</span>Gb/<span className='text-secondary'>5</span>Gb</p>
         </div>
 
         <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
           <div>
-            <p  className='font-poiretOne text-[40px] max-sm:text-[35px] '>Uploads Recentes</p>
-            <div  className='border-[2px] border-secondary w-[300px] h-[200px] pr-[5px] rounded-[12px]'>
+            <p  className='font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Uploads Recentes</p>
+            <div  className='border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[210px] pr-[5px] rounded-[12px]'>
               <div id={styles.boxFiles} className='h-full overflow-y-scroll pb-[5px] px-[5px]'>
                 {recentsFile.length > 0 ?
                 recentsFile.map((file) =>{
                     return(
                       <div onClick={() => DownloadFiles({filesDownloaded:[file], files:context.allFiles, from:"admin", childToParentDownload:childToParentDownload})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                        <p className='overflow-hidden whitespace-nowrap text-ellipsis'>{file.name}</p>
+                        <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white'>{file.name}</p>
                       </div>
                     )
                   })
@@ -162,25 +163,25 @@ function ComponentHome () {
           </div>
 
           <div>
-            <p  className='font-poiretOne text-[40px] max-sm:text-[35px] '>Contato</p>
-            <div className='border-[2px] border-secondary w-[300px] h-[200px] pr-[5px] rounded-[12px]'>
+            <p  className='font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Contato</p>
+            <div className='border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[210px] pr-[5px] rounded-[12px]'>
               <div id={styles.boxFiles} className='h-full overflow-y-scroll px-[5px] flex flex-col'>
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[0])} onChange={(text) => ChangeContact({index:0, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[0])} onChange={(text) => ChangeContact({index:0, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
                 </div>
 
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[1])} onChange={(text) => ChangeContact({index:1, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[1])} onChange={(text) => ChangeContact({index:1, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
                 </div>
 
                 <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                   <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[2])} onChange={(text) => ChangeContact({index:2, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact[2])} onChange={(text) => ChangeContact({index:2, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
                 </div>
 
-                <button onClick={() => UpdateBdContact()} className="flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center mb-[10px]" >
+                <button onClick={() => UpdateBdContact()} className="cursor-pointer flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center mb-[10px]" >
                   Salvar
                 </button>
               </div>
@@ -188,39 +189,39 @@ function ComponentHome () {
           </div>
         </div>
 
-        <p  className='font-poiretOne mt-[20px] text-[40px] max-lg:hidden'>Dúvidas Frequentes</p>
-        <div className='max-lg:hidden border-[2px] border-secondary w-[850px] h-[400px] p-[10px] rounded-[12px]'>
+        <p  className='font-poiretOne mt-[20px] text-[40px] max-lg:hidden dark:text-white'>Dúvidas Frequentes</p>
+        <div className='max-lg:hidden border-[2px] border-secondary dark:border-dsecondary w-[850px] h-[400px] p-[10px] rounded-[12px]'>
           <div id={styles.boxFiles} className='overflow-y-scroll h-full px-[5px] flex flex-col'>
             <div className="flex items-center gap-[5px] mt-[10px]">
-              <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
-              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
-                <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[0] ? dataCompany.questions[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
-                <p>Resposta:</p>
-                <textarea  id={styles.boxFiles} rows={3} value={dataCompany.questions[0]  ? dataCompany.questions[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+              <QuestionMarkCircledIcon className="w-[40px] h-[40px] dark:text-white"/>
+              <div className='border-black dark:border-white border-[2px] rounded-[8px] p-[5px] w-[94%]'>
+                <p className='dark:text-white'>Pergunta:</p>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[0] ? dataCompany.questions[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <p className='dark:text-white'>Resposta:</p>
+                <textarea  id={styles.boxFiles} rows={3} value={dataCompany.questions[0]  ? dataCompany.questions[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
               </div>
             </div>
 
             <div className="flex items-center gap-[5px] mt-[30px]">
-              <QuestionMarkCircledIcon className="w-[40px] h-[40px] "/>
-              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
-                <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[1] ? dataCompany.questions[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
-                <p>Resposta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[1] ? dataCompany.questions[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+              <QuestionMarkCircledIcon className="w-[40px] h-[40px] dark:text-white"/>
+              <div className='border-black dark:border-white border-[2px] rounded-[8px] p-[5px] w-[94%]'>
+                <p className='dark:text-white'>Pergunta:</p>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[1] ? dataCompany.questions[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <p className='dark:text-white'>Resposta:</p>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[1] ? dataCompany.questions[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
               </div>
             </div>
 
             <div className="flex items-center gap-[5px] mt-[30px]">
-              <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
-              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
-                <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[2] ? dataCompany.questions[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
-                <p>Resposta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[2] ? dataCompany.questions[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+              <QuestionMarkCircledIcon className="w-[40px] h-[40px] dark:text-white"/>
+              <div className='border-black dark:border-white border-[2px] rounded-[8px] p-[5px] w-[94%]'>
+                <p className='dark:text-white'>Pergunta:</p>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[2] ? dataCompany.questions[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <p className='dark:text-white'>Resposta:</p>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions[2] ? dataCompany.questions[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
               </div>
             </div>
-            <button onClick={() => UpdateBdQuestion()} className="flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center" >
+            <button onClick={() => UpdateBdQuestion()} className="cursor-pointer flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center" >
               Salvar
             </button>
           </div>
