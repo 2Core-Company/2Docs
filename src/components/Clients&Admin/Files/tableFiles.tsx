@@ -206,7 +206,7 @@ export default function TableFiles(props:Props) {
                       </th>
 
                       <th className='font-[400] text-left pl-[20px] max-md:hidden w-50'>
-                        <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{parseInt(file.size) < 1000 ? file.size + " KB"  : Math.ceil(parseInt(file.size) / 1000) + " MB"} </p>
+                        <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{file.size < 1000 ? file.size + " KB"  : Math.ceil(file.size / 1000) + " MB"} </p>
                       </th>
 
                       <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.created_date)}</th>
