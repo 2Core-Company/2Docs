@@ -90,7 +90,7 @@ import { Files } from '../../../types/interfaces'
             <div className='flex flex-wrap mt-[10px]'>
               {foldersFilter.length > 0 ? 
               foldersFilter.map((folder) =>{
-                const qtdFiles = context?.allFiles?.filter(file => file.folder === folder.name && file.trash === false)
+                const qtdFiles = folder.name === "Favoritos" ? context.allFiles.filter(file => file.favorite === true && file.trash === false) : context.allFiles.filter(file => file.folder === folder.name && file.trash === false)
                 return (
                   <Link href={{pathname: "/Clientes/Arquivos", query:{folder:folder.name}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
                     <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>

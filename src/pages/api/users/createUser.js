@@ -8,7 +8,8 @@ export default async function CreateUser(req, res) {
         .createUser({
             email: req.body.data.email,
             password: req.body.data.password,
-            displayName:req.body.data.id_company
+            displayName:req.body.data.id_company,
+            emailVerified:true
         })
         return res.json(response)
       } catch (e) {
