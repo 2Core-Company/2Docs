@@ -19,7 +19,6 @@ export default function DashboardLayout({children}: {children: React.ReactNode,}
         auth.currentUser.getIdTokenResult().then((idTokenResult) => {
           if(idTokenResult.claims.admin){
             router.push("/Admin")
-
           } else {
             setOnLoad(true)
             GetUsers(user)

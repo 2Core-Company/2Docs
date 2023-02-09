@@ -88,7 +88,7 @@ function TableClients(props: Props) {
           {/* <--------------------------------- HeadTable ---------------------------------> */}
           <thead>
             <tr className='bg-[#DDDDDD] border-b-[2px] border-t-[2px] border-terciary text-[20px] max-lg:text-[18px] max-md:text-[17px]'>
-              <th className='py-[10px]'><input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className='w-[20px] h-[20px]'/></th>
+              <th className='py-[10px]'><input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className='w-[20px] h-[20px] all-unset'/></th>
               
               <th className='font-[400] text-left pl-[20px] max-lg:pl-[10px]'>
                 <button onClick={() => (setFilter({...filter, name:! filter.name, status: false, date:false}), filterName())} className='flex items-center cursor-pointer'>
