@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Logo from '../../../../public/image/2core.png'
 import { toast } from 'react-toastify';
+import { signOut} from "firebase/auth";
 
 function Signin(){
   const context = useContext(AppContext)
@@ -27,8 +28,13 @@ function Signin(){
     context.setLoading(true)
     signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
     .then((userCredential) => {
-      context.setLoading(false)
-      router.push("/Admin")
+      if(userCredential.user.emailVerified){
+        router.push("/Admin")
+      } else {
+        context.setLoading(false)
+        signOut(auth)
+        toast.error("Você não concluiu o cadastro da sua empresa.")
+      }
     })
     .catch((error) => {
       context.setLoading(false)
