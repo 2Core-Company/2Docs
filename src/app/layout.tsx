@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'
 import { DataUser, Files } from '../types/interfaces'
+import ThemeContextProvider from '../hooks/useTheme'
 
 const poiretOne = Poiret_One({
   display: 'swap',
@@ -54,22 +55,24 @@ useEffect(() => {
 
 
   return (
-    <html lang="pt-br">
-      <title>Software para auxiliar o gerenciamento dos arquivos.</title>
-      <head />
-      <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
-      <AppContext.Provider value={{
-        loading, setLoading,
-        dataUser, setDataUser,
-        allFiles, setAllFiles
-        }}>
-          <Loading />
-          {children}
-      </AppContext.Provider>
-      <ToastContainer
-      autoClose={3000}
-      />
-      </body>
-    </html>
+    <ThemeContextProvider>
+      <html lang="pt-br">
+        <title>Software para auxiliar o gerenciamento dos arquivos.</title>
+        <head />
+        <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
+        <AppContext.Provider value={{
+          loading, setLoading,
+          dataUser, setDataUser,
+          allFiles, setAllFiles
+          }}>
+            <Loading />
+            {children}
+        </AppContext.Provider>
+        <ToastContainer
+        autoClose={3000}
+        />
+        </body>
+      </html>
+    </ThemeContextProvider>
   )
 }
