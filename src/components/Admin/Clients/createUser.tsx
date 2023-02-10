@@ -190,10 +190,10 @@ function CreateUser({childToParentCreate, closedWindow}){
 
 return (
     <>
-      <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] min-h-screen pb-[100px] ${right} duration-300 flex flex-col items-center`}>
-        <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full max-sm:z-50'>
-          <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]'/>
-          <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex'>Cadastrar</p>
+      <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] ${right} duration-300 flex flex-col items-center`}>
+        <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full max-sm:z-50'>
+          <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]'/>
+          <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Cadastrar</p>
         </div>
         <form  onSubmit={VerifyCnpj} className='w-full px-[10%] flex flex-col gap-y-[20px] max-sm:gap-y-[5px] text-[20px] max-sm:text-[18px]'>
         {fileDataURL != undefined ?
@@ -202,25 +202,25 @@ return (
             <div onClick={()=> (setFileDataURL(undefined), setFile({name:"padrao.png"}))} className='cursor-pointer absolute right-[-10px] top-[5px] w-[30px] h-[4px] bg-strong rotate-45 after:w-[30px] after:h-[4px] after:bg-strong after:block after:rotate-90 '></div>
           </div>
         : 
-          <label  className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] bg-gradient-to-b from-[#D2D2D2] to-[#9E9E9E] rounded-full mt-[30px] max-sm:mt-[15px]'>
+          <label  className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] bg-gradient-to-b from-[#D2D2D2] to-[#9E9E9E] border-secondary dark:border-dsecondary rounded-full mt-[30px] max-sm:mt-[15px]'>
             <input  type="file" className='hidden' accept='.png, .jpg, .jpeg' onChange={changeHandler} />
           </label>
         }
 
-          <label  className='flex flex-col max-sm'>
+          <label  className='flex flex-col max-sm dark:text-white'>
             Nome
-            <input type="text" maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o nome da empresa'/>
+            <input type="text" maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o nome da empresa'/>
           </label>
 
-          <label className='flex flex-col'>
+          <label className='flex flex-col dark:text-white'>
             Email
-            <input required  maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full  p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o email'/>
+            <input required  maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o email'/>
           </label>
 
-          <label className='flex flex-col w-full'>
+          <label className='flex flex-col w-full dark:text-white'>
             Senha
-            <div className='border-2 border-black rounded-[8px] flex items-center'>
-              <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full p-[5px] bg-transparent' placeholder='Senha'/>
+            <div className='border-2 border-black dark:border-white rounded-[8px] flex items-center'>
+              <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full p-[5px] bg-transparent dark:placeholder:text-gray-500' placeholder='Senha'/>
               {eye ?
                 <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
               : 
@@ -230,17 +230,17 @@ return (
           </label>
 
           <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
-            <label className='flex flex-col w-[50%] max-sm:w-full' >
+            <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
               Cnpj
-              <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
+              <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o CNPJ'/>
             </label>
 
-            <label className='flex flex-col w-[50%] max-sm:w-full'>
+            <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
               Telefone
-              <input maxLength={15} required  value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o telefone'/>
+              <input maxLength={15} required  value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone'/>
             </label>
           </div>
-          <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full max-sm:w-[80%] self-center h-[55px] max-sm:h-[50px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
+          <button type="submit" className='hover:scale-105 text-white cursor-pointer text-[22px] flex justify-center items-center w-full max-sm:w-[80%] self-center h-[55px] max-sm:h-[50px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
               Salvar
           </button>
         </form>

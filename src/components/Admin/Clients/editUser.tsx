@@ -187,31 +187,31 @@ function EditUser(props:{closedWindow:Function, childToParentEdit:Function, user
 
 return (
       <>
-      <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] min-h-screen pb-[100px] ${right} duration-300 flex flex-col items-center`}>
-        <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full max-sm:z-50'>
+      <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] ${right} duration-300 flex flex-col items-center`}>
+        <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full max-sm:z-50'>
             <DoubleArrowRightIcon onClick={() => props.closedWindow()} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px]  max-sm:h-[35px] absolute left-[5px]'/>
-            <p  className='font-poiretOne text-[40px] max-sm:text-[35px] flex'>Editar</p>
+            <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Editar</p>
           </div>
           <form  onSubmit={VerifyCnpj} className='w-full px-[10%] flex flex-col gap-y-[20px] max-sm:gap-y-[5px] text-[20px] max-sm:text-[18px]'>
 
           <label className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[30px] max-sm:mt-[15px] relative'>
             <input  type="file" className='hidden' accept='.png, .jpg, .jpeg' onChange={changeHandler} />
-            <Image src={fileDataURL} width={180} height={180} alt="preview" className='w-full h-full rounded-full border-[2px] border-white' /> 
+            <Image src={fileDataURL} width={180} height={180} alt="preview" className='w-full h-full rounded-full border-[2px] border-secondary dark:border-dsecondary' /> 
           </label>
 
-            <label  className='flex flex-col max-sm'>
+            <label  className='flex flex-col max-sm dark:text-white'>
               Nome
-              <input type="text" maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o nome do cliente'/>
+              <input type="text" maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o nome do cliente'/>
             </label>
 
-            <label className='flex flex-col'>
+            <label className='flex flex-col dark:text-white'>
               Email
-              <input required  value={dataUser.email} maxLength={40} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o email'/>
+              <input required  value={dataUser.email} maxLength={40} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o email'/>
             </label>
 
-            <label className='flex flex-col '>
+            <label className='flex flex-col dark:text-white'>
               Senha provisória
-              <div className='border-2 border-black rounded-[8px] flex items-center'>
+              <div className='border-2 border-black dark:border-white rounded-[8px] flex items-center'>
                 <input required type="text" value={dataUser.password} disabled={true} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>
                 {eye ? 
                 <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
@@ -221,14 +221,14 @@ return (
               </div>
             </label>
             <div className='flex max-sm:flex-col justify-between gap-[5px] '>
-              <label className='flex flex-col'>
+              <label className='flex flex-col dark:text-white'>
                 Cnpj
-                <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o CNPJ'/>
+                <input maxLength={18} required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o CNPJ'/>
               </label>
 
-              <label className='flex flex-col'>
+              <label className='flex flex-col dark:text-white'>
                 Telefone
-                <input required  maxLength={15} value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o telefone'/>
+                <input required  maxLength={15} value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o telefone'/>
               </label>
             </div>
             <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full max-sm:w-[80%] self-center h-[55px] max-sm:h-[50px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
