@@ -56,7 +56,6 @@ function Signin(){
       ErrorFirebase(error)
     });
   }
-
     return (
       <section className="bg-primary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
         <Image src={Logo} alt="Logo da empresa" priority height={150} width={150} className='rounded-full'/>

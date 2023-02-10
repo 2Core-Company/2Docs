@@ -195,7 +195,7 @@ export default function TableFiles(props:Props) {
                     var checked = file.checked
                     if( showItens.min < index && index < showItens.max){
                     return(
-                    <tr key={file.id_file} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
+                    <tr key={file.id_file} className={`border-b-[1px] border-terciary text-[18px] max-lg:text-[16px] ${file.favorite ? "bg-neutral-300" : ""}`} >
                       <th className='h-[50px] max-sm:h-[40px]'>
                         <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
                       </th>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { DownloadIcon, EyeOpenIcon, TrashIcon, DrawingPinIcon} from '@radix-ui/react-icons';
 import Image from 'next/image'
