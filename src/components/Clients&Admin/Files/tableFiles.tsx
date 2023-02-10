@@ -10,6 +10,7 @@ import ViewFile from '../../Clients&Admin/Files/viewFile';
 import AppContext from '../../Clients&Admin/AppContext';
 import Favorite from './favorite'
 import Desfavorite from './desfavorite'
+import Message from './message'
 
 
 interface Props{ 
@@ -38,6 +39,7 @@ export default function TableFiles(props:Props) {
   const trash = props.trash
   const [messageEmpty, setMessageEmpty] = useState<string>()
   const [viwedFile, setViwedFile] = useState<OptionsFiles>({viwed:false, url:""})
+
   useEffect(() => {
     if(url.includes("Clientes") === true  && props.folderName === "Cliente" ){
       setMessageEmpty("Envie seu primeiro arquivo!")
@@ -195,7 +197,7 @@ export default function TableFiles(props:Props) {
                     var checked = file.checked
                     if( showItens.min < index && index < showItens.max){
                     return(
-                    <tr key={file.id_file} className={`border-b-[1px] border-terciary text-[18px] max-lg:text-[16px] ${file.favorite ? "bg-neutral-300" : ""}`} >
+                    <tr key={file.id_file} className={`border-b-[1px] border-terciary text-[18px] max-lg:text-[16px] ${file.favorite ? "bg-neutral-200" : ""}`} >
                       <th className='h-[50px] max-sm:h-[40px]'>
                         <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
                       </th>
@@ -224,8 +226,9 @@ export default function TableFiles(props:Props) {
                       </th>
 
                       <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
-                          <div className='flex justify-center items-center'>
-                            <OptionsFile index={index} file={file} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile} childToParentDownload={props.childToParentDownload}/>
+                          <div className='flex justify-center items-center gap-[10px]'>
+                              <Message file={file} childToParentDownload={props.childToParentDownload}/>
+                              <OptionsFile index={index} file={file} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile} childToParentDownload={props.childToParentDownload}/>
                           </div>
                       </th>
                     </tr>

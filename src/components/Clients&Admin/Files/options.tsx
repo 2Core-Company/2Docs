@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { DownloadIcon, EyeOpenIcon, TrashIcon, DrawingPinIcon} from '@radix-ui/react-icons';
+import { DownloadIcon, EyeOpenIcon, TrashIcon} from '@radix-ui/react-icons';
 import Image from 'next/image'
 import Copy from '../../../../public/icons/copy.svg'
 import Move from '../../../../public/icons/move.svg'
