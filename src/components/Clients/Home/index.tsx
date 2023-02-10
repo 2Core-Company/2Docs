@@ -96,8 +96,8 @@ function ComponentHome () {
               return(
                 <div key={question.question} className="w-full">
                   <details>
-                    <summary className='text-[18px] font-[600] whitespace-pre-line'>{question.question}</summary>
-                    <p className='text-[18px] pl-[5px] pb-[15px] whitespace-pre-wrap w-full'>{question.response}</p>
+                    <summary className='text-[18px] font-[600] whitespace-pre-line text-ellipsis overflow-hidden'>{question.question}</summary>
+                    <p className='text-[18px] pl-[5px] pb-[15px] whitespace-pre-wrap w-full text-ellipsis overflow-hidden'>{question.response}</p>
                   </details> 
                 </div>
               )

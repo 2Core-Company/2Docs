@@ -73,6 +73,7 @@
     urlDownload?:string
     id_company?:string
     favorite?:boolean
+    message?:string
   }
 
   export interface Folders{
