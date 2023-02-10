@@ -33,10 +33,11 @@ module.exports = {
         dsecondary: "#494949",
         dterciary: "#5C5C5C",
         dstrong: "#8F8F8F",
-        dhilight: "#D9D9D9",
+        dhilight: "#121212",
         dred: "#BD0303",
         dgreenV: "#087E14",
-        dblue: "#005694"
+        dblue: "#005694",
+        dstrong: "#333333"
       }
 
     },
