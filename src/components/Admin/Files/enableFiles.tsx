@@ -39,12 +39,12 @@ function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[
         props.childToChangeStatus(files)
       }catch(e) {
         console.log(e)
-        toast.error("Não Foi possivel recuperar este arquivo.")
+        toast.error("Não Foi possível recuperar este arquivo.")
       }
     }
 
     return (
-      <button onClick={() => ConfirmationEnableFile()} className={`bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${props.menu ? "max-lg:hidden" : ""}`}>
+      <button onClick={() => ConfirmationEnableFile()} className={`bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${props.menu ? "max-lg:hidden" : ""}`}>
         Recuperar
       </button>
     )
