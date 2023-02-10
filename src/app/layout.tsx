@@ -35,7 +35,7 @@ const router =  useRouter()
 useEffect(() => {
   const page = window.location.pathname
   onAuthStateChanged(auth, (user) => {
-    if (user) {
+    if (user?.emailVerified) {
       if(page === "/"){
         auth.currentUser.getIdTokenResult().then((idTokenResult) => {
           if(idTokenResult.claims.admin){

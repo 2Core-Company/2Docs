@@ -1,22 +1,23 @@
 import React,{useState} from 'react'
-import { Pencil1Icon, FileTextIcon } from '@radix-ui/react-icons';
 import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
 import Image from 'next/image'
 import iconNullClient from '../../../../public/icons/nullClient.svg'
 import iconSearchUser from '../../../../public/icons/searchUser.svg'
-import Link from 'next/link'
-import { UsersFilter, WindowsAction } from '../../../types/interfaces'
+import { UsersFilter, WindowsAction, Users } from '../../../types/interfaces'
+import Options from './options'
 
 interface Props { 
   searchUser: string,
-  users: {length?: number, created_date?:Date}[],
+  users: Users[],
   setUsersFilter: (arg0: any[]) => void,
   usersFilter: UsersFilter[],
   pages: number,
   windowsAction:WindowsAction,
   SelectUsers: Function,
   setUserEdit: Function,
-  setWindowsAction:Function;
+  setWindowsAction:Function,
+  ChildToParentFix:Function,
+  FilterFixed:Function
 }
 
 function TableClients(props: Props) {
@@ -36,7 +37,7 @@ function TableClients(props: Props) {
         return a == b ? 0 : a > b ? 1 : -1
       }  
     })
-    props.setUsersFilter(users)
+    props.setUsersFilter(props.FilterFixed(users))
   }
 
   function filterStatus(){
@@ -50,7 +51,7 @@ function TableClients(props: Props) {
         return a == b ? 0 : a > b ? 1 : -1
       }  
     })
-    props.setUsersFilter(users)
+    props.setUsersFilter(props.FilterFixed(users))
   }
 
   function filterDate(){
@@ -67,7 +68,7 @@ function TableClients(props: Props) {
     for (var i = 0; i < users .length; i++) {
         users[i].created_date = users[i].created_date
     }
-    props.setUsersFilter(users)
+    props.setUsersFilter(props.FilterFixed(users))
   }
 
   function formatDate(date:string){
@@ -122,10 +123,10 @@ function TableClients(props: Props) {
           <tbody>
           {props.usersFilter.map((user, index) =>{
             var checked = user.checked
-
             if( showItens.min < index && index < showItens.max){
+
           return(
-          <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
+          <tr key={user.id} className={`border-b-[1px] border-terciary text-[18px] max-lg:text-[16px] ${user.fixed ? "bg-neutral-300" : ""}`}>
               <th className='h-[50px] max-sm:h-[40px]'>
                 <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
               </th>
@@ -154,13 +155,8 @@ function TableClients(props: Props) {
               </th>
 
               <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
-                <div className='flex justify-between'>
-                  <button id="alb" title="Botão De editar usuario" aria-labelledby="labeldiv" onClick={() => (props.setUserEdit(user), props.setWindowsAction({...props.windowsAction, updateUser:true}))} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
-                    <Pencil1Icon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]" />
-                  </button>
-                  <Link href={{ pathname: '/Admin/Pastas', query:{id:user.id}}} className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
-                    <FileTextIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]" />
-                  </Link>
+                <div className='flex justify-center items-center'>
+                  <Options idUser={user.id} setUserEdit={props.setUserEdit} setWindowsAction={props.setWindowsAction} windowsAction={props.windowsAction} user={user} users={props.users} FilterFixed={props.FilterFixed} setUsersFilter={props.setUsersFilter} />
                 </div>
               </th>
             </tr>)}     

@@ -11,7 +11,9 @@ import Image from 'next/image';
 import LogoPretoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.png'
 import LogoBrancoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.png'
 import { toast } from 'react-toastify';
+import { signOut} from "firebase/auth";
 import { useTheme } from "../../../hooks/useTheme"
+
 
 function Signin(){
   const context = useContext(AppContext)
@@ -30,8 +32,13 @@ function Signin(){
     context.setLoading(true)
     signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
     .then((userCredential) => {
-      context.setLoading(false)
-      router.push("/Admin")
+      if(userCredential.user.emailVerified){
+        router.push("/Admin")
+      } else {
+        context.setLoading(false)
+        signOut(auth)
+        toast.error("Você não concluiu o cadastro da sua empresa.")
+      }
     })
     .catch((error) => {
       context.setLoading(false)
@@ -53,9 +60,7 @@ function Signin(){
       ErrorFirebase(error)
     });
   }
-
   const { theme, setTheme } = useTheme();
-
     return (
       <section className="bg-primary dark:bg-dprimary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
         {theme == "light" ? (

@@ -1,19 +1,20 @@
-export interface Users{
+  export interface Users{
     id?:string, 
     status?:boolean, 
     checked?:boolean,
     length?: number,
-    date?:Date,
+    created_date?:Date,
     name?: string
-}
+    fixed?:boolean
+  }
 
-export interface WindowsAction{
+  export interface WindowsAction{
     createUser?: boolean,
     updateUser?: boolean,
     deletUser?: boolean
   }
 
-export interface Modal{
+  export interface Modal{
     status?:boolean,
     message?:string,
     subMessage1?:string,
@@ -37,6 +38,7 @@ export interface Modal{
     phone?:string 
     photo_url?:string 
     status?:boolean
+    fixed?:boolean
   }
 
   export interface UsersFilter{
@@ -51,7 +53,8 @@ export interface Modal{
     photo_url?:string, 
     created_date?:Date | any, 
     status?:boolean,
-    checked?:boolean
+    checked?:boolean,
+    fixed?:boolean
   }
 
   export interface Files{

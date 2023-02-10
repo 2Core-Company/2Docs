@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon} from '@radix-ui/react-icons';
 import React, {useState, useContext, useEffect} from 'react'
 import AppContext from '../../Clients&Admin/AppContext';
 import {db, auth} from '../../../../firebase'
-import { collection, where, getDocs, doc, updateDoc, query } from "firebase/firestore";  
+import { collection, where, getDocs, doc, updateDoc, query, orderBy } from "firebase/firestore";  
 import EditUser from './editUser'
 import CreateUser from './createUser'
 import axios from 'axios';
@@ -35,16 +35,25 @@ function ComponentClients(){
 
   async function GetUsers(){
     const getUsers:Array<{checked?:boolean}> = []
-      const q = query(collection(db, "users", context.dataUser.id_company, "Clientes" ), where("permission", "==", 0));
-      const querySnapshot = await getDocs(q);
-      const a = querySnapshot.forEach((doc) =>  getUsers.push(doc.data()));
+    const q = query(collection(db, "users", context.dataUser.id_company, "Clientes" ),where("permission", "==", 0));
+    const querySnapshot = await getDocs(q);
+    const a = querySnapshot.forEach((doc) =>  getUsers.push(doc.data()));
     for(var i = 0; i < getUsers.length; i++){
       getUsers[i].checked = false
     }
+    
     setPages(Math.ceil(getUsers.length / 10))
-    setUsers(getUsers)
-    setUsersFilter(getUsers)
+    setUsers(FilterFixed(getUsers))
+    setUsersFilter(FilterFixed(getUsers))
     context.setLoading(false)
+  }
+
+  function FilterFixed(users:Users[]){
+    return users.sort(function (x, y){
+      let a = x.fixed
+      let b = y.fixed
+        return a == b ? 0 : a < b ? 1 : -1
+      })
   }
 
   useEffect(() => {
@@ -137,6 +146,10 @@ function ComponentClients(){
     setUsers(users)
   }
 
+  function ChildToParentFix(){
+
+  }
+
 return (
       <section className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
@@ -159,7 +172,7 @@ return (
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
             </div>
-            <TableClients usersFilter={usersFilter} setUsersFilter={setUsersFilter} users={users} pages={pages} searchUser={searchUser} setUserEdit={setUserEdit} setWindowsAction={setWindowsAction} windowsAction={windowsAction} SelectUsers={SelectUsers}/>
+            <TableClients usersFilter={usersFilter} setUsersFilter={setUsersFilter} users={users} pages={pages} searchUser={searchUser} setUserEdit={setUserEdit} setWindowsAction={setWindowsAction} windowsAction={windowsAction} SelectUsers={SelectUsers} ChildToParentFix={ChildToParentFix} FilterFixed={FilterFixed}/>
           </div>
         </div>
         {windowsAction.createUser ? <CreateUser childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}

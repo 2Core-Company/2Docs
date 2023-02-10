@@ -85,6 +85,7 @@ function CreateUser({childToParentCreate, closedWindow}){
       status: false,
       checked: false,
       permission: 0,
+      fixed:false,
       folders: [
         {color:"#005694", name: "Cliente"},
         {color:"#C7A03C", name: "Favoritos"}
@@ -105,6 +106,7 @@ function CreateUser({childToParentCreate, closedWindow}){
         created_date: date,
         status: false,
         permission: 0,
+        fixed:false,
         folders: [        
           {color:"#005694", name: "Cliente"},
           {color:"#C7A03C", name: "Favoritos"}
