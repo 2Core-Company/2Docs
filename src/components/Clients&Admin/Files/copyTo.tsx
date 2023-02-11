@@ -21,6 +21,7 @@ function  CopyTo(props: Props) {
     const [folderName, setFolderName] = useState(undefined)
     const [file, setFile] = useState()
     const messageToast = {pending:"Copiando arquivo.", success:"Arquivo copiado com sucesso para a pasta: " + folderName, error:"Não foi possivel copiar o arquivo"}
+    const toastId = "copyTo"
 
     useLayoutEffect(() =>{
         GetFolders()
@@ -31,7 +32,12 @@ function  CopyTo(props: Props) {
     async function GetFolders(){
         const docRef = doc(db, "users", props.file.id_company, "Clientes", props.file.id_user);
         const docSnap = await getDoc(docRef);
-        setFolders(docSnap.data().folders)
+        if(docSnap.data().folders.length > 3){
+          setFolders(docSnap.data().folders)
+        } else {
+          toast.error("Você precisa ter no minimo 2 pastas para conseguir copiar um arquivo.", {toastId:toastId})
+          props.setCopyTo(false)
+        }
     }
 
     async function GetFile(){
@@ -107,6 +113,7 @@ function  CopyTo(props: Props) {
     }
 
     return (
+      folders.length > 3 ?
       <div className='w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black z-50 top-[0px] left-0'>
         <div className='bg-primary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
           <div  className='bg-greenV w-full h-[15px] rounded-t-[4px]'/>
@@ -136,6 +143,7 @@ function  CopyTo(props: Props) {
           </div>
         </div>
       </div>
+      : <></>
     )
 }
 

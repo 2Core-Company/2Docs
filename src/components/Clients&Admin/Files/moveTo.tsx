@@ -17,16 +17,23 @@ function MoveTo(props: Props) {
     const [folders, setFolders] = useState([])
     const [folderName, setFolderName] = useState(undefined)
     const messageToast = {pending:"Movendo o arquivo.", success:"Arquivo movido com sucesso.", error:"Não foi possivel mover o arquivo"}
-
+    const toastId = "moveTo"
+    
     useLayoutEffect(() =>{
-        async function GetFolders(){
-            const docRef = doc(db, "users", props.file.id_company, "Clientes", props.file.id_user);
-            const docSnap = await getDoc(docRef);
-            setFolders(docSnap.data().folders)
-        }
-        GetFolders()
+      GetFolders()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
+
+    async function GetFolders(){
+      const docRef = doc(db, "users", props.file.id_company, "Clientes", props.file.id_user);
+      const docSnap = await getDoc(docRef);
+      if(docSnap.data().folders.length > 3){
+        setFolders(docSnap.data().folders)
+      } else {
+        props.setMoveTo(false)
+        throw toast.error("Você precisa ter no minimo 2 pastas para conseguir copiar um arquivo.", {toastId:toastId})
+      }
+    }
 
     async function ChangeFolder(){
         const files = context.allFiles
@@ -40,12 +47,13 @@ function MoveTo(props: Props) {
             props.setMoveTo(false)
         } catch(e) {
             console.log(e)
-            toast.error("Não foi possivél trocar a pasta deste arquivo.")
+            throw toast.error("Não foi possivél trocar a pasta deste arquivo.")
         }
     }
 
 
     return (
+      folders.length > 3 ?
       <div className='w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black z-50 top-[0px] left-0'>
         <div className='bg-primary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
           <div  className='bg-blue w-full h-[15px] rounded-t-[4px]'/>
@@ -75,6 +83,7 @@ function MoveTo(props: Props) {
           </div>
         </div>
       </div>
+      : <></>
     )
 }
 

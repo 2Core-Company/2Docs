@@ -56,7 +56,7 @@ function NavBar(props:{user:string, image:string}) {
                     </Tooltip.Portal>
                 </Tooltip.Root>
             </Tooltip.Provider>
-            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-full  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 flex flex-col items-center border-r-2 border-terciary`}> 
+            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-full  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary flex flex-col items-center border-r-2 border-terciary`}> 
                 <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>
@@ -79,8 +79,8 @@ function NavBar(props:{user:string, image:string}) {
                     <div className='w-[90%] h-[3px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center'/>
 
                     <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Admin" || path === "/Clientes" ? "bg-gray-400/40" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
-                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="IconButton" onClick={()=>  (setMenu(!menu) ,router.push(props.user === "Clients" ? "/Clientes" :"/Admin"))}>
+                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Admin" || path === "/Clientes" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
+                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(props.user === "Clients" ? "/Clientes" :"/Admin"))}>
                                 <HomeIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
                             </button>
                         </Tooltip.Trigger>
@@ -98,9 +98,9 @@ function NavBar(props:{user:string, image:string}) {
 
                     {props.user === "Clients" ? 
                         <Tooltip.Root>
-                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-gray-400/40" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
                                 <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Clientes/Pastas"))}>
-                                    <FileTextIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
+                                    <FileTextIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white cursor-pointer'}/>
                                 </button>
                             </Tooltip.Trigger>
                             <Tooltip.Portal>
@@ -116,8 +116,9 @@ function NavBar(props:{user:string, image:string}) {
                         </Tooltip.Root>
                     :
                         <Tooltip.Root>
-                            <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Clientes" || path === "/Admin/Pastas" || path === "/Admin/Arquivos" ? "bg-gray-400/40" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
-                                <button className="IconButton" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> router.push("/Admin/Clientes")}>
+
+                            <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Clientes" || path === "/Admin/Pastas" || path === "/Admin/Arquivos" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                                <button className="cursor-pointer" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> router.push("/Admin/Clientes")}>
                                     <PersonIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
                                 </button>
                             </Tooltip.Trigger>
@@ -136,7 +137,7 @@ function NavBar(props:{user:string, image:string}) {
                     <Tooltip.Root>
                         <div className='w-[90%] h-[3px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center absolute bottom-[70px] max-sm:bottom-[60px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] max-sm:bottom-[10px] w-full flex justify-center`}>
-                            <button className="IconButton" onClick={() => setModal({status:true,  message:"Tem certeza que deseja sair da sua conta"})} >
+                            <button className="IconButton" onClick={() => setModal({status:true,  message:"Tem certeza que deseja sair da sua conta cursor-pointer"})} >
                                 <Image src={iconExit} alt="Ícone de sair" className='w-[40px] max-sm:w-[35px] h-[40px] max-sm:h-[35px]'/> 
                             </button>
                         </Tooltip.Trigger>

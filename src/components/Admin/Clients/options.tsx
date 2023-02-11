@@ -23,8 +23,8 @@ function OptionsFile(props:Props){
   return (
     <>
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <button className="flex gap-[3px]" aria-label="Customise options">
+        <DropdownMenu.Trigger asChild className='flex justify-center items-center'>
+          <button className="flex  cursor-pointer w-[20px] h-[20px] justify-between" aria-label="Customise options">
             <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
             <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
             <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
