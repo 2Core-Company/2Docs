@@ -88,33 +88,33 @@ function TableClients(props: Props) {
 
           {/* <--------------------------------- HeadTable ---------------------------------> */}
           <thead>
-            <tr className='bg-[#DDDDDD] border-b-[2px] border-t-[2px] border-terciary text-[20px] max-lg:text-[18px] max-md:text-[17px]'>
+            <tr className='bg-[#DDDDDD] dark:bg-[#fff]/5 border-b-[2px] border-t-[2px] border-terciary dark:border-dterciary text-[20px] max-lg:text-[18px] max-md:text-[17px]'>
               <th className='py-[10px]'><input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className='w-[20px] h-[20px] all-unset'/></th>
               
               <th className='font-[400] text-left pl-[20px] max-lg:pl-[10px]'>
                 <button onClick={() => (setFilter({...filter, name:! filter.name, status: false, date:false}), filterName())} className='flex items-center cursor-pointer'>
-                  <p>Nome</p> 
+                  <p className='dark:text-white'>Nome</p> 
                   <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.name ? "rotate-180" : ""}`}src={ArrowFilter}/>
                 </button>
               </th>
 
-              <th className='font-[400] text-left pl-[20px] max-md:hidden'>Email</th>
+              <th className='font-[400] text-left pl-[20px] max-md:hidden dark:text-white'>Email</th>
 
               <th className='font-[400] max-lg:hidden'>
                 <button onClick={() => (setFilter({...filter, date:! filter.date, status: false, name:false}) ,filterDate())} className='flex items-center cursor-pointer'>
-                  <p className='text-left'>Data de cadastro</p>
+                  <p className='text-left dark:text-white'>Data de cadastro</p>
                   <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
                 </button>
               </th>
 
               <th className='font-[400]'>
               <button onClick={() => (setFilter({...filter, status:! filter.status, name: false, date:false}), filterStatus())}  className='flex items-center cursor-pointer'>
-                  <p>Status</p>
+                  <p className='dark:text-white'>Status</p>
                   <Image alt="Imagem de uma flecha" className={`ml-[5px]  ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter}/>
                 </button>
               </th>
 
-              <th className='font-[400]'>Ações</th>
+              <th className='font-[400] dark:text-white'>Ações</th>
 
             </tr>
           </thead>
@@ -126,31 +126,31 @@ function TableClients(props: Props) {
             if( showItens.min < index && index < showItens.max){
 
           return(
-          <tr key={user.id} className={`border-b-[1px] border-terciary text-[18px] max-lg:text-[16px] ${user.fixed ? "bg-neutral-300" : ""}`}>
+          <tr key={user.id} className={`border-b-[1px] border-terciary dark:border-dterciary text-[18px] max-lg:text-[16px] ${user.fixed ? "bg-neutral-300" : ""}`}>
               <th className='h-[50px] max-sm:h-[40px]'>
-                <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
+                <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px] bg-gray-400'/>
               </th>
 
               <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
                 <Image src={user.photo_url} width={40} height={40} alt="Perfil"  className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
-                <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{user.name}</p>
+                <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px] dark:text-white'>{user.name}</p>
               </th>
 
               <th className='font-[400] text-left pl-[20px] max-md:hidden'>
-                <p className='overflow-hidden whitespace-nowrap text-ellipsis max-w-[250px]'>{user.email}</p>
+                <p className='overflow-hidden whitespace-nowrap text-ellipsis max-w-[250px] dark:text-white'>{user.email}</p>
               </th>
 
-              <th className='font-[400] max-lg:hidden text-left'>{formatDate(user.created_date)}</th>
+              <th className='font-[400] max-lg:hidden text-left dark:text-white'>{formatDate(user.created_date)}</th>
 
               <th className='font-[400] w-[80px] max-lg:w-[70px]'>
                 {user.status  ? 
-                  <div className='bg-red/20 border-red text-[#c50000] border-[1px] rounded-full'>
+                  (<div className='bg-red/20 border-red text-[#c50000] border-[1px] rounded-full'>
                     Inativo
-                  </div>
+                  </div>)
                   :
-                  <div className='bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-full'>
+                  (<div className='bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-full'>
                     Ativo 
-                  </div>
+                  </div>)
                 }
               </th>
 
@@ -159,7 +159,7 @@ function TableClients(props: Props) {
                   <Options idUser={user.id} setUserEdit={props.setUserEdit} setWindowsAction={props.setWindowsAction} windowsAction={props.windowsAction} user={user} users={props.users} FilterFixed={props.FilterFixed} setUsersFilter={props.setUsersFilter} />
                 </div>
               </th>
-            </tr>)}     
+            </tr>)}       
           })}
           </tbody>
         </table>
@@ -174,9 +174,9 @@ function TableClients(props: Props) {
       {props.usersFilter.length > 0 ?
       <div className='w-full px-[10px] flex justify-between h-[50px] mt-[10px]'>
         <div className='flex justify-between w-full h-[40px] max-sm:h-[30px]'>
-          <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
-          <p>{`Página ${showItens.max / 10} de ${props.pages}`}</p>
-          <button onClick={() => {showItens.max / 10 != props.pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == props.pages ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
+          <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-terciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
+          <p className='dark:text-white'>{`Página ${showItens.max / 10} de ${props.pages}`}</p>
+          <button onClick={() => {showItens.max / 10 != props.pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == props.pages ? "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-terciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
         </div>
       </div>
       :<></>}
