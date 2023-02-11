@@ -56,7 +56,7 @@ useEffect(() => {
 
   return (
     <ThemeContextProvider>
-      <html lang="pt-br">
+      <html lang="pt-br" className='bg-primary dark:bg-dprimary'>
         <title>Software para auxiliar o gerenciamento dos arquivos.</title>
         <head />
         <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>

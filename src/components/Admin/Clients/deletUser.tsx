@@ -28,7 +28,7 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
 
 
   const childModal = () => {
-    toast.promise(DeleteAuth(), {pending:"Deletando o usuários", success:"Os usuários foram deletados.", error:"Não foi possivel deletar os usuários"});
+    toast.promise(DeleteAuth(), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
     setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   }
 
