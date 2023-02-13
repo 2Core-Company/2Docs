@@ -33,7 +33,7 @@ function Signin(){
     signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
     .then((userCredential) => {
       if(userCredential.user.emailVerified){
-        router.push("/Admin")
+        router.push("/Clientes")
       } else {
         context.setLoading(false)
         signOut(auth)

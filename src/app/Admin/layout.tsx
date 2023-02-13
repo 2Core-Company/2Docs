@@ -15,6 +15,7 @@ export default function DashboardLayout({ children,}: {children: React.ReactNode
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
+      context.setLoading(false)
       if (user) {
         auth.currentUser.getIdTokenResult().then((idTokenResult) => {
           if(idTokenResult.claims.admin){
