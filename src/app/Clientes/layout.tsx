@@ -14,6 +14,7 @@ export default function DashboardLayout({children}: {children: React.ReactNode,}
   const [urlImageProfile, setUrlImageProfile] = useState(null)
 
   useEffect(() => {
+    context.setLoading(false)
     onAuthStateChanged(auth, (user) => {
       if (user) {
         auth.currentUser.getIdTokenResult().then((idTokenResult) => {

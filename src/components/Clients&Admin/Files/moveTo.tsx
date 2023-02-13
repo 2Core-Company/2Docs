@@ -20,6 +20,7 @@ function MoveTo(props: Props) {
     const toastId = "moveTo"
     
     useLayoutEffect(() =>{
+      console.log("a")
       GetFolders()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
@@ -36,19 +37,19 @@ function MoveTo(props: Props) {
     }
 
     async function ChangeFolder(){
-        const files = context.allFiles
-        try{
-            await updateDoc(doc(db, 'files', props.file.id_company, "Arquivos", props.file.id_file), {
-                folder: folderName
-            })
-            const index = files.findIndex(file => file.id_file == props.file.id_file)
-            files[index].folder = folderName
-            props.childToParentDownload(files)
-            props.setMoveTo(false)
-        } catch(e) {
-            console.log(e)
-            throw toast.error("Não foi possivél trocar a pasta deste arquivo.")
-        }
+      const files = context.allFiles
+      try{
+          await updateDoc(doc(db, 'files', props.file.id_company, "Arquivos", props.file.id_file), {
+              folder: folderName
+          })
+          const index = files.findIndex(file => file.id_file == props.file.id_file)
+          files[index].folder = folderName
+          props.childToParentDownload(files)
+          props.setMoveTo(false)
+      } catch(e) {
+          console.log(e)
+          throw toast.error("Não foi possivél trocar a pasta deste arquivo.")
+      }
     }
 
 

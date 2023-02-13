@@ -11,6 +11,7 @@ import { Files } from '../../../types/interfaces'
 import MoveTo from './moveTo'
 import CopyTo from './copyTo'
 import Rename from './rename'
+import { useSearchParams } from 'next/navigation';
 
 interface Props{
   file?:Files, 
@@ -30,11 +31,13 @@ function OptionsFile(props:Props){
   const [moveTo, setMoveTo] = useState(false)
   const [copyTo, setCopyTo] = useState(false)
   const [rename, setRename] = useState(false)
+  const params = useSearchParams()
+  const folderName:string = params.get("folder")
   return (
     <>
       {moveTo ? <MoveTo file={props.file} setMoveTo={setMoveTo} childToParentDownload={props.childToParentDownload}/> : <> </>}
-      {copyTo? <CopyTo file={props.file} setCopyTo={setCopyTo} childToParentDownload={props.childToParentDownload}/> : <> </>}
-      {rename? <Rename file={props.file} setRename={setRename} childToParentDownload={props.childToParentDownload}/> : <> </>}
+      {copyTo ? <CopyTo file={props.file} setCopyTo={setCopyTo} childToParentDownload={props.childToParentDownload}/> : <> </>}
+      {rename ? <Rename file={props.file} setRename={setRename} childToParentDownload={props.childToParentDownload}/> : <> </>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -61,7 +64,7 @@ function OptionsFile(props:Props){
               </div>
             </DropdownMenu.Item>
 
-          {props.trash || url.includes("/Admin") && props.file.from === "user" ? <></>
+          {props.trash || url.includes("/Admin") && props.file.from === "user" || folderName === "Favoritos" ? <></>
           :
             <>
               <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">

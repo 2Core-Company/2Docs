@@ -30,7 +30,8 @@ function NavBar(props:{user:string, image:string}) {
     }
 
     async function setAdminAuth(){
-        const id = "2hbPDdfRIuZPa5tmfnmKMKTQhPw2"
+        console.log("a")
+        const id = "QidWHorgi4RnOsCtTonuo6j5Gup1"
         const domain = new URL(window.location.href).origin
         const result = await axios.post(`${domain}/api/users/setAdmin`, {user: id})
     }
@@ -61,7 +62,7 @@ function NavBar(props:{user:string, image:string}) {
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>
                             <Avatar.Root className="flex flex-col items-center justify-center">
-                                <Avatar.Image onClick={() => setAdminAuth()} width={80} height={80} className="border-[2px] border-secondary dark:border-dsecondary h-[70px] w-[70px] max-sm:h-[60px] max-sm:w-[60px] rounded-full" src={props.image} alt="Imagem de perfil"/>
+                                <Avatar.Image width={80} height={80} className="border-[2px] border-secondary dark:border-dsecondary h-[70px] w-[70px] max-sm:h-[60px] max-sm:w-[60px] rounded-full" src={props.image} alt="Imagem de perfil"/>
                             </Avatar.Root>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
