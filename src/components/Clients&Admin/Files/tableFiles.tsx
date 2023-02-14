@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import iconAddFile from '../../../../public/icons/addFile.svg'
 import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
 import iconSearchFile from '../../../../public/icons/searchFile.svg' 
@@ -7,42 +7,37 @@ import DownloadsFile from './dowloadFiles'
 import { Filter, Files,  OptionsFiles} from '../../../types/interfaces'
 import OptionsFile  from './options'
 import ViewFile from '../../Clients&Admin/Files/viewFile';
-import AppContext from '../../Clients&Admin/AppContext';
 import Favorite from './favorite'
 import Desfavorite from './desfavorite'
 import Message from './message'
 
-
-interface Props{ 
-  setFilesFilter?: Function, 
-  SelectFile?: Function, 
-  ConfirmationDeleteFile?:Function, 
-  setDocuments?: Function, 
-  documents?: any, 
-  pages?: number,
-  trash?: string,
-  filesFilter?:Files[],
-  files?:Files[],
-  folderName?:string,
-  searchFile?:string
+interface Props{
+  filesFilter:Files[]
+  pages:number
+  trash:boolean
+  files:Files[]
+  folderName:string
+  searchFile:string
   from:string
+  ConfirmationDeleteFile:Function
+  SelectFile:Function
+  setFilesFilter:Function
   childToParentDownload:Function
- }
+}
 
-export default function TableFiles(props:Props) {
-  const context = useContext(AppContext)
+
+export default function TableFiles({setFilesFilter ,SelectFile, ConfirmationDeleteFile, pages, trash, filesFilter, files, folderName, searchFile, from, childToParentDownload}:Props) {
   const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
   const [showItens, setShowItens] = useState({min:-1, max:10})
   const url = window.location.href
-  const trash = props.trash
   const [messageEmpty, setMessageEmpty] = useState<string>()
   const [viwedFile, setViwedFile] = useState<OptionsFiles>({viwed:false, url:""})
 
   useEffect(() => {
-    if(url.includes("Clientes") === true  && props.folderName === "Cliente" ){
+    if(url.includes("Clientes") === true  && folderName === "Cliente" ){
       setMessageEmpty("Envie seu primeiro arquivo!")
-    } else if(url.includes("Admin") === true  && props.folderName != "Cliente") {
+    } else if(url.includes("Admin") === true  && folderName != "Cliente") {
       setMessageEmpty("Envie seu primeiro arquivo!")
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,7 +45,7 @@ export default function TableFiles(props:Props) {
 
   // <--------------------------------- Filters Files --------------------------------->
   function filterName(){
-    var files = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
+    var files = searchFile.length == 0 ? [...files ]: [...filesFilter]
     files.sort(function (x, y){
       let a = x.name.toUpperCase()
       let b = y.name.toUpperCase()
@@ -60,11 +55,11 @@ export default function TableFiles(props:Props) {
         return a == b ? 0 : a > b ? 1 : -1
       }  
     })
-    props.setFilesFilter(files)
+    setFilesFilter(files)
   }
 
   function filterSize(){
-    var files = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
+    var files = searchFile.length == 0 ? [...files ]: [...filesFilter]
     files.sort(function (x, y){
       let a = x.size
       let b = y.size
@@ -74,11 +69,11 @@ export default function TableFiles(props:Props) {
         return a == b ? 0 : a > b ? 1 : -1
       }  
     })
-    props.setFilesFilter(files)
+    setFilesFilter(files)
   }
 
   function filterStatus(){
-    var files = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
+    var files = searchFile.length == 0 ? [...files ]: [...filesFilter]
     files.sort(function (x, y){
       let a = x.viwed
       let b = y.viwed
@@ -88,11 +83,11 @@ export default function TableFiles(props:Props) {
         return a == b ? 0 : a > b ? 1 : -1
       }  
     })
-    props.setFilesFilter(files)
+    setFilesFilter(files)
   }
 
   function filterDate(){
-    const filesDate = [...props.filesFilter]
+    const filesDate = [...filesFilter]
     filesDate.sort((a,b) => { 
       a.created_date = new Date(a.created_date)
       b.created_date = new Date(b.created_date)
@@ -105,7 +100,7 @@ export default function TableFiles(props:Props) {
     for (var i = 0; i < filesDate.length; i++) {
       filesDate[i].created_date = filesDate[i].created_date + ""
     }
-    props.setFilesFilter(filesDate)
+    setFilesFilter(filesDate)
   }
 
   // <--------------------------------- Formate Date Files --------------------------------->
@@ -125,8 +120,8 @@ export default function TableFiles(props:Props) {
   function selectAllFiles(){
     var i = showItens.max - 10
     for(i; showItens.max > i; i++){
-      if(props.filesFilter[i]){
-        props.SelectFile(i)
+      if(filesFilter[i]){
+        SelectFile(i)
       } else{
         break
       }
@@ -135,29 +130,29 @@ export default function TableFiles(props:Props) {
 
    // <--------------------------------- Download Files --------------------------------->
   function DownloadFile(file){
-    DownloadsFile({filesDownloaded:[file], files:props.files, from:props.from, childToParentDownload:props.childToParentDownload})
+    DownloadsFile({filesDownloaded:[file], files:files, from:from, childToParentDownload:childToParentDownload})
   }
 
   // <--------------------------------- Delet Files --------------------------------->
   async function DeletFiles(index:number){
-    props.ConfirmationDeleteFile(index)
+    ConfirmationDeleteFile(index)
   }
 
   // <--------------------------------- Favorite Files --------------------------------->
   function FavoriteFile(file){
-    Favorite({favoriteFile:file, files:props.files, from:props.from, childToParentDownload:props.childToParentDownload})
+    Favorite({favoriteFile:file, files:files, childToParentDownload:childToParentDownload})
   }
 
   // <--------------------------------- Desfavorite Files --------------------------------->
   function DesfavoriteFile(file){
-    Desfavorite({desfavoriteFile:file, files:props.files, from:props.from, childToParentDownload:props.childToParentDownload, folderName:props.folderName})
+    Desfavorite({desfavoriteFile:file, files:files, childToParentDownload:childToParentDownload, folderName:folderName})
   }
 
   return (
     <>
-    {viwedFile.viwed ? <ViewFile setViwedFile={setViwedFile} viwedFile={viwedFile} files={props.files} from={props.from} childToParentDownload={props.childToParentDownload} /> : <></>}
+    {viwedFile.viwed ? <ViewFile setViwedFile={setViwedFile} viwedFile={viwedFile} files={files} from={from} childToParentDownload={childToParentDownload} /> : <></>}
     
-    {props.filesFilter.length > 0 ?
+    {filesFilter.length > 0 ?
         <table className='w-full mt-[10px] bg-transparent'>
           {/* <--------------------------------- HeadTable ---------------------------------> */}
           <thead>
@@ -198,13 +193,13 @@ export default function TableFiles(props:Props) {
           </thead>
               {/* <--------------------------------- BodyTable ---------------------------------> */}
             <tbody>
-                {props.filesFilter.map((file, index) =>{
+                {filesFilter.map((file, index) =>{
                     var checked = file.checked
                     if( showItens.min < index && index < showItens.max){
                     return(
                     <tr key={file.id_file} className={`border-b-[1px] border-terciary dark:border-dterciary text-[18px] max-lg:text-[16px] ${file.favorite ? "bg-neutral-200" : ""}`} >
                       <th className='h-[50px] max-sm:h-[40px]'>
-                        <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
+                        <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
                       </th>
 
                       <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
@@ -232,8 +227,8 @@ export default function TableFiles(props:Props) {
 
                       <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                           <div className='flex justify-center items-center gap-[10px]'>
-                              <Message file={file} childToParentDownload={props.childToParentDownload} files={props.files}/>
-                              <OptionsFile index={index} file={file} files={props.files} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile} childToParentDownload={props.childToParentDownload}/>
+                              <Message file={file} childToParentDownload={childToParentDownload} files={files}/>
+                              <OptionsFile index={index} file={file} files={files} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile} childToParentDownload={childToParentDownload}/>
                           </div>
                       </th>
                     </tr>
@@ -242,23 +237,23 @@ export default function TableFiles(props:Props) {
         </table>
       : 
         <div className='w-full h-full flex justify-center items-center flex-col'>
-            <Image src={props.files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="Imagem de 2 arquivos" priority className='w-[170px] h-[170px]'/>
+            <Image src={files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="Imagem de 2 arquivos" priority className='w-[170px] h-[170px]'/>
           {trash ? 
-            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {props.filesFilter.length <= 0 ? "Nenhum arquivo deletado encontrado." : "Nenhum resultado foi encontrado."} </p>
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {filesFilter.length <= 0 ? "Nenhum arquivo deletado encontrado." : "Nenhum resultado foi encontrado."} </p>
           :
-            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {props.filesFilter.length <= 0 ? messageEmpty : "Nenhum resultado foi encontrado."}</p>
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {filesFilter.length <= 0 ? messageEmpty : "Nenhum resultado foi encontrado."}</p>
           }
         </div>
 
       }
 
     {/* <--------------------------------- NavBar table ---------------------------------> */}
-        {props.filesFilter.length > 0 ?
+        {filesFilter.length > 0 ?
             <div className='w-full px-[10px] flex justify-between h-[50px] mt-[10px]'>
                 <div className='flex justify-between w-full h-[40px] max-sm:h-[30px]'>
-                    <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px] cursor-pointer`}>Anterior</button>
-                      <p className="dark:text-white">{`Página ${showItens.max / 10} de ${props.pages}`}</p>
-                    <button onClick={() => {showItens.max / 10 != props.pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == props.pages ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px] cursor-pointer`}>Proximo</button>
+                    <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
+                      <p>{`Página ${showItens.max / 10} de ${pages}`}</p>
+                    <button onClick={() => {showItens.max / 10 != pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == pages ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
                 </div>
             </div>
         :<></>}

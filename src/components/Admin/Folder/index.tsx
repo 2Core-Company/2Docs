@@ -184,7 +184,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
               <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>Excluidos</p>
             </Link>
           </div>
-          {createFolder ? <CreateFolder  setCreateFolder={setCreateFolder} idUser={id} user={user} setUser={setUser} setFoldersFilter={setFoldersFilter} id_company={context.dataUser.id_company}/> : <></>}
+          {createFolder ? <CreateFolder  setCreateFolder={setCreateFolder} id={id} user={user} setUser={setUser} setFoldersFilter={setFoldersFilter} id_company={context.dataUser.id_company}/> : <></>}
           {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
     )

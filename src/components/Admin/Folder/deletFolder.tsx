@@ -1,20 +1,29 @@
 import {db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore"; 
-import { Folders } from '../../../types/interfaces' 
+import { DataUser } from '../../../types/interfaces' 
 
-async function DeletFolder(props:{user:{folders?:Folders[]}, name:string, id:string, setUser:Function, setFoldersFilter:Function, id_company:string}) {
-    const folders = props.user.folders
-    const index = folders.findIndex(folder => folder.name === props.name)
+interface Props{
+    user:DataUser,
+    name:string
+    id:string
+    id_company:string
+    setUser:Function, 
+    setFoldersFilter:Function
+}
+
+async function DeletFolder({user, name, id, setUser, setFoldersFilter, id_company}:Props) {
+    const folders = user.folders
+    const index = folders.findIndex(folder => folder.name === name)
     folders.splice(index, 1);
     try{
-        await updateDoc(doc(db, 'users', props.id_company, "Clientes", props.id), {
+        await updateDoc(doc(db, 'users', id_company, "Clientes", id), {
             folders: folders
         })
     } catch(err){
         console.log(err)
     }
-    props.setFoldersFilter(folders)
-    props.setUser({...props.user, folders:folders})
+    setFoldersFilter(folders)
+    setUser({...user, folders:folders})
 }
 
 export default DeletFolder

@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
     from:string
   }
 
-function UploadFiles(props:Props) {
+function UploadFiles({folderName, menu, permission, id, id_company, childToParentUpload, from}: Props) {
 
   async function UploadFile(files){
     for(let i = 0; i < files.length; i++){
@@ -24,7 +24,7 @@ function UploadFiles(props:Props) {
     }
     for await (const file of files.files) {
       const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
-      const docsRef = ref(storage, `${props.id_company}/files/${props.id + "/" + referencesFile}`);
+      const docsRef = ref(storage, `${id_company}/files/${id + "/" + referencesFile}`);
       const upload = await uploadBytes(docsRef, file)
       await GetUrlDownload({referencesFile:referencesFile, file:file, path:upload.metadata.fullPath})
     }
@@ -65,10 +65,10 @@ function UploadFiles(props:Props) {
 
     const date = new Date() + ""
     try {
-      const docRef = await setDoc(doc(db, "files", props.id_company, "Arquivos", params.nameFile), {
-        id_user: props.id,
+      const docRef = await setDoc(doc(db, "files", id_company, "Arquivos", params.nameFile), {
+        id_user: id,
         id_file: params.nameFile,
-        id_company: props.id_company,
+        id_company: id_company,
         url: params.url,
         name: params.name,
         size: Math.ceil(params.size / 1000),
@@ -76,14 +76,14 @@ function UploadFiles(props:Props) {
         type:type, 
         trash: false,
         viwed: false,
-        folder: props.folderName,
-        from: props.from
+        folder: folderName,
+        from: from
       });
 
       const data = {
-        id_user: props.id,
+        id_user: id,
         id_file: params.nameFile,
-        id_company: props.id_company,
+        id_company: id_company,
         url: params.url,
         name: params.name,
         size: Math.ceil(params.size / 1000),
@@ -93,11 +93,11 @@ function UploadFiles(props:Props) {
         trash: false,
         viwed: false,
         checked:false,
-        folder: props.folderName,
-        from: props.from
+        folder: folderName,
+        from: from
       }
 
-      props.childToParentUpload(data)
+      childToParentUpload(data)
     } catch (e) {
       toast.error("Não foi possivel armazenar o " + params.name)
       console.log(e)
@@ -106,13 +106,13 @@ function UploadFiles(props:Props) {
 
   return(
     <>
-      {props?.permission > 0 ?
-        <label className={`${props.folderName === "Cliente" &&  props.permission > 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${props.menu ? "max-lg:hidden" : ""}`}>
+      {permission > 0 ?
+        <label className={`${folderName === "Cliente" &&  permission > 0  ? "hidden" : <></>} bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
           <p>Upload</p>
           <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
         </label>
       :
-        <label className={`${props.folderName !== "Cliente" &&  props?.permission === 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${props.menu ? "max-lg:hidden" : ""}`}>
+        <label className={`${folderName !== "Cliente" &&  permission === 0  ? "hidden" : <></>} bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
           <p>Upload</p>
           <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
         </label>

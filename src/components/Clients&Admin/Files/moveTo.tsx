@@ -1,17 +1,17 @@
 import React, { useLayoutEffect, useState} from 'react'
 import { db } from '../../../../firebase'
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { Files } from '../../../types/interfaces'
 import { toast } from 'react-toastify';
+import { Files } from '../../../types/interfaces'
 
 interface Props{
-    file:Files
-    files:Files[]
-    setMoveTo:Function
-    childToParentDownload:Function
+  file:Files
+  files:Files[]
+  setMoveTo:Function
+  childToParentDownload:Function
 }
 
-function MoveTo(props: Props) {
+function MoveTo({file, files, setMoveTo, childToParentDownload}:Props) {
     const [folders, setFolders] = useState([])
     const [folderName, setFolderName] = useState(undefined)
     const messageToast = {pending:"Movendo o arquivo.", success:"Arquivo movido com sucesso.", error:"Não foi possivel mover o arquivo"}
@@ -23,26 +23,25 @@ function MoveTo(props: Props) {
     },[])
 
     async function GetFolders(){
-      const docRef = doc(db, "users", props.file.id_company, "Clientes", props.file.id_user);
+      const docRef = doc(db, "users", file.id_company, "Clientes", file.id_user);
       const docSnap = await getDoc(docRef);
       if(docSnap.data().folders.length > 3){
         setFolders(docSnap.data().folders)
       } else {
-        props.setMoveTo(false)
+        setMoveTo(false)
         throw toast.error("Você precisa ter no minimo 2 pastas para conseguir copiar um arquivo.", {toastId:toastId})
       }
     }
 
     async function ChangeFolder(){
-      const files = props.files
       try{
-          await updateDoc(doc(db, 'files', props.file.id_company, "Arquivos", props.file.id_file), {
-              folder: folderName
+          await updateDoc(doc(db, 'files', file.id_company, "Arquivos", file.id_file), {
+            folder: folderName
           })
           const index:number = files.findIndex(file => file.id_file === file.id_file)
           files.splice(index, 1);
-          props.childToParentDownload(files)
-          props.setMoveTo(false)
+          childToParentDownload(files)
+          setMoveTo(false)
       } catch(e) {
           console.log(e)
           throw toast.error("Não foi possivél trocar a pasta deste arquivo.")
@@ -59,7 +58,7 @@ function MoveTo(props: Props) {
             <p className='text-[26px] mt-[10px]'>Para qual pasta voce deseja mover este arquivo? </p>
             <div className='flex w-full flex-wrap justify-center gap-[20px]'>
             {folders?.map((folder) =>{
-                if(folder.name === "Favoritos" || folder.name === "Cliente" || folder.name === props.file.folder){
+                if(folder.name === "Favoritos" || folder.name === "Cliente" || folder.name === file.folder){
                     return
                 }
                 return (
@@ -76,7 +75,7 @@ function MoveTo(props: Props) {
 
           </div>
           <div className='flex w-full justify-end gap-4 bg-hilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-            <button onClick={() => props.setMoveTo(false)} className='bg-strong/40 border-[2px] border-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
+            <button onClick={() => setMoveTo(false)} className='bg-strong/40 border-[2px] border-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
             <button  onClick={() => toast.promise(ChangeFolder(), messageToast)} className={`${folderName != undefined ? "bg-blue/40 border-blue": "bg-strong/30 border-strong text-white" } border-2 hover:scale-[1.10]  duration-300 py-[5px] px-[15px] rounded-[8px] text-[20px] text-white `}>Mover</button>
           </div>
         </div>

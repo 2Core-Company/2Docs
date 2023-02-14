@@ -3,11 +3,20 @@ import { useState } from 'react'
 import { doc, updateDoc } from "firebase/firestore";  
 import {db} from '../../../../firebase'
 import { toast } from 'react-toastify';
-import { Folders } from '../../../types/interfaces'
+import { DataUser } from '../../../types/interfaces' 
 
-function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setUser:Function, setFoldersFilter:Function, setCreateFolder:Function, id_company:string}) {
-    const folders = props.user.folders
-    const [color, setColor] = useState<string>("#005694")
+interface Props{
+    user:DataUser,
+    id:string
+    id_company:string
+    setUser:Function, 
+    setFoldersFilter:Function
+    setCreateFolder:Function
+}
+
+function CreateFolder({user, id, setUser,setCreateFolder, setFoldersFilter, id_company}:Props) {
+    const folders = user.folders
+    const [color, setColor] = useState<string>()
     const [nameFolder, setNameFolder] = useState<string>()
 
     async function CreateFolder(){
@@ -16,12 +25,12 @@ function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setUser:F
             if(color != undefined && nameFolder.length > 0 ){
                 folders.push({name: nameFolder, color: color})
                 try{
-                    await updateDoc(doc(db, 'users', props.id_company, "Clientes", props.idUser), {
+                    await updateDoc(doc(db, 'users', id_company, "Clientes", id), {
                         folders: folders
                     })
-                    props.setUser({...props.user, folders:folders})
-                    props.setFoldersFilter(folders)
-                    props.setCreateFolder(false)
+                    setUser({...user, folders:folders})
+                    setFoldersFilter(folders)
+                    setCreateFolder(false)
                 } catch(err){
                     console.log(err)
                 }
@@ -53,8 +62,8 @@ function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setUser:F
                     <div className={`w-[30px] h-[30px] bg-[#9E9E9E] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#9E9E9E" ? "border-[#0093FF] border-[3px]" : <></>}`} onClick={() => (setColor("#9E9E9E"))}/>
                 </div>
             </div>
-            <div className='flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-                <button onClick={() => props.setCreateFolder(false)} className='bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Cancelar</button>
+            <div className='flex w-full justify-end gap-4 bg-hilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
+                <button onClick={() => setCreateFolder(false)} className='bg-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Cancelar</button>
                 <button onClick={() => toast.promise(CreateFolder(),{pending:"Criando pasta.", success:"Pasta criada.", error:"Não foi possivel criar esta pasta."})} className='bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white '>Confirmar</button>
             </div>
         </div>

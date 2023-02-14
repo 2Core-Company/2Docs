@@ -14,8 +14,12 @@ import { toast } from 'react-toastify';
 import { DataUser } from '../../../types/interfaces'
 import AppContext from '../../Clients&Admin/AppContext';
 
+  interface Props{
+    childToParentCreate:Function
+    closedWindow:Function
+  }
 
-function CreateUser({childToParentCreate, closedWindow}){
+function CreateUser({childToParentCreate, closedWindow}:Props){
   const context = useContext(AppContext)
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
   const [dataUser, setDataUser] = useState<DataUser>({name: "", email:"", cnpj: "", phone:"", password:"", id_company:""})

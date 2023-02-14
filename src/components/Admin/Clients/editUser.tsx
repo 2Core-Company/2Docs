@@ -13,10 +13,14 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import {DataUser} from '../../../types/interfaces'
 
+  interface Props{
+    user:DataUser
+    closedWindow:Function
+    childToParentEdit:Function
+  }
 
-function EditUser(props:{closedWindow:Function, childToParentEdit:Function, user:DataUser}){
+function EditUser({closedWindow, childToParentEdit, user}:Props){
   const context = useContext(AppContext)
-  const user = props.user
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
   const [dataUser, setDataUser] = useState<DataUser>({name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, nameImage: user.nameImage, photo_url: user.photo_url})
   const [file, setFile] : Array<{name:string}> | any  = useState({name: "padrao.png"})
@@ -107,7 +111,7 @@ function EditUser(props:{closedWindow:Function, childToParentEdit:Function, user
   async function UpdateBdUser(data:{photo_url: string, nameImage: string}){
     console.log(data)
     const userAfterEdit = {
-      id: props.user.id,
+      id: user.id,
       name: dataUser.name,
       email: dataUser.email,
       cnpj: dataUser.cnpj,
@@ -129,7 +133,7 @@ function EditUser(props:{closedWindow:Function, childToParentEdit:Function, user
       photo_url: data.photo_url,
       nameImage: data.nameImage,
     }),{pending:"Editando usuário...", success:"Usuário editado com sucesso", error:"Não foi possivel editar o usuário"})
-    props.childToParentEdit(userAfterEdit)
+    childToParentEdit(userAfterEdit)
   }
   
   const phoneMask = (value:string) => {
@@ -187,10 +191,11 @@ function EditUser(props:{closedWindow:Function, childToParentEdit:Function, user
 
 return (
       <>
-      <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] ${right} duration-300 flex flex-col items-center`}>
-        <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full max-sm:z-50'>
-            <DoubleArrowRightIcon onClick={() => props.closedWindow()} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px]  max-sm:h-[35px] absolute left-[5px]'/>
-            <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Editar</p>
+
+      <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] min-h-screen pb-[100px] ${right} duration-300 flex flex-col items-center`}>
+        <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full max-sm:z-50'>
+            <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px]  max-sm:h-[35px] absolute left-[5px]'/>
+            <p  className='font-poiretOne text-[40px] max-sm:text-[35px] flex'>Editar</p>
           </div>
           <form  onSubmit={VerifyCnpj} className='w-full px-[10%] flex flex-col gap-y-[20px] max-sm:gap-y-[5px] text-[20px] max-sm:text-[18px]'>
 

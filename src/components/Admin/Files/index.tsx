@@ -29,9 +29,8 @@ function ComponentUpload(){
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
   const [pages, setPages] = useState<number>(0)
   const [menu, setMenu] = useState<boolean>(true)
-  const [documents, setDocuments] = useState<{view:boolean, url:string}>({view: false, url: ""})
   const params = useSearchParams()
-  const trash:string = params.get("trash")
+  const trash:boolean = Boolean(params.get("trash"))
   const id:string  = params.get("id")
   const folderName:string  = params.get("folder")
   const [user, setUser] = useState<DataUser>()
@@ -42,6 +41,7 @@ function ComponentUpload(){
     const docSnap = await getDoc(docRef);
     setUser(docSnap.data())
   }
+  
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
     if(context.dataUser != undefined){
@@ -195,7 +195,7 @@ return (
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} from="admin"/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} from="admin"/>
           </div>
         </div>
         {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}
