@@ -7,25 +7,36 @@ import AppContext from '../../Clients&Admin/AppContext';
 import Link from 'next/link';
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Files } from '../../../types/interfaces' 
+import {db} from '../../../../firebase'
+import { where, collection, query, getDocs} from "firebase/firestore"; 
 
   function ComponentFolder(){
     const context = useContext(AppContext)
     const [recentsFile, setRecentsFile] = useState<Files[]>([])
     const [foldersFilter, setFoldersFilter] = useState<{color:string, name:string}[]>([])
     const [searchFolders, setSearchFolders] = useState<string>("")
+    const [files, setFiles] = useState([])
     
     useEffect(() =>{
       if(context.dataUser != undefined){
         setFoldersFilter(context.dataUser.folders)
-        if(context.allFiles != undefined){
-          FilesRecents()
-        }
+        GetFiles()
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[context.dataUser])
 
-    function FilesRecents(){
-      const filesHere = [...context.allFiles].filter(file => file.trash === false && file.from === "admin")
+    async function GetFiles(){
+      var getFiles = []
+      var q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  context.dataUser.id));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        getFiles.push(doc.data())
+      });
+      setFiles(getFiles)
+    }
+
+    useEffect(() =>{
+      const filesHere = [...files].filter(file => file.trash === false && file.from === "admin")
       const recents = []
       filesHere.sort((a, b) =>{ 
         a.created_date = new Date(a.created_date)
@@ -36,7 +47,7 @@ import { Files } from '../../../types/interfaces'
         recents.push(filesHere[i])
       }
       setRecentsFile(recents)
-    }
+    },[files])
 
     useEffect(() => {
       if(searchFolders != null && context.dataUser != undefined){
@@ -51,7 +62,7 @@ import { Files } from '../../../types/interfaces'
     },[searchFolders, context.dataUser])
 
     function childToParentDownload(files){
-      context.setAllFiles(files)
+      setFiles(files)
     }
 
     return(
@@ -69,7 +80,7 @@ import { Files } from '../../../types/interfaces'
               {recentsFile.map((file) =>{
                 return (
                   <div key={file.id_file} className='group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                    <button onClick={() => DownloadsFile({filesDownloaded:[file], files:context.allFiles, from:"user", childToParentDownload:childToParentDownload})}>
+                    <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"user", childToParentDownload:childToParentDownload})}>
                       <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                     </button>
                     <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>
@@ -90,7 +101,7 @@ import { Files } from '../../../types/interfaces'
             <div className='flex flex-wrap mt-[10px]'>
               {foldersFilter.length > 0 ? 
               foldersFilter.map((folder) =>{
-                const qtdFiles = folder.name === "Favoritos" ? context.allFiles.filter(file => file.favorite === true && file.trash === false) : context.allFiles.filter(file => file.folder === folder.name && file.trash === false)
+                const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false) : files.filter(file => file.folder === folder.name && file.trash === false)
                 return (
                   <Link href={{pathname: "/Clientes/Arquivos", query:{folder:folder.name}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
                     <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>

@@ -4,14 +4,18 @@ import { doc, deleteDoc, query,  where, collection, getDocs} from "firebase/fire
 import axios from 'axios'
 import { toast } from 'react-toastify';
 import ErrorFirebase from "../../Clients&Admin/ErrorFirebase";
-import AppContext from '../../Clients&Admin/AppContext';
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import Modals from '../../Clients&Admin/Modals'
-import { Modal } from '../../../types/interfaces'
+import { Modal, Users } from '../../../types/interfaces'
 
+  interface Props{
+    selectUsers:Users
+    usersFilter:Users[]
+    menu:boolean
+    childToParentDelet:Function
+  }
 
-function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
-  const context = useContext(AppContext)
+function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}:Props) {
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
 
   function ConfirmationDeleteUser(){
@@ -26,12 +30,10 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
     }
   }
 
-
   const childModal = () => {
     toast.promise(DeleteAuth(), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
     setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   }
-
 
   async function DeleteAuth(){
     const domain:string = new URL(window.location.href).origin
@@ -42,7 +44,6 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
       ErrorFirebase(result)
     }
   }
-
 
   async function DeletePhoto(){
     try{
@@ -58,7 +59,6 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
     }
   }
 
-  
   async function DeleteFile(){
     const users = [...usersFilter]
     for(let i = 0; i < selectUsers.length; i++){
@@ -70,9 +70,7 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
     childToParentDelet(users)
   }
 
-
   async function DeleteFiles(id:string){
-    const allFiles = context.allFiles
     const getFiles:Array<{id_file?:string}> = []
     var q = query(collection(db, "files", selectUsers[0].id_company, "Arquivos"), where("id_user", "==", id))
     const querySnapshot = await getDocs(q);
@@ -83,10 +81,7 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
       const desertRef = ref(storage, selectUsers[0].id_company + '/files/' + id + "/" + getFiles[i].id_file)
       const result = await deleteObject(desertRef)
       const response = await deleteDoc(doc(db, "files", selectUsers[0].id_company, "Arquivos", getFiles[i].id_file));
-      const index = allFiles.findIndex(file => file.id_file === getFiles[i].id_file)
-      allFiles.splice(index, 1)
     }
-    context.setAllFiles(allFiles)
   }   
 
   return(

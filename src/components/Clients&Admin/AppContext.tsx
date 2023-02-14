@@ -1,5 +1,5 @@
 import {createContext} from 'react';
-import { DataUser, Files } from '../../types/interfaces' 
+import { DataUser } from '../../types/interfaces' 
 const AppContext = createContext<AllContextType | null>(null)
 
   interface AllContextType{
@@ -7,8 +7,6 @@ const AppContext = createContext<AllContextType | null>(null)
     setLoading:(loading: boolean) => void,
     dataUser: DataUser,
     setDataUser:(dataUser: DataUser) => void;
-    allFiles: Array<Files>
-    setAllFiles:(allFiles: Array<Files>) => void
   };
 
  export default AppContext;

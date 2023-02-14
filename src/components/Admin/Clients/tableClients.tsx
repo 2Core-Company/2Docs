@@ -9,25 +9,24 @@ import Options from './options'
 interface Props { 
   searchUser: string,
   users: Users[],
-  setUsersFilter: (arg0: any[]) => void,
   usersFilter: UsersFilter[],
   pages: number,
   windowsAction:WindowsAction,
+  setUsersFilter: Function,
   SelectUsers: Function,
   setUserEdit: Function,
   setWindowsAction:Function,
-  ChildToParentFix:Function,
   FilterFixed:Function
 }
 
-function TableClients(props: Props) {
+function TableClients({  searchUser, users, setUsersFilter, usersFilter, pages, windowsAction, SelectUsers, setUserEdit, setWindowsAction, FilterFixed}: Props) {
     const [showItens, setShowItens] = useState<{min:number, max:number}>({min:-1, max:10})
     const [filter, setFilter] = useState<{name:boolean, date:boolean, status:boolean}>({name: false, date:false, status:false})
     const months:Array<string> = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-// <--------------------------------- Filters Table --------------------------------->
 
+  // <--------------------------------- Filters Table --------------------------------->
   function filterName(){
-    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.usersFilter]
+    var users = searchUser.length == 0 ? [...users ] : [...usersFilter]
     users.sort(function (x, y){
       let a = x.name.toUpperCase()
       let b = y.name.toUpperCase()
@@ -37,11 +36,11 @@ function TableClients(props: Props) {
         return a == b ? 0 : a > b ? 1 : -1
       }  
     })
-    props.setUsersFilter(props.FilterFixed(users))
+    setUsersFilter(FilterFixed(users))
   }
 
   function filterStatus(){
-    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.usersFilter]
+    var users = searchUser.length == 0 ? [...users ] : [...usersFilter]
     users.sort(function (x, y){
       let a = x.status
       let b = y.status
@@ -51,11 +50,11 @@ function TableClients(props: Props) {
         return a == b ? 0 : a > b ? 1 : -1
       }  
     })
-    props.setUsersFilter(props.FilterFixed(users))
+    setUsersFilter(FilterFixed(users))
   }
 
   function filterDate(){
-    var users = props.searchUser.length == 0 ? [...props.users ] : [...props.usersFilter]
+    var users = searchUser.length == 0 ? [...users ] : [...usersFilter]
     users.sort((a, b) =>{ 
       a.date = new Date(a.created_date)
       b.date = new Date(b.created_date)
@@ -68,7 +67,7 @@ function TableClients(props: Props) {
     for (var i = 0; i < users .length; i++) {
         users[i].created_date = users[i].created_date
     }
-    props.setUsersFilter(props.FilterFixed(users))
+    setUsersFilter(FilterFixed(users))
   }
 
   function formatDate(date:string){
@@ -83,7 +82,7 @@ function TableClients(props: Props) {
 
   return (
     <>
-    {props.usersFilter.length > 0 ?
+    {usersFilter.length > 0 ?
         <table className='w-full mt-[10px] bg-transparent'>
 
           {/* <--------------------------------- HeadTable ---------------------------------> */}
@@ -121,14 +120,14 @@ function TableClients(props: Props) {
 
           {/* <--------------------------------- BodyTable ---------------------------------> */}
           <tbody>
-          {props.usersFilter.map((user, index) =>{
+          {usersFilter.map((user, index) =>{
             var checked = user.checked
             if( showItens.min < index && index < showItens.max){
 
           return(
           <tr key={user.id} className={`border-b-[1px] border-terciary dark:border-dterciary text-[18px] max-lg:text-[16px] ${user.fixed ? "bg-neutral-300 bg-neutral-300/10" : ""}`}>
               <th className='h-[50px] max-sm:h-[40px]'>
-                <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => props.SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px] bg-gray-400'/>
+                <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
               </th>
 
               <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
@@ -156,7 +155,7 @@ function TableClients(props: Props) {
 
               <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                 <div className='flex justify-center items-center'>
-                  <Options idUser={user.id} setUserEdit={props.setUserEdit} setWindowsAction={props.setWindowsAction} windowsAction={props.windowsAction} user={user} users={props.users} FilterFixed={props.FilterFixed} setUsersFilter={props.setUsersFilter} />
+                  <Options idUser={user.id} setUserEdit={setUserEdit} setWindowsAction={setWindowsAction} windowsAction={windowsAction} user={user} users={users} FilterFixed={FilterFixed} setUsersFilter={setUsersFilter} />
                 </div>
               </th>
             </tr>)}       
@@ -165,18 +164,18 @@ function TableClients(props: Props) {
         </table>
       : 
           <div className='w-full h-full flex justify-center items-center flex-col'>
-            <Image src={props.users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => props.setWindowsAction({...props.windowsAction, createUser: true})}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
-            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {props.users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
+            <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({...windowsAction, createUser: true})}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
           </div>
       }
 
       {/* <--------------------------------- NavBar table ---------------------------------> */}
-      {props.usersFilter.length > 0 ?
+      {usersFilter.length > 0 ?
       <div className='w-full px-[10px] flex justify-between h-[50px] mt-[10px]'>
         <div className='flex justify-between w-full h-[40px] max-sm:h-[30px]'>
-          <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-terciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
-          <p className='dark:text-white'>{`Página ${showItens.max / 10} de ${props.pages}`}</p>
-          <button onClick={() => {showItens.max / 10 != props.pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == props.pages ? "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-terciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
+          <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
+          <p>{`Página ${showItens.max / 10} de ${pages}`}</p>
+          <button onClick={() => {showItens.max / 10 != pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == pages ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
         </div>
       </div>
       :<></>}

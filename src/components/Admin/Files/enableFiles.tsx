@@ -6,11 +6,19 @@ import { Files, Folders } from '../../../types/interfaces'
 import React, { useContext } from 'react'
 import AppContext from '../../Clients&Admin/AppContext';
 
-function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[], childToChangeStatus:Function}) {
+interface Props{
+  selectFiles:Files[], 
+  menu:boolean, 
+  folders?:Folders[], 
+  childToChangeStatus:Function, 
+  files:Files[]
+}
+
+function EnableFiles({selectFiles, menu, folders, childToChangeStatus, files}:Props) {
     const context = useContext(AppContext)
 
     function ConfirmationEnableFile(){
-      if(props.selectFiles.length > 0){
+      if(selectFiles.length > 0){
         toast.promise(EnableFile(),{pending:"Restaurando arquivos.", success:"Arquivos restaurados.", error:"Não foi possivel restaurar os arquivos."})
       } else {
         toast.error("Selecione um arquivo para recuperar.")
@@ -18,9 +26,6 @@ function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[
     }
 
     async function EnableFile(){
-      const files = context.allFiles
-      const selectFiles = props.selectFiles
-      const folders = props.folders
       try{
         for(let i = 0; i < selectFiles.length; i++){
           const folderStatus = folders.findIndex(folder => folder.name === selectFiles[i].folder)
@@ -36,7 +41,7 @@ function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[
           const index = files.findIndex(file => file.id_file === selectFiles[i].id_file)
           files[index].trash = false
         } 
-        props.childToChangeStatus(files)
+        childToChangeStatus(files)
       }catch(e) {
         console.log(e)
         toast.error("Não Foi possível recuperar este arquivo.")
@@ -44,7 +49,7 @@ function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[
     }
 
     return (
-      <button onClick={() => ConfirmationEnableFile()} className={`bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${props.menu ? "max-lg:hidden" : ""}`}>
+      <button onClick={() => ConfirmationEnableFile()} className={`bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
         Recuperar
       </button>
     )

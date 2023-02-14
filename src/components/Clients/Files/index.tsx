@@ -14,8 +14,10 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import Modals from '../../Clients&Admin/Modals'
 import DeletFiles from '../../Admin/Files/deletFiles';
 import { Files, Modal} from '../../../types/interfaces' 
+import { where, collection, query, getDocs} from "firebase/firestore"; 
+import {db} from '../../../../firebase'
 
-function ComponentUpload(){
+function Files(){
   const context = useContext(AppContext)
   const [files, setFiles] = useState<Files[]>([])
   const [filesFilter, setFilesFilter] = useState<Files[]>([])
@@ -31,31 +33,38 @@ function ComponentUpload(){
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
     context.setLoading(true)
-    if(context.allFiles != undefined){
+    if(context.dataUser != undefined){
       GetFiles()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[context.allFiles])
+  },[context.dataUser])
 
   async function GetFiles(){
     var getFiles = []
+    var q
     if(folderName === "Favoritos"){
-      getFiles = context.allFiles.filter(file => file.trash === false && file.favorite == true)
+      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  context.dataUser.id), where("favorite", "==", true), where("trash", "==", false));
     } else {
-      getFiles = context.allFiles.filter(file => file.trash === false && file.folder == folderName)
+      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  context.dataUser.id), where("trash", "==", false), where("folder", "==", folderName));
     }
 
+    const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        getFiles.push(doc.data())
+    });
 
     for(var i = 0; i < getFiles.length; i++){
       getFiles[i].checked = false
       getFiles[i].created_date = getFiles[i].created_date + ""
     }
+
     setPages(Math.ceil(getFiles.length / 10))
     setFiles(getFiles)
     setFilesFilter(getFiles)
     context.setLoading(false)
   }
 
+  // <--------------------------------- Search File --------------------------------->
   useEffect(() => {
     if(searchFile != null){
       const searchFilesFilter = []
@@ -68,6 +77,7 @@ function ComponentUpload(){
     }
   },[files, searchFile])
 
+  // <--------------------------------- Select File --------------------------------->
   async function SelectFile(index:number){
     const files = [...filesFilter]
     files[index].checked = !files[index].checked
@@ -78,45 +88,32 @@ function ComponentUpload(){
 
   // <--------------------------------- Upload File --------------------------------->
   const childToParentUpload = (childdata:object) => {
-    files.push(childdata)
-    context.allFiles.push(childdata)
-    GetFiles()
+    const allFiles = [...files]
+    allFiles.push(childdata)
+    setFiles(allFiles)
     setMenu(true)
   }
 
-  function ResetConfig(files:Files[]){
-    setPages(Math.ceil(files.length / 10))
-    setMenu(true)
-    setFilesFilter(files)
-    setSelectFiles([])
-    setFiles(files)
-  }
-
+  // <--------------------------------- Delet File --------------------------------->
   function ConfirmationDeleteFile(index:number){
     setIndexFile(index)
     setModal({...modal, status:true, message: "Tem certeza que deseja excluir este arquivo?", subMessage1: "Não será possivel recuperar."})
   }
   
-
-  const childModal = () => {
+  const childModal = async () => {
     setModal({...modal, status:false})
-    toast.promise(deletFile(),{pending:"Deletando arquivos.", success:"Arquivos deletados com sucesso.", error:"Não foi possivel deletar os arquivos."})
+    toast.promise(DeletFiles({files:files, selectFiles:[filesFilter[indexFile]], childToParentDelet}),{pending:"Deletando arquivos.", success:"Arquivos deletados com sucesso.", error:"Não foi possivel deletar os arquivos."})
   }
 
   function childToParentDelet(files){
-    context.setAllFiles(files)
-    GetFiles()
+    setFiles([...files])
     setMenu(true)
     setSelectFiles([])
   }
 
-  async function deletFile(){
-    await DeletFiles({files:context.allFiles, selectFiles:[filesFilter[indexFile]], childToParentDelet})
-  }
-
+  // <--------------------------------- Download File --------------------------------->
   function childToParentDownload(files){
-    context.setAllFiles(files)
-    GetFiles()
+    setFiles(files)
     setMenu(true)
     setSelectFiles([])
   }
@@ -155,11 +152,11 @@ return (
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} childToParentDownload={childToParentDownload} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} trash={"false"} from={"user"}/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} trash={false} from={"user"}/>
           </div>
         </div>
         {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
   )
   }
-export default ComponentUpload;
+export default Files;

@@ -13,8 +13,13 @@ import { Modal } from '../../../types/interfaces'
 import axios from 'axios';
 import { useTheme } from "../../../hooks/useTheme"
 
+interface Props{
+    user:string
+    image:string
+}
 
-function NavBar(props:{user:string, image:string}) {
+
+function NavBar({user, image}:Props) {
     const path = usePathname()
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState<Modal>({status: false, message: ""})
@@ -57,12 +62,12 @@ function NavBar(props:{user:string, image:string}) {
                     </Tooltip.Portal>
                 </Tooltip.Root>
             </Tooltip.Provider>
-            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-full  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
+            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-screen overflow-hidden  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
                 <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>
                             <Avatar.Root className="flex flex-col items-center justify-center">
-                                <Avatar.Image width={80} height={80} className="border-[2px] border-secondary dark:border-dsecondary h-[70px] w-[70px] max-sm:h-[60px] max-sm:w-[60px] rounded-full" src={props.image} alt="Imagem de perfil"/>
+                                <Avatar.Image width={80} height={80} className="border-[2px] border-secondary dark:border-dsecondary h-[70px] w-[70px] max-sm:h-[60px] max-sm:w-[60px] rounded-full" src={image} alt="Imagem de perfil"/>
                             </Avatar.Root>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
@@ -80,8 +85,8 @@ function NavBar(props:{user:string, image:string}) {
                     <div className='w-[90%] h-[3px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center'/>
 
                     <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Admin" || path === "/Clientes" ? "bg-gray-300 bg-gray-300/20" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
-                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(props.user === "Clients" ? "/Clientes" :"/Admin"))}>
+                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Admin" || path === "/Clientes" ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
+                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(user === "Clients" ? "/Clientes" :"/Admin"))}>
                                 <HomeIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
                             </button>
                         </Tooltip.Trigger>
@@ -97,7 +102,7 @@ function NavBar(props:{user:string, image:string}) {
                         </Tooltip.Portal>
                     </Tooltip.Root>
 
-                    {props.user === "Clients" ? 
+                    {user === "Clients" ? 
                         <Tooltip.Root>
                             <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-gray-300 bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
                                 <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Clientes/Pastas"))}>

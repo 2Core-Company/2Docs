@@ -1,25 +1,19 @@
-import React, { useLayoutEffect, useState, useContext } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { db, storage } from '../../../../firebase'
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { Files } from '../../../types/interfaces'
 import { toast } from 'react-toastify';
-import AppContext from '../../Clients&Admin/AppContext';
 import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
-
-
-
+import { Files } from '../../../types/interfaces'
 
 interface Props{
-    file:Files
-    setCopyTo:Function
-    childToParentDownload:Function
+  file:Files
+  setCopyTo:Function
 }
 
-function  CopyTo(props: Props) {
-    const context = useContext(AppContext)
+function  CopyTo({file, setCopyTo}: Props) {
     const [folders, setFolders] = useState([])
     const [folderName, setFolderName] = useState(undefined)
-    const [file, setFile] = useState()
+    const [fileCopy, setFileCopy] = useState()
     const messageToast = {pending:"Copiando arquivo.", success:"Arquivo copiado com sucesso para a pasta: " + folderName, error:"Não foi possivel copiar o arquivo"}
     const toastId = "copyTo"
 
@@ -30,13 +24,13 @@ function  CopyTo(props: Props) {
     },[])
 
     async function GetFolders(){
-        const docRef = doc(db, "users", props.file.id_company, "Clientes", props.file.id_user);
+        const docRef = doc(db, "users", file.id_company, "Clientes", file.id_user);
         const docSnap = await getDoc(docRef);
         if(docSnap.data().folders.length > 3){
           setFolders(docSnap.data().folders)
         } else {
           toast.error("Você precisa ter no minimo 2 pastas para conseguir copiar um arquivo.", {toastId:toastId})
-          props.setCopyTo(false)
+          setCopyTo(false)
         }
     }
 
@@ -44,23 +38,23 @@ function  CopyTo(props: Props) {
         var xhr = new XMLHttpRequest;
         xhr.responseType = 'blob';
         xhr.onload = function () {
-            var recoveredBlob = xhr.response;
-            setFile(recoveredBlob)
+          var recoveredBlob = xhr.response;
+          setFileCopy(recoveredBlob)
         };
-        xhr.open('GET', props.file.url);
+        xhr.open('GET', file.url);
         xhr.send();
     }
 
     async function CopyngFileStorage(){
-      props.setCopyTo(false)
-      const referencesFile = Math.floor(1000 + Math.random() * 9000) + props.file.name;
-      const docsRef = ref(storage, props.file.id_company + "/files/" + props.file.id_user + "/" + referencesFile );
-      const upload = await uploadBytes(docsRef, file)
+      setCopyTo(false)
+      const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
+      const docsRef = ref(storage, file.id_company + "/files/" + file.id_user + "/" + referencesFile );
+      const upload = await uploadBytes(docsRef, fileCopy)
       await GetUrlDownload({referencesFile:referencesFile, path:upload.metadata.fullPath})
     }
 
     async function GetUrlDownload(data){
-        const name = props.file.name
+        const name = file.name
         const url = await getDownloadURL(ref(storage, data.path))
         await UploadFilestore({url, nameFile:data.referencesFile, name:name})
     }
@@ -68,44 +62,23 @@ function  CopyTo(props: Props) {
     async function UploadFilestore(params){
       let blob = await fetch(params.url).then(r => r.blob());
       var urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
-      const size = props.file.size
+      const size = file.size
       const date = new Date() + ""
-      const files = context.allFiles
-
       try {
-        const docRef = await setDoc(doc(db, "files", props.file.id_company, "Arquivos", params.nameFile), {
-          id_user: props.file.id_user,
+        const docRef = await setDoc(doc(db, "files", file.id_company, "Arquivos", params.nameFile), {
+          id_user: file.id_user,
           id_file: params.nameFile,
-          id_company: props.file.id_company,
+          id_company: file.id_company,
           url: params.url,
           name: params.name,
           size: Math.ceil(size / 1000),
           created_date: date,
-          type:props.file.type, 
+          type:file.type, 
           trash: false,
           viwed: false,
           folder: folderName,
-          from: props.file.from
+          from: file.from
         });
-  
-        const data = {
-          id_user: props.file.id_user,
-          id_file: params.nameFile,
-          id_company: props.file.id_company,
-          url: params.url,
-          name: params.name,
-          size: Math.ceil(size / 1000),
-          created_date: date,
-          type:props.file.type, 
-          trash: false,
-          viwed: false,
-          checked:false,
-          folder: folderName,
-          from: props.file.from,
-          urlDownload: urlDownload
-        }
-        files.push(data)
-        props.childToParentDownload(files)
       } catch (e) {
         console.log(e)
         throw toast.error("Não foi possivel copiar o arquivo")
@@ -121,7 +94,7 @@ function  CopyTo(props: Props) {
             <p className='text-[26px] mt-[10px]'>Para qual pasta voce deseja mover este arquivo? </p>
             <div className='flex w-full flex-wrap justify-center gap-[20px]'>
             {folders?.map((folder) =>{
-                if(folder.name === "Favoritos" || folder.name === "Cliente" || folder.name === props.file.folder){
+                if(folder.name === "Favoritos" || folder.name === "Cliente" || folder.name === file.folder){
                     return
                 }
                 return (
@@ -138,7 +111,7 @@ function  CopyTo(props: Props) {
 
           </div>
           <div className='flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-            <button onClick={() => props.setCopyTo(false)} className='bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong dark:border-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
+            <button onClick={() => setCopyTo(false)} className='bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong dark:border-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
             <button  onClick={() => toast.promise(CopyngFileStorage(),messageToast)} className={`${folderName != undefined ? "bg-greenV/40 border-greenV": "bg-strong/30 dark:bg-dstrong/20 border-strong dark:border-dstrong text-white cursor-not-allowed" } border-2 hover:scale-[1.10]  duration-300 py-[5px] px-[15px] rounded-[8px] text-[20px] text-white `}>Copiar</button>
           </div>
         </div>

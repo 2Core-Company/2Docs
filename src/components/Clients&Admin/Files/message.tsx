@@ -1,30 +1,32 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import MessageIcon from "../../../../public/icons/message.svg";
 import Image from 'next/image'
 import styles from '../../Admin/Home/home.module.css'
-import { Files } from '../../../types/interfaces'
-import AppContext from '../../Clients&Admin/AppContext';
 import { doc, updateDoc } from "firebase/firestore"; 
 import { db } from '../../../../firebase'
 import { toast } from 'react-toastify';
 import { PlusCircledIcon } from '@radix-ui/react-icons';
+import { Files } from '../../../types/interfaces'
 
- function Message(props:{file:Files, childToParentDownload:Function}) {
-    const context = useContext(AppContext)
+    interface Props{
+        file:Files
+        files:Files[]
+        childToParentDownload:Function
+    }
+
+ function Message({file, files, childToParentDownload}:Props) {
     const [modalMessage, setModalMessage] = useState({permission:"", status:false})
-    const [message, setMessage] = useState(props.file.message)
+    const [message, setMessage] = useState(file.message)
     const url = window.location.href
 
     function UploadMessage(){
-        const fileUpload = props.file
-        const files =  context.allFiles
         try{
-            updateDoc(doc(db, 'files', fileUpload.id_company, "Arquivos", fileUpload.id_file), {
+            updateDoc(doc(db, 'files', file.id_company, "Arquivos", file.id_file), {
                 message: message.trim()
             })
-            const index = files.findIndex(file => file.id_file == fileUpload.id_file)
+            const index = files.findIndex(file => file.id_file == file.id_file)
             files[index].message = message.trim()
-            props.childToParentDownload(files)
+            childToParentDownload(files)
             setModalMessage({...modalMessage, permission:"", status:false})
         } catch(e) {
             console.log(e)
@@ -33,12 +35,12 @@ import { PlusCircledIcon } from '@radix-ui/react-icons';
     }
 
   return (
-    <>      {url.includes("/Admin") && props.file.from === "admin" || url.includes("/Clientes") && props.file.from === "user" ?
+    <>      {url.includes("/Admin") && file.from === "admin" || url.includes("/Clientes") && file.from === "user" ?
             <div onClick={() => setModalMessage({...modalMessage, permission:"edit", status:true})} className='bg-[#15E08B] w-[33px] h-[33px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
-                {props.file?.message?.length > 0 ?  <Image src={MessageIcon} width={25} height={25} alt="Chat"/> : <PlusCircledIcon className='w-[25px] h-[25px] text-white'/> }
+                {file?.message?.length > 0 ?  <Image src={MessageIcon} width={25} height={25} alt="Chat"/> : <PlusCircledIcon className='w-[25px] h-[25px] text-white'/> }
             </div>
              : 
-                props.file?.message?.length > 0 ?
+                file?.message?.length > 0 ?
                     <div onClick={() => setModalMessage({...modalMessage, permission:"viwed", status:true})} className='bg-[#15E08B] w-[33px] h-[33px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
                         <Image src={MessageIcon} width={25} height={25} alt="Chat"/>
                     </div>
@@ -52,8 +54,8 @@ import { PlusCircledIcon } from '@radix-ui/react-icons';
                 <div className='bg-primary dark:bg-dprimary w-[400px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
                     <div  className='bg-[rgba(126,181,163,1)] w-full h-[15px] rounded-t-[4px]'/>
                         <div className='px-[10px] '>
-                            <p className='text-[24px] max-lsm:text-[20px] mt-[10px] text-left'>{props.file.message?.length > 0 ? "Edite a observação deste arquivo." : "Adicione uma observação ao arquivo."}</p>
-                            <p className='self-start mt-[15px] text-[20px] max-lsm:text-[18px] justify-self-start text-left'>Mensagem:</p>
+                            <p className='text-[24px] max-lsm:text-[20px] mt-[10px] text-left'>{file.message?.length > 0 ? "Edite a observação deste arquivo." : "Adicione uma observação ao arquivo."}</p>
+                            <p className='self-start mt-[15px] text-[20px] max-lsm:text-[18px] justify-self-start text-left'>Menssagem:</p>
                             <div className='px-[5px] border-black border-[2px] rounded-[8px]'>
                                 <textarea maxLength={256} value={message} onChange={(text) =>  setMessage(text.target.value)} rows={3} id={styles.boxFiles} placeholder="Adicione uma observação..." className='w-full outline-none bg-transparent text-[18px] pr-[5px] dark:text-white dark:placeholder:text-gray-500'/>
                             </div>

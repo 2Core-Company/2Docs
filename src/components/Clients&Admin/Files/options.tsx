@@ -14,8 +14,8 @@ import Rename from './rename'
 import { useSearchParams } from 'next/navigation';
 
 interface Props{
-  file?:Files, 
-  from:string, 
+  file:Files, 
+  files:Files[] 
   viwedFile:any, 
   index:number
   trash:boolean
@@ -26,7 +26,7 @@ interface Props{
   DesfavoriteFile:Function
   childToParentDownload:Function}
 
-function OptionsFile(props:Props){
+function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, DownloadFile, DeletFiles, FavoriteFile, DesfavoriteFile, childToParentDownload}: Props){
   const url = window.location.href
   const [moveTo, setMoveTo] = useState(false)
   const [copyTo, setCopyTo] = useState(false)
@@ -35,9 +35,9 @@ function OptionsFile(props:Props){
   const folderName:string = params.get("folder")
   return (
     <>
-      {moveTo ? <MoveTo file={props.file} setMoveTo={setMoveTo} childToParentDownload={props.childToParentDownload}/> : <> </>}
-      {copyTo ? <CopyTo file={props.file} setCopyTo={setCopyTo} childToParentDownload={props.childToParentDownload}/> : <> </>}
-      {rename ? <Rename file={props.file} setRename={setRename} childToParentDownload={props.childToParentDownload}/> : <> </>}
+      {moveTo ? <MoveTo file={file} files={files} setMoveTo={setMoveTo} childToParentDownload={childToParentDownload}/> : <> </>}
+      {copyTo ? <CopyTo file={file} setCopyTo={setCopyTo} /> : <> </>}
+      {rename ? <Rename file={file} files={files} setRename={setRename} childToParentDownload={childToParentDownload}/> : <> </>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -48,23 +48,23 @@ function OptionsFile(props:Props){
           </button>
         </DropdownMenu.Trigger>
 
-      <DropdownMenu.Portal >
-        <DropdownMenu.Content align="end" alignOffset={-25}  className="bg-primary dark:bg-dprimary text-black dark:text-white text-[18px] rounded-[6px] flex flex-col gap-[5px] drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
-          <DropdownMenu.Item  className="cursor-pointer rounded-t-[6px] hover:outline-none  hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
-            <div onClick={() => props.setViwedFile({...props.viwedFile, viwed:true, url:props.file.url, file:props.file})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-              <EyeOpenIcon width={22} height={22} className='text-[250px]'/>
-              Visualizar
-            </div>
-          </DropdownMenu.Item>
+        <DropdownMenu.Portal >
+          <DropdownMenu.Content align="end" alignOffset={-25}  className="bg-primary text-black text-[18px] rounded-[6px] flex flex-col gap-[5px] drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
+            <DropdownMenu.Item  className="cursor-pointer rounded-t-[6px] hover:outline-none  hover:bg-neutral-300">
+              <div onClick={() => setViwedFile({...viwedFile, viwed:true, url:file.url, file:file})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+                <EyeOpenIcon width={22} height={22} className='text-[250px]'/>
+                Visualizar
+              </div>
+            </DropdownMenu.Item>
 
-          <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
-            <div onClick={() => props.DownloadFile(props.file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-              <DownloadIcon width={22} height={22} className='text-[250px]'/>
-              Download
-            </div>
-          </DropdownMenu.Item>
+            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
+              <div onClick={() => DownloadFile(file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+                <DownloadIcon width={22} height={22} className='text-[250px]'/>
+                Download
+              </div>
+            </DropdownMenu.Item>
 
-          {props.trash || url.includes("/Admin") && props.file.from === "user" || folderName === "Favoritos" ? <></>
+          {trash || url.includes("/Admin") && file.from === "user" || folderName === "Favoritos" ? <></>
           :
             <>
               <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
@@ -82,8 +82,8 @@ function OptionsFile(props:Props){
               </DropdownMenu.Item>
             </>
           }
-          {url.includes("/Clientes") && props.file.from === "user" ||  url.includes("/Admin") && props.file.from === "admin" ? 
-            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
+          {folderName === "Clientes" && file.from === "user" ||  url.includes("/Admin") && file.from === "admin" ? 
+            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
               <div onClick={() => setRename(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image className="invert" src={RenameIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Renomear
@@ -92,23 +92,24 @@ function OptionsFile(props:Props){
             :
             <></>
           }
-          <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
-            {props.file?.favorite ? 
-              <div onClick={() => props.DesfavoriteFile(props.file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <Image className="invert" src={Desfavorite} width={22} height={22} alt={"Copiar documentos"}/>
+          <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
+            {file?.favorite ? 
+              <div onClick={() => DesfavoriteFile(file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+                <Image src={Desfavorite} width={22} height={22} alt={"Copiar documentos"}/>
                 Desfavoritar
               </div>
             :
-              <div onClick={() => props.FavoriteFile(props.file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <Image className="invert" src={Favorite} width={22} height={22} alt={"Copiar documentos"}/>
+              <div onClick={() => FavoriteFile(file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+                <Image src={Favorite} width={22} height={22} alt={"Copiar documentos"}/>
+
                 Favoritar
               </div>
             }
           </DropdownMenu.Item>
 
-          {url.includes("/Clientes") && props.file.from === "user" ||  url.includes("/Admin") ? 
+          {url.includes("/Clientes") && file.from === "user" ||  url.includes("/Admin") ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none rounded-b-[6px] hover:bg-red/30">
-              <div onClick={() => props.DeletFiles(props.index)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => DeletFiles(index)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <TrashIcon width={22} height={22} className='text-[250px]'/>
                 Excluir
               </div>
