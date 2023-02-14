@@ -3,16 +3,20 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/interfaces'
 
-  function Favorite(props:{favoriteFile:any, files:Files[], from:string, childToParentDownload:Function }) {                                                                            
-    const fileFavorite = props.favoriteFile
-    const files =  props.files
+    interface Props{
+        favoriteFile:Files
+        files:Files[]
+        childToParentDownload:Function
+    }
+
+  function Favorite({favoriteFile, files, childToParentDownload}:Props) {                                                                            
     try{
-        updateDoc(doc(db, 'files', fileFavorite.id_company, "Arquivos", fileFavorite.id_file), {
+        updateDoc(doc(db, 'files', favoriteFile.id_company, "Arquivos", favoriteFile.id_file), {
             favorite: true
         })
-        const index = files.findIndex(file => file.id_file == fileFavorite.id_file)
+        const index = files.findIndex(file => file.id_file == favoriteFile.id_file)
         files[index].favorite = true
-        props.childToParentDownload(files)
+        childToParentDownload(files)
     } catch(e) {
     console.log(e)
     toast.error("Não foi possivél visualizar este arquivo.")

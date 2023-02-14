@@ -6,8 +6,15 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from '../../../../firebase'
 import { toast } from 'react-toastify';
 import { PlusCircledIcon } from '@radix-ui/react-icons';
+import { Files } from '../../../types/interfaces'
 
- function Message({file, childToParentDownload, files}) {
+    interface Props{
+        file:Files
+        files:Files[]
+        childToParentDownload:Function
+    }
+
+ function Message({file, files, childToParentDownload}:Props) {
     const [modalMessage, setModalMessage] = useState({permission:"", status:false})
     const [message, setMessage] = useState(file.message)
     const url = window.location.href

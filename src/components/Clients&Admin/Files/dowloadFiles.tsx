@@ -3,14 +3,20 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/interfaces'
 
+interface Props{
+  filesDownloaded:Files[]
+  files:Files[]
+  from:string
+  childToParentDownload:Function
+}
 
-async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], childToParentDownload:Function, from:string}){
-  const filesDownloaded = props.filesDownloaded
-  const files = props.files
+async function DownloadsFile({filesDownloaded, files, childToParentDownload, from}:Props){
+
   for(var i = 0; i < filesDownloaded.length; i++){
     let blob = await fetch(filesDownloaded[i].url).then(r => r.blob());
     filesDownloaded[i].urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
   }
+
   try{
     for(let i = 0; i < filesDownloaded.length; i++) {
       const element = document.createElement("a");
@@ -23,20 +29,20 @@ async function DownloadsFile(props:{filesDownloaded?:Files[], files?:Files[], ch
 
       element.parentNode.removeChild(element);
 
-      if(props.from === "user" && filesDownloaded[i].folder != "Cliente"){
+      if(from === "user" && filesDownloaded[i].folder != "Cliente"){
         await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
           viwed: true
         })
         const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
         files[index].viwed = true
-      } else if(props.from === "admin" && filesDownloaded[i].folder == "Cliente"){
+      } else if(from === "admin" && filesDownloaded[i].folder == "Cliente"){
         await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
           viwed: true
         })
         const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
         files[index].viwed = true
       }
-      props.childToParentDownload(files)
+      childToParentDownload(files)
     }
   } catch(e) {
     console.log(e)

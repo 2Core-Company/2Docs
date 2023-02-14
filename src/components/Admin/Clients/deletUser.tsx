@@ -4,14 +4,18 @@ import { doc, deleteDoc, query,  where, collection, getDocs} from "firebase/fire
 import axios from 'axios'
 import { toast } from 'react-toastify';
 import ErrorFirebase from "../../Clients&Admin/ErrorFirebase";
-import AppContext from '../../Clients&Admin/AppContext';
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import Modals from '../../Clients&Admin/Modals'
-import { Modal } from '../../../types/interfaces'
+import { Modal, Users } from '../../../types/interfaces'
 
+  interface Props{
+    selectUsers:Users
+    usersFilter:Users[]
+    menu:boolean
+    childToParentDelet:Function
+  }
 
-function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
-  const context = useContext(AppContext)
+function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}:Props) {
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
 
   function ConfirmationDeleteUser(){
@@ -26,12 +30,10 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
     }
   }
 
-
   const childModal = () => {
     toast.promise(DeleteAuth(), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
     setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   }
-
 
   async function DeleteAuth(){
     const domain:string = new URL(window.location.href).origin
@@ -42,7 +44,6 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
       ErrorFirebase(result)
     }
   }
-
 
   async function DeletePhoto(){
     try{
@@ -58,7 +59,6 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
     }
   }
 
-  
   async function DeleteFile(){
     const users = [...usersFilter]
     for(let i = 0; i < selectUsers.length; i++){

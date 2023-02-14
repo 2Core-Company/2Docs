@@ -3,20 +3,25 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/interfaces'
 
-  function Desfavorite(props:{desfavoriteFile:any, files:Files[], from:string, childToParentDownload:Function, folderName:string }) { 
-    const fileDesfavorite = props.desfavoriteFile                                                                                    
-    const files =  props.files
+interface Props{
+    desfavoriteFile:Files
+    files:Files[]
+    folderName:string
+    childToParentDownload:Function
+  }
+
+  function Desfavorite({desfavoriteFile, files, childToParentDownload, folderName}: Props) {                                                                                   
     try{
-        updateDoc(doc(db, 'files', fileDesfavorite .id_company, "Arquivos", fileDesfavorite.id_file), {
+        updateDoc(doc(db, 'files', desfavoriteFile.id_company, "Arquivos", desfavoriteFile.id_file), {
             favorite: false
         })
-        const index = files.findIndex(file => file.id_file == fileDesfavorite.id_file)
-        if(props.folderName === "Favoritos"){
+        const index = files.findIndex(file => file.id_file == desfavoriteFile.id_file)
+        if(folderName === "Favoritos"){
             files.splice(index, 1);
         } else {
             files[index].favorite = false
         }
-        props.childToParentDownload(files)
+        childToParentDownload(files)
     } catch(e) {
     console.log(e)
     toast.error("Não foi possivél visualizar este arquivo.")
