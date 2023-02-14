@@ -17,7 +17,6 @@ interface Props{
   setFilesFilter?: Function, 
   SelectFile?: Function, 
   ConfirmationDeleteFile?:Function, 
-  ResetConfig?: Function, 
   setDocuments?: Function, 
   documents?: any, 
   pages?: number,
@@ -49,6 +48,7 @@ export default function TableFiles(props:Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
+  // <--------------------------------- Filters Files --------------------------------->
   function filterName(){
     var files = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
     files.sort(function (x, y){
@@ -108,6 +108,7 @@ export default function TableFiles(props:Props) {
     props.setFilesFilter(filesDate)
   }
 
+  // <--------------------------------- Formate Date Files --------------------------------->
   function formatDate(date:string){
     if(date.length > 12){
       var newDate = new Date(date)
@@ -120,6 +121,7 @@ export default function TableFiles(props:Props) {
     } 
   }
 
+   // <--------------------------------- Select Files --------------------------------->
   function selectAllFiles(){
     var i = showItens.max - 10
     for(i; showItens.max > i; i++){
@@ -131,27 +133,30 @@ export default function TableFiles(props:Props) {
     }
   }
 
+   // <--------------------------------- Download Files --------------------------------->
   function DownloadFile(file){
-    DownloadsFile({filesDownloaded:[file], files:context.allFiles, from:props.from, childToParentDownload:props.childToParentDownload})
+    DownloadsFile({filesDownloaded:[file], files:props.files, from:props.from, childToParentDownload:props.childToParentDownload})
   }
 
+  // <--------------------------------- Delet Files --------------------------------->
   async function DeletFiles(index:number){
     props.ConfirmationDeleteFile(index)
   }
 
+  // <--------------------------------- Favorite Files --------------------------------->
   function FavoriteFile(file){
-    Favorite({favoriteFile:file, files:context.allFiles, from:props.from, childToParentDownload:props.childToParentDownload})
+    Favorite({favoriteFile:file, files:props.files, from:props.from, childToParentDownload:props.childToParentDownload})
   }
 
+  // <--------------------------------- Desfavorite Files --------------------------------->
   function DesfavoriteFile(file){
-    Desfavorite({desfavoriteFile:file, files:context.allFiles, from:props.from, childToParentDownload:props.childToParentDownload})
+    Desfavorite({desfavoriteFile:file, files:props.files, from:props.from, childToParentDownload:props.childToParentDownload, folderName:props.folderName})
   }
 
   return (
     <>
-    {viwedFile.viwed ? <ViewFile setViwedFile={setViwedFile} viwedFile={viwedFile} files={context.allFiles} from={props.from} childToParentDownload={props.childToParentDownload} /> : <></>}
-
-
+    {viwedFile.viwed ? <ViewFile setViwedFile={setViwedFile} viwedFile={viwedFile} files={props.files} from={props.from} childToParentDownload={props.childToParentDownload} /> : <></>}
+    
     {props.filesFilter.length > 0 ?
         <table className='w-full mt-[10px] bg-transparent'>
           {/* <--------------------------------- HeadTable ---------------------------------> */}
@@ -228,7 +233,7 @@ export default function TableFiles(props:Props) {
                       <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                           <div className='flex justify-center items-center gap-[10px]'>
                               <Message file={file} childToParentDownload={props.childToParentDownload}/>
-                              <OptionsFile index={index} file={file} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile} childToParentDownload={props.childToParentDownload}/>
+                              <OptionsFile index={index} file={file} files={props.files} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile} childToParentDownload={props.childToParentDownload}/>
                           </div>
                       </th>
                     </tr>

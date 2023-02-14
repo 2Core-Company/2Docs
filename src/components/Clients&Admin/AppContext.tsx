@@ -7,8 +7,6 @@ const AppContext = createContext<AllContextType | null>(null)
     setLoading:(loading: boolean) => void,
     dataUser: DataUser,
     setDataUser:(dataUser: DataUser) => void;
-    allFiles: Array<Files>
-    setAllFiles:(allFiles: Array<Files>) => void
   };
 
  export default AppContext;

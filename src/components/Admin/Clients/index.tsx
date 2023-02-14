@@ -49,6 +49,7 @@ function ComponentClients(){
     context.setLoading(false)
   }
 
+  // <--------------------------------- Filter fixed  --------------------------------->
   function FilterFixed(users:Users[]){
     return users.sort(function (x, y){
       let a = x.fixed
@@ -57,6 +58,7 @@ function ComponentClients(){
       })
   }
 
+  // <--------------------------------- Search User  --------------------------------->
   useEffect(() => {
     if(searchUser != null){
       const searchUserFilter:Array<object> = []
@@ -69,13 +71,12 @@ function ComponentClients(){
     }
   },[searchUser, users])
 
-   // <--------------------------------- Delete User --------------------------------->
-
+  // <--------------------------------- Delete User --------------------------------->
   const childToParentDelet = (childdata : Array<{}>) => {
     ResetConfig(childdata)
   }
-  // <--------------------------------- Disable User --------------------------------->
 
+  // <--------------------------------- Disable User --------------------------------->
   async function DisableUser(){
     const usersHere = [...usersFilter]
     const domain:string = new URL(window.location.href).origin
@@ -104,7 +105,6 @@ function ComponentClients(){
   }
 
   // <--------------------------------- Select User --------------------------------->
-
   async function SelectUsers(index:number){
     if(usersFilter.filter(user => user.checked === true).length <= 9){
       const users = [...usersFilter]
@@ -129,7 +129,6 @@ function ComponentClients(){
   }
 
   // <--------------------------------- Edit User --------------------------------->
-
   const childToParentEdit = (childdata:{id:string}) => {
     const users = [...usersFilter]
     const index:number = users.findIndex(user => user.id == childdata.id)
@@ -147,9 +146,6 @@ function ComponentClients(){
     setUsers(users)
   }
 
-  function ChildToParentFix(){
-
-  }
 
 return (
       <section className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
@@ -173,7 +169,7 @@ return (
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
             </div>
-            <TableClients usersFilter={usersFilter} setUsersFilter={setUsersFilter} users={users} pages={pages} searchUser={searchUser} setUserEdit={setUserEdit} setWindowsAction={setWindowsAction} windowsAction={windowsAction} SelectUsers={SelectUsers} ChildToParentFix={ChildToParentFix} FilterFixed={FilterFixed}/>
+            <TableClients usersFilter={usersFilter} setUsersFilter={setUsersFilter} users={users} pages={pages} searchUser={searchUser} setUserEdit={setUserEdit} setWindowsAction={setWindowsAction} windowsAction={windowsAction} SelectUsers={SelectUsers} FilterFixed={FilterFixed}/>
           </div>
         </div>
         {windowsAction.createUser ? <CreateUser childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}

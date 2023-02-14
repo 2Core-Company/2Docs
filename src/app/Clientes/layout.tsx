@@ -4,7 +4,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import React, {useState, useEffect, useContext} from 'react'
 import { useRouter } from 'next/navigation'
 import { auth, db } from '../../../firebase'
-import { collection, where, getDocs, doc, getDoc, query } from "firebase/firestore";
+import { doc, getDoc} from "firebase/firestore";
 import AppContext from '../../components/Clients&Admin/AppContext';
 
 export default function DashboardLayout({children}: {children: React.ReactNode,}) {
@@ -23,7 +23,6 @@ export default function DashboardLayout({children}: {children: React.ReactNode,}
           } else {
             setOnLoad(true)
             GetUsers(user)
-            GetFiles(user)
           }
         })
       } else {
@@ -38,16 +37,6 @@ export default function DashboardLayout({children}: {children: React.ReactNode,}
     const docSnap = await getDoc(docRef);
     setUrlImageProfile(docSnap.data().photo_url)
     context.setDataUser(docSnap.data())
-  }
-
-  async function GetFiles(user:User){
-    const files = []
-    const q = query(collection(db, "files", user.displayName, "Arquivos"), where("id_user", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      files.push(doc.data())
-    });
-    context.setAllFiles(files)
   }
 
     return (

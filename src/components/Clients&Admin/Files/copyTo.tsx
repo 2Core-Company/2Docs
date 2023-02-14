@@ -3,7 +3,6 @@ import { db, storage } from '../../../../firebase'
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { Files } from '../../../types/interfaces'
 import { toast } from 'react-toastify';
-import AppContext from '../../Clients&Admin/AppContext';
 import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 
@@ -12,11 +11,9 @@ import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
 interface Props{
     file:Files
     setCopyTo:Function
-    childToParentDownload:Function
 }
 
 function  CopyTo(props: Props) {
-    const context = useContext(AppContext)
     const [folders, setFolders] = useState([])
     const [folderName, setFolderName] = useState(undefined)
     const [file, setFile] = useState()
@@ -70,8 +67,6 @@ function  CopyTo(props: Props) {
       var urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
       const size = props.file.size
       const date = new Date() + ""
-      const files = context.allFiles
-
       try {
         const docRef = await setDoc(doc(db, "files", props.file.id_company, "Arquivos", params.nameFile), {
           id_user: props.file.id_user,
@@ -87,25 +82,6 @@ function  CopyTo(props: Props) {
           folder: folderName,
           from: props.file.from
         });
-  
-        const data = {
-          id_user: props.file.id_user,
-          id_file: params.nameFile,
-          id_company: props.file.id_company,
-          url: params.url,
-          name: params.name,
-          size: Math.ceil(size / 1000),
-          created_date: date,
-          type:props.file.type, 
-          trash: false,
-          viwed: false,
-          checked:false,
-          folder: folderName,
-          from: props.file.from,
-          urlDownload: urlDownload
-        }
-        files.push(data)
-        props.childToParentDownload(files)
       } catch (e) {
         console.log(e)
         throw toast.error("Não foi possivel copiar o arquivo")

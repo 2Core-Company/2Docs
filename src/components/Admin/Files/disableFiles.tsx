@@ -13,7 +13,7 @@ async function DisableFiles(props:{files:Files[], selectFiles:Files[], childToPa
             trash: true
           })
           const index:number = files.findIndex(file => file.id_file === selectFiles[i].id_file)
-          files[index].trash = true
+          files.splice(index, 1);
         } 
         props.childToParentDisable(files)
       }catch(e) {

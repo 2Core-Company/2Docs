@@ -1,27 +1,23 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";
 import { Files } from '../../../types/interfaces'
 import { toast } from 'react-toastify';
-import AppContext from '../../Clients&Admin/AppContext';
-
-
-
 
 
 interface Props{
     file:Files
+    files:Files[]
     setRename:Function
     childToParentDownload:Function
 }
 
 function  Rename(props: Props) {
-    const context = useContext(AppContext)
     const [nameFile, setNameFile] = useState(props.file.name)
     const messageToast = {pending:"Alterando nome.", success:"O nome do arquivo foi alterado com sucesso.", error:"Não foi possivel alterar o nome do arquivo."}
 
     async function ChangeName(){
-        const files = context.allFiles
+        const files = props.files
         try{
             await updateDoc(doc(db, 'files', props.file.id_company, "Arquivos", props.file.id_file), {
                 name: nameFile

@@ -14,7 +14,8 @@ import Rename from './rename'
 import { useSearchParams } from 'next/navigation';
 
 interface Props{
-  file?:Files, 
+  file:Files, 
+  files:Files[]
   from:string, 
   viwedFile:any, 
   index:number
@@ -35,9 +36,9 @@ function OptionsFile(props:Props){
   const folderName:string = params.get("folder")
   return (
     <>
-      {moveTo ? <MoveTo file={props.file} setMoveTo={setMoveTo} childToParentDownload={props.childToParentDownload}/> : <> </>}
-      {copyTo ? <CopyTo file={props.file} setCopyTo={setCopyTo} childToParentDownload={props.childToParentDownload}/> : <> </>}
-      {rename ? <Rename file={props.file} setRename={setRename} childToParentDownload={props.childToParentDownload}/> : <> </>}
+      {moveTo ? <MoveTo file={props.file} files={props.files} setMoveTo={setMoveTo} childToParentDownload={props.childToParentDownload}/> : <> </>}
+      {copyTo ? <CopyTo file={props.file} setCopyTo={setCopyTo} /> : <> </>}
+      {rename ? <Rename file={props.file} files={props.files} setRename={setRename} childToParentDownload={props.childToParentDownload}/> : <> </>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -82,7 +83,7 @@ function OptionsFile(props:Props){
               </DropdownMenu.Item>
             </>
           }
-          {url.includes("/Clientes") && props.file.from === "user" ||  url.includes("/Admin") && props.file.from === "admin" ? 
+          {folderName === "Clientes" && props.file.from === "user" ||  url.includes("/Admin") && props.file.from === "admin" ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
               <div onClick={() => setRename(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={RenameIcon} width={22} height={22} alt={"Copiar documentos"}/>

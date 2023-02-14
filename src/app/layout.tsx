@@ -51,8 +51,7 @@ useEffect(() => {
       }
     }
   });
-// eslint-disable-next-line react-hooks/exhaustive-deps
-},[])
+},[router, children])
 
 
   return (
@@ -63,8 +62,7 @@ useEffect(() => {
         <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
         <AppContext.Provider value={{
           loading, setLoading,
-          dataUser, setDataUser,
-          allFiles, setAllFiles
+          dataUser, setDataUser
           }}>
             <Loading />
             {children}

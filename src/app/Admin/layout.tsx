@@ -4,7 +4,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import React, {useState, useEffect, useContext} from 'react'
 import { useRouter } from 'next/navigation'
 import { auth, db } from '../../../firebase'
-import { collection, getDocs, getDoc, query, doc } from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 import AppContext from '../../components/Clients&Admin/AppContext';
 
 export default function DashboardLayout({ children,}: {children: React.ReactNode}) {
@@ -15,13 +15,11 @@ export default function DashboardLayout({ children,}: {children: React.ReactNode
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      context.setLoading(false)
       if (user) {
         auth.currentUser.getIdTokenResult().then((idTokenResult) => {
           if(idTokenResult.claims.admin){
             setOnLoad(true)
             GetUsers(user)
-            GetFiles(user)
           } else {
             router.push("/Clientes")
           }
@@ -40,16 +38,6 @@ export default function DashboardLayout({ children,}: {children: React.ReactNode
     context.setDataUser(docSnap.data())
   }
 
-  async function GetFiles(user:User){
-    const files = []
-    const q = query(collection(db, "files", user.displayName, "Arquivos"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      files.push(doc.data())
-    });
-    context.setAllFiles(files)
-  }
-  
     return (
       <section>
         {onLoad ? 

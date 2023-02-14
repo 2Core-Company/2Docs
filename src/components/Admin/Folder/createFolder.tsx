@@ -16,11 +16,9 @@ function CreateFolder(props:{user:{folders?:Folders[]}, idUser:string, setUser:F
             if(color != undefined && nameFolder.length > 0 ){
                 folders.push({name: nameFolder, color: color})
                 try{
-                    console.log(props.idUser)
                     await updateDoc(doc(db, 'users', props.id_company, "Clientes", props.idUser), {
                         folders: folders
                     })
-                    console.log(updateDoc)
                     props.setUser({...props.user, folders:folders})
                     props.setFoldersFilter(folders)
                     props.setCreateFolder(false)
