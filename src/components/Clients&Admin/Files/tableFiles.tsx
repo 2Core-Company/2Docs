@@ -156,38 +156,38 @@ export default function TableFiles({setFilesFilter ,SelectFile, ConfirmationDele
         <table className='w-full mt-[10px] bg-transparent'>
           {/* <--------------------------------- HeadTable ---------------------------------> */}
           <thead>
-            <tr className='bg-[#DDDDDD] border-b-[2px] border-t-[2px] border-terciary text-[20px] max-lg:text-[18px] max-md:text-[17px]'>
+            <tr className='bg-[#DDDDDD] dark:bg-[#fff]/5 border-b-[2px] border-t-[2px] border-terciary dark:border-dterciary text-[20px] max-lg:text-[18px] max-md:text-[17px]'>
               <th className='py-[10px]'><button aria-label="checkbox demonstrativo" onClick={() => selectAllFiles()} className='w-[22px] h-[22px] cursor-pointer bg-white rounded-[4px] ml-[5px] border-[1px] border-black'/></th>
               
               <th className='font-[400] text-left pl-[20px] max-lg:pl-[10px]'>
                 <button id="filterName" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, name:! filter.name, status: false, date:false, size:false}), filterName())} className='flex items-center cursor-pointer'>
-                  <p>Nome</p> 
+                  <p className="dark:text-white">Nome</p> 
                   <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.name ? "rotate-180" : ""}`}src={ArrowFilter}/>
                 </button>
               </th>
 
               <th className='font-[400] text-left pl-[20px] max-md:hidden'>
                 <button id="filterSize" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, size:! filter.size, name:false, status: false, date:false}), filterSize())} className='flex items-center cursor-pointer'>
-                  <p>Tamanho</p> 
+                  <p className="dark:text-white">Tamanho</p> 
                   <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.size ? "rotate-180" : ""}`}src={ArrowFilter}/>
                 </button>
               </th>
 
               <th className='font-[400] max-lg:hidden'>
                 <button id="filterData" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, date:! filter.date, status: false, name:false, size:false}), filterDate())} className='flex items-center cursor-pointer'>
-                  <p className='text-left'>Data de upload</p>
+                  <p className='text-left dark:text-white'>Data de upload</p>
                   <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
                 </button>
               </th>
 
               <th className='font-[400]'>
               <button id="filterStatus" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, status:! filter.status, name: false,  size:false, date:false}), filterStatus())}  className='flex items-center cursor-pointer'>
-                  <p>Status</p>
+                  <p className="dark:text-white">Status</p>
                   <Image alt="Imagem de uma flecha" className={`ml-[5px]  ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter}/>
                 </button>
               </th>
 
-              <th className='font-[400]'>Ações</th>
+              <th className='font-[400] dark:text-white'>Ações</th>
 
             </tr>
           </thead>
@@ -197,21 +197,21 @@ export default function TableFiles({setFilesFilter ,SelectFile, ConfirmationDele
                     var checked = file.checked
                     if( showItens.min < index && index < showItens.max){
                     return(
-                    <tr key={file.id_file} className={`border-b-[1px] border-terciary text-[18px] max-lg:text-[16px] ${file.favorite ? "bg-neutral-200" : ""}`} >
+                    <tr key={file.id_file} className={`border-b-[1px] border-terciary dark:border-dterciary text-[18px] max-lg:text-[16px] ${file.favorite ? "bg-neutral-200" : ""}`} >
                       <th className='h-[50px] max-sm:h-[40px]'>
                         <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => SelectFile(index)} className='w-[20px] max-sm:w-[15px] max-sm:h-[15px]  h-[20px] ml-[5px]'/>
                       </th>
 
                       <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={40} height={40}  className='text-[10px] mt-[3px] mr-[10px] w-[30px] max-lg:w-[25px]  h-[30px] max-lg:h-[25px]'/>
-                        <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{file.name}</p>
+                        <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{file.name}</p>
                       </th>
 
                       <th className='font-[400] text-left pl-[20px] max-md:hidden w-50'>
-                        <p className='overflow-hidden whitespace-nowrap text-ellipsis '>{file.size < 1000 ? file.size + " KB"  : Math.ceil(file.size / 1000) + " MB"} </p>
+                        <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white'>{file.size < 1000 ? file.size + " KB"  : Math.ceil(file.size / 1000) + " MB"} </p>
                       </th>
 
-                      <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.created_date)}</th>
+                      <th className='font-[400] max-lg:hidden text-left dark:text-white'>{formatDate(file.created_date)}</th>
 
                       <th className='font-[400] w-[80px] pr-[10px] max-sm:pr-[0px] max-sm:w-[70px] text-[18px] max-sm:text-[14px] '>
                         {file.viwed  ? 
@@ -219,7 +219,7 @@ export default function TableFiles({setFilesFilter ,SelectFile, ConfirmationDele
                             Visualizado
                           </div>
                         :
-                          <div className='bg-hilight max-sm:text-[12px] border-terciary text-secondary border-[1px]  px-[4px] rounded-full'>
+                          <div className='bg-hilight dark:bg-dhilight max-sm:text-[12px] border-terciary dark:border-dterciary text-secondary dark:text-dsecondary border-[1px]  px-[4px] rounded-full'>
                             Visualizado
                           </div>
                         }

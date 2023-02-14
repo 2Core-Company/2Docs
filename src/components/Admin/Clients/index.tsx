@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import TableClients from './tableClients';
 import {Users, WindowsAction, UsersFilter} from '../../../types/interfaces'
 import DeletUser from './deletUser';
+import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 
 function ComponentClients(){
   const context = useContext(AppContext)
@@ -148,25 +149,30 @@ function ComponentClients(){
 
 
 return (
-      <section className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
+      <section className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
+        <LightModeSwitch />
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-          <p className=' font-poiretOne text-[40px]'>Clientes</p>
-          <div className=' w-full relative border-[2px] border-terciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
+          <p className='font-poiretOne text-[40px] dark:text-white'>Clientes</p>
+          <div className=' w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
               <div className='flex items-center bg-transparent'>
-                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{users.length} <span className='text-black'>Clientes</span></p>
-                <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px]"/>
-                <input type="text" value={searchUser} onChange={(Text) => setSearchUser(Text.target.value)}  className='w-[300px] text-black max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px]' placeholder='Buscar' ></input>
+                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px] dark:text-white'>{users.length} <span className='text-black dark:text-white'>Clientes</span></p>
+                <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px] dark:text-white"/>
+                <input type="text" value={searchUser} onChange={(Text) => setSearchUser(Text.target.value)}  className='w-[300px] dark:text-white text-black max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px] dark:placeholder:text-gray-500' placeholder='Buscar' ></input>
               </div>
+
               <div className={`text-center flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${menu ? "" : "max-lg:bg-[#b1b0b0]"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
+
                 <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`flex-col self-center hidden max-lg:flex ${menu ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
-                  <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
-                  <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
-                  <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+                  <div className={`w-[35px] max-lsm:w-[30px] h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
+                  <div className={`w-[35px] max-lsm:w-[30px] h-[3px] bg-black dark:bg-white my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
+                  <div className={`w-[35px] max-lsm:w-[30px] h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
                 <DeletUser menu={menu} selectUsers={selectUsers} usersFilter={usersFilter} childToParentDelet={childToParentDelet}/>
+
                 <button onClick={() => toast.promise(DisableUser(),toastDisable)} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
+
               </div>
             </div>
             <TableClients usersFilter={usersFilter} setUsersFilter={setUsersFilter} users={users} pages={pages} searchUser={searchUser} setUserEdit={setUserEdit} setWindowsAction={setWindowsAction} windowsAction={windowsAction} SelectUsers={SelectUsers} FilterFixed={FilterFixed}/>

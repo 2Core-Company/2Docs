@@ -41,10 +41,10 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <button className="flex gap-[3px]" aria-label="Customise options">
-            <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
-            <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
-            <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
+          <button className="flex gap-[3px] cursor-pointer" aria-label="Customize options">
+            <div className='w-[5px] h-[5px] bg-black dark:bg-white rounded-full'></div>
+            <div className='w-[5px] h-[5px] bg-black dark:bg-white rounded-full'></div>
+            <div className='w-[5px] h-[5px] bg-black dark:bg-white rounded-full'></div>
           </button>
         </DropdownMenu.Trigger>
 
@@ -67,16 +67,16 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
           {trash || url.includes("/Admin") && file.from === "user" || folderName === "Favoritos" ? <></>
           :
             <>
-              <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
+              <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
                 <div onClick={() => setMoveTo(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                  <Image src={Move} width={22} height={22}  alt={"Copiar documentos"} />
+                  <Image className="invert" src={Move} width={22} height={22}  alt={"Copiar documentos"} />
                   Mover
                 </div>
               </DropdownMenu.Item>
 
-              <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
+              <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
                 <div onClick={() => setCopyTo(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                  <Image src={Copy} width={22} height={22} alt={"Copiar documentos"}/>
+                  <Image className="invert" src={Copy} width={22} height={22} alt={"Copiar documentos"}/>
                   Copiar
                 </div>
               </DropdownMenu.Item>
@@ -85,7 +85,7 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
           {folderName === "Clientes" && file.from === "user" ||  url.includes("/Admin") && file.from === "admin" ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
               <div onClick={() => setRename(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <Image src={RenameIcon} width={22} height={22} alt={"Copiar documentos"}/>
+                <Image className="invert" src={RenameIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Renomear
               </div>
             </DropdownMenu.Item>
@@ -101,6 +101,7 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
             :
               <div onClick={() => FavoriteFile(file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={Favorite} width={22} height={22} alt={"Copiar documentos"}/>
+
                 Favoritar
               </div>
             }

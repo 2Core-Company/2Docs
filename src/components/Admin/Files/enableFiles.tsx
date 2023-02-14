@@ -44,7 +44,7 @@ function EnableFiles({selectFiles, menu, folders, childToChangeStatus, files}:Pr
         childToChangeStatus(files)
       }catch(e) {
         console.log(e)
-        toast.error("Não Foi possivel recuperar este arquivo.")
+        toast.error("Não Foi possível recuperar este arquivo.")
       }
     }
 
