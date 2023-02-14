@@ -91,7 +91,7 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
 
   return(
     <>
-      <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/60 dark:bg-red/60 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
+      <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/60 dark:bg-red/60 border-red text-white cursor-pointer" : "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
       {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} user={modal.user} childModal={childModal}/> : <></>}
     </>
 
