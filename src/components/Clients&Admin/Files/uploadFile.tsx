@@ -16,7 +16,6 @@ import { toast } from 'react-toastify';
 function UploadFiles(props:Props) {
 
   async function UploadFile(files){
-
     for(let i = 0; i < files.length; i++){
       if(files[i].size > 30000000){
         files.value = null
@@ -41,8 +40,12 @@ function UploadFiles(props:Props) {
   }
 
   async function UploadFilestore(params){
-    let blob = await fetch(params.url).then(r => r.blob());
-    var urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
+    try{
+      let blob = await fetch(params.url).then(r => r.blob());
+      var urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
+    } catch(e){
+      console.log(e)
+    }
     var type = params.file.split('/')
     var type2 = params.name.split('.')
 

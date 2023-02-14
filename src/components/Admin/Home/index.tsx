@@ -1,5 +1,5 @@
 import { db } from '../../../../firebase'
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc,  collection, getDocs, query} from "firebase/firestore";
 import Image from 'next/image';
 import { useContext, useLayoutEffect, useState } from 'react'
 import styles from './home.module.css'
@@ -17,17 +17,33 @@ function ComponentHome () {
   const [gbPorcentage, setGbPorcentage] = useState<number>(0)
   const [recentsFile, setRecentsFile]= useState<Files[]>([])
   const [dataCompany, setDataCompany] = useState<DataCompany>({contact:[], questions:[]})
+  const [files, setFiles] = useState([])
 
   useLayoutEffect(() => {
     if(context.dataUser != undefined){
-      CalculatingGb(context.allFiles)
-      FilterDate(context.allFiles)
+      GetFiles()
       GetContact()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[context.dataUser])
 
-  function CalculatingGb(files:Files[]){
+  async function GetFiles(){
+    const files = []
+    const q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      files.push(doc.data())
+    });
+    setFiles(files)
+  }
+
+  useLayoutEffect(() => {
+      CalculatingGb()
+      FilterDate()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[files])
+
+  function CalculatingGb(){
     const gbAll = 5000000
     var numbers: number | string | any  = 0
     for(var i = 0; i < files.length ; i++){
@@ -38,8 +54,8 @@ function ComponentHome () {
     setGb((numbers / 1000000).toFixed(1))
   }
 
-  async function FilterDate(getFiles:Files[]){
-    const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "user")
+  async function FilterDate(){
+    const filesHere = [...files].filter(file => file.trash === false && file.from === "user")
     const recents = []
     filesHere.sort((a, b) =>{ 
       a.created_date = new Date(a.created_date)
@@ -144,7 +160,7 @@ function ComponentHome () {
   }
 
   function childToParentDownload(files){
-    context.setAllFiles(files)
+    setFiles(files)
   }
 
   return (
@@ -152,7 +168,7 @@ function ComponentHome () {
       <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>        
         <LightModeSwitch />
         {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="border-[2px] border-secondary dark:border-dsecondary w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]"/> : <></>}
-        <p  className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Home</p>        
+        <p className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Home</p>        
         <p  className=' font-poiretOne mt-[20px] text-[40px] max-sm:text-[35px] dark:text-white'>Uso</p>
         <div className='flex items-center gap-[30px] max-md:gap-[10px]'>
           <div className='w-[250px] h-[15px] bg-hilight border-[2px] border-black rounded-[4px]'>
@@ -169,7 +185,7 @@ function ComponentHome () {
                 {recentsFile.length > 0 ?
                 recentsFile.map((file) =>{
                     return(
-                      <div onClick={() => DownloadFiles({filesDownloaded:[file], files:context.allFiles, from:"admin", childToParentDownload:childToParentDownload})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
+                      <div onClick={() => DownloadFiles({filesDownloaded:[file], files:files, from:"admin", childToParentDownload:childToParentDownload})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                         <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white'>{file.name}</p>
                       </div>

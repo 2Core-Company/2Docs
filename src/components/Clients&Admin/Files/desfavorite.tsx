@@ -3,7 +3,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/interfaces'
 
-  function Desfavorite(props:{desfavoriteFile:any, files:Files[], from:string, childToParentDownload:Function }) { 
+  function Desfavorite(props:{desfavoriteFile:any, files:Files[], from:string, childToParentDownload:Function, folderName:string }) { 
     const fileDesfavorite = props.desfavoriteFile                                                                                    
     const files =  props.files
     try{
@@ -11,8 +11,11 @@ import { Files } from '../../../types/interfaces'
             favorite: false
         })
         const index = files.findIndex(file => file.id_file == fileDesfavorite.id_file)
-        files[index].favorite = false
-        console.log(files)
+        if(props.folderName === "Favoritos"){
+            files.splice(index, 1);
+        } else {
+            files[index].favorite = false
+        }
         props.childToParentDownload(files)
     } catch(e) {
     console.log(e)

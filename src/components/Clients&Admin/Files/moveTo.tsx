@@ -1,26 +1,23 @@
-import React, { useLayoutEffect, useState, useContext } from 'react'
+import React, { useLayoutEffect, useState} from 'react'
 import { db } from '../../../../firebase'
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Files } from '../../../types/interfaces'
 import { toast } from 'react-toastify';
-import AppContext from '../../Clients&Admin/AppContext';
-
 
 interface Props{
     file:Files
+    files:Files[]
     setMoveTo:Function
     childToParentDownload:Function
 }
 
 function MoveTo(props: Props) {
-    const context = useContext(AppContext)
     const [folders, setFolders] = useState([])
     const [folderName, setFolderName] = useState(undefined)
     const messageToast = {pending:"Movendo o arquivo.", success:"Arquivo movido com sucesso.", error:"Não foi possivel mover o arquivo"}
     const toastId = "moveTo"
     
     useLayoutEffect(() =>{
-      console.log("a")
       GetFolders()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
@@ -37,13 +34,13 @@ function MoveTo(props: Props) {
     }
 
     async function ChangeFolder(){
-      const files = context.allFiles
+      const files = props.files
       try{
           await updateDoc(doc(db, 'files', props.file.id_company, "Arquivos", props.file.id_file), {
               folder: folderName
           })
-          const index = files.findIndex(file => file.id_file == props.file.id_file)
-          files[index].folder = folderName
+          const index:number = files.findIndex(file => file.id_file === file.id_file)
+          files.splice(index, 1);
           props.childToParentDownload(files)
           props.setMoveTo(false)
       } catch(e) {

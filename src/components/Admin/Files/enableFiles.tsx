@@ -6,7 +6,7 @@ import { Files, Folders } from '../../../types/interfaces'
 import React, { useContext } from 'react'
 import AppContext from '../../Clients&Admin/AppContext';
 
-function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[], childToChangeStatus:Function}) {
+function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[], childToChangeStatus:Function, files:Files[]}) {
     const context = useContext(AppContext)
 
     function ConfirmationEnableFile(){
@@ -18,7 +18,7 @@ function EnableFiles(props:{selectFiles:Files[], menu:boolean, folders?:Folders[
     }
 
     async function EnableFile(){
-      const files = context.allFiles
+      const files = props.files
       const selectFiles = props.selectFiles
       const folders = props.folders
       try{

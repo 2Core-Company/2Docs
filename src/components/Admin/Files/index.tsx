@@ -4,12 +4,11 @@ import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
 import AppContext from '../../Clients&Admin/AppContext';
 import {db} from '../../../../firebase'
-import { doc, getDoc} from "firebase/firestore";  
+import { doc, getDoc, where, collection, getDocs, query} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';
 import UploadFile from '../../Clients&Admin/Files/uploadFile'
 import Modals from '../../Clients&Admin/Modals'
 import { useSearchParams } from 'next/navigation';
-import ViewFile from '../../Clients&Admin/Files/viewFile';
 import { toast } from 'react-toastify';
 import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
@@ -36,7 +35,8 @@ function ComponentUpload(){
   const id:string  = params.get("id")
   const folderName:string  = params.get("folder")
   const [user, setUser] = useState<DataUser>()
-
+  
+  // <--------------------------------- GetUser --------------------------------->
   async function GetUser(){
     const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
     const docSnap = await getDoc(docRef);
@@ -44,33 +44,41 @@ function ComponentUpload(){
   }
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
-    if(context.allFiles != undefined){
+    if(context.dataUser != undefined){
       context.setLoading(true)
       GetFiles()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[context.allFiles])
+  },[context.dataUser])
   
   async function GetFiles(){
-    var getFiles
+    const getFiles = []
+    var q
     if(trash){
-      getFiles = context.allFiles.filter(file => file.id_user === id && file.trash === true)
+      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("trash", "==", true));
       GetUser()
     } else if(folderName === "Favoritos"){
-      getFiles = context.allFiles.filter(file => file.id_user === id && file.trash === false && file.favorite == true)
+      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("favorite", "==", true), where("trash", "==", false));
     } else {
-      getFiles = context.allFiles.filter(file => file.id_user === id && file.trash === false && file.folder == folderName)
+      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("folder", "==", folderName), where("trash", "==", false));
     }
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      getFiles.push(doc.data())
+    });
+
     for(var i = 0; i < getFiles.length; i++){
       getFiles[i].checked = false
-      getFiles[i].created_date = getFiles[i].created_date + ""
+      getFiles[i].created_date = files[i].created_date + ""
     }
-    setPages(Math.ceil(getFiles.length / 10))
-    setFiles(getFiles)
-    setFilesFilter(getFiles)
+    setPages(Math.ceil(files.length / 10))
+    setFiles(files)
+    setFilesFilter(files)
     context.setLoading(false)
   }
 
+  // <--------------------------------- Search Files --------------------------------->
   useEffect(() => {
     if(searchFile != null){
       const searchFilesFilter = []
@@ -83,6 +91,7 @@ function ComponentUpload(){
     }
   },[files, searchFile])
 
+  // <--------------------------------- Select Files --------------------------------->
   async function SelectFile(index:number){
     const files = [...filesFilter]
     files[index].checked = !files[index].checked
@@ -93,18 +102,17 @@ function ComponentUpload(){
   
   // <--------------------------------- Upload File --------------------------------->
   const childToParentUpload = (childdata:object) => {
-    files.push(childdata)
-    context.allFiles.push(childdata)
-    GetFiles()
+    const allFiles = [...files]
+    allFiles.push(childdata)
+    setFiles(allFiles)
     setMenu(true)
   }
-  // <--------------------------------- Delet Files --------------------------------->
 
+  // <--------------------------------- Delet / Disable Files --------------------------------->
   function ConfirmationDeleteFile(index:number){
     if(index != undefined) {
       SelectFile(index)
     }
-
     if(selectFiles.length > 0 || index != undefined){
       if(trash){
         setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivo?", subMessage1: "Será permanente.", subMessage2:"Não será possivel recuperar."})
@@ -119,44 +127,34 @@ function ComponentUpload(){
   const childModal = () => {
     setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
       if(trash){
-        toast.promise(DeletFiles({files:context.allFiles, selectFiles:selectFiles, childToParentDelet:childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
+        toast.promise(DeletFiles({files:files, selectFiles:selectFiles, childToParentDelet:childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
       } else {
-        toast.promise(DisableFiles({files:context.allFiles, selectFiles:selectFiles, childToParentDisable:childToChangeStatus}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
+        toast.promise(DisableFiles({files:files, selectFiles:selectFiles, childToParentDisable:childToChangeStatus}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
   }
 
   function childToChangeStatus(files){
-    context.setAllFiles(files)
+    setFiles(files)
     GetFiles()
     setMenu(true)
     setSelectFiles([])
   }
 
   function childToParentDelet(files){
-    context.setAllFiles(files)
-    GetFiles()
-    setMenu(true)
-    setSelectFiles([])
-  }
-
-  // <--------------------------------- Enable File --------------------------------->
-
-  function ResetConfig(files:Files[]){
-    setPages(Math.ceil(files.length / 10))
-    setMenu(true)
-    setSelectFiles([])
-    setFilesFilter(files)
     setFiles(files)
+    setMenu(true)
+    setSelectFiles([])
   }
 
+  // <--------------------------------- Download File --------------------------------->
   function DowloadFiles(){
     if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
     toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"admin", childToParentDownload:childToParentDownload}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})
   }
 
   function childToParentDownload(files){
-    context.setAllFiles(files)
-    GetFiles()
+    const allFiles = [...files]
+    setFiles(allFiles)
     setMenu(true)
     setSelectFiles([])
   }
@@ -190,14 +188,14 @@ return (
                 </button>
                 <button onClick={() => ConfirmationDeleteFile(undefined)} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 {trash ? 
-                  <EnableFiles menu={menu} selectFiles={selectFiles} childToChangeStatus={childToChangeStatus} folders={user?.folders} />
+                  <EnableFiles files={files} menu={menu} selectFiles={selectFiles} childToChangeStatus={childToChangeStatus} folders={user?.folders} />
                 : 
                   <UploadFile folderName={folderName} childToParentUpload={childToParentUpload} permission={context?.dataUser?.permission} id={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"}/>
                 }
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} ResetConfig={ResetConfig} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} from="admin"/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} documents={documents} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName} from="admin"/>
           </div>
         </div>
         {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}

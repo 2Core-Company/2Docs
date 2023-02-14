@@ -5,13 +5,12 @@ import { TrashIcon, DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-ic
 import { useSearchParams } from 'next/navigation';
 import React, {useEffect, useContext, useState} from 'react'
 import AppContext from '../../Clients&Admin/AppContext';
-import { getDoc } from "firebase/firestore";  
+import { getDoc, where, doc, updateDoc, collection, getDocs, query  } from "firebase/firestore";  
 import { db } from '../../../../firebase'
 import CreateFolder from './createFolder';
 import DeleteFolder from './deletFolder';
 import Link from 'next/link';
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
-import { doc, updateDoc } from "firebase/firestore";  
 import Modals from '../../Clients&Admin/Modals'
 import {toast} from 'react-toastify'
 import { DataUser, Files, Modal} from '../../../types/interfaces'
@@ -29,6 +28,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
     const [searchFolders, setSearchFolders] = useState<string>("")
     const [deletFolder, setDeletFolder] = useState<string>()
+
     useEffect(() =>{
       if(context.dataUser != undefined){
         GetFiles()
@@ -57,7 +57,12 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
     },[user, searchFolders, context.dataUser])
 
     async function GetFiles(){
-      const files = context.allFiles.filter( file => file.id_user === id)
+      const files = []
+      const q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        files.push(doc.data())
+      });
       setFiles(files)
       FilterDate(files)
     }
@@ -106,7 +111,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
     }
 
     function childToParentDownload(files){
-      context.setAllFiles(files)
+      setFiles(files)
     }
 
     return(
@@ -125,7 +130,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
               {recentsFile.map((file) =>{
                 return (
                   <div key={file.id_file} className='group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                    <button onClick={() => DownloadsFile({filesDownloaded:[file], files:context.allFiles, from:"admin", childToParentDownload:childToParentDownload})}>
+                    <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"admin", childToParentDownload:childToParentDownload})}>
                       <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                     </button>
                     <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>

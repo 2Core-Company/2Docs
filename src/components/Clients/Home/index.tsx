@@ -1,5 +1,5 @@
 import { db } from '../../../../firebase'
-import { doc, getDoc } from "firebase/firestore";
+import { doc, collection, getDocs, query, where, getDoc} from "firebase/firestore";
 import Image from 'next/image';
 import { useLayoutEffect, useState, useContext } from 'react'
 import styles from './home.module.css'
@@ -12,17 +12,28 @@ function ComponentHome () {
   const context = useContext(AppContext)
   const [recentsFile, setRecentsFile]= useState<Files[]>([])
   const [dataCompany, setDataCompany] = useState<DataCompany>({contact:[], questions:[]})
+  const [files, setFiles] = useState([])
 
   useLayoutEffect(() => {
     if(context.dataUser != undefined){
-      FilterDate(context.allFiles)
       GetContact()
+      GetFiles()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[context.dataUser])
 
-  async function FilterDate(getFiles:Files[]){
-    const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "admin")
+  async function GetFiles(){
+    const files = []
+    const q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==", context.dataUser.id), where("from", "==", "admin"));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      files.push(doc.data())
+    });
+    setFiles(files)
+  }
+
+  useLayoutEffect(() => {
+    const filesHere = [...files].filter(file => file.trash === false && file.from === "admin")
     const recents = []
     filesHere.sort((a, b) =>{ 
       a.created_date = new Date(a.created_date)
@@ -33,7 +44,7 @@ function ComponentHome () {
       recents.push(filesHere[i])
     }
     setRecentsFile(recents)
-  }
+  },[files])
 
   async function GetContact(){
     const docRef = doc(db, "users", context.dataUser.id_company);
@@ -47,7 +58,7 @@ function ComponentHome () {
   }
 
   function childToParentDownload(files){
-    context.setAllFiles(files)
+    setFiles(files)
   }
   
   return (
@@ -62,7 +73,7 @@ function ComponentHome () {
                 <div id={styles.boxFiles} className='w-full h-full overflow-y-auto'>
                   {recentsFile?.map((file) =>{
                     return(
-                      <div onClick={() => DownloadFiles({filesDownloaded:[file], files:context.allFiles, from:"user", childToParentDownload:childToParentDownload})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
+                      <div onClick={() => DownloadFiles({filesDownloaded:[file], files:files, from:"user", childToParentDownload:childToParentDownload})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                         <p className='overflow-hidden whitespace-nowrap text-ellipsis'>{file.name}</p>
                       </div>
@@ -76,7 +87,7 @@ function ComponentHome () {
               <p  className='font-poiretOne text-[40px] max-sm:text-[35px] '>Contato</p>
               <div className='border-[2px] border-secondary w-[300px] h-[200px] pr-[5px] rounded-[12px]'>
                 <div id={styles.boxFiles} className='h-full overflow-y-scroll px-[10px] flex flex-col'>
-                  {dataCompany?.contact.map((contact) => {
+                  {dataCompany?.contact?.map((contact) => {
                     const linkWhatsApp = "https://wa.me/55" +  contact.replaceAll("(", "").replaceAll( ")", "").replaceAll( "-", "").replaceAll( " ", "")
                     return(
                       <a key={contact} href={linkWhatsApp } className="flex items-center gap-[10px] mt-[10px] h-[50px] underline underline-offset-[8px]">
@@ -92,7 +103,7 @@ function ComponentHome () {
 
           <p  className='font-poiretOne text-[40px] max-sm:text-[35px] mt-[20px]'>Dúvidas Frequentes</p>
           <div className=' w-full'>
-            {dataCompany?.questions.map((question) => {
+            {dataCompany?.questions?.map((question) => {
               return(
                 <div key={question.question} className="w-full">
                   <details>

@@ -19,7 +19,6 @@ function ErrorFirebase(props:{message?:string, code?:string}) {
         message = "O formato de email digitado não é aceito pelo nosso sistema."
       }
       toast.error(message);
-      throw new Error(message);
 }
 
 export default ErrorFirebase

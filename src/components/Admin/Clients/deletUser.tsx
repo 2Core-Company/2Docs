@@ -70,9 +70,7 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
     childToParentDelet(users)
   }
 
-
   async function DeleteFiles(id:string){
-    const allFiles = context.allFiles
     const getFiles:Array<{id_file?:string}> = []
     var q = query(collection(db, "files", selectUsers[0].id_company, "Arquivos"), where("id_user", "==", id))
     const querySnapshot = await getDocs(q);
@@ -83,10 +81,7 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}) {
       const desertRef = ref(storage, selectUsers[0].id_company + '/files/' + id + "/" + getFiles[i].id_file)
       const result = await deleteObject(desertRef)
       const response = await deleteDoc(doc(db, "files", selectUsers[0].id_company, "Arquivos", getFiles[i].id_file));
-      const index = allFiles.findIndex(file => file.id_file === getFiles[i].id_file)
-      allFiles.splice(index, 1)
     }
-    context.setAllFiles(allFiles)
   }   
 
   return(

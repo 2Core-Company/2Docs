@@ -16,7 +16,6 @@ interface Props {
   SelectUsers: Function,
   setUserEdit: Function,
   setWindowsAction:Function,
-  ChildToParentFix:Function,
   FilterFixed:Function
 }
 
@@ -24,8 +23,8 @@ function TableClients(props: Props) {
     const [showItens, setShowItens] = useState<{min:number, max:number}>({min:-1, max:10})
     const [filter, setFilter] = useState<{name:boolean, date:boolean, status:boolean}>({name: false, date:false, status:false})
     const months:Array<string> = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-// <--------------------------------- Filters Table --------------------------------->
 
+  // <--------------------------------- Filters Table --------------------------------->
   function filterName(){
     var users = props.searchUser.length == 0 ? [...props.users ] : [...props.usersFilter]
     users.sort(function (x, y){

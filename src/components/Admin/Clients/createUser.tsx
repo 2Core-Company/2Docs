@@ -58,7 +58,7 @@ function CreateUser({childToParentCreate, closedWindow}){
         ErrorFirebase(error)
       });
     } else {
-      getDownloadURL(ref(storage, 'images/padrao.png'))
+      getDownloadURL(ref(storage, 'padrao.png'))
       .then((url) => {
         SignUpDb({url: url, referencesFile: "padrao.png", id: id})
       })
@@ -122,7 +122,7 @@ function CreateUser({childToParentCreate, closedWindow}){
     const data ={
       email: dataUser.email,
       password: dataUser.password,
-      id_company:"0mBWrQ3mMMKjAi4aMd4k"
+      id_company:context.dataUser.id_company
     }
     try{
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser.uid})

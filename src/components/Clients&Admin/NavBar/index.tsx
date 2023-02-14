@@ -57,7 +57,7 @@ function NavBar(props:{user:string, image:string}) {
                     </Tooltip.Portal>
                 </Tooltip.Root>
             </Tooltip.Provider>
-            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-full  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary flex flex-col items-center border-r-2 border-terciary`}> 
+            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-screen overflow-hidden ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary flex flex-col items-center border-r-2 border-terciary`}> 
                 <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>
@@ -138,7 +138,7 @@ function NavBar(props:{user:string, image:string}) {
                     <Tooltip.Root>
                         <div className='w-[90%] h-[3px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center absolute bottom-[70px] max-sm:bottom-[60px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] max-sm:bottom-[10px] w-full flex justify-center`}>
-                            <button className="IconButton" onClick={() => setModal({status:true,  message:"Tem certeza que deseja sair da sua conta cursor-pointer"})} >
+                            <button className="IconButton" onClick={() => setModal({status:true,  message:"Tem certeza que deseja sair da sua conta?"})} >
                                 <Image src={iconExit} alt="Ícone de sair" className='w-[40px] max-sm:w-[35px] h-[40px] max-sm:h-[35px]'/> 
                             </button>
                         </Tooltip.Trigger>
