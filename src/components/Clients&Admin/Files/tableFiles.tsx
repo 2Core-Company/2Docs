@@ -232,7 +232,7 @@ export default function TableFiles(props:Props) {
 
                       <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                           <div className='flex justify-center items-center gap-[10px]'>
-                              <Message file={file} childToParentDownload={props.childToParentDownload}/>
+                              <Message file={file} childToParentDownload={props.childToParentDownload} files={props.files}/>
                               <OptionsFile index={index} file={file} files={props.files} from={props.from} setViwedFile={setViwedFile} viwedFile={viwedFile} DownloadFile={DownloadFile}  DeletFiles={DeletFiles} trash={Boolean(trash)} FavoriteFile={FavoriteFile} DesfavoriteFile={DesfavoriteFile} childToParentDownload={props.childToParentDownload}/>
                           </div>
                       </th>
