@@ -50,7 +50,7 @@ function NavBar({user, image}:Props) {
                     <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
                         <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`z-10  absolute top-[20px] left-[20px] max-sm:left-[15px] flex flex-col`}>
                             <div className={`w-[40px] max-sm:w-[35px] h-[3px] bg-terciary dark:bg-dterciary transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
-                            <div className={`w-[40px] max-sm:w-[35px]  h-[3px] bg-terciary dark:bg-dterciary my-[8px] ${menu ? "" : "hidden"}`}/>
+                            <div className={`w-[40px] max-sm:w-[35px]  h-[3px] bg-terciary dark:bg-dterciary my-[8px] transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "hidden"} `}/>
                             <div className={`w-[40px] max-sm:w-[35px]  h-[3px] bg-terciary dark:bg-dterciary transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                         </button>
                     </Tooltip.Trigger>
@@ -62,7 +62,7 @@ function NavBar({user, image}:Props) {
                     </Tooltip.Portal>
                 </Tooltip.Root>
             </Tooltip.Provider>
-            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-screen overflow-hidden ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary flex flex-col items-center border-r-2 border-terciary`}> 
+            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-screen overflow-hidden  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
                 <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>
@@ -85,7 +85,7 @@ function NavBar({user, image}:Props) {
                     <div className='w-[90%] h-[3px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center'/>
 
                     <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Admin" || path === "/Clientes" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
+                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Admin" || path === "/Clientes" ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
                             <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(user === "Clients" ? "/Clientes" :"/Admin"))}>
                                 <HomeIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
                             </button>
@@ -104,7 +104,7 @@ function NavBar({user, image}:Props) {
 
                     {user === "Clients" ? 
                         <Tooltip.Root>
-                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-gray-300 bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
                                 <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Clientes/Pastas"))}>
                                     <FileTextIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white cursor-pointer'}/>
                                 </button>
@@ -122,7 +122,6 @@ function NavBar({user, image}:Props) {
                         </Tooltip.Root>
                     :
                         <Tooltip.Root>
-
                             <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Clientes" || path === "/Admin/Pastas" || path === "/Admin/Arquivos" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
                                 <button className="cursor-pointer" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push("/Admin/Clientes"))}>
                                     <PersonIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
@@ -141,10 +140,10 @@ function NavBar({user, image}:Props) {
                         </Tooltip.Root>
                     }
                     <Tooltip.Root>
-                        <div className='w-[90%] h-[3px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center absolute bottom-[70px] max-sm:bottom-[60px]'/>
+                        <div className='w-[90%] h-[3px] bg-terciary dark:bg-dterciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center absolute bottom-[70px] max-sm:bottom-[60px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] max-sm:bottom-[10px] w-full flex justify-center`}>
                             <button className="IconButton" onClick={() => setModal({status:true,  message:"Tem certeza que deseja sair da sua conta?"})} >
-                                <Image src={iconExit} alt="Ícone de sair" className='w-[40px] max-sm:w-[35px] h-[40px] max-sm:h-[35px]'/> 
+                                <Image src={iconExit} alt="Ícone de sair" className='w-[40px] max-sm:w-[35px] h-[40px] max-sm:h-[35px] cursor-pointer'/> 
                             </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>

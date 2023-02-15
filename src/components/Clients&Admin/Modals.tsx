@@ -29,9 +29,9 @@ function Modal({message, subMessage1, subMessage2, user, childModal, setModal}:P
               </div>)
             :(<></>)}
           </div>
-          <div className='flex w-full justify-end gap-4 bg-hilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-            <button onClick={() => setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })} className='bg-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
-            <button onClick={() => childModal()} className='bg-red/40 border-2 border-red hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] text-white '>Confirmar</button>
+          <div className='flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
+            <button onClick={() => setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })} className='bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px] rounded-[8px] text-[20px] text-white'>Cancelar</button>
+            <button onClick={() => childModal()} className='bg-red/40 border-2 border-red hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] text-white'>Confirmar</button>
           </div>
         </div>
       </div>

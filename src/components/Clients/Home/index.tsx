@@ -6,6 +6,7 @@ import styles from './home.module.css'
 import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
 import { Files, DataCompany} from '../../../types/interfaces' 
 import AppContext from '../../Clients&Admin/AppContext';
+import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 
 
 function ComponentHome () {
@@ -62,14 +63,15 @@ function ComponentHome () {
   }
   
   return (
-    <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
+    <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
+        <LightModeSwitch></LightModeSwitch>
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]" /> : ""}
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Home</p>
           <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
             <div>
               <p  className='font-poiretOne text-[40px] max-sm:text-[35px] '>Uploads Recentes</p>
-              <div className='border-[2px] border-secondary w-[300px] h-[200px] p-[10px] rounded-[12px] scroll-mt-[50px]'>
+              <div className='border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[200px] p-[10px] rounded-[12px] scroll-mt-[50px]'>
                 <div id={styles.boxFiles} className='w-full h-full overflow-y-auto'>
                   {recentsFile?.map((file) =>{
                     return(
@@ -85,7 +87,7 @@ function ComponentHome () {
 
             <div>
               <p  className='font-poiretOne text-[40px] max-sm:text-[35px] '>Contato</p>
-              <div className='border-[2px] border-secondary w-[300px] h-[200px] pr-[5px] rounded-[12px]'>
+              <div className='border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[200px] pr-[5px] rounded-[12px]'>
                 <div id={styles.boxFiles} className='h-full overflow-y-scroll px-[10px] flex flex-col'>
                   {dataCompany?.contact?.map((contact) => {
                     const linkWhatsApp = "https://wa.me/55" +  contact.replaceAll("(", "").replaceAll( ")", "").replaceAll( "-", "").replaceAll( " ", "")
