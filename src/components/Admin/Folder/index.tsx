@@ -164,7 +164,7 @@ import Enterprises from '../../Clients&Admin/Enterprise';
               {foldersFilter.length > 0 ? 
               foldersFilter.map((folder) =>{
                 if(folder.id_enterprise == enterprise?.id || folder.name === "Favoritos" || folder.name === "Cliente"){
-                const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === folder.id_enterprise) : files.filter(file => file.folder === folder.name && file.trash === false && file.id_enterprise === folder.id_enterprise)
+                const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === enterprise.id) : files.filter(file => file.folder === folder.name && file.trash === false && file.id_enterprise === enterprise.id)
                 return (
                   <div key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
                     {folder.name === "Cliente" || folder.name === "Favoritos" ? <></> : <TrashIcon height={25} width={25} onClick={() => ConfirmationDeleteFolder(folder.name)} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />}
