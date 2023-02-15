@@ -124,7 +124,7 @@ import Enterprises from '../../Clients&Admin/Enterprise';
 
     return(
       <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
-          {user?.enterprises[0] && enterprise ? <Enterprises enterprises={user.enterprises} user={user} setUser={setUser} enterprise={enterprise} setEnterprise={setEnterprise}/> : <></>}
+          {user?.enterprises[0] && enterprise ? <Enterprises enterprises={user.enterprises} user={user} setUser={setUser} enterprise={enterprise} setEnterprise={setEnterprise} from={"admin"}/> : <></>}
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           {recentsFile.length > 0 ? 
           <>

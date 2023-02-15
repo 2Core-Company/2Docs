@@ -10,11 +10,12 @@ interface Props{
     enterprises:{name:string, id:string}[]
     user:DataUser
     enterprise:{name:string, id:string}
+    from:string
     setEnterprise: Function
     setUser: Function
 }
 
-function Enterprises({enterprises, enterprise, user, setUser, setEnterprise}:Props) {
+function Enterprises({enterprises, enterprise, user, setUser, setEnterprise, from}:Props) {
     const [changeEnterprise, setChangeEnterprise] = useState(false)
     const [createEnterprises, setCreateEnterprises] = useState(false)
 
@@ -37,7 +38,11 @@ function Enterprises({enterprises, enterprise, user, setUser, setEnterprise}:Pro
                     return (
                         <div key={data.id} className="flex itens-center mt-[5px] justify-between px-[7px]">
                             <p onClick={() => (setEnterprise(enterprises[index]), setChangeEnterprise(false))} className="cursor-pointer w-[100%] max-w-[150px] overflow-hidden text-ellipsis">{data.name}</p>
-                            <Options user={user} index={index} setUser={setUser}/>
+                            {from === "user" ? 
+                                <div onClick={() => (setEnterprise(enterprises[index]), setChangeEnterprise(false))} className='cursor-pointer min-w-[20px] h-[20px] rounded-full border-black p-[2px] border-[2px]' />
+                            : 
+                                <Options user={user} index={index} setUser={setUser}/>
+                            }
                         </div>
                     )
                 })}
