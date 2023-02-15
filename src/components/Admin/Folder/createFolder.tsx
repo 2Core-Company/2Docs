@@ -9,21 +9,22 @@ interface Props{
     user:DataUser,
     id:string
     id_company:string
+    enterprise:{id:string}
     setUser:Function, 
     setFoldersFilter:Function
     setCreateFolder:Function
 }
 
-function CreateFolder({user, id, setUser,setCreateFolder, setFoldersFilter, id_company}:Props) {
+function CreateFolder({user, enterprise, id, setUser,setCreateFolder, setFoldersFilter, id_company}:Props) {
     const folders = user.folders
-    const [color, setColor] = useState<string>()
+    const [color, setColor] = useState<string>('#005694')
     const [nameFolder, setNameFolder] = useState<string>()
 
     async function CreateFolder(){
-        const result = folders.findIndex(folder => folder.name === nameFolder)
+        const result = folders.findIndex(folder => folder.name === nameFolder && folder.id_enterprise == enterprise.id)
         if(result === -1){
             if(color != undefined && nameFolder.length > 0 ){
-                folders.push({name: nameFolder, color: color})
+                folders.push({name: nameFolder, color: color, id_enterprise:enterprise.id})
                 try{
                     await updateDoc(doc(db, 'users', id_company, "Clientes", id), {
                         folders: folders

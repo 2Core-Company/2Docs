@@ -6,19 +6,33 @@ import React, {useEffect, useContext, useState} from 'react'
 import AppContext from '../../Clients&Admin/AppContext';
 import Link from 'next/link';
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
-import { Files } from '../../../types/interfaces' 
+import { Enterprise, Files, Folders } from '../../../types/interfaces' 
 import {db} from '../../../../firebase'
 import { where, collection, query, getDocs} from "firebase/firestore"; 
+import Enterprises from '../../Clients&Admin/Enterprise';
+import { useSearchParams } from 'next/navigation';
 
   function ComponentFolder(){
     const context = useContext(AppContext)
+    const params = useSearchParams()
     const [recentsFile, setRecentsFile] = useState<Files[]>([])
-    const [foldersFilter, setFoldersFilter] = useState<{color:string, name:string}[]>([])
+    const [foldersFilter, setFoldersFilter] = useState<Folders[]>([])
     const [searchFolders, setSearchFolders] = useState<string>("")
+    const id_enterprise:string  = params.get("id_enterprise")
+    const [enterprise, setEnterprise] = useState<Enterprise>()
     const [files, setFiles] = useState([])
     
     useEffect(() =>{
       if(context.dataUser != undefined){
+        var enterprise_id
+        if(id_enterprise){
+          const index = context.dataUser.enterprises.findIndex(enterprise => enterprise.id === id_enterprise)
+          setEnterprise(context.dataUser.enterprises[index])
+          enterprise_id = context.dataUser.enterprises[index].id
+        } else {
+          setEnterprise(context.dataUser.enterprises[0])
+          enterprise_id = context.dataUser.enterprises[0].id
+        }
         setFoldersFilter(context.dataUser.folders)
         GetFiles()
       }
@@ -67,6 +81,7 @@ import { where, collection, query, getDocs} from "firebase/firestore";
 
     return(
       <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
+      {context?.dataUser?.enterprises[0] && enterprise ? <Enterprises enterprises={context.dataUser.enterprises} enterprise={enterprise} user={context.dataUser} setUser={context.setDataUser} setEnterprise={setEnterprise}/> : <></>}
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           {recentsFile.length > 0 ? 
           <>
@@ -78,6 +93,7 @@ import { where, collection, query, getDocs} from "firebase/firestore";
 
             <div className='flex flex-wrap mt-[30px]'>
               {recentsFile.map((file) =>{
+                if(file.id_enterprise === enterprise.id){
                 return (
                   <div key={file.id_file} className='group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
                     <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"user", childToParentDownload:childToParentDownload})}>
@@ -87,7 +103,7 @@ import { where, collection, query, getDocs} from "firebase/firestore";
                     <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>{file.name}</p>
                   </div>
                 )
-              })}
+              }})}
             </div>
           </>
             : <></>}
@@ -98,10 +114,12 @@ import { where, collection, query, getDocs} from "firebase/firestore";
                 <input onChange={(text) => setSearchFolders(text.target.value)} type="text"  className='w-[90%] text-black  bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px] border-b-black border-b-[2px]' placeholder='Buscar' ></input>
               </label>
             </div>
+
             <div className='flex flex-wrap mt-[10px]'>
               {foldersFilter.length > 0 ? 
-              foldersFilter.map((folder) =>{
-                const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false) : files.filter(file => file.folder === folder.name && file.trash === false)
+                foldersFilter.map((folder) =>{
+                if(folder.id_enterprise == enterprise?.id || folder.name === "Favoritos" || folder.name === "Cliente"){
+                  const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === folder.id_enterprise) : files.filter(file => file.folder === folder.name && file.trash === false && file.id_enterprise === folder.id_enterprise)
                 return (
                   <Link href={{pathname: "/Clientes/Arquivos", query:{folder:folder.name}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
                     <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>
@@ -112,7 +130,7 @@ import { where, collection, query, getDocs} from "firebase/firestore";
                     </div>
                     <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>{folder.name === "Cliente" ? "Meus" : folder.name}</p>
                   </Link>
-                )})
+                )}})
               : <></>}
             </div>
           </div>

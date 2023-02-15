@@ -12,7 +12,7 @@ function Modal({message, subMessage1, subMessage2, user, childModal, setModal}:P
       <div className='w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black dark:text-white z-50 top-[0px] left-0'>
         <div className='bg-primary dark:bg-dprimary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
           <div  className='bg-red w-full h-[15px] rounded-t-[4px]'/>
-          <div className=' px-[10px]'>
+          <div className=' px-[10px] text-left'>
             <p className='text-[26px] mt-[10px]'>{message}</p>
             <p className='font-[600] text-[26px] font-poppins overflow-hidden whitespace-nowrap text-ellipsis w-full'>{user}</p>
             {subMessage1 != undefined ? 

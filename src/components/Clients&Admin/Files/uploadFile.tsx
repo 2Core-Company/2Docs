@@ -9,17 +9,19 @@ import { toast } from 'react-toastify';
     permission: number
     id:string
     id_company:string
-    childToParentUpload:Function
     from:string
+    id_enterprise:string
+    setFiles:Function
+    setMenu:Function
   }
 
-function UploadFiles({folderName, menu, permission, id, id_company, childToParentUpload, from}: Props) {
+function UploadFiles({folderName, menu, permission, id, id_company, setFiles, from, id_enterprise, setMenu}: Props) {
 
   async function UploadFile(files){
-    for(let i = 0; i < files.length; i++){
-      if(files[i].size > 30000000){
+    for await (const file of files.files) {
+      if(file.size > 30000000){
         files.value = null
-        return toast.error("Os arquivos só podem ter no maximo 2mb.")
+        return toast.error("Os arquivos só podem ter no maximo 30mb.")
       }
     }
     for await (const file of files.files) {
@@ -29,6 +31,7 @@ function UploadFiles({folderName, menu, permission, id, id_company, childToParen
       await GetUrlDownload({referencesFile:referencesFile, file:file, path:upload.metadata.fullPath})
     }
     files.value = null
+    setMenu(false)
   }
 
   async function GetUrlDownload(params){
@@ -62,13 +65,14 @@ function UploadFiles({folderName, menu, permission, id, id_company, childToParen
     } else {
       type = "docs"
     }
-
     const date = new Date() + ""
+
     try {
       const docRef = await setDoc(doc(db, "files", id_company, "Arquivos", params.nameFile), {
         id_user: id,
         id_file: params.nameFile,
         id_company: id_company,
+        id_enterprise: id_enterprise,
         url: params.url,
         name: params.name,
         size: Math.ceil(params.size / 1000),
@@ -84,6 +88,7 @@ function UploadFiles({folderName, menu, permission, id, id_company, childToParen
         id_user: id,
         id_file: params.nameFile,
         id_company: id_company,
+        id_enterprise: id_enterprise,
         url: params.url,
         name: params.name,
         size: Math.ceil(params.size / 1000),
@@ -96,8 +101,7 @@ function UploadFiles({folderName, menu, permission, id, id_company, childToParen
         folder: folderName,
         from: from
       }
-
-      childToParentUpload(data)
+      setFiles((files) => [...files, data])
     } catch (e) {
       toast.error("Não foi possivel armazenar o " + params.name)
       console.log(e)

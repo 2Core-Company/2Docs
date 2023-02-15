@@ -26,8 +26,9 @@ function  CopyTo({file, setCopyTo}: Props) {
     async function GetFolders(){
         const docRef = doc(db, "users", file.id_company, "Clientes", file.id_user);
         const docSnap = await getDoc(docRef);
-        if(docSnap.data().folders.length > 3){
-          setFolders(docSnap.data().folders)
+        const foldersHere = docSnap.data().folders.filter(folder => folder.id_enterprise === file.id_enterprise || folder.name === "Favoritos" || folder.name === "Cliente")
+        if(foldersHere.length > 3){
+          setFolders(foldersHere)
         } else {
           toast.error("Você precisa ter no minimo 2 pastas para conseguir copiar um arquivo.", {toastId:toastId})
           setCopyTo(false)
