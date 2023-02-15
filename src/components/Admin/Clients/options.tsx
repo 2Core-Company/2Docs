@@ -25,22 +25,22 @@ function OptionsFile({idUser, user, users, windowsAction, setWindowsAction, setU
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild className='flex justify-center items-center'>
           <button className="flex  cursor-pointer w-[20px] h-[20px] justify-between" aria-label="Customise options">
-            <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
-            <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
-            <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
+            <div className='w-[5px] h-[5px] bg-black dark:bg-white rounded-full'></div>
+            <div className='w-[5px] h-[5px] bg-black dark:bg-white rounded-full'></div>
+            <div className='w-[5px] h-[5px] bg-black dark:bg-white rounded-full'></div>
           </button>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Portal >
-          <DropdownMenu.Content align="end" alignOffset={-25}  className="bg-primary text-black text-[18px] rounded-[6px] flex flex-col gap-[5px] drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
-            <DropdownMenu.Item  className="cursor-pointer rounded-t-[6px] hover:outline-none  hover:bg-neutral-300">
+          <DropdownMenu.Content align="end" alignOffset={-25}  className="bg-primary dark:bg-dprimary text-black dark:text-white text-[18px] rounded-[6px] flex flex-col gap-[5px] drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
+            <DropdownMenu.Item  className="cursor-pointer rounded-t-[6px] hover:outline-none  hover:bg-neutral-300 dark:hover:bg-gray-300/20">
               <Link href={{ pathname: '/Admin/Pastas', query:{id:idUser}}}  className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <FileTextIcon width={22} height={22} className='text-[250px]'/>
                 Documentos
               </Link>
             </DropdownMenu.Item>
 
-            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
+            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-gray-300/20">
               <div onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Pencil1Icon width={22} height={22} className='text-[250px]'/>
                 Editar
@@ -48,7 +48,7 @@ function OptionsFile({idUser, user, users, windowsAction, setWindowsAction, setU
             </DropdownMenu.Item>
             
 
-            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
+            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-gray-300/20">
                 {user.fixed ? 
                     <div onClick={() => toast.promise(UnFix({user: user, users:users, FilterFixed:FilterFixed, setUsersFilter:setUsersFilter}),messageFix)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                         <DrawingPinFilledIcon width={22} height={22} className='text-[250px]'/>

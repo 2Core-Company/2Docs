@@ -125,7 +125,7 @@ function TableClients({  searchUser, users, setUsersFilter, usersFilter, pages, 
             if( showItens.min < index && index < showItens.max){
 
           return(
-          <tr key={user.id} className={`border-b-[1px] border-terciary dark:border-dterciary text-[18px] max-lg:text-[16px] ${user.fixed ? "bg-neutral-300" : ""}`}>
+          <tr key={user.id} className={`border-b-[1px] border-terciary dark:border-dterciary text-[18px] max-lg:text-[16px] ${user.fixed ? "bg-neutral-300 bg-neutral-300/10" : ""}`}>
               <th className='h-[50px] max-sm:h-[40px]'>
                 <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value === "on" ?  true : false}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
               </th>
