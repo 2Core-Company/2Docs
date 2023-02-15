@@ -29,6 +29,7 @@ function Files(){
   const folderName:string = params.get("folder")
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""})
   const [indexFile, setIndexFile] = useState<number>()
+  const id_enterprise:string  = params.get("id_enterprise")
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
@@ -86,14 +87,6 @@ function Files(){
     setFilesFilter(files)
   }
 
-  // <--------------------------------- Upload File --------------------------------->
-  const childToParentUpload = (childdata:object) => {
-    const allFiles = [...files]
-    allFiles.push(childdata)
-    setFiles(allFiles)
-    setMenu(true)
-  }
-
   // <--------------------------------- Delet File --------------------------------->
   function ConfirmationDeleteFile(index:number){
     setIndexFile(index)
@@ -130,9 +123,9 @@ return (
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Documentos</p>
           <div className='flex items-top'>
             <Image src={folder} alt="Imagem de uma pasta" width={21} height={21}/> 
-              <Link href={"Clientes/Pastas"}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
-            <FileIcon height={21} width={21} className="dark:text-dsecondary"/>
-            <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{folderName}</p> 
+              <Link href={{pathname:"Clientes/Pastas", query:{id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary'>{"Pastas    >"}</Link> 
+            <FileIcon height={21} width={21}/>
+            <p  className='text-[18px] flex mx-[5px] text-secondary'>{folderName}</p> 
           </div>
           <div className=' w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
@@ -147,8 +140,8 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white my-[8px] max-lsm:my-[5px] transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "hidden"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-strong dark:text-dstrong cursor-not-allowed"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
-                <UploadFile folderName={folderName} childToParentUpload={childToParentUpload} permission={context?.dataUser?.permission} id={context?.dataUser?.id} id_company={context?.dataUser?.id_company} menu={menu} from={"user"}/>
+                <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
+                <UploadFile setMenu={setMenu} id_enterprise={id_enterprise} folderName={folderName} setFiles={setFiles} permission={context?.dataUser?.permission} id={context?.dataUser?.id} id_company={context?.dataUser?.id_company} menu={menu} from={"user"}/>
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}

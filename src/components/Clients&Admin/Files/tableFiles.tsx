@@ -148,6 +148,7 @@ export default function TableFiles({setFilesFilter ,SelectFile, ConfirmationDele
     Desfavorite({desfavoriteFile:file, files:files, childToParentDownload:childToParentDownload, folderName:folderName})
   }
 
+
   return (
     <>
     {viwedFile.viwed ? <ViewFile setViwedFile={setViwedFile} viwedFile={viwedFile} files={files} from={from} childToParentDownload={childToParentDownload} /> : <></>}

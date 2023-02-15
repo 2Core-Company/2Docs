@@ -13,8 +13,8 @@ import Link from 'next/link';
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import Modals from '../../Clients&Admin/Modals'
 import {toast} from 'react-toastify'
-import { DataUser, Files, Modal} from '../../../types/interfaces'
-import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
+import { DataUser, Files, Modal, Enterprise} from '../../../types/interfaces'
+import Enterprises from '../../Clients&Admin/Enterprise';
 
   function ComponentFolder(){
     const context = useContext(AppContext)
@@ -28,6 +28,8 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
     const [searchFolders, setSearchFolders] = useState<string>("")
     const [deletFolder, setDeletFolder] = useState<string>()
+    const [enterprise, setEnterprise] = useState<Enterprise>()
+    const id_enterprise:string  = params.get("id_enterprise")
 
     useEffect(() =>{
       if(context.dataUser != undefined){
@@ -41,6 +43,12 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
       const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
       const docSnap = await getDoc(docRef)
       setUser(docSnap.data())
+      if(id_enterprise){
+        const index = docSnap.data().enterprises.findIndex(enterprise => enterprise.id === id_enterprise)
+        setEnterprise(docSnap.data().enterprises[index])
+      } else {
+        setEnterprise(docSnap.data().enterprises[0])
+      }
       setFoldersFilter(docSnap.data().folders)
     }
 
@@ -82,7 +90,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
     }
 
     function FilterTrash(){
-      return files.filter(file => file.trash === true)
+      return files.filter(file => file.trash === true && file.id_enterprise == enterprise?.id)
     }
 
     function ConfirmationDeleteFolder(name:string){
@@ -98,7 +106,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
     async function DeleteFolderAndFiles(){
       const name = deletFolder
       const filesHere = [...files]
-      toast.promise(DeleteFolder({user:user, name:name, setFoldersFilter:setFoldersFilter, setUser:setUser, id:id, id_company:context.dataUser.id_company}),{pending:"Deletando pasta.", success:"Pasta deletada.", error:"Não foi possivel deletar esta pasta."})
+      toast.promise(DeleteFolder({user:user, name:name, setFoldersFilter:setFoldersFilter, setUser:setUser, id:id, id_enterprise:enterprise.id, id_company:context.dataUser.id_company}),{pending:"Deletando pasta.", success:"Pasta deletada.", error:"Não foi possivel deletar esta pasta."})
       const filesToTrash = files.filter(file => file.folder === name)
       for (var i = 0; i < filesToTrash.length; i++){
         await updateDoc(doc(db, 'files', context.dataUser.id_company, "Arquivos", filesToTrash[i].id_file), {
@@ -116,7 +124,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 
     return(
       <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
-          <LightModeSwitch />
+          {user?.enterprises[0] && enterprise ? <Enterprises enterprises={user.enterprises} user={user} setUser={setUser} enterprise={enterprise} setEnterprise={setEnterprise}/> : <></>}
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           {recentsFile.length > 0 ? 
           <>
@@ -155,11 +163,12 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
             <div className='flex flex-wrap mt-[10px]'>
               {foldersFilter.length > 0 ? 
               foldersFilter.map((folder) =>{
-                const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false) : files.filter(file => file.folder === folder.name && file.trash === false)
+                if(folder.id_enterprise == enterprise?.id || folder.name === "Favoritos" || folder.name === "Cliente"){
+                const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === folder.id_enterprise) : files.filter(file => file.folder === folder.name && file.trash === false && file.id_enterprise === folder.id_enterprise)
                 return (
                   <div key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
                     {folder.name === "Cliente" || folder.name === "Favoritos" ? <></> : <TrashIcon height={25} width={25} onClick={() => ConfirmationDeleteFolder(folder.name)} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />}
-                    <Link href={{pathname:"/Admin/Arquivos", query:{folder:folder.name, id:id}}}>
+                    <Link href={{pathname:"/Admin/Arquivos", query:{folder:folder.name, id:id, id_enterprise:enterprise?.id}}}>
                       <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>
                         <p className='font-500 text-[18px] w-[25px] h-[25px] bg-secondary dark:bg-dsecondary rounded-full absolute text-center text-white right-[-10px]'>{qtdFiles.length}</p>
                         <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -169,12 +178,12 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
                       <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>{folder.name}</p>
                     </Link>
                   </div>
-                )})
+                )}})
               : <></>}
             </div>
 
             <p  className=' font-poiretOne text-[40px] mt-[20px]'>Lixeira</p>        
-            <Link href={{pathname:"/Admin/Arquivos", query:{trash:true, id:id}}} className='w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px]'>
+            <Link href={{pathname:"/Admin/Arquivos", query:{trash:true, id:id, id_enterprise:enterprise?.id}}} className='w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px]'>
               <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>
                 <p className='font-500 text-[18px] w-[25px] h-[25px] bg-secondary dark:bg-dsecondary rounded-full absolute text-center text-white right-[-10px]'>{FilterTrash().length}</p>
                 <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -184,7 +193,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
               <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>Excluidos</p>
             </Link>
           </div>
-          {createFolder ? <CreateFolder  setCreateFolder={setCreateFolder} id={id} user={user} setUser={setUser} setFoldersFilter={setFoldersFilter} id_company={context.dataUser.id_company}/> : <></>}
+          {createFolder ? <CreateFolder  enterprise={enterprise} setCreateFolder={setCreateFolder} id={id} user={user} setUser={setUser} setFoldersFilter={setFoldersFilter} id_company={context.dataUser.id_company}/> : <></>}
           {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
     )

@@ -18,7 +18,7 @@ interface Props{
     setUsersFilter:Function
 }
 
-function OptionsFile({idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed,setUsersFilter}: Props){
+function Options({idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed,setUsersFilter}: Props){
     const messageFix = {pending:"Fixando usuário...", success:"Usuário fixado com sucesso."}
   return (
     <>
@@ -68,4 +68,4 @@ function OptionsFile({idUser, user, users, windowsAction, setWindowsAction, setU
   );
 };
 
-export default OptionsFile;
+export default Options;

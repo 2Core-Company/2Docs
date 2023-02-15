@@ -34,11 +34,17 @@
     nameImage?:string 
     password?:string     
     permission?:number
-    folders?: Array<{ name:string, color:string}>
+    folders?: Folders[]
     phone?:string 
     photo_url?:string 
     status?:boolean
     fixed?:boolean
+    enterprises?:Enterprise[]
+  }
+
+  export interface Enterprise{
+    name:string, 
+    id:string
   }
 
   export interface UsersFilter{
@@ -74,11 +80,13 @@
     id_company?:string
     favorite?:boolean
     message?:string
+    id_enterprise?:string
   }
 
   export interface Folders{
     name:string, 
     color:string
+    id_enterprise:string
   }
 
   export interface DataCompany{

@@ -20,7 +20,7 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Files, Modal, DataUser } from '../../../types/interfaces'
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 
-function ComponentUpload(){
+function Files(){
   const context = useContext(AppContext)
   const [files, setFiles] = useState<Files[]>([])
   const [filesFilter, setFilesFilter] = useState<Files[]>([])
@@ -32,6 +32,7 @@ function ComponentUpload(){
   const params = useSearchParams()
   const trash:boolean = Boolean(params.get("trash"))
   const id:string  = params.get("id")
+  const id_enterprise:string  = params.get("id_enterprise")
   const folderName:string  = params.get("folder")
   const [user, setUser] = useState<DataUser>()
   
@@ -55,26 +56,24 @@ function ComponentUpload(){
     const getFiles = []
     var q
     if(trash){
-      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("trash", "==", true));
+      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("trash", "==", true), where("id_enterprise", "==", id_enterprise));
       GetUser()
     } else if(folderName === "Favoritos"){
-      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("favorite", "==", true), where("trash", "==", false));
+      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("favorite", "==", true), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
     } else {
-      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("folder", "==", folderName), where("trash", "==", false));
+      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("folder", "==", folderName), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
     }
 
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      getFiles.push(doc.data())
+      const file:Files = doc.data()
+      file.checked = false
+      getFiles.push(file)
     });
 
-    for(var i = 0; i < getFiles.length; i++){
-      getFiles[i].checked = false
-      getFiles[i].created_date = files[i].created_date + ""
-    }
-    setPages(Math.ceil(files.length / 10))
-    setFiles(files)
-    setFilesFilter(files)
+    setPages(Math.ceil(getFiles.length / 10))
+    setFiles(getFiles)
+    setFilesFilter(getFiles)
     context.setLoading(false)
   }
 
@@ -98,14 +97,6 @@ function ComponentUpload(){
     const fileSelect = files.filter(file => file.checked === true);
     setSelectFiles(fileSelect)
     setFilesFilter(files)
-  }
-  
-  // <--------------------------------- Upload File --------------------------------->
-  const childToParentUpload = (childdata:object) => {
-    const allFiles = [...files]
-    allFiles.push(childdata)
-    setFiles(allFiles)
-    setMenu(true)
   }
 
   // <--------------------------------- Delet / Disable Files --------------------------------->
@@ -134,14 +125,13 @@ function ComponentUpload(){
   }
 
   function childToChangeStatus(files){
-    setFiles(files)
-    GetFiles()
+    setFiles([...files])
     setMenu(true)
     setSelectFiles([])
   }
 
   function childToParentDelet(files){
-    setFiles(files)
+    setFiles([...files])
     setMenu(true)
     setSelectFiles([])
   }
@@ -153,8 +143,7 @@ function ComponentUpload(){
   }
 
   function childToParentDownload(files){
-    const allFiles = [...files]
-    setFiles(allFiles)
+    setFiles([...files])
     setMenu(true)
     setSelectFiles([])
   }
@@ -166,7 +155,7 @@ return (
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>{trash ? "Deletados" : "Documentos"}</p>
           <div className='flex items-top'>
             <Image src={folder} alt="Imagem de uma pasta"/> 
-              <Link href={{pathname:"Admin/Pastas", query:{id:id}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
+              <Link href={{pathname:"Admin/Pastas", query:{id:id, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
             <FileIcon className="dark:text-dsecondary" height={21} width={21}/>
             <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{trash ? "Lixeira" : folderName}</p> 
           </div>
@@ -188,9 +177,9 @@ return (
                 </button>
                 <button onClick={() => ConfirmationDeleteFile(undefined)} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 {trash ? 
-                  <EnableFiles files={files} menu={menu} selectFiles={selectFiles} childToChangeStatus={childToChangeStatus} folders={user?.folders} />
+                  <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles} selectFiles={selectFiles} folders={user?.folders} />
                 : 
-                  <UploadFile folderName={folderName} childToParentUpload={childToParentUpload} permission={context?.dataUser?.permission} id={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"}/>
+                  <UploadFile folderName={folderName} setFiles={setFiles} setMenu={setMenu} permission={context?.dataUser?.permission} id={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/>
                 }
               </div>
             </div>
@@ -202,4 +191,4 @@ return (
       </div>
   )
   }
-export default ComponentUpload;
+export default Files;

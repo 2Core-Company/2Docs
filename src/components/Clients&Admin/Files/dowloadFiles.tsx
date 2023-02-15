@@ -29,6 +29,8 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
 
       element.parentNode.removeChild(element);
 
+      filesDownloaded[i].checked = false
+      
       if(from === "user" && filesDownloaded[i].folder != "Cliente"){
         await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
           viwed: true
@@ -42,6 +44,7 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
         const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
         files[index].viwed = true
       }
+
       childToParentDownload(files)
     }
   } catch(e) {

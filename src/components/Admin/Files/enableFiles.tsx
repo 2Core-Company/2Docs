@@ -3,19 +3,18 @@ import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify'; 
 import { Files, Folders } from '../../../types/interfaces'
-import React, { useContext } from 'react'
-import AppContext from '../../Clients&Admin/AppContext';
+import React  from 'react'
 
 interface Props{
   selectFiles:Files[], 
   menu:boolean, 
   folders?:Folders[], 
-  childToChangeStatus:Function, 
   files:Files[]
+  setMenu:Function
+  setFiles:Function
 }
 
-function EnableFiles({selectFiles, menu, folders, childToChangeStatus, files}:Props) {
-    const context = useContext(AppContext)
+function EnableFiles({selectFiles, menu, folders, files, setMenu, setFiles}:Props) {
 
     function ConfirmationEnableFile(){
       if(selectFiles.length > 0){
@@ -30,7 +29,7 @@ function EnableFiles({selectFiles, menu, folders, childToChangeStatus, files}:Pr
         for(let i = 0; i < selectFiles.length; i++){
           const folderStatus = folders.findIndex(folder => folder.name === selectFiles[i].folder)
           if(folderStatus  == -1){
-            folders.push({name: selectFiles[i].folder, color: "#BE0000"})
+            folders.push({name: selectFiles[i].folder, color: "#BE0000", id_enterprise:selectFiles[i].id_enterprise})
             updateDoc(doc(db, 'users', selectFiles[i].id_company, "Clientes", selectFiles[i].id_user), {
               folders: folders
             })
@@ -39,9 +38,10 @@ function EnableFiles({selectFiles, menu, folders, childToChangeStatus, files}:Pr
             trash: false
           })
           const index = files.findIndex(file => file.id_file === selectFiles[i].id_file)
-          files[index].trash = false
+          files.splice(index,1)
         } 
-        childToChangeStatus(files)
+        setFiles([...files])
+        setMenu(false)
       }catch(e) {
         console.log(e)
         toast.error("Não Foi possível recuperar este arquivo.")

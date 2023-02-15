@@ -170,9 +170,8 @@ return (
                 </button>
                 <DeletUser menu={menu} selectUsers={selectUsers} usersFilter={usersFilter} childToParentDelet={childToParentDelet}/>
 
-                <button onClick={() => toast.promise(DisableUser(),toastDisable)} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white cursor-pointer" : "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
-                <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black dark:bg-white text-white dark:text-black p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
-
+                <button onClick={() => toast.promise(DisableUser(),toastDisable)} className={`cursor-pointer border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
+                <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
             </div>
             <TableClients usersFilter={usersFilter} setUsersFilter={setUsersFilter} users={users} pages={pages} searchUser={searchUser} setUserEdit={setUserEdit} setWindowsAction={setWindowsAction} windowsAction={windowsAction} SelectUsers={SelectUsers} FilterFixed={FilterFixed}/>

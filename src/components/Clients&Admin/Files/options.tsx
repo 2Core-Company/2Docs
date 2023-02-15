@@ -69,14 +69,14 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
             <>
               <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
                 <div onClick={() => setMoveTo(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                  <Image className="invert" src={Move} width={22} height={22}  alt={"Copiar documentos"} />
+                  <Image className="dark:invert" src={Move} width={22} height={22}  alt={"Copiar documentos"} />
                   Mover
                 </div>
               </DropdownMenu.Item>
 
               <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">
                 <div onClick={() => setCopyTo(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                  <Image className="invert" src={Copy} width={22} height={22} alt={"Copiar documentos"}/>
+                  <Image className="dark:invert" src={Copy} width={22} height={22} alt={"Copiar documentos"}/>
                   Copiar
                 </div>
               </DropdownMenu.Item>
@@ -85,7 +85,7 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
           {folderName === "Clientes" && file.from === "user" ||  url.includes("/Admin") && file.from === "admin" ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
               <div onClick={() => setRename(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <Image className="invert" src={RenameIcon} width={22} height={22} alt={"Copiar documentos"}/>
+                <Image className="dark:invert" src={RenameIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Renomear
               </div>
             </DropdownMenu.Item>
