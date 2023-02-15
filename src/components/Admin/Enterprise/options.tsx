@@ -83,7 +83,7 @@ function Options({user, index, setUser}: Props){
         <DropdownMenu.Trigger asChild className='flex justify-center items-center ml-[10px]'>
           <button className="flex  cursor-pointer w-[20px] h-[20px] justify-between" aria-label="Customise options">
             <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
-            <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
+            <div className='w-[5px] h-[5px] mx-[2px] bg-black rounded-full'></div>
             <div className='w-[5px] h-[5px] bg-black rounded-full'></div>
           </button>
         </DropdownMenu.Trigger>
