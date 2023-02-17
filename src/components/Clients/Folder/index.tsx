@@ -82,7 +82,7 @@ import { useSearchParams } from 'next/navigation';
     }
 
     return(
-      <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
+      <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
       {context?.dataUser?.enterprises[0] && enterprise ? <Enterprises enterprises={context.dataUser.enterprises} enterprise={enterprise} user={context.dataUser} setUser={context.setDataUser} setEnterprise={setEnterprise} from={"user"}/> : <></>}
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           {recentsFile.length > 0 ? 
