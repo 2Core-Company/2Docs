@@ -32,12 +32,12 @@ function Signin(){
     context.setLoading(true)
     signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
     .then((userCredential) => {
-      if(userCredential.user.emailVerified){
+      if(userCredential.user.emailVerified && userCredential.user.displayName){
         router.push("/Clientes")
       } else {
         context.setLoading(false)
-        signOut(auth)
         toast.error("Você não concluiu o cadastro da sua empresa.")
+        signOut(auth)
       }
     })
     .catch((error) => {

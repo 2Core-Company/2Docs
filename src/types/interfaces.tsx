@@ -2,21 +2,21 @@
     id?:string, 
     status?:boolean, 
     checked?:boolean,
-    length?: number,
+    length?:number,
     created_date?:Date,
     name?: string
-    fixed?:boolean
+    fixed?: boolean
   }
 
   export interface WindowsAction{
-    createUser?: boolean,
-    updateUser?: boolean,
-    deletUser?: boolean
+    createUser: boolean,
+    updateUser: boolean,
+    deletUser: boolean
   }
 
   export interface Modal{
     status?:boolean,
-    message?:string,
+    message:string,
     subMessage1?:string,
     subMessage2?:string,
     user?:string,
@@ -25,14 +25,14 @@
   }
 
   export interface DataUser{
-    cnpj?:string 
+    cnpj:string 
     created_date?:string 
-    email?:string 
+    email:string 
     id?:string 
     id_company?:string 
-    name?:string 
+    name:string 
     nameImage?:string 
-    password?:string     
+    password:string     
     permission?:number
     folders?: Folders[]
     phone?:string 
@@ -60,6 +60,7 @@
     created_date?:Date | any, 
     status?:boolean,
     checked?:boolean,
+    id_company?:string,
     fixed?:boolean
   }
 

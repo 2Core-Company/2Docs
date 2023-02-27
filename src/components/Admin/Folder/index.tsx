@@ -42,7 +42,24 @@ import Enterprises from '../../Clients&Admin/Enterprise';
     async function GetUser(){
       const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
       const docSnap = await getDoc(docRef)
-      setUser(docSnap.data())
+      const allDataUser = docSnap.data()
+      context.setDataUser({
+        cnpj: allDataUser.cnpj, 
+        created_date:allDataUser.created_user, 
+        email: allDataUser.email, 
+        id:allDataUser.id, 
+        id_company: allDataUser.id_company,
+        name:allDataUser.name,
+        nameImage:allDataUser.nameImage,
+        password:allDataUser.password,   
+        permission:allDataUser.permission,
+        folders: allDataUser.folders,
+        phone:allDataUser.phone,
+        photo_url:allDataUser.photo_url,
+        status:allDataUser.status,
+        fixed:allDataUser.fixed,
+        enterprises:allDataUser.enterprises
+      })
       if(id_enterprise){
         const index = docSnap.data().enterprises.findIndex(enterprise => enterprise.id === id_enterprise)
         setEnterprise(docSnap.data().enterprises[index])

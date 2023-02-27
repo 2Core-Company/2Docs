@@ -14,8 +14,8 @@ async function DisableFiles({files, selectFiles, childToParentDisable}:Props) {
       try{
         for(let i = 0; i < selectFiles.length; i++){
             updateDoc(doc(db, 'files', selectFiles[i].id_company, "Arquivos", selectFiles[i].id_file), {
-            trash: true
-          })
+              trash: true
+            })
           const index:number = files.findIndex(file => file.id_file === selectFiles[i].id_file)
           files.splice(index, 1);
         } 

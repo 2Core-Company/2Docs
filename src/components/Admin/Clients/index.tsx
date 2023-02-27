@@ -19,7 +19,7 @@ function ComponentClients(){
   const [users, setUsers] = useState<Users[]>([])
   const [usersFilter, setUsersFilter] = useState<UsersFilter[]>([])
   const [searchUser, setSearchUser] = useState<string>("")
-  const [userEdit, setUserEdit] = useState<{}>()
+  const [userEdit, setUserEdit] = useState<{cnpj:"", name:"", email:"", password:""}>()
   const [selectUsers, setSelectUsers] = useState<Users[]>([])
   const [windowsAction, setWindowsAction] = useState<WindowsAction>({createUser: false, updateUser: false, deletUser: false})
   const [pages, setPages] = useState<number>(0)
