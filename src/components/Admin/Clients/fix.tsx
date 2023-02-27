@@ -1,10 +1,10 @@
 import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
-import { Users, DataUser } from '../../../types/interfaces'
+import { Users, UsersFilter} from '../../../types/interfaces'
 
     interface Props{
-        user:DataUser, 
+        user:UsersFilter, 
         users:Users[], 
         FilterFixed:Function, 
         setUsersFilter:Function

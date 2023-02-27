@@ -1,10 +1,11 @@
   export interface Users{
-    id:string, 
-    status:boolean, 
-    checked:boolean,
-    created_date:Date,
-    name: string
-    fixed: boolean
+    id?:string, 
+    status?:boolean, 
+    checked?:boolean,
+    length?:number,
+    created_date?:Date,
+    name?: string
+    fixed?: boolean
   }
 
   export interface WindowsAction{
@@ -25,20 +26,20 @@
 
   export interface DataUser{
     cnpj:string 
-    created_date:string 
+    created_date?:string 
     email:string 
-    id:string 
-    id_company:string 
+    id?:string 
+    id_company?:string 
     name:string 
-    nameImage:string 
+    nameImage?:string 
     password:string     
-    permission:number
-    folders: Folders[]
-    phone:string 
-    photo_url:string 
-    status:boolean
-    fixed:boolean
-    enterprises:Enterprise[]
+    permission?:number
+    folders?: Folders[]
+    phone?:string 
+    photo_url?:string 
+    status?:boolean
+    fixed?:boolean
+    enterprises?:Enterprise[]
   }
 
   export interface Enterprise{
@@ -59,6 +60,7 @@
     created_date?:Date | any, 
     status?:boolean,
     checked?:boolean,
+    id_company?:string,
     fixed?:boolean
   }
 

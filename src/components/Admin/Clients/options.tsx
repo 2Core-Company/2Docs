@@ -2,14 +2,14 @@ import React from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Link from 'next/link'
 import { Pencil1Icon, FileTextIcon, DrawingPinIcon, DrawingPinFilledIcon } from '@radix-ui/react-icons';
-import { DataUser, Users, WindowsAction } from '../../../types/interfaces'
+import { DataUser,UsersFilter, Users, WindowsAction } from '../../../types/interfaces'
 import Fix from './fix'
 import UnFix from './unFix'
 import { toast } from 'react-toastify';
 
 interface Props{
     idUser:string
-    user:DataUser,
+    user:UsersFilter,
     users:Users[],
     windowsAction:WindowsAction,
     setWindowsAction:Function,
