@@ -40,7 +40,24 @@ function Files(){
   async function GetUser(){
     const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
     const docSnap = await getDoc(docRef);
-    setUser(docSnap.data())
+    const allDataUser = docSnap.data()
+    setUser({
+      cnpj: allDataUser.cnpj, 
+      created_date:allDataUser.created_user, 
+      email: allDataUser.email, 
+      id:allDataUser.id, 
+      id_company: allDataUser.id_company,
+      name:allDataUser.name,
+      nameImage:allDataUser.nameImage,
+      password:allDataUser.password,   
+      permission:allDataUser.permission,
+      folders: allDataUser.folders,
+      phone:allDataUser.phone,
+      photo_url:allDataUser.photo_url,
+      status:allDataUser.status,
+      fixed:allDataUser.fixed,
+      enterprises:allDataUser.enterprises
+    })
   }
   
   // <--------------------------------- GetFiles --------------------------------->

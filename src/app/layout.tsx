@@ -10,7 +10,7 @@ import Loading from '../components/Clients&Admin/Loading'
 import { useRouter } from 'next/navigation';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'
-import { DataUser, Files } from '../types/interfaces'
+import { DataUser } from '../types/interfaces'
 import ThemeContextProvider from '../hooks/useTheme'
 
 const poiretOne = Poiret_One({
@@ -29,7 +29,6 @@ export default function RootLayout({children,}: {children: React.ReactNode}) {
   
 const [loading, setLoading] = useState(false)
 const [dataUser, setDataUser] = useState<DataUser>()
-const [allFiles, setAllFiles] = useState<Files[]>()
 const router =  useRouter()
 
 useEffect(() => {
