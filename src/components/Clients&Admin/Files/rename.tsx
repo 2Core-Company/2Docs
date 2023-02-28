@@ -39,8 +39,8 @@ function  Rename({file, files, setRename, childToParentDownload}) {
             </div>
           </div>
           <div className='flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-            <button  onClick={() => setRename(false)} className='bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong dark:border-dstrong hover:scale-[1.10] duration-300 p-[3px]  rounded-[8px] text-[18px] text-white '>Cancelar</button>
-            <button type='submit' className={`${nameFile.trim().length > 0 ? "bg-[rgba(126,181,163,0.40)] border-[rgba(126,181,163,1)]": "bg-strong/30 dark:bg-dstrong/20 border-strong dark:border-dstrong text-white cursor-not-allowed" } border-2 hover:scale-[1.10]  duration-300 py-[3px] px-[10px] rounded-[8px] text-[18px] text-white `}>Alterar</button>
+            <button  onClick={() => setRename(false)} className='bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong dark:border-dstrong hover:scale-[1.10] duration-300 p-[3px] rounded-[8px] text-[18px] text-white cursor-pointer'>Cancelar</button>
+            <button type='submit' className={`${nameFile.trim().length > 0 ? "bg-[rgba(126,181,163,0.40)] border-[rgba(126,181,163,1)] cursor-pointer": "bg-strong/30 dark:bg-dstrong/20 border-strong dark:border-dstrong text-white cursor-not-allowed" } border-2 hover:scale-[1.10]  duration-300 py-[3px] px-[10px] rounded-[8px] text-[18px] text-white `}>Alterar</button>
           </div>
         </form>
       </div>
