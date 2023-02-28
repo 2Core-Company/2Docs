@@ -131,8 +131,8 @@ function TableClients({  searchUser, users, setUsersFilter, usersFilter, pages, 
               </th>
 
               <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
-                <Image src={user.photo_url} width={40} height={40} alt="Perfil"  className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
-                <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px] dark:text-white'>{user.name}</p>
+                <Image src={user.photo_url} width={40} height={40} alt="Perfil" className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
+                <p className='overflow-hidden whitespace-nowrap text-ellipsis max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px] dark:text-white'>{user.name}</p>
               </th>
 
               <th className='font-[400] text-left pl-[20px] max-md:hidden'>
@@ -165,7 +165,7 @@ function TableClients({  searchUser, users, setUsersFilter, usersFilter, pages, 
       : 
           <div className='w-full h-full flex justify-center items-center flex-col'>
             <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({...windowsAction, createUser: true})}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
-            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
           </div>
       }
 
