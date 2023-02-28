@@ -154,7 +154,7 @@ import Enterprises from '../../Clients&Admin/Enterprise';
             <div className='flex flex-wrap mt-[30px]'>
               {recentsFile.map((file) =>{
                 return (
-                  <div key={file.id_file} className='group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
+                  <div key={file.id_file} className='group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] dark:hover:shadow-[#414141] relative'>
                     <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"admin", childToParentDownload:childToParentDownload})}>
                       <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                     </button>
