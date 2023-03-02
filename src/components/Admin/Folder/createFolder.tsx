@@ -16,7 +16,8 @@ interface Props{
 }
 
 function CreateFolder({user, enterprise, id, setUser,setCreateFolder, setFoldersFilter, id_company}:Props) {
-    const folders = user.folders
+    const folders = user?.folders
+    console.log(user)
     const [color, setColor] = useState<string>('#005694')
     const [nameFolder, setNameFolder] = useState<string>()
 
@@ -41,7 +42,6 @@ function CreateFolder({user, enterprise, id, setUser,setCreateFolder, setFolders
         } else{
             throw toast.error("Já existe uma pasta com esse nome.")
         }
-
     }
 
   return (

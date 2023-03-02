@@ -45,7 +45,7 @@ useEffect(() => {
         })
       }
     } else {
-      if(page != "/"){
+      if(page != "/" && page != "/CompartilharArquivo"){
         router.push("/")
       }
     }

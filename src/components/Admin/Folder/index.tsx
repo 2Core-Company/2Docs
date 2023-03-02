@@ -43,7 +43,7 @@ import Enterprises from '../../Clients&Admin/Enterprise';
       const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
       const docSnap = await getDoc(docRef)
       const allDataUser = docSnap.data()
-      context.setDataUser({
+      setUser({
         cnpj: allDataUser.cnpj, 
         created_date:allDataUser.created_user, 
         email: allDataUser.email, 
