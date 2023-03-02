@@ -29,7 +29,6 @@ function ComponentClients(){
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() =>{
     if(context.dataUser){
-      context.setLoading(true)
       GetUsers()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,14 +39,13 @@ function ComponentClients(){
     const q = query(collection(db, "users", context.dataUser.id_company, "Clientes" ),where("permission", "==", 0));
     const querySnapshot = await getDocs(q);
     const a = querySnapshot.forEach((doc) =>  getUsers.push(doc.data()));
+    console.log(querySnapshot)
     for(var i = 0; i < getUsers.length; i++){
       getUsers[i].checked = false
     }
-    
     setPages(Math.ceil(getUsers.length / 10))
     setUsers(FilterFixed(getUsers))
     setUsersFilter(FilterFixed(getUsers))
-    context.setLoading(false)
   }
 
   // <--------------------------------- Filter fixed  --------------------------------->

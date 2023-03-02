@@ -7,11 +7,14 @@ import Move from '../../../../public/icons/move.svg'
 import RenameIcon from '../../../../public/icons/rename.svg'
 import Favorite from '../../../../public/icons/favorite.svg'
 import Desfavorite from '../../../../public/icons/desfavorite.svg'
+import Share from '../../../../public/icons/share.svg'
 import { Files } from '../../../types/interfaces'
 import MoveTo from './moveTo'
 import CopyTo from './copyTo'
 import Rename from './rename'
 import { useSearchParams } from 'next/navigation';
+import ShareFile from './shareFile';
+
 
 interface Props{
   file:Files, 
@@ -33,6 +36,7 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
   const [rename, setRename] = useState(false)
   const params = useSearchParams()
   const folderName:string = params.get("folder")
+
   return (
     <>
       {moveTo ? <MoveTo file={file} files={files} setMoveTo={setMoveTo} childToParentDownload={childToParentDownload}/> : <> </>}
@@ -105,6 +109,13 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
                 Favoritar
               </div>
             }
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
+              <div onClick={() => ShareFile({file:file})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+                <Image src={Share} width={22} height={22} alt={"Copiar documentos"}/>
+                Compartilhar
+              </div>
           </DropdownMenu.Item>
 
           {url.includes("/Clientes") && file.from === "user" ||  url.includes("/Admin") ? 
