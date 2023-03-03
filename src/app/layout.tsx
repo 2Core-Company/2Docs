@@ -50,7 +50,7 @@ useEffect(() => {
       }
     }
   });
-},[router, children])
+},[router])
 
 
   return (

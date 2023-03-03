@@ -16,8 +16,7 @@ interface Props{
 }
 
 function CreateFolder({user, enterprise, id, setUser,setCreateFolder, setFoldersFilter, id_company}:Props) {
-    const folders = user?.folders
-    console.log(user)
+    const folders = user.folders
     const [color, setColor] = useState<string>('#005694')
     const [nameFolder, setNameFolder] = useState<string>()
 

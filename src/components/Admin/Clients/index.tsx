@@ -39,7 +39,6 @@ function ComponentClients(){
     const q = query(collection(db, "users", context.dataUser.id_company, "Clientes" ),where("permission", "==", 0));
     const querySnapshot = await getDocs(q);
     const a = querySnapshot.forEach((doc) =>  getUsers.push(doc.data()));
-    console.log(querySnapshot)
     for(var i = 0; i < getUsers.length; i++){
       getUsers[i].checked = false
     }
@@ -167,7 +166,6 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px] h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
                 <DeletUser menu={menu} selectUsers={selectUsers} usersFilter={usersFilter} childToParentDelet={childToParentDelet}/>
-
                 <button onClick={() => toast.promise(DisableUser(),toastDisable)} className={`cursor-pointer border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>

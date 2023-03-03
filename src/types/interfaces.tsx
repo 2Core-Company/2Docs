@@ -82,6 +82,7 @@
     favorite?:boolean
     message?:string
     id_enterprise?:string
+    nameCompany?:string
   }
 
   export interface Folders{
