@@ -35,7 +35,8 @@ function Files(){
   const id_enterprise:string  = params.get("id_enterprise")
   const folderName:string  = params.get("folder")
   const [user, setUser] = useState<DataUser>()
-  
+
+
   // <--------------------------------- GetUser --------------------------------->
   async function GetUser(){
     const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
@@ -192,11 +193,11 @@ return (
                 <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
                   Download
                 </button>
-                <button onClick={() => ConfirmationDeleteFile(undefined)} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
+                <button onClick={() => ConfirmationDeleteFile(undefined)} className={` text-center border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary  text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 {trash ? 
                   <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles} selectFiles={selectFiles} folders={user?.folders} />
                 : 
-                  <UploadFile folderName={folderName} setFiles={setFiles} setMenu={setMenu} permission={context?.dataUser?.permission} id={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/>
+                  folderName != 'Favoritos' ? <UploadFile folderName={folderName} setFiles={setFiles} setMenu={setMenu} permission={context?.dataUser?.permission} id={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise} /> : <></>
                 }
               </div>
             </div>

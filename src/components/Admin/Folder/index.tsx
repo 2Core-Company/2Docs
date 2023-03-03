@@ -38,7 +38,7 @@ import Enterprises from '../../Clients&Admin/Enterprise';
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[context.dataUser])
-
+    
     async function GetUser(){
       const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
       const docSnap = await getDoc(docRef)

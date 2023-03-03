@@ -110,14 +110,15 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
               </div>
             }
           </DropdownMenu.Item>
-
+ 
+          {file?.from === 'admin' &&  url.includes("/Admin") ? 
           <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
               <div onClick={() => ShareFile({file:file})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={Share} width={22} height={22} alt={"Copiar documentos"}/>
                 Compartilhar
               </div>
           </DropdownMenu.Item>
-
+          :<></>}
           {url.includes("/Clientes") && file.from === "user" ||  url.includes("/Admin") ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none rounded-b-[6px] hover:bg-red/30">
               <div onClick={() => DeletFiles(index)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
