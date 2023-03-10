@@ -24,6 +24,7 @@ function UploadFiles({folderName, menu, permission, id, id_company, setFiles, fr
         return toast.error("Os arquivos só podem ter no maximo 30mb.")
       }
     }
+    
     for await (const file of files.files) {
       const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
       const docsRef = ref(storage, `${id_company}/files/${id + "/" + referencesFile}`);

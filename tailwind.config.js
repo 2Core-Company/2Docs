@@ -38,8 +38,7 @@ module.exports = {
         dgreenV: "#087E14",
         dblue: "#005694",
         dstrong: "#333333"
-      }
-
+      },
     },
 
   },

@@ -5,13 +5,12 @@ import { Files } from '../../../types/interfaces'
 
 interface Props{
   filesDownloaded:Files[]
-  files:Files[]
+  files?:Files[]
   from:string
-  childToParentDownload:Function
+  childToParentDownload?:Function
 }
 
 async function DownloadsFile({filesDownloaded, files, childToParentDownload, from}:Props){
-
   for(var i = 0; i < filesDownloaded.length; i++){
     let blob = await fetch(filesDownloaded[i].url).then(r => r.blob());
     filesDownloaded[i].urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
@@ -35,17 +34,21 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
         await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
           viwed: true
         })
-        const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
-        files[index].viwed = true
+        if(files){
+          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+          files[index].viwed = true
+          childToParentDownload(files)
+        }
       } else if(from === "admin" && filesDownloaded[i].folder == "Cliente"){
         await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
           viwed: true
         })
-        const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
-        files[index].viwed = true
+        if(files){
+          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+          files[index].viwed = true
+          childToParentDownload(files)
+        }
       }
-
-      childToParentDownload(files)
     }
   } catch(e) {
     console.log(e)

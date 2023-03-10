@@ -10,20 +10,21 @@ import { signOut} from "firebase/auth";
 import { auth } from '../../../../firebase'
 import { useRouter } from 'next/navigation';
 import { Modal } from '../../../types/interfaces'
-import axios from 'axios';
 import { useTheme } from "../../../hooks/useTheme"
+import Calendar from '../../../../public/icons/calendar.svg';
 
 interface Props{
     user:string
     image:string
 }
 
-
 function NavBar({user, image}:Props) {
     const path = usePathname()
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState<Modal>({status: false, message: ""})
     const router = useRouter()
+    console.log(window.location.href)
+
  
     const childModal = () => {
         signOut(auth).then(() => {
@@ -34,17 +35,10 @@ function NavBar({user, image}:Props) {
         });
     }
 
-    async function setAdminAuth(){
-        console.log("a")
-        const id = "QidWHorgi4RnOsCtTonuo6j5Gup1"
-        const domain = new URL(window.location.href).origin
-        const result = await axios.post(`${domain}/api/users/setAdmin`, {user: id})
-    }
-
     const { theme, setTheme } = useTheme();
 
     return (
-        <div className='left-[0px] fixed z-50'>
+        <div className='top-0 fixed w-[80px] z-50'>
             <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
@@ -62,7 +56,7 @@ function NavBar({user, image}:Props) {
                     </Tooltip.Portal>
                 </Tooltip.Root>
             </Tooltip.Provider>
-            <div className={`w-[80px] fixed max-sm:max-w-[70px] h-screen overflow-hidden  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
+            <div className={`w-[80px] relative max-sm:max-w-[70px] h-screen overflow-hidden  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
                 <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>
@@ -104,7 +98,7 @@ function NavBar({user, image}:Props) {
 
                     {user === "Clients" ? 
                         <Tooltip.Root>
-                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-gray-300 bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
                                 <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Clientes/Pastas"))}>
                                     <FileTextIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white cursor-pointer'}/>
                                 </button>
@@ -139,11 +133,30 @@ function NavBar({user, image}:Props) {
                             </Tooltip.Portal>
                         </Tooltip.Root>
                     }
+
+                    <Tooltip.Root>
+                        <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Calendario"  ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                            <button className="cursor-pointer" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push(window.location.href.includes('Admin') ? 'Admin/Calendario'  : 'Clientes/Calendario'))}>
+                                <Image src={Calendar} alt="Calendário" className={`w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] dark:fill-[#fff]`}/>
+                            </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                            <Tooltip.Content  side="right" sideOffset={10}>
+                                <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[5px] py-[2px] rounded-[10px] bg-gray-700 dark:bg-gray-200'>Clientes</p>
+                                {theme == "light" ? (
+                                    <Tooltip.Arrow width={15} height={10} className='fill-gray-700' />
+                                ) : (
+                                    <Tooltip.Arrow width={15} height={10} className='fill-gray-200' />
+                                )}                                    
+                            </Tooltip.Content>
+                        </Tooltip.Portal>
+                    </Tooltip.Root>
+
                     <Tooltip.Root>
                         <div className='w-[90%] h-[3px] bg-terciary dark:bg-dterciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center absolute bottom-[70px] max-sm:bottom-[60px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] max-sm:bottom-[10px] w-full flex justify-center`}>
                             <button className="IconButton" onClick={() => setModal({status:true,  message:"Tem certeza que deseja sair da sua conta?"})} >
-                                <Image src={iconExit} alt="Ícone de sair" className='w-[40px] max-sm:w-[35px] h-[40px] max-sm:h-[35px] cursor-pointer'/> 
+                                <Image priority src={iconExit} alt="Ícone de sair" className='w-[40px] max-sm:w-[35px] h-[40px] max-sm:h-[35px] cursor-pointer'/> 
                             </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
