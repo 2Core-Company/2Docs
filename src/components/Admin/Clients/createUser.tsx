@@ -14,10 +14,10 @@ import { DataUser } from '../../../types/interfaces'
 import AppContext from '../../Clients&Admin/AppContext';
 import { v4 as uuidv4 } from 'uuid';
 
-  interface Props{
-    childToParentCreate:Function
-    closedWindow:Function
-  }
+interface Props{
+  childToParentCreate:Function
+  closedWindow:Function
+}
 
 function CreateUser({childToParentCreate, closedWindow}:Props){
   const context = useContext(AppContext)

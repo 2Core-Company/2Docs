@@ -60,7 +60,7 @@ export default function DashboardLayout({ children,}: {children: React.ReactNode
         {onLoad ? 
         <>
           <NavBar image={urlImageProfile} user={"Admin"}/>
-          <main>{children}</main>
+          <main className='w-full'>{children}</main>
         </>
         : <></>}
       </section>

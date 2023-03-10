@@ -40,6 +40,7 @@
     status?:boolean
     fixed?:boolean
     enterprises?:Enterprise[]
+    checked?:boolean
   }
 
   export interface Enterprise{
@@ -65,6 +66,7 @@
   }
 
   export interface Files{
+    id_event?:string
     name?:string,
     id_file?:string
     checked?:boolean
@@ -108,4 +110,15 @@
     url?:string,
     viwed?:boolean
     downlowed?: boolean
+  }
+
+  export interface Event{
+    id:string
+    id_user:string
+    userName:string
+    enterprise:Enterprise
+    title:string
+    observation:string
+    complete:boolean
+    dateSelected:string
   }

@@ -1,6 +1,6 @@
 
 
-export function FormatDate({date}){
+export function FormatDate(date:string){
     if(date?.length > 12){
       const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
       var newDate = new Date(date)

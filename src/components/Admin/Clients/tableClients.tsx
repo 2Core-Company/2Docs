@@ -3,7 +3,7 @@ import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
 import Image from 'next/image'
 import iconNullClient from '../../../../public/icons/nullClient.svg'
 import iconSearchUser from '../../../../public/icons/searchUser.svg'
-import { UsersFilter, WindowsAction, Users } from '../../../types/interfaces'
+import { DataUser, UsersFilter, WindowsAction, Users } from '../../../types/interfaces'
 import Options from './options'
 
 interface Props { 
@@ -64,9 +64,6 @@ function TableClients({  searchUser, users, setUsersFilter, usersFilter, pages, 
        return (a.date.getTime() - b.date.getTime())
       }
     });
-    for (var i = 0; i < users .length; i++) {
-        users[i].created_date = users[i].created_date
-    }
     setUsersFilter(FilterFixed(users))
   }
 
@@ -120,7 +117,7 @@ function TableClients({  searchUser, users, setUsersFilter, usersFilter, pages, 
 
           {/* <--------------------------------- BodyTable ---------------------------------> */}
           <tbody>
-          {usersFilter.map((user, index) =>{
+          {usersFilter.map((user:DataUser, index) => {
             var checked = user.checked
             if( showItens.min < index && index < showItens.max){
 
