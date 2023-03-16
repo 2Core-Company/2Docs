@@ -5,7 +5,7 @@ import React, {useState, useContext, useEffect} from 'react'
 import AppContext from '../../Clients&Admin/AppContext';
 import { FileIcon  } from '@radix-ui/react-icons';
 import UploadFile from '../../Clients&Admin/Files/uploadFile'
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
@@ -14,7 +14,7 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import Modals from '../../Clients&Admin/Modals'
 import DeletFiles from '../../Admin/Files/deletFiles';
 import { Files, Modal} from '../../../types/interfaces' 
-import { where, collection, query, getDocs} from "firebase/firestore"; 
+import { where, collection, query, getDocs, doc, getDoc} from "firebase/firestore"; 
 import {db} from '../../../../firebase'
 
 function Files(){
@@ -30,15 +30,30 @@ function Files(){
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""})
   const [indexFile, setIndexFile] = useState<number>()
   const id_enterprise:string  = params.get("id_enterprise")
+  const router = useRouter();
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
     context.setLoading(true)
     if(context.dataUser != undefined){
-      GetFiles()
-    }
+      verifyFolder();
+      GetFiles();
+    }    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[context.dataUser])
+
+  async function verifyFolder() {
+    const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", context.dataUser.id);
+    const docSnap = await getDoc(docRef);
+
+    let folders = docSnap.data().folders;
+    
+    let mockFolder = folders.filter((folder) => folder.name === folderName);
+
+    if(mockFolder[0].isPrivate === true) {
+      router.push("/Clientes/Pastas");
+    }
+  }
 
   async function GetFiles(){
     var getFiles = []

@@ -11,6 +11,7 @@ import {db} from '../../../../firebase'
 import { where, collection, query, getDocs} from "firebase/firestore"; 
 import Enterprises from '../../Clients&Admin/Enterprise';
 import { useSearchParams } from 'next/navigation';
+import { folder } from 'jszip';
 
   function ComponentFolder(){
     const context = useContext(AppContext)
@@ -95,7 +96,9 @@ import { useSearchParams } from 'next/navigation';
 
             <div className='flex flex-wrap mt-[30px]'>
               {recentsFile.map((file) =>{
-                if(file.id_enterprise === enterprise.id){
+                let index = foldersFilter.findIndex((folder) => folder.name == file.folder)
+
+                if(file.id_enterprise === enterprise.id && foldersFilter[index].isPrivate === false){
                 return (
                   <div key={file.id_file} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
                     <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"user", childToParentDownload:childToParentDownload})}>

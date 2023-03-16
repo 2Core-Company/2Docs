@@ -170,7 +170,7 @@ function ComponentFolder() {
   async function PrivateFolderChange(privateState: boolean, index: number) {
     const mockFolders = foldersFilter;
 
-    mockFolders[index].isPrivate = !privateState;
+    foldersFilter[index].isPrivate = !privateState;
 
     try{
       toast.promise(
@@ -212,7 +212,7 @@ function ComponentFolder() {
       }
     );
     const filesToTrash = files.filter((file) => file.folder === name);
-    for (var i = 0; i < filesToTrash.length; i++) {
+    for (var i in filesToTrash) {
       await updateDoc(
         doc(
           db,
