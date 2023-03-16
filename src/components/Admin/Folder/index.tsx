@@ -6,7 +6,7 @@ import {
   DownloadIcon,
   MagnifyingGlassIcon,
   LockClosedIcon,
-  LockOpen2Icon,
+  LockOpen1Icon,
 } from "@radix-ui/react-icons";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useContext, useState } from "react";
@@ -167,6 +167,31 @@ function ComponentFolder() {
     DeleteFolderAndFiles();
   };
 
+  async function PrivateFolderChange(privateState: boolean, index: number) {
+    const mockFolders = foldersFilter;
+
+    mockFolders[index].isPrivate = !privateState;
+
+    try{
+      toast.promise(
+        updateDoc(
+          doc(db, "users", context.dataUser.id_company, "Clientes", user.id),
+          {
+            folders: mockFolders,
+          }
+        ),
+        {
+          pending: privateState ? "Desprivando pasta." : "Privando pasta.",
+          success: privateState ? "Pasta desprivada." : "Pasta privada.",
+        }
+      );
+    } catch(e) {
+      throw toast("Erro ao realizar a ação: " + e)
+    }
+
+    setFoldersFilter([...foldersFilter]);
+  }
+
   async function DeleteFolderAndFiles() {
     const name = deletFolder;
     const filesHere = [...files];
@@ -183,7 +208,7 @@ function ComponentFolder() {
       {
         pending: "Deletando pasta.",
         success: "Pasta deletada.",
-        error: "Não foi possivel deletar esta pasta.",
+        error: "Não foi possível deletar esta pasta.",
       }
     );
     const filesToTrash = files.filter((file) => file.folder === name);
@@ -307,7 +332,7 @@ function ComponentFolder() {
 
         <div className="flex flex-wrap mt-[10px]">
           {foldersFilter.length > 0 ? (
-            foldersFilter.map((folder) => {
+            foldersFilter.map((folder, index) => {
               if (
                 folder.id_enterprise == enterprise?.id ||
                 folder.name === "Favoritos" ||
@@ -336,23 +361,33 @@ function ComponentFolder() {
                     folder.name === "Favoritos" ? (
                       <></>
                     ) : (
-                      <LockClosedIcon
-                        height={24}
-                        width={24}
-                        onClick={() => {}}
-                        className="absolute top-[5px] right-[40px] group-hover:block cursor-pointer hidden"
-                      />
-                    )}
-                    {folder.name === "Cliente" ||
-                    folder.name === "Favoritos" ? (
-                      <></>
-                    ) : (
-                      <TrashIcon
-                        height={25}
-                        width={25}
-                        onClick={() => ConfirmationDeleteFolder(folder.name)}
-                        className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden"
-                      />
+                      <div>
+                        {folder.isPrivate === true ? (
+                          <LockClosedIcon
+                            height={24}
+                            width={24}
+                            onClick={() => {
+                              PrivateFolderChange(folder.isPrivate, index);
+                            }}
+                            className="absolute top-[5px] right-[40px] group-hover:block cursor-pointer hidden"
+                          />
+                        ) : (
+                          <LockOpen1Icon
+                            height={24}
+                            width={24}
+                            onClick={() => {
+                              PrivateFolderChange(folder.isPrivate, index);
+                            }}
+                            className="absolute top-[5px] right-[40px] group-hover:block cursor-pointer hidden"
+                          ></LockOpen1Icon>
+                        )}
+                        <TrashIcon
+                          height={25}
+                          width={25}
+                          onClick={() => ConfirmationDeleteFolder(folder.name)}
+                          className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden"
+                        />
+                      </div>
                     )}
                     <Link
                       href={{
