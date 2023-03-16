@@ -167,9 +167,7 @@ function ComponentFolder() {
     DeleteFolderAndFiles();
   };
 
-  async function PrivateFolderChange(privateState: boolean, index: number) {
-    const mockFolders = foldersFilter;
-
+  async function PrivateFolderChange(privateState: boolean, index: number) {    
     foldersFilter[index].isPrivate = !privateState;
 
     try{
@@ -177,7 +175,7 @@ function ComponentFolder() {
         updateDoc(
           doc(db, "users", context.dataUser.id_company, "Clientes", user.id),
           {
-            folders: mockFolders,
+            folders: foldersFilter,
           }
         ),
         {
