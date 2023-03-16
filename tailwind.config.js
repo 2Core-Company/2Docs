@@ -1,5 +1,6 @@
 const { fontFamily } = require('tailwindcss/defaultTheme')
 const defaultTheme = require('tailwindcss/defaultTheme')
+const { blackA } = require('@radix-ui/colors');
 
 
 /** @type {import('tailwindcss').Config} */
@@ -37,7 +38,10 @@ module.exports = {
         dred: "#BD0303",
         dgreenV: "#087E14",
         dblue: "#005694",
-        dstrong: "#333333"
+        dstrong: "#333333",
+
+        //!Radix
+        ...blackA,
       },
     },
 
