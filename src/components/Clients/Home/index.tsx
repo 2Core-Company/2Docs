@@ -7,6 +7,7 @@ import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
 import { Files, DataCompany} from '../../../types/interfaces' 
 import AppContext from '../../Clients&Admin/AppContext';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
+import Notification from './notification';
 
 
 function ComponentHome () {
@@ -63,10 +64,11 @@ function ComponentHome () {
   }
   
   return (
-    <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
-        <LightModeSwitch></LightModeSwitch>
-        <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-          {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]" /> : ""}
+    <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col text-black dark:text-white">
+        <LightModeSwitch />
+        <div className='w-[85%] h-full ml-[100px] max-lg:ml-[10px] max-lg:w-[90%] mt-[10px] max-lg:mt-[50px]'>
+          <Notification dataUser={context.dataUser}/>
+          {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px] top-[60px]" /> : ""}
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Home</p>
           <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
             <div>

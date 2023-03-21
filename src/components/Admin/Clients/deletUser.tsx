@@ -82,7 +82,25 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}:Props) {
       const result = await deleteObject(desertRef)
       const response = await deleteDoc(doc(db, "files", selectUsers[0].id_company, "Arquivos", getFiles[i].id_file));
     }
+    await DeletEvents()
   }   
+
+  async function DeletEvents() {
+    const events = await GetEvents()
+    for(let i = 0; i < events.length; i++){
+      const response = await deleteDoc(doc(db, "companies", selectUsers[0].id_company, "events", events[i].id));
+    }
+  }
+
+  async function GetEvents() {
+    const events = []
+    var q = query(collection(db, "companies", selectUsers[0].id_company, "events"), where("id_user", "==", selectUsers[0].id))
+    const querySnapshot = await getDocs(q);
+    const a = querySnapshot.forEach((doc) => {
+      events.push(doc.data())
+    }); 
+    return events
+  }
 
   return(
     <>

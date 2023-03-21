@@ -3,7 +3,7 @@ import { FormatDate } from '../Utils/FormatDate'
 import Image from 'next/image'
 import Document from '../../../../public/icons/document.svg'
 import styles from '../../Admin/Home/home.module.css'
-import { addDoc, collection, doc, setDoc} from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import { useContext, useState } from 'react'
 import AppContext from '../AppContext';
@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { Enterprise } from '../../../types/interfaces'
 import Arrow from '../../../../public/icons/arrow.svg'
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 
 
 interface Props{
@@ -18,20 +19,23 @@ interface Props{
     id:string
     enterprises:Enterprise[]
     userName:string
+    email:string
     setDateSelected:Function
     setModalEvent:Function
 }
 
-function CreateEvent({setDateSelected, dateSelected, id, enterprises, userName, setModalEvent}:Props) {
+function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, userName, setModalEvent}:Props) {
     const context = useContext(AppContext)
     const [changeEnterprise, setChangeEnterprise] = useState(false)
-    const [dataEvent, setDataEvent] = useState({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, enterprise: enterprises[0], userName:userName})
+    const [dataEvent, setDataEvent] = useState({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, enterprise: enterprises[0], userName:userName, viwed: false})
     const messageToast = {pending: 'Criando evento...', success:'Evento criado com sucesso.', error:'Não foi possivel criar este evento.'}
 
     async function CreatedEvent(){
-        try{
+        try{            
             const docRef = await setDoc(doc(db, "companies", context.dataUser.id_company, "events", dataEvent.id), dataEvent)
-            setModalEvent(false)
+            Promise.all([docRef, SendEmail()]).then((values) => {
+                setModalEvent(false)
+            }); 
         } catch(e){
             console.log(e)
             throw Error
@@ -41,6 +45,26 @@ function CreateEvent({setDateSelected, dateSelected, id, enterprises, userName, 
     function OnToast(e: { preventDefault: () => void; }){
         e.preventDefault()
         toast.promise(CreatedEvent(),messageToast)
+    }
+
+    async function SendEmail() {
+        const data = {
+            email: email,
+            title: dataEvent.title,
+            observation: dataEvent.observation,
+            enterprise: dataEvent.enterprise.name,
+            dateSelected: dataEvent.dateSelected
+        }
+        const domain:string = new URL(window.location.href).origin
+        try{
+          const result = await axios.post(`${domain}/api/events/sendEmail`, data)  
+          if(result.status === 200){
+            toast.success('Enviamos um email para seu cliente, notificando sobre este evento.')
+          }
+        }catch(e){
+            console.log(e)
+            throw Error
+        }
     }
 
 

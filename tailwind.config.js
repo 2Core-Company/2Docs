@@ -13,6 +13,10 @@ module.exports = {
         poppins: ['var(--font-poppins)', ...fontFamily.sans]
       },
 
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+      },
+
       screens: {
         "lsm": "450px",
         ...defaultTheme.screens,

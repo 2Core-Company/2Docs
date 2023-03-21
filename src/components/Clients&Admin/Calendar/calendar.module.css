@@ -1,9 +1,9 @@
 #animationUpdate{
-  height: 3px;
+  height: 2px;
   background-color: #50cc08;
   animation-name: example;
-  animation-duration: 4s;
-  margin-top: 5px;
+  animation-duration: 3s;
+  margin-top: 3px;
 }
 
 @keyframes example {

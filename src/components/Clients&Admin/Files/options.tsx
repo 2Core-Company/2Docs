@@ -105,7 +105,6 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
             :
               <div onClick={() => FavoriteFile(file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={Favorite} width={22} height={22} alt={"Copiar documentos"}/>
-
                 Favoritar
               </div>
             }

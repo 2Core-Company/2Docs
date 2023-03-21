@@ -177,6 +177,7 @@ function ComponentHome () {
           <p className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] dark:text-[#b1b1b1] font-[600]'><span className='text-[#BB8702]'>{gb}</span>Gb/<span className='text-secondary'>5</span>Gb</p>
         </div>
 
+
         <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
           <div>
             <p  className='font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Uploads Recentes</p>

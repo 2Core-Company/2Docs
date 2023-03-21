@@ -149,7 +149,7 @@ return (
       <section className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
         <LightModeSwitch />
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-          <p className='font-poiretOne text-[40px] dark:text-white'>Clientes</p>
+          <p  className='font-poiretOne text-[40px] dark:text-white'>Clientes</p>
           <div className=' w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
               <div className='flex items-center bg-transparent'>
