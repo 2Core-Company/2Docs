@@ -1,6 +1,5 @@
 import * as Tabs from '@radix-ui/react-tabs';
-import styles from "./signIn.module.css"
-import { EyeClosedIcon, EyeOpenIcon, SunIcon, MoonIcon } from '@radix-ui/react-icons';
+import { EyeClosedIcon, EyeOpenIcon} from '@radix-ui/react-icons';
 import { useState, useContext} from 'react';
 import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";

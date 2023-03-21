@@ -27,7 +27,7 @@ function Options({idUser, user, users, windowsAction, setWindowsAction, setUserE
 
   return (
     <>
-      {modalEvent ? <ModalEvent id={user.id} enterprises={user.enterprises} userName={user.name} setModalEvent={setModalEvent}/> : <></>}
+      {modalEvent ? <ModalEvent id={user.id} email={user.email} enterprises={user.enterprises} userName={user.name} setModalEvent={setModalEvent}/> : <></>}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild className='flex justify-center items-center'>
           <button className="flex  cursor-pointer w-[20px] h-[20px] justify-between" aria-label="Customise options">
@@ -60,18 +60,17 @@ function Options({idUser, user, users, windowsAction, setWindowsAction, setUserE
               </div>
             </DropdownMenu.Item>
             
-
             <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-gray-300/20">
                 {user.fixed ? 
-                    <div onClick={() => toast.promise(UnFix({user: user, users:users, FilterFixed:FilterFixed, setUsersFilter:setUsersFilter}),messageFix)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                        <DrawingPinFilledIcon width={22} height={22} className='text-[250px]'/>
-                        Desfixar
-                    </div>
+                  <div onClick={() => toast.promise(UnFix({user: user, users:users, FilterFixed:FilterFixed, setUsersFilter:setUsersFilter}),messageFix)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+                    <DrawingPinFilledIcon width={22} height={22} className='text-[250px]'/>
+                    Desfixar
+                  </div>
                 :
-                    <div onClick={() => toast.promise(Fix({user: user, users:users, FilterFixed:FilterFixed, setUsersFilter:setUsersFilter}),messageFix)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                        <DrawingPinIcon width={22} height={22} className='text-[250px]'/>
-                        Fixar
-                    </div>
+                  <div onClick={() => toast.promise(Fix({user: user, users:users, FilterFixed:FilterFixed, setUsersFilter:setUsersFilter}),messageFix)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+                    <DrawingPinIcon width={22} height={22} className='text-[250px]'/>
+                    Fixar
+                  </div>
                 }   
             </DropdownMenu.Item>
           </DropdownMenu.Content>

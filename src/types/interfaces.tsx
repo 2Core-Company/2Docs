@@ -122,4 +122,5 @@
     observation:string
     complete:boolean
     dateSelected:string
+    viwed:boolean
   }

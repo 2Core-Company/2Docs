@@ -8,3 +8,8 @@ export function FormatDate(date:string){
       return date.substr(8, 2) + " de " + months[month] + " de " + date.substr(11, 4)
     } 
 }
+
+export function FormatDateSmall(date:string){
+  var newDate = new Date(date)
+  return newDate.toLocaleDateString()
+}

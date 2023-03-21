@@ -23,8 +23,6 @@ function NavBar({user, image}:Props) {
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState<Modal>({status: false, message: ""})
     const router = useRouter()
-    console.log(window.location.href)
-
  
     const childModal = () => {
         signOut(auth).then(() => {
@@ -38,7 +36,7 @@ function NavBar({user, image}:Props) {
     const { theme, setTheme } = useTheme();
 
     return (
-        <div className='top-0 fixed w-[80px] z-50'>
+        <div className='top-0 fixed z-50'>
             <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
@@ -86,7 +84,7 @@ function NavBar({user, image}:Props) {
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                             <Tooltip.Content  side="right" sideOffset={10}>
-                                <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[2px] rounded-[10px] bg-gray-700 dark:bg-gray-200'>Pagina Inicial</p>
+                                <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[4px] rounded-[10px] bg-gray-700 dark:bg-gray-200'>Inicial</p>
                                 {theme == "light" ? (
                                     <Tooltip.Arrow width={15} height={10} className='fill-gray-700'/>
                                 ) : (
@@ -135,14 +133,14 @@ function NavBar({user, image}:Props) {
                     }
 
                     <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Calendario"  ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
-                            <button className="cursor-pointer" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push(window.location.href.includes('Admin') ? 'Admin/Calendario'  : 'Clientes/Calendario'))}>
+                        <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Calendario" || path === "/Clientes/Calendario"  ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                            <button className="cursor-pointer" id="alb" title="Pagina De Calendário" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push(window.location.href.includes('Admin') ? 'Admin/Calendario'  : 'Clientes/Calendario'))}>
                                 <Image src={Calendar} alt="Calendário" className={`w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] dark:fill-[#fff]`}/>
                             </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                             <Tooltip.Content  side="right" sideOffset={10}>
-                                <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[5px] py-[2px] rounded-[10px] bg-gray-700 dark:bg-gray-200'>Clientes</p>
+                                <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[5px] py-[2px] rounded-[10px] bg-gray-700 dark:bg-gray-200'>Calendário</p>
                                 {theme == "light" ? (
                                     <Tooltip.Arrow width={15} height={10} className='fill-gray-700' />
                                 ) : (

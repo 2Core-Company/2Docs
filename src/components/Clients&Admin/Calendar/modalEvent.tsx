@@ -9,10 +9,11 @@ interface Props{
   id:string
   enterprises:Enterprise[]
   userName:string
+  email:string
   setModalEvent:Function
 }
 
-export default function ModalEvent({id, enterprises, userName, setModalEvent}:Props) {
+export default function ModalEvent({email, id, enterprises, userName, setModalEvent}:Props) {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [dateSelected, setDateSelected] = useState<string>();
   const [indexMonth, setIndexMonth] = useState(new Date().getMonth())
@@ -54,7 +55,7 @@ export default function ModalEvent({id, enterprises, userName, setModalEvent}:Pr
       <div className="max-w-[600px] flex flex-col items-center bg-primary pb-[10px] rounded-[8px] relative">
         <div onClick={() => setModalEvent(false)} className="cursor-pointer w-[4px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[4px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:cursor-pointer after:rotate-90 absolute right-[15px] top-[5px]"></div>
         {dateSelected ? 
-          <CreateEvent setDateSelected={setDateSelected} dateSelected={dateSelected} id={id} enterprises={enterprises} userName={userName} setModalEvent={setModalEvent} />
+          <CreateEvent email={email} setDateSelected={setDateSelected} dateSelected={dateSelected} id={id} enterprises={enterprises} userName={userName} setModalEvent={setModalEvent} />
         : 
           <>
             <p className="font-poiretOne text-[40px]">Calendário</p>

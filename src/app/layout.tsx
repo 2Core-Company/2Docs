@@ -58,7 +58,7 @@ useEffect(() => {
       <html lang="pt-br" className='bg-primary dark:bg-dprimary'>
         <title>Software para auxiliar o gerenciamento dos arquivos.</title>
         <head />
-        <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
+        <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins max-w-screen`}>
         <AppContext.Provider value={{
           loading, setLoading,
           dataUser, setDataUser
