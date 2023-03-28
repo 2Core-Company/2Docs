@@ -39,13 +39,6 @@ function Files(){
   const folderName:string  = params.get("folder")
   const [user, setUser] = useState<DataUser>()
 
-
-  // <--------------------------------- GetUser --------------------------------->
-  async function GetUser(){
-    const docRef = doc(db, "users", dataUser.id_company, "Clientes", id);
-    const docSnap = await getDoc(docRef);
-    setUser(docSnap.data())
-  }
   
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
@@ -68,7 +61,12 @@ function Files(){
     setLoading(false)
   }
 
-  
+    // <--------------------------------- GetUser --------------------------------->
+    async function GetUser(){
+      const docRef = doc(db, "companies", dataUser.id_company, "clients", id);
+      const docSnap = await getDoc(docRef);
+      setUser(docSnap.data())
+    }
 
   // <--------------------------------- Search Files --------------------------------->
   useEffect(() => {
@@ -113,7 +111,7 @@ function Files(){
       if(trash){
         toast.promise(DeletFiles({files:files, selectFiles:selectFiles, childToParentDelet:childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
       } else {
-        toast.promise(DisableFiles({files:files, selectFiles:selectFiles, childToParentDisable:childToChangeStatus}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
+        toast.promise(DisableFiles({files:files, selectFiles:selectFiles, setFiles:setFiles}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
   }
 

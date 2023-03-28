@@ -8,7 +8,7 @@ import { userContext } from '../../../app/contextUser'
 import {getDoc, where, doc, updateDoc, collection,getDocs, query} from "firebase/firestore";
 import { db } from "../../../../firebase";
 import CreateFolder from "./createFolder";
-import DeleteFolder from "./deletFolder";
+import DeleteFolder from "./DeletFolder";
 import Link from "next/link";
 import DownloadsFile from "../../Clients&Admin/Files/dowloadFiles";
 import Modals from "../../Clients&Admin/Modals";
@@ -105,6 +105,7 @@ function ComponentFolder() {
 
     setFoldersFilter([...foldersFilter]);
   }
+  console.log(files)
 
   return (
     <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">

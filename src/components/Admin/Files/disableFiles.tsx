@@ -11,19 +11,19 @@ interface Props{
 }
 
 async function DisableFiles({files, selectFiles, setFiles}:Props) {
-      try{
-        for await (const file of selectFiles){
-          updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
-            trash: true
-          })
-          const index:number = files.findIndex(file => file.id_file === file.id_file)
-          files.splice(index, 1);
-        } 
-        setFiles(files)
-      }catch(e) {
-        console.log(e)
-        toast.error("Não Foi possivel excluir este arquivo.")
-      }
+  try{
+    for await (const file of selectFiles){
+      updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
+        trash: true
+      })
+      const index:number = files.findIndex(file => file.id_file === file.id_file)
+      files.splice(index, 1);
+    } 
+    setFiles(files)
+  }catch(e){
+    console.log(e)
+    toast.error("Não Foi possivel excluir este arquivo.")
+  }
 }
 
 export default DisableFiles

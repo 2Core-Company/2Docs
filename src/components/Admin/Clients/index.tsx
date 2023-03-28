@@ -63,7 +63,7 @@ function ComponentClients() {
   };
 
   const closedWindow = () => {
-    setWindowsAction({createUser: false,updateUser: false,});
+    setWindowsAction({createUser: false,updateUser: false});
   };
 
   // <--------------------------------- Edit User --------------------------------->

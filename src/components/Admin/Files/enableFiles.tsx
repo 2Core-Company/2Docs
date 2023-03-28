@@ -15,7 +15,6 @@ interface Props{
 }
 
 function EnableFiles({selectFiles, menu, folders, files, setMenu, setFiles}:Props) {
-
     function ConfirmationEnableFile(){
       if(selectFiles.length > 0){
         toast.promise(EnableFile(),{pending:"Restaurando arquivos.", success:"Arquivos restaurados.", error:"Não foi possivel restaurar os arquivos."})
@@ -30,11 +29,11 @@ function EnableFiles({selectFiles, menu, folders, files, setMenu, setFiles}:Prop
           const folderStatus = folders.findIndex(folder => folder.name === selectFiles[i].folder)
           if(folderStatus  == -1){
             folders.push({name: selectFiles[i].folder, color: "#BE0000", id_enterprise:selectFiles[i].id_enterprise, isPrivate:false})
-            updateDoc(doc(db, 'users', selectFiles[i].id_company, "Clientes", selectFiles[i].id_user), {
+            updateDoc(doc(db, 'companies', selectFiles[i].id_company, "clients", selectFiles[i].id_user), {
               folders: folders
             })
           }
-          updateDoc(doc(db, 'files', selectFiles[i].id_company, "Arquivos", selectFiles[i].id_file), {
+          updateDoc(doc(db, 'files', selectFiles[i].id_company, "documents", selectFiles[i].id_file), {
             trash: false
           })
           const index = files.findIndex(file => file.id_file === selectFiles[i].id_file)
