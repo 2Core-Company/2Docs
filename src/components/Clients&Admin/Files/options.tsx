@@ -118,6 +118,7 @@ function OptionsFile({file, files, viwedFile, index, trash, setViwedFile, Downlo
               </div>
           </DropdownMenu.Item>
           :<></>}
+          
           {url.includes("/Clientes") && file.from === "user" ||  url.includes("/Admin") ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none rounded-b-[6px] hover:bg-red/30">
               <div onClick={() => DeletFiles(index)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>

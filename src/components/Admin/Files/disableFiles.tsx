@@ -7,19 +7,19 @@ import { Files } from '../../../types/interfaces'
 interface Props{
   files:Files[], 
   selectFiles:Files[], 
-  childToParentDisable:Function
+  setFiles:Function
 }
 
-async function DisableFiles({files, selectFiles, childToParentDisable}:Props) {
+async function DisableFiles({files, selectFiles, setFiles}:Props) {
       try{
-        for(let i = 0; i < selectFiles.length; i++){
-            updateDoc(doc(db, 'files', selectFiles[i].id_company, "Arquivos", selectFiles[i].id_file), {
-              trash: true
-            })
-          const index:number = files.findIndex(file => file.id_file === selectFiles[i].id_file)
+        for await (const file of selectFiles){
+          updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
+            trash: true
+          })
+          const index:number = files.findIndex(file => file.id_file === file.id_file)
           files.splice(index, 1);
         } 
-        childToParentDisable(files)
+        setFiles(files)
       }catch(e) {
         console.log(e)
         toast.error("Não Foi possivel excluir este arquivo.")

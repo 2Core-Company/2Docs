@@ -12,13 +12,11 @@ interface Props {
 
 async function UnFix({ user, users, FilterFixed, setUsersFilter }: Props) {
   try {
-    await updateDoc(doc(db, "users", user.id_company, "Clientes", user.id), {
+    await updateDoc(doc(db, "companies", user.id_company, "clients", user.id), {
       fixed: false,
     });
     const index = users.findIndex((user) => user.id == user.id);
-    console.log(index);
     users[index].fixed = false;
-    console.log(users);
     setUsersFilter(FilterFixed(users));
   } catch (e) {
     console.log(e);

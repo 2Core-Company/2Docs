@@ -3,7 +3,7 @@ import IconFolder from '../../../../public/icons/folder.svg'
 import Image from 'next/image'
 import { DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import React, {useEffect, useContext, useState} from 'react'
-import AppContext from '../../Clients&Admin/AppContext';
+import { userContext } from '../../../app/contextUser';
 import Link from 'next/link';
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Enterprise, Files, Folders } from '../../../types/interfaces' 
@@ -14,7 +14,7 @@ import { useSearchParams } from 'next/navigation';
 import { folder } from 'jszip';
 
   function ComponentFolder(){
-    const context = useContext(AppContext)
+    const context = useContext(userContext)
     const params = useSearchParams()
     const [recentsFile, setRecentsFile] = useState<Files[]>([])
     const [foldersFilter, setFoldersFilter] = useState<Folders[]>([])

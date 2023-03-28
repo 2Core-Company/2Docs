@@ -3,10 +3,11 @@ import {db, auth, storage } from '../../../../firebase'
 import { doc, deleteDoc, query,  where, collection, getDocs} from "firebase/firestore";
 import axios from 'axios'
 import { toast } from 'react-toastify';
-import ErrorFirebase from "../../Clients&Admin/ErrorFirebase";
+import ErrorFirebase from "../../../Utils/Firebase/ErrorFirebase";
 import { useState } from 'react'
 import Modals from '../../Clients&Admin/Modals'
 import { Modal, Users } from '../../../types/interfaces'
+import DeletFiles from "../Files/deletFiles";
 
   interface Props{
     selectUsers:Users
@@ -18,6 +19,7 @@ import { Modal, Users } from '../../../types/interfaces'
 function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}:Props) {
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
 
+  //Confirmação de deletar usuário
   function ConfirmationDeleteUser(){
     if(selectUsers.length > 0 ){
       if(selectUsers.length === 1){
@@ -30,68 +32,60 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}:Props) {
     }
   }
 
+  //Resposta da confirmação
   const childModal = () => {
     toast.promise(DeleteAuth(), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
     setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   }
 
+  //Deletando o auth do usuário
   async function DeleteAuth(){
     const domain:string = new URL(window.location.href).origin
-    const result:any = await axios.post(`${domain}/api/users/deleteUser`, {users: selectUsers, uid: auth.currentUser.uid})
-    if(result.data.type === 'success'){
+    const result = await axios.post(`${domain}/api/users/deleteUser`, {users: selectUsers[0], uid: auth.currentUser.uid})
+    console.log(result)
+    if(result.status === 200){
       await DeletePhoto()
     } else {
-      ErrorFirebase(result)
+      ErrorFirebase(result.data)
     }
   }
 
+  //Deletando a photo de perfil do usuário
   async function DeletePhoto(){
     try{
-      for(let i = 0; i < selectUsers.length; i++){
-        if(selectUsers[i].nameImage != "padrao.png"){
-          const desertRef = ref(storage, selectUsers[0].id_company + '/images/' + selectUsers[i].nameImage);
-          const result = await deleteObject(desertRef)
-        }
+      if(selectUsers[0].nameImage != "padraoCliente.png"){
+        const desertRef = ref(storage, selectUsers[0].id_company + '/images/' + selectUsers[0].nameImage);
+        const result = await deleteObject(desertRef)
       }
-      await DeleteFile()
+      await DeletFile()
     } catch(e){
       console.log(e)
     }
   }
 
-  async function DeleteFile(){
+  //Deletando o arquivo do usuário
+  async function DeletFile(){
     const users = [...usersFilter]
-    for(let i = 0; i < selectUsers.length; i++){
-      const result = await deleteDoc(doc(db, "users",selectUsers[0].id_company, "Clientes", selectUsers[i].id))
-      const index = users.findIndex(user => user.id === selectUsers[i].id)
-      users.splice(index, 1);
-      await DeleteFiles(selectUsers[i].id)
-    }
-    childToParentDelet(users)
+    const result = await deleteDoc(doc(db, "companies", selectUsers[0].id_company, "clients", selectUsers[0].id))
+    const index = users.findIndex(user => user.id === selectUsers[0].id)
+    users.splice(index, 1);
+    await Promise.all([GetFiles(selectUsers[0].id), DeletEvents()]).then((values) => {
+      childToParentDelet(users)
+    });
   }
 
-  async function DeleteFiles(id:string){
+  //Puxando arquivos dos usuários
+  async function GetFiles(id:string) {
     const getFiles:Array<{id_file?:string}> = []
-    var q = query(collection(db, "files", selectUsers[0].id_company, "Arquivos"), where("id_user", "==", id))
+    var q = query(collection(db, "files", selectUsers[0].id_company, "documents"), where("id_user", "==", id))
     const querySnapshot = await getDocs(q);
     const a = querySnapshot.forEach((doc) => {
       getFiles.push(doc.data())
-    }); 
-    for(let i = 0; i < getFiles.length; i++){
-      const desertRef = ref(storage, selectUsers[0].id_company + '/files/' + id + "/" + getFiles[i].id_file)
-      const result = await deleteObject(desertRef)
-      const response = await deleteDoc(doc(db, "files", selectUsers[0].id_company, "Arquivos", getFiles[i].id_file));
-    }
-    await DeletEvents()
-  }   
+    })
+    await DeletFiles({selectFiles:getFiles})
+  } 
 
-  async function DeletEvents() {
-    const events = await GetEvents()
-    for(let i = 0; i < events.length; i++){
-      const response = await deleteDoc(doc(db, "companies", selectUsers[0].id_company, "events", events[i].id));
-    }
-  }
-
+  //Puxando eventos dos usuários
   async function GetEvents() {
     const events = []
     var q = query(collection(db, "companies", selectUsers[0].id_company, "events"), where("id_user", "==", selectUsers[0].id))
@@ -102,10 +96,19 @@ function DeletUser({selectUsers, usersFilter, menu, childToParentDelet}:Props) {
     return events
   }
 
+  //Deletando eventos dos usuários
+  async function DeletEvents() {
+    const events = await GetEvents()
+    for(let i = 0; i < events.length; i++){
+      const response = await deleteDoc(doc(db, "companies", selectUsers[0].id_company, "events", events[i].id));
+    }
+  }
+
   return(
     <>
-      <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/60 dark:bg-red/60 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""} cursor-pointer`}>Deletar</button>
-
+      <button onClick={() =>  ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/60 dark:bg-red/60 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""} cursor-pointer`}>
+        Deletar
+      </button>
       {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} user={modal.user} childModal={childModal}/> : <></>}
     </>
 

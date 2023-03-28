@@ -1,5 +1,5 @@
 'use client'
-import ComponentHome from '../../components/Admin/Home'
+import ComponentHome from '../../../components/Admin/Home'
 
 function Home(){
   return (

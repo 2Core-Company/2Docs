@@ -5,7 +5,7 @@ import { DataUser, Event } from '../../../types/interfaces'
 import styles from './home.module.css'
 import NotificationIcon from '../../../../public/icons/notification.svg'
 import Image from 'next/image'
-import { FormatDateSmall } from '../../Clients&Admin/Utils/FormatDate'
+import { FormatDateSmall } from '../../../Utils/Other/FormatDate'
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import ViwedEvent from '../../Clients&Admin/Calendar/viwedEvent'
 interface Props{

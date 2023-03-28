@@ -3,16 +3,16 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Users, UsersFilter} from '../../../types/interfaces'
 
-    interface Props{
-        user:UsersFilter, 
-        users:Users[], 
-        FilterFixed:Function, 
-        setUsersFilter:Function
-    }
+interface Props{
+    user:UsersFilter, 
+    users:Users[], 
+    FilterFixed:Function, 
+    setUsersFilter:Function
+}
 
   async function Fix({user, users, FilterFixed, setUsersFilter}:Props) {                                                                            
     try{
-        await updateDoc(doc(db, 'users', user.id_company, "Clientes", user.id), {
+        await updateDoc(doc(db, 'companies', user.id_company, "clients", user.id), {
             fixed: true
         })
         const index = users.findIndex(user => user.id == user.id)

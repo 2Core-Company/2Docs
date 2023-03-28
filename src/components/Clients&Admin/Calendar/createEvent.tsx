@@ -1,12 +1,12 @@
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
-import { FormatDate } from '../Utils/FormatDate'
+import { FormatDate } from '../../../Utils/Other/FormatDate'
 import Image from 'next/image'
 import Document from '../../../../public/icons/document.svg'
 import styles from '../../Admin/Home/home.module.css'
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import { useContext, useState } from 'react'
-import AppContext from '../AppContext';
+import { userContext } from '../../../app/contextUser';
 import { toast } from 'react-toastify';
 import { Enterprise } from '../../../types/interfaces'
 import Arrow from '../../../../public/icons/arrow.svg'
@@ -25,14 +25,14 @@ interface Props{
 }
 
 function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, userName, setModalEvent}:Props) {
-    const context = useContext(AppContext)
+    const contextUser = useContext(userContext)
     const [changeEnterprise, setChangeEnterprise] = useState(false)
     const [dataEvent, setDataEvent] = useState({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, enterprise: enterprises[0], userName:userName, viwed: false})
     const messageToast = {pending: 'Criando evento...', success:'Evento criado com sucesso.', error:'Não foi possivel criar este evento.'}
 
     async function CreatedEvent(){
         try{            
-            const docRef = await setDoc(doc(db, "companies", context.dataUser.id_company, "events", dataEvent.id), dataEvent)
+            const docRef = await setDoc(doc(db, "companies", contextUser.dataUser.id_company, "events", dataEvent.id), dataEvent)
             Promise.all([docRef, SendEmail()]).then((values) => {
                 setModalEvent(false)
             }); 

@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import { db, storage } from '../../../../firebase'
 import { Event, Modal, Files } from '../../../types/interfaces'
-import Modals from '../../Clients&Admin/Modals'
+import Modals from '../Modals'
 
 
 interface Props{

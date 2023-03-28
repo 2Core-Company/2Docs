@@ -1,4 +1,4 @@
-import ComponentsFolder from '../../../components/Admin/Folder'
+import ComponentsFolder from '../../../../components/Admin/Folder'
 
 function Pastas(){
   return (

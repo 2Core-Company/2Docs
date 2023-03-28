@@ -1,10 +1,10 @@
 import React, {useContext, useState, useEffect} from 'react'
 import { ArrowLeftIcon, UploadIcon, DownloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Event } from '../../../types/interfaces'
-import { FormatDate } from '../Utils/FormatDate';
+import { FormatDate } from '../../../Utils/Other/FormatDate';
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../../../../firebase';
-import AppContext from '../AppContext';
+import { userContext } from "../../../app/contextUser";
 import { toast } from 'react-toastify';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Image from 'next/image';
@@ -25,7 +25,7 @@ interface Props{
 }
 
 function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay, VerifyNotificationEvent}:Props) {
-    const context = useContext(AppContext)
+    const context = useContext(userContext)
     const [files, setFiles]= useState([])
     const [newFiles, setNewFiles]= useState([])
     const [dataEvent, setDataEvent] = useState({style:'', text:'', upload:true})

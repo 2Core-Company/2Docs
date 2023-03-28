@@ -2,7 +2,8 @@
 import { MagnifyingGlassIcon} from '@radix-ui/react-icons';
 import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
-import AppContext from '../../Clients&Admin/AppContext';
+import { userContext } from '../../../app/contextUser';
+import { loadingContext } from '../../../app/contextLoading';
 import {db} from '../../../../firebase'
 import { doc, getDoc, where, collection, getDocs, query} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';
@@ -19,9 +20,11 @@ import TableFiles from '../../Clients&Admin/Files/tableFiles'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Files, Modal, DataUser } from '../../../types/interfaces'
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
+import { GetFilesToTrash, GetFilesToFavorites, GetFilesToNormal } from '../../../Utils/Firebase/GetFiles';
 
 function Files(){
-  const context = useContext(AppContext)
+  const { dataUser } = useContext(userContext)
+  const { setLoading } = useContext(loadingContext)
   const [files, setFiles] = useState<Files[]>([])
   const [filesFilter, setFilesFilter] = useState<Files[]>([])
   const [searchFile, setSearchFile] = useState<string>("")
@@ -39,61 +42,33 @@ function Files(){
 
   // <--------------------------------- GetUser --------------------------------->
   async function GetUser(){
-    const docRef = doc(db, "users", context.dataUser.id_company, "Clientes", id);
+    const docRef = doc(db, "users", dataUser.id_company, "Clientes", id);
     const docSnap = await getDoc(docRef);
-    const allDataUser = docSnap.data()
-    setUser({
-      cnpj: allDataUser.cnpj, 
-      created_date:allDataUser.created_user, 
-      email: allDataUser.email, 
-      id:allDataUser.id, 
-      id_company: allDataUser.id_company,
-      name:allDataUser.name,
-      nameImage:allDataUser.nameImage,
-      password:allDataUser.password,   
-      permission:allDataUser.permission,
-      folders: allDataUser.folders,
-      phone:allDataUser.phone,
-      photo_url:allDataUser.photo_url,
-      status:allDataUser.status,
-      fixed:allDataUser.fixed,
-      enterprises:allDataUser.enterprises
-    })
+    setUser(docSnap.data())
   }
   
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
-    if(context.dataUser != undefined){
-      context.setLoading(true)
+    if(dataUser != undefined){
+      setLoading(true)
       GetFiles()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[context.dataUser])
+  },[dataUser])
   
   async function GetFiles(){
-    const getFiles = []
-    var q
     if(trash){
-      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("trash", "==", true), where("id_enterprise", "==", id_enterprise));
+      await GetFilesToTrash({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, setFiles:setFiles, setFilesFilter:setFilesFilter, setPages:setPages})
       GetUser()
     } else if(folderName === "Favoritos"){
-      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("favorite", "==", true), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
+      await GetFilesToFavorites({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, setFiles:setFiles, setFilesFilter:setFilesFilter, setPages:setPages})
     } else {
-      q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  id), where("folder", "==", folderName), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
+      await GetFilesToNormal({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, folderName:folderName, setFiles:setFiles, setFilesFilter:setFilesFilter, setPages:setPages})
     }
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      const file:Files = doc.data()
-      file.checked = false
-      getFiles.push(file)
-    });
-
-    setPages(Math.ceil(getFiles.length / 10))
-    setFiles(getFiles)
-    setFilesFilter(getFiles)
-    context.setLoading(false)
+    setLoading(false)
   }
+
+  
 
   // <--------------------------------- Search Files --------------------------------->
   useEffect(() => {
@@ -173,7 +148,7 @@ return (
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>{trash ? "Deletados" : "Documentos"}</p>
           <div className='flex items-top'>
             <Image src={folder} alt="Imagem de uma pasta"/> 
-              <Link href={{pathname:"Admin/Pastas", query:{id:id, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
+              <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id:id, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
             <FileIcon className="dark:text-dsecondary" height={21} width={21}/>
             <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{trash ? "Lixeira" : folderName}</p> 
           </div>
@@ -197,7 +172,7 @@ return (
                 {trash ? 
                   <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles} selectFiles={selectFiles} folders={user?.folders} />
                 : 
-                  folderName != 'Favoritos' ? <UploadFile folderName={folderName} setFiles={setFiles} setMenu={setMenu} permission={context?.dataUser?.permission} id={id} id_company={context?.dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise} /> : <></>
+                  folderName != 'Favoritos' ? <UploadFile folderName={folderName} setFiles={setFiles} setMenu={setMenu} permission={dataUser?.permission} id={id} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise} /> : <></>
                 }
               </div>
             </div>

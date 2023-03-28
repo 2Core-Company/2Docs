@@ -1,17 +1,12 @@
-
 'use client'
 import {Poiret_One, Poppins } from '@next/font/google'
-import { useEffect, useState } from 'react';
 import "../../styles/globals.css";
-import AppContext from '../components/Clients&Admin/AppContext'
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from '../../firebase'
 import Loading from '../components/Clients&Admin/Loading'
-import { useRouter } from 'next/navigation';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'
-import { DataUser } from '../types/interfaces'
 import ThemeContextProvider from '../hooks/useTheme'
+import ContextUser from './contextUser'
+import ContextLoading from './contextLoading'
 
 const poiretOne = Poiret_One({
   display: 'swap',
@@ -26,49 +21,19 @@ const poppins = Poppins({
 })
 
 export default function RootLayout({children,}: {children: React.ReactNode}) {
-  
-const [loading, setLoading] = useState(false)
-const [dataUser, setDataUser] = useState<DataUser>()
-const router =  useRouter()
-
-useEffect(() => {
-  const page = window.location.pathname
-  onAuthStateChanged(auth, (user) => {
-    if (user?.emailVerified) {
-      if(page === "/"){
-        auth.currentUser.getIdTokenResult().then((idTokenResult) => {
-          if(idTokenResult.claims.admin){
-            router.push("/Admin")
-          } else {
-            router.push("/Clientes")
-          }
-        })
-      }
-    } else {
-      if(page != "/" && page != "/CompartilharArquivo"){
-        router.push("/")
-      }
-    }
-  });
-},[router])
-
-
   return (
     <ThemeContextProvider>
       <html lang="pt-br" className='bg-primary dark:bg-dprimary'>
         <title>Software para auxiliar o gerenciamento dos arquivos.</title>
         <head />
         <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins max-w-screen`}>
-        <AppContext.Provider value={{
-          loading, setLoading,
-          dataUser, setDataUser
-          }}>
-            <Loading />
-            {children}
-        </AppContext.Provider>
-        <ToastContainer
-        autoClose={3000}
-        />
+          <ContextUser>
+            <ContextLoading>
+              <Loading />
+              {children}
+            </ContextLoading>
+          </ContextUser>
+          <ToastContainer autoClose={3000}/>
         </body>
       </html>
     </ThemeContextProvider>

@@ -10,8 +10,7 @@ import { toast } from 'react-toastify';
 import { db, storage } from '../../../../firebase'
 import { doc, updateDoc, deleteDoc, query, collection, getDocs, where} from "firebase/firestore";
 import { ref, deleteObject} from "firebase/storage";
-import AppContext from '../../Clients&Admin/AppContext';
-
+import { loadingContext } from '../../../app/contextLoading';
 
 interface Props{
     user:DataUser,
@@ -22,14 +21,14 @@ interface Props{
 function Options({user, index, setUser}: Props){
   const [rename, setRename] = useState(false)
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:""})
-  const context = useContext(AppContext)
+  const {setLoading} = useContext(loadingContext)
 
     function ConfirmationDeleteEmpresa(){
         setModal({...modal, status:true, message: "Tem certeza que deseja excluir a empresa:", subMessage1: "Você excluirá todos arquivos dela.", subMessage2:"Será permanente.", user:user.enterprises[index].name})
     }
 
     const childModal = () => {
-        context.setLoading(true)
+        setLoading(true)
         setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:""})
         toast.promise(DeletEnterprise(),{pending:"Deletando empresa...", success:"Empresa deletada com sucesso."}, {position: "bottom-right"})
       }
@@ -49,7 +48,7 @@ function Options({user, index, setUser}: Props){
             await DeletFileEnterprise()
         } catch(e) {
           console.log(e)
-          context.setLoading(false)
+          setLoading(false)
           throw toast.error("Não foi possivél deletar esta empresa.", {position: "bottom-right"})
         }
     }
@@ -67,9 +66,9 @@ function Options({user, index, setUser}: Props){
               const result = await deleteObject(desertRef)
               const response = await deleteDoc(doc(db, "files", user.id_company, "Arquivos", getFiles[i].id_file));
             }
-            context.setLoading(false)
+            setLoading(false)
         } catch(e){
-            context.setLoading(false)
+            setLoading(false)
             console.log(e)
             throw toast.error("Não foi possivél deletar esta empresa.")
         }

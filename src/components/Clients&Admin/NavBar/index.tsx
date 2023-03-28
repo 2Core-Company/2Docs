@@ -77,8 +77,8 @@ function NavBar({user, image}:Props) {
                     <div className='w-[90%] h-[3px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center'/>
 
                     <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Admin" || path === "/Clientes" ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
-                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(user === "Clients" ? "/Clientes" :"/Admin"))}>
+                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Dashboard/Admin" || path === "/Dashboard/Clientes" ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
+                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(user === "Clients" ? "/Dashboard/Clientes" :"/Dashboard/Admin"))}>
                                 <HomeIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
                             </button>
                         </Tooltip.Trigger>
@@ -96,8 +96,8 @@ function NavBar({user, image}:Props) {
 
                     {user === "Clients" ? 
                         <Tooltip.Root>
-                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
-                                <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Clientes/Pastas"))}>
+                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Dashboard/Clientes/Arquivos" || path === "/Dashboard/Clientes/Pastas" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                                <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Dashboard/Clientes/Pastas"))}>
                                     <FileTextIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white cursor-pointer'}/>
                                 </button>
                             </Tooltip.Trigger>
@@ -114,8 +114,8 @@ function NavBar({user, image}:Props) {
                         </Tooltip.Root>
                     :
                         <Tooltip.Root>
-                            <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Clientes" || path === "/Admin/Pastas" || path === "/Admin/Arquivos" ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
-                                <button className="cursor-pointer" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push("/Admin/Clientes"))}>
+                            <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Dashboard/Admin/Clientes" || path === "/Dashboard/Admin/Pastas" || path === "/Dashboard/Admin/Arquivos" ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                                <button className="cursor-pointer" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push("/Dashboard/Admin/Clientes"))}>
                                     <PersonIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
                                 </button>
                             </Tooltip.Trigger>
@@ -133,8 +133,8 @@ function NavBar({user, image}:Props) {
                     }
 
                     <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Calendario" || path === "/Clientes/Calendario"  ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
-                            <button className="cursor-pointer" id="alb" title="Pagina De Calendário" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push(window.location.href.includes('Admin') ? 'Admin/Calendario'  : 'Clientes/Calendario'))}>
+                        <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Dashboard/Admin/Calendario" || path === "/Dashboard/Clientes/Calendario"  ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
+                            <button className="cursor-pointer" id="alb" title="Pagina De Calendário" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push(window.location.href.includes('Admin') ? '/Dashboard/Admin/Calendario'  : '/Dashboard/Clientes/Calendario'))}>
                                 <Image src={Calendar} alt="Calendário" className={`w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] dark:fill-[#fff]`}/>
                             </button>
                         </Tooltip.Trigger>

@@ -9,29 +9,21 @@ import { useTheme } from "../../../hooks/useTheme";
 
 interface Props {
   user: DataUser;
+  enterprise: { id: string };
   id: string;
   id_company: string;
-  enterprise: { id: string };
   setUser: Function;
-  setFoldersFilter: Function;
   setCreateFolder: Function;
+  setFoldersFilter: Function;
 }
 
-function CreateFolder({
-  user,
-  enterprise,
-  id,
-  setUser,
-  setCreateFolder,
-  setFoldersFilter,
-  id_company,
-}: Props) {
+function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolder, setFoldersFilter}: Props) {
   const folders = user.folders;
   const [color, setColor] = useState<string>("#005694");
   const [nameFolder, setNameFolder] = useState<string>();
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
 
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
 
   async function CreateFolder() {
     const result = folders.findIndex(
@@ -47,7 +39,7 @@ function CreateFolder({
           isPrivate: isPrivate,
         });
         try {
-          await updateDoc(doc(db, "users", id_company, "Clientes", id), {
+          await updateDoc(doc(db, "companies", id_company, "clients", id), {
             folders: folders,
           });
           setUser({ ...user, folders: folders });

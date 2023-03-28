@@ -5,13 +5,13 @@ import calendarBuild from "./calendarbuild";
 import { TriangleLeftIcon, TriangleRightIcon } from '@radix-ui/react-icons';
 import { collection, getDocs, query, where} from "firebase/firestore";
 import { db } from "../../../../firebase";
-import AppContext from "../AppContext";
+import { userContext } from "../../../app/contextUser";
 import Exclamation from '../../../../public/icons/exclamation.svg'
 import Image from "next/image";
 import TableEvents from "./tableEvents";
 
 export default function Calendar() {
-  const context = useContext(AppContext)
+  const context = useContext(userContext)
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [dateSelected, setDateSelected] = useState([]);
   const [indexMonth, setIndexMonth] = useState(new Date().getMonth())
