@@ -12,7 +12,7 @@ async function ShareFile({file}:Props) {
     if(file.viwed){
         return toast.error("Você não pode compartilhar um arquivo que ja foi visualizado.")
     } else {
-        const docRef = doc(db, "users", file.id_company);
+        const docRef = doc(db, "companies", file.id_company);
         const docSnap = await getDoc(docRef)
         const nameCompany = docSnap.data().name
 

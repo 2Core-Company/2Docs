@@ -52,17 +52,15 @@ function Signin(){
       if(userCredential.user.emailVerified && userCredential.user.displayName){
         router.replace("/Dashboard/Clientes")
       } else {
-        contextLoading.setLoading(false)
         signOut(auth)
         throw toast.error("Você não concluiu o cadastro da sua empresa.")
       }
-    }catch(e){
+    } catch(e){
       contextLoading.setLoading(false)
       ErrorFirebase(e)
       throw e
     }
   }
-
 
   //Funçaõ de recuperar senha
   async function AlterPassword(email:string){

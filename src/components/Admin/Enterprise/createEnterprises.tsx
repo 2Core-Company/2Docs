@@ -11,7 +11,6 @@ interface Props{
   setCreateEnterprises:Function
 }
 
-
 function  CreateEnterprises({user, setUser, setCreateEnterprises}:Props) {
   const [nameEmprise, setNameEmprise] = useState("")
   const messageToast = {pending:"Criando uma Empresa.", success:"Uma empresa foi criada com sucesso.", error:"Não foi possivel criar uma empresa."}
@@ -21,12 +20,12 @@ function  CreateEnterprises({user, setUser, setCreateEnterprises}:Props) {
     const userHere = user
     enterprises.push({name:nameEmprise, id:uuidv4()})
     try{
-        await updateDoc(doc(db, 'users', user.id_company, "Clientes", user.id), {
-          enterprises:enterprises
-        })
-        userHere.enterprises = enterprises
-        setUser(userHere)
-        setCreateEnterprises(false)
+      await updateDoc(doc(db, 'companies', user.id_company, "clients", user.id), {
+        enterprises:enterprises
+      })
+      userHere.enterprises = enterprises
+      setUser(userHere)
+      setCreateEnterprises(false)
     } catch(e) {
       console.log(e)
       throw toast.update("Não foi possivél alterar o nome deste arquivo.", {position: "bottom-right"})

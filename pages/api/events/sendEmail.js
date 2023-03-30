@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer"
-import { FormatDate } from "../../../components/Clients&Admin/Utils/FormatDate";
+import { FormatDate } from "../../../src/Utils/Other/FormatDate";
 
 // async..await is not allowed in global scope, must use a wrapper
 export default async function SendEmail(req, res) {

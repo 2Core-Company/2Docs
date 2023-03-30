@@ -1,11 +1,11 @@
 "use client";
 import IconFolder from "../../../../public/icons/folder.svg";
 import Image from "next/image";
-import { TrashIcon, DownloadIcon, MagnifyingGlassIcon, LockClosedIcon, LockOpen1Icon} from "@radix-ui/react-icons";
+import { TrashIcon, DownloadIcon, MagnifyingGlassIcon, LockClosedIcon, LockOpen1Icon, PersonIcon} from "@radix-ui/react-icons";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useContext, useState } from "react";
 import { userContext } from '../../../app/contextUser'
-import {getDoc, where, doc, updateDoc, collection,getDocs, query} from "firebase/firestore";
+import {getDoc, where, doc, updateDoc} from "firebase/firestore";
 import { db } from "../../../../firebase";
 import CreateFolder from "./createFolder";
 import DeleteFolder from "./DeletFolder";
@@ -17,7 +17,7 @@ import { DataUser, Files, Modal, Enterprise } from "../../../types/interfaces";
 import Enterprises from "../../Clients&Admin/Enterprise";
 import { GetFilesToAllFolders } from "../../../Utils/Firebase/GetFiles";
 import { Search } from "../../../Utils/Other/Search";
-import DisableFiles from "../Files/disableFiles";
+import { useRouter } from "next/navigation";
 
 function ComponentFolder() {
   const params = useSearchParams();
@@ -32,11 +32,18 @@ function ComponentFolder() {
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""});
   const [deletFolder, setDeletFolder] = useState<string>();
   const [enterprise, setEnterprise] = useState<Enterprise>();
+  const toastDeletFolder = {pending: "Deletando pasta.",success: "Pasta deletada.",error: "Não foi possível deletar esta pasta."}
+  const router = useRouter()
 
+  useEffect(() => {
+    if (enterprise) {
+      GetFilesToAllFolders({id_company:dataUser.id_company,  id_user:id_user, id_enterprise:enterprise.id, from:'user', setFiles:setFiles, setRecentFiles:setRecentsFile});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enterprise]);
 
   useEffect(() => {
     if (dataUser != undefined) {
-      GetFilesToAllFolders({id_company:dataUser.id_company,  id_user:id_user, id_enterprise:id_enterprise, from:'user', setFiles:setFiles, setRecentFiles:setRecentsFile});
       GetUser();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,9 +65,7 @@ function ComponentFolder() {
 
   //Filtandro arquivos da lixeira
   function FilterTrash() {
-    return files.filter(
-      (file) => file.trash === true && file.id_enterprise == enterprise?.id
-    );
+    return files.filter((file) => file.trash === true && file.id_enterprise == enterprise?.id);
   }
 
   //Confirmação de deletar pasta
@@ -71,17 +76,33 @@ function ComponentFolder() {
 
   const childModal = () => {
     setModal({ status: false, message: "", subMessage1: "", subMessage2: "" });
-    toast.promise(DeleteFolderAndFiles(),{ pending: "Deletando pasta.",success: "Pasta deletada.",error: "Não foi possível deletar esta pasta."})
+    toast.promise(DeleteFolders(), toastDeletFolder)
   };
 
-  //Deletando pasta e movendo arquivos para lixeira
-  async function DeleteFolderAndFiles() {
+  //Deletando pasta
+  async function DeleteFolders() {
     const name = deletFolder;
-    
     DeleteFolder({user: user,name: name,setFoldersFilter: setFoldersFilter,setUser: setUser,id: id_user,id_enterprise: enterprise.id,id_company: dataUser.id_company,})
+    DisableFiles(name)
+  }
 
-    const filesToTrash = files.filter((file) => file.folder === name);
-    DisableFiles({files, selectFiles:filesToTrash, setFiles})
+  //Movendo arquivos para lixeira
+  async function DisableFiles(nameFolder){
+    const filesToTrash = files.filter((file) => file.folder === nameFolder);
+    const allFiles = [...files]
+    try{
+      for await (const fileToTrash of filesToTrash){
+        updateDoc(doc(db, 'files', fileToTrash.id_company, "documents", fileToTrash.id_file), {
+          trash: true
+        })
+        const index:number = allFiles.findIndex(file => file.id_file === fileToTrash.id_file)
+        allFiles[index].trash = true
+      } 
+      setFiles(allFiles)
+    }catch(e){
+      console.log(e)
+      toast.error("Não Foi possivel excluir este arquivo.")
+    }
   }
 
   async function PrivateFolderChange(privateState: boolean, index: number) {    
@@ -105,7 +126,7 @@ function ComponentFolder() {
 
     setFoldersFilter([...foldersFilter]);
   }
-  console.log(files)
+
 
   return (
     <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
@@ -117,9 +138,16 @@ function ComponentFolder() {
 
       <div className="w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]">
         <div className="flex items-top">
+          <div onClick={() => router.push('/Dashboard/Admin/Clientes')} className="flex cursor-pointer">
+            <PersonIcon height={25} width={25} />
+            <p className="cursor-pointer text-[18px] flex mr-[15px] text-secondary dark:text-dsecondary">
+              {"Usuários    >"} 
+            </p>
+          </div>
+
           <Image src={IconFolder} alt="Imagem de uma pasta" />
-          <p className="cursor-pointer text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary">
-            {"Pastas"}
+          <p className="text-[18px] flex ml-[5px] text-secondary dark:text-dsecondary">
+            Pastas
           </p>
         </div>
         {recentsFile.length > 0 ? (
@@ -167,8 +195,9 @@ function ComponentFolder() {
               if(folder.name === "Favoritos"){
                 qtdFiles = files.filter((file) => file.favorite === true && file.trash === false)
               } else {
-                qtdFiles = files.filter((file) => file.folder === folder.name)
+                qtdFiles = files.filter((file) => file.folder === folder.name && file.trash === false)
               }
+              if(enterprise.id === folder.id_enterprise || folder.name == 'Cliente' ||  folder.name == 'Favoritos')
               return (
                 <div key={folder.name} className="group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]">
                   {folder.name === "Cliente" || folder.name === "Favoritos" ? (

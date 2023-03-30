@@ -10,7 +10,7 @@ import { Users } from "../../types/interfaces";
   }
 
     // <--------------------------------- Filtrar pot alfabeto  --------------------------------->
-  export function FilterAlphabetical({dataFilter, data, filter, setReturn}) {
+  export function FilterAlphabetical({dataFilter, filter, setReturn}) {
     var dataToFilter =  [...dataFilter];
     dataToFilter.sort(function (x, y) {
       let a = x.name.toUpperCase();
@@ -29,6 +29,11 @@ import { Users } from "../../types/interfaces";
     dataToFilter.sort(function (x, y) {
       let a = x.status;
       let b = y.status;
+      if(x.status === undefined){
+        a = x.viwed
+        b= y.viwed
+      }
+
       if (filter.status) {
         return a == b ? 0 : a < b ? 1 : -1;
       } else {
@@ -38,7 +43,7 @@ import { Users } from "../../types/interfaces";
     setReturn(FilterFixed(dataToFilter));
   }
 
-  export function FilterDate({dataFilter, data, filter, setReturn}) {
+  export function FilterDate({dataFilter, filter, setReturn}) {
     var dataToFilter = [...dataFilter];
     dataToFilter.sort((a, b) => {
       a.date = new Date(a.created_date);
@@ -50,4 +55,18 @@ import { Users } from "../../types/interfaces";
       }
     });
     setReturn(FilterFixed(dataToFilter));
+  }
+
+  export function FilterSize({dataFilter, filter, setReturn}){
+    var files = [...dataFilter]
+    files.sort(function (x, y){
+      let a = x.size
+      let b = y.size
+      if(filter.size){
+        return a == b ? 0 : a < b ? 1 : -1
+      } else {
+        return a == b ? 0 : a > b ? 1 : -1
+      }  
+    })
+    setReturn(files)
   }

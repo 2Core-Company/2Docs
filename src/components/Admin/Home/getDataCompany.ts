@@ -7,7 +7,7 @@ export async function GetDataCompanyAdmin({id_company, dataCompany, setDataCompa
 
   if (docSnap.exists()) {
     var type = 'Mb'
-    var sizeOfFiles = docSnap.data().size / 1000000 //Transformando em megabyte
+    var sizeOfFiles = docSnap.data().size / 1000 //Transformando em megabyte
     if(sizeOfFiles >= 1000){
       sizeOfFiles = parseFloat((sizeOfFiles / 1000).toFixed(1))
       type = 'Gb'

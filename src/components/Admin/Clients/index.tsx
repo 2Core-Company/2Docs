@@ -51,7 +51,7 @@ function ComponentClients() {
       setSelectUsers(userSelect);
       setUsersFilter(users);
     } else {
-      toast.error("Você só pode selecionar 10 arquivos");
+      toast.error("Você só pode selecionar 10 usuários");
     }
   }
 

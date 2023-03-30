@@ -7,72 +7,75 @@ import Image from 'next/image'
 import Rename from './rename';
 import Modals from '../../Clients&Admin/Modals'
 import { toast } from 'react-toastify';
-import { db, storage } from '../../../../firebase'
-import { doc, updateDoc, deleteDoc, query, collection, getDocs, where} from "firebase/firestore";
-import { ref, deleteObject} from "firebase/storage";
+import { db } from '../../../../firebase'
+import { doc, updateDoc, query, collection, getDocs, where} from "firebase/firestore";
 import { loadingContext } from '../../../app/contextLoading';
-
+import DeletFiles from '../Files/DeletFiles';
+ 
 interface Props{
-    user:DataUser,
-    index:number
-    setUser:Function
+  user:DataUser,
+  index:number
+  setUser:Function
+  setEnterprise: Function
 }
 
-function Options({user, index, setUser}: Props){
+function Options({user, index, setUser, setEnterprise}: Props){
   const [rename, setRename] = useState(false)
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:""})
   const {setLoading} = useContext(loadingContext)
 
-    function ConfirmationDeleteEmpresa(){
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir a empresa:", subMessage1: "Você excluirá todos arquivos dela.", subMessage2:"Será permanente.", user:user.enterprises[index].name})
-    }
+  //Confirmação de deletar empresa
+  function ConfirmationDeleteEmpresa(){
+    setModal({...modal, status:true, message: "Tem certeza que deseja excluir a empresa:", subMessage1: "Você excluirá todos arquivos dela.", subMessage2:"Será permanente.", user:user.enterprises[index].name})
+  }
 
-    const childModal = () => {
-        setLoading(true)
-        setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:""})
-        toast.promise(DeletEnterprise(),{pending:"Deletando empresa...", success:"Empresa deletada com sucesso."}, {position: "bottom-right"})
-      }
+  //Resposta do modal
+  const childModal = () => {
+    setLoading(true)
+    setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:""})
+    toast.promise(DeletEnterprise(),{pending:"Deletando empresa...", success:"Empresa deletada com sucesso."}, {position: "bottom-right"})
+  }
 
-    async function DeletEnterprise(){
-        const allFolders = [...user.folders]
-        const enterprises = [...user.enterprises]
-        const folders = allFolders.filter(folder => folder.id_enterprise != user.enterprises[index].id)
-        enterprises.splice(index, 1)
-        try{
-            await updateDoc(doc(db, 'users', user.id_company, "Clientes", user.id), {
-                enterprises: enterprises,
-                folders:folders
-            })
-            setUser({...user, enterprises:enterprises})
-            setRename(false)
-            await DeletFileEnterprise()
-        } catch(e) {
-          console.log(e)
-          setLoading(false)
-          throw toast.error("Não foi possivél deletar esta empresa.", {position: "bottom-right"})
-        }
+  //Deletando pastas e empresa
+  async function DeletEnterprise(){
+    const allFolders = [...user.folders]
+    const enterprises = [...user.enterprises]
+    const folders = allFolders.filter(folder => folder.id_enterprise != user.enterprises[index].id || folder.name === 'Cliente' || folder.name === 'Favoritos')
+    enterprises.splice(index, 1)
+    try{
+      await updateDoc(doc(db, 'companies', user.id_company, "clients", user.id), {
+        enterprises: enterprises,
+        folders:folders
+      })
+      setEnterprise(enterprises[0])
+      setUser({...user, enterprises:enterprises})
+      setRename(false)
+      await GetFilesToDelet()
+    } catch(e) {
+      console.log(e)
+      setLoading(false)
+      throw toast.error("Não foi possivél deletar esta empresa.", {position: "bottom-right"})
     }
+  }
 
-    async function DeletFileEnterprise(){
-        try{
-            const getFiles = []
-            var q = query(collection(db, "files", user.id_company, "Arquivos"), where("id_user", "==", user.id), where("id_enterprise", "==", user.enterprises[index].id))
-            const querySnapshot = await getDocs(q);
-            const a = querySnapshot.forEach((doc) => {
-              getFiles.push(doc.data())
-            }); 
-            for(let i = 0; i < getFiles.length; i++){
-              const desertRef = ref(storage, user.id_company + '/files/' + user.id + "/" + getFiles[i].id_file)
-              const result = await deleteObject(desertRef)
-              const response = await deleteDoc(doc(db, "files", user.id_company, "Arquivos", getFiles[i].id_file));
-            }
-            setLoading(false)
-        } catch(e){
-            setLoading(false)
-            console.log(e)
-            throw toast.error("Não foi possivél deletar esta empresa.")
-        }
+  //Puxando arquivos para deletar daquela empresa
+  async function  GetFilesToDelet(){
+    try{
+      const getFiles = []
+      var q = query(collection(db, "files", user.id_company, "documents"), where("id_user", "==", user.id), where("id_enterprise", "==", user.enterprises[index].id))
+      const querySnapshot = await getDocs(q);
+      const a = querySnapshot.forEach((doc) => {
+        getFiles.push(doc.data())
+      }); 
+      DeletFiles({selectFiles:getFiles})
+      setLoading(false)
+    } catch(e){
+      setLoading(false)
+      console.log(e)
+      throw toast.error("Não foi possivél deletar esta empresa.")
     }
+  }
+
 
   return (
     <>

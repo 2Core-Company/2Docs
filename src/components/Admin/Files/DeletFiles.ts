@@ -12,7 +12,6 @@ interface Props{
 
 async function DeletFiles({files, selectFiles, childToParentDelet}:Props) {
   try{
-    console.log(selectFiles)
     if(selectFiles.length > 0) {
       var totalSizeFiles = 0
       for await (const file of selectFiles){

@@ -14,9 +14,10 @@ import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany';
     id_enterprise:string
     setFiles:Function
     setMenu:Function
+    setFilesFilter:Function
   }
 
-function UploadFiles({folderName, menu, permission, id, id_company, setFiles, from, id_enterprise, setMenu}: Props) {
+function UploadFiles({folderName, menu, permission, id, id_company,  from, id_enterprise, setFiles, setMenu, setFilesFilter}: Props) {
 
   async function UploadFile(files){
     var totalSizeFiles = 0
@@ -80,7 +81,7 @@ function UploadFiles({folderName, menu, permission, id, id_company, setFiles, fr
         id_enterprise: id_enterprise,
         url: params.url,
         name: params.name,
-        size: params.size,
+        size: Math.ceil(params.size / 1000),
         created_date: date,
         type:type, 
         trash: false,
@@ -106,7 +107,8 @@ function UploadFiles({folderName, menu, permission, id, id_company, setFiles, fr
         folder: folderName,
         from: from
       }
-      setFiles((files) => [...files, data])
+      setFiles((files) => [data, ...files])
+      setFilesFilter((filesFilter) => [data, ...filesFilter])
     } catch (e) {
       toast.error("Não foi possivel armazenar o " + params.name)
       console.log(e)
@@ -117,14 +119,14 @@ function UploadFiles({folderName, menu, permission, id, id_company, setFiles, fr
     <>
       {permission > 0 ? (
         <label className={`${folderName === "Cliente" &&  permission > 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
-            <p>+ Upload</p>
-            <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
+          <p>+ Upload</p>
+          <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
         </label>
         ) : (
-          <label className={`${folderName !== "Cliente" &&  permission === 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`} >
-            <p>+ Upload</p>
-            <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
-          </label>
+        <label className={`${folderName !== "Cliente" &&  permission === 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`} >
+          <p>+ Upload</p>
+          <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
+        </label>
         )
       }
     </>

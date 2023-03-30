@@ -9,9 +9,9 @@ import { Files } from '../../../types/interfaces'
         childToParentDownload:Function
     }
 
-  function Favorite({favoriteFile, files, childToParentDownload}:Props) {                                                                            
+  function Favorite({favoriteFile, files, childToParentDownload}:Props) {                                                                       
     try{
-        updateDoc(doc(db, 'files', favoriteFile.id_company, "Arquivos", favoriteFile.id_file), {
+        updateDoc(doc(db, 'files', favoriteFile.id_company, "documents", favoriteFile.id_file), {
             favorite: true
         })
         const index = files.findIndex(file => file.id_file == favoriteFile.id_file)

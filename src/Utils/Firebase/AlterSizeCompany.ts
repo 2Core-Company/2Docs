@@ -19,7 +19,7 @@ export async function AlterSizeCompany({id_company, action, size}:Props){
     }
 
     if(action === 'sum'){
-        totalSize = dataCompany.size + size
+        totalSize = dataCompany.size + (size / 1000)
     }
 
     if(action === 'subtraction'){

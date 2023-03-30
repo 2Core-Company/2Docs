@@ -1,6 +1,6 @@
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { db } from "../../../firebase";
-import { FilterFixed } from "../Other/FiltersClients";
+import { FilterFixed } from "../Other/Filters";
 
 interface PropsGetUsers{
   id_company:string

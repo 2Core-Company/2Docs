@@ -1,4 +1,4 @@
-import ComponentFiles from '../../../components/Clients/Files'
+import ComponentFiles from '../../../../components/Clients/Files'
 
 function Clientes(){
   return (

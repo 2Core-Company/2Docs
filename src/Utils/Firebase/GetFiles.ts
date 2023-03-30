@@ -33,7 +33,9 @@ export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setF
   const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==",  id_user), where("trash", "==", true), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
-    files.push(doc.data())
+    var file = doc.data()
+    file.checked = false
+    files.push(file)
   });
   setFiles(files)
   setFilesFilter(files)
@@ -55,7 +57,9 @@ export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, 
   const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==",  id_user), where("favorite", "==", true), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
-    files.push(doc.data())
+    var file = doc.data()
+    file.checked = false
+    files.push(file)
   });
   setFiles(files)
   setFilesFilter(files)
@@ -79,7 +83,9 @@ export async function GetFilesToNormal({id_company,  id_user, id_enterprise, fol
   const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==",  id_user), where("folder", "==", folderName), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
-    files.push(doc.data())
+    var file = doc.data()
+    file.checked = false
+    files.push(file)
   });
   setFiles(files)
   setFilesFilter(files)
@@ -98,19 +104,23 @@ interface GetFilesToAllFolders{
 
 export async function GetFilesToAllFolders({id_company,  id_user, id_enterprise, from,  setFiles, setRecentFiles}:GetFilesToAllFolders){
   const files = [];
-  const recentFiles = []
+
+  try{
+      const recentFiles = []
   const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==", id_user), where("id_enterprise", "==", id_enterprise), orderBy("created_date"));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     files.push(doc.data());
   });
   setFiles(files)
-
+  
   for(var i = 0; i < 3 ; i++){
     if(files[i]?.from === from){
       recentFiles.push(files[i])
     }
   }
-
   setRecentFiles(recentFiles)
+  }catch(e){
+    console.log(e)
+  }
 }

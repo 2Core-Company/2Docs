@@ -7,7 +7,7 @@ import ErrorFirebase from "../../../Utils/Firebase/ErrorFirebase";
 import { useState } from 'react'
 import Modals from '../../Clients&Admin/Modals'
 import { Modal, Users } from '../../../types/interfaces'
-import DeletFiles from "../Files/deletFiles";
+import DeletFiles from "../Files/DeletFiles";
 
   interface Props{
     selectUsers:Users

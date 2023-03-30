@@ -1,7 +1,7 @@
 import { db } from '../../../../firebase'
 import { doc, collection, getDocs, query, where, getDoc} from "firebase/firestore";
 import Image from 'next/image';
-import { useLayoutEffect, useState, useContext } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import styles from './home.module.css'
 import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
 import { Files, DataCompany} from '../../../types/interfaces' 
@@ -10,17 +10,20 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import Notification from './notification';
 import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
 import { GetDataCompanyUser } from '../../Admin/Home/getDataCompany';
-
+import { loadingContext } from '../../../app/contextLoading';
+import Link from 'next/link';
 
 function ComponentHome () {
   const { dataUser } = useContext(userContext)
+  const {setLoading} = useContext(loadingContext)
   const [recentsFile, setRecentsFile]= useState<Files[]>([])
   const [dataCompany, setDataCompany] = useState<DataCompany>({contact:[], questions:[]})
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if(dataUser != undefined){
       GetFilesOrderByDate({id_company:dataUser.id_company, setRecentsFile:setRecentsFile, from:'admin'})
       GetDataCompanyUser({id_company:dataUser.id_company, dataCompany:dataCompany, setDataCompany:setDataCompany})
+      setLoading(false)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[dataUser])
@@ -55,10 +58,10 @@ function ComponentHome () {
                 {dataCompany?.contact?.map((contact) => {
                   const linkWhatsApp = "https://wa.me/55" +  contact.replaceAll("(", "").replaceAll( ")", "").replaceAll( "-", "").replaceAll( " ", "")
                   return(
-                    <a key={contact} href={linkWhatsApp } className="flex items-center gap-[10px] mt-[10px] h-[50px] underline underline-offset-[8px]">
+                    <Link key={contact} href={linkWhatsApp} target="_blank" className="flex items-center gap-[10px] mt-[10px] h-[50px] underline underline-offset-[8px]">
                       <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                       <p  className='text-[20px] text-ellipsis pl-[5px] white-space'>{contact}</p>
-                    </a> 
+                    </Link > 
                   )
                 })}
               </div>

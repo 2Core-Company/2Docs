@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import { db, storage } from '../../../../firebase'
 import { Event, Modal, Files } from '../../../types/interfaces'
+import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany'
 import Modals from '../Modals'
 
 
@@ -50,7 +51,6 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
             for(let i = 0; i < files.length; i++){
                 const desertRef = ref(storage, files[i].id_company + '/files/' + files[i].id_user + "/" + files[i].id_file);
                 const result = await deleteObject(desertRef)
-                await DeletFilesFireStore()
             }
         }catch(e){
             console.log(e)
@@ -60,9 +60,14 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
 
     async function DeletFilesFireStore() {
         try{
-            for(let i = 0; i < files.length; i++){
-                const response = await deleteDoc(doc(db, 'files', files[i].id_company, "Arquivos", files[i].id_file))
+            var totalSize = 0
+            for await(const file of files){
+                const response = await deleteDoc(doc(db, 'files', file.id_company, "documents", file.id_file))
+                totalSize = totalSize + file.size
             }
+            console.log(files)
+            console.log(totalSize)
+            AlterSizeCompany({id_company: id_company, action:'subtraction', size:totalSize})
         }catch(e){
             console.log(e)
             throw Error

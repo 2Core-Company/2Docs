@@ -5,7 +5,7 @@ import iconNullClient from "../../../../public/icons/nullClient.svg";
 import iconSearchUser from "../../../../public/icons/searchUser.svg";
 import {DataUser,UsersFilter,WindowsAction,Users} from "../../../types/interfaces";
 import Options from "./options";
-import { FilterFixed, FilterAlphabetical, FilterStatus, FilterDate } from "../../../Utils/Other/FiltersClients";
+import { FilterFixed, FilterAlphabetical, FilterStatus, FilterDate } from "../../../Utils/Other/Filters";
 import { FormatDate, FormatDateSmall } from "../../../Utils/Other/FormatDate";
 import { toast } from "react-toastify";
 
@@ -40,14 +40,14 @@ function TableClients({users, setUsersFilter, usersFilter, pages, windowsAction,
           <div className="w-full mt-[10px] grid grid-cols-[20px__repeat(2,1fr)_200px_65px_60px] max-lg:grid-cols-[20px__repeat(2,1fr)_65px_60px] max-md:grid-cols-[20px__1fr_65px_60px] px-[5px] gap-x-[15px] text-[18px] font-[500] border-y-[1px] border-y-neutral-400  bg-neutral-300  items-center py-[5px]">
             <input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className="w-[20px] h-[20px]"/>
 
-            <button onClick={() => (setFilter({...filter, name: !filter.name, status: false, date: false}), FilterAlphabetical({dataFilter:usersFilter, data:users, filter:filter, setReturn:setUsersFilter}))} className="text-left flex items-center cursor-pointer">
+            <button onClick={() => (setFilter({...filter, name: !filter.name, status: false, date: false}), FilterAlphabetical({dataFilter:usersFilter, filter:filter, setReturn:setUsersFilter}))} className="text-left flex items-center cursor-pointer">
               <p className="dark:text-white">Nome</p>
               <Image alt="Imagem de uma flecha" className={`ml-[2px] ${filter.name ? "rotate-180" : ""}`}  src={ArrowFilter} />
             </button>
 
             <p className="text-left max-md:hidden dark:text-white "> Email </p>
 
-            <button onClick={() => (setFilter({...filter, date: !filter.date, status: false, name: false}), FilterDate({dataFilter:usersFilter, data:users, filter:filter, setReturn:setUsersFilter}))} className="max-lg:hidden flex items-center cursor-pointer">
+            <button onClick={() => (setFilter({...filter, date: !filter.date, status: false, name: false}), FilterDate({dataFilter:usersFilter, filter:filter, setReturn:setUsersFilter}))} className="max-lg:hidden flex items-center cursor-pointer">
               <p className="text-left dark:text-white">Data de cadastro</p>
               <Image alt="Imagem de uma flecha" className={`ml-[2px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
             </button>

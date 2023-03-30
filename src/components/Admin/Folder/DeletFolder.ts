@@ -12,7 +12,6 @@ interface Props{
     setFoldersFilter:Function
 }
 
-//Função de deletar pasta
 async function DeletFolder({user, name, id, setUser, setFoldersFilter, id_company, id_enterprise}:Props) {
     const folders = user.folders
     const index = folders.findIndex(folder => folder.name === name && folder.id_enterprise === id_enterprise)

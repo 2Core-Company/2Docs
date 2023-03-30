@@ -14,15 +14,16 @@ import { useTheme } from "../../../hooks/useTheme"
 import Calendar from '../../../../public/icons/calendar.svg';
 
 interface Props{
-    user:string
+    permission:string
     image:string
 }
 
-function NavBar({user, image}:Props) {
+function NavBar({permission, image}:Props) {
     const path = usePathname()
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState<Modal>({status: false, message: ""})
     const router = useRouter()
+    const admin = parseInt(permission) > 0 ? true : false
  
     const childModal = () => {
         signOut(auth).then(() => {
@@ -54,12 +55,13 @@ function NavBar({user, image}:Props) {
                     </Tooltip.Portal>
                 </Tooltip.Root>
             </Tooltip.Provider>
+
             <div className={`w-[80px] relative max-sm:max-w-[70px] h-screen overflow-hidden  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
                 <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>
                             <Avatar.Root className="flex flex-col items-center justify-center">
-                                <Avatar.Image width={80} height={80} className="border-[2px] border-secondary dark:border-dsecondary h-[70px] w-[70px] max-sm:h-[60px] max-sm:w-[60px] rounded-full" src={image} alt="Imagem de perfil"/>
+                                <Avatar.Image src={image} alt="Imagem de perfil" width={80} height={80} className="border-[2px] border-secondary dark:border-dsecondary h-[70px] w-[70px] max-sm:h-[60px] max-sm:w-[60px] rounded-full"/>
                             </Avatar.Root>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
@@ -77,8 +79,8 @@ function NavBar({user, image}:Props) {
                     <div className='w-[90%] h-[3px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center'/>
 
                     <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Dashboard/Admin" || path === "/Dashboard/Clientes" ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[80px] max-sm:h-[70px] flex justify-center items-center`}>
-                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(user === "Clients" ? "/Dashboard/Clientes" :"/Dashboard/Admin"))}>
+                        <Tooltip.Trigger asChild className={`mt-[10px] w-full h-[80px] max-sm:h-[70px] flex justify-center items-center ${path === "/Dashboard/Admin" || path === "/Dashboard/Clientes" ? "bg-gray-300 dark:bg-gray-300/20" : ""}`}>
+                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(admin ? "/Dashboard/Admin" : "/Dashboard/Clientes"))}>
                                 <HomeIcon className={'w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
                             </button>
                         </Tooltip.Trigger>
@@ -94,7 +96,7 @@ function NavBar({user, image}:Props) {
                         </Tooltip.Portal>
                     </Tooltip.Root>
 
-                    {user === "Clients" ? 
+                    {!admin ? 
                         <Tooltip.Root>
                             <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Dashboard/Clientes/Arquivos" || path === "/Dashboard/Clientes/Pastas" ? "bg-gray-300" : ""} w-full h-[80px] max-sm:max-h-[70px] flex justify-center items-center`}>
                                 <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Dashboard/Clientes/Pastas"))}>

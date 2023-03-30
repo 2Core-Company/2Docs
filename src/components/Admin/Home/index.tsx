@@ -1,7 +1,7 @@
 import { db } from '../../../../firebase'
 import { doc, updateDoc} from "firebase/firestore";
 import Image from 'next/image';
-import { useContext, useLayoutEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import styles from './home.module.css'
 import { toast } from 'react-toastify';
 import { QuestionMarkCircledIcon, PlusIcon } from '@radix-ui/react-icons';
@@ -13,18 +13,21 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles'
 import { GetDataCompanyAdmin } from './getDataCompany';
 import AddContactImage from '../../../../public/icons/addContact.png'
+import { loadingContext } from '../../../app/contextLoading';
 
 
 function ComponentHome () {
   const { dataUser } = useContext(userContext)
+  const { setLoading } = useContext(loadingContext)
   const [recentsFile, setRecentsFile]= useState<Files[]>([])
   const [dataCompany, setDataCompany] = useState<DataCompany>({contact:[], questions:[], gbFiles:{type:'', size:0, porcentage:0}})
 
   //Chamando as funçoes que puxam os arquivos e o contato
-  useLayoutEffect(() => {
+  useEffect(() => {
     if(dataUser != undefined){
       GetFilesOrderByDate({id_company:dataUser.id_company, setRecentsFile:setRecentsFile, from:'user'})
       GetDataCompanyAdmin({id_company:dataUser.id_company, dataCompany:dataCompany, setDataCompany:setDataCompany})
+      setLoading(false)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[dataUser])
