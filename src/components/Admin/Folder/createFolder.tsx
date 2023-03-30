@@ -9,35 +9,25 @@ import { useTheme } from "../../../hooks/useTheme";
 
 interface Props {
   user: DataUser;
+  enterprise: { id: string };
   id: string;
   id_company: string;
-  enterprise: { id: string };
   setUser: Function;
-  setFoldersFilter: Function;
   setCreateFolder: Function;
+  setFoldersFilter: Function;
 }
 
-function CreateFolder({
-  user,
-  enterprise,
-  id,
-  setUser,
-  setCreateFolder,
-  setFoldersFilter,
-  id_company,
-}: Props) {
+function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolder, setFoldersFilter}: Props) {
   const folders = user.folders;
   const [color, setColor] = useState<string>("#005694");
   const [nameFolder, setNameFolder] = useState<string>();
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
+  const toastCreateFolder = {pending: "Criando pasta.", success: "Pasta criada.",error: "Não foi possivel criar esta pasta."}
+  const { theme } = useTheme();
 
-  const { theme, setTheme } = useTheme();
-
+  //Função de criar pasta
   async function CreateFolder() {
-    const result = folders.findIndex(
-      (folder) =>
-        folder.name === nameFolder && folder.id_enterprise == enterprise.id
-    );
+    const result = folders.findIndex((folder) => folder.name === nameFolder && folder.id_enterprise == enterprise.id);
     if (result === -1) {
       if (color != undefined && nameFolder.length > 0) {
         folders.push({
@@ -47,7 +37,7 @@ function CreateFolder({
           isPrivate: isPrivate,
         });
         try {
-          await updateDoc(doc(db, "users", id_company, "Clientes", id), {
+          await updateDoc(doc(db, "companies", id_company, "clients", id), {
             folders: folders,
           });
           setUser({ ...user, folders: folders });
@@ -69,72 +59,26 @@ function CreateFolder({
       <div className="bg-primary dark:bg-dprimary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col">
         <div className={`bg-[${color}] w-full h-[15px] rounded-t-[4px]`} />
         <div className="px-[10px] pl-[20px]">
-          <p
-            className="text-[26px] mt-[10px] font-[500] dark:text-white"
-            onClick={() => console.log(isPrivate)}
-          >
+          <p className="text-[26px] mt-[10px] font-[500] dark:text-white" onClick={() => console.log(isPrivate)}>
             Criar Nova Pasta
           </p>
           <p className="text-[20px] mt-[10px] font-[500] dark:text-white">
             Nome da Pasta:
           </p>
-          <input
-            onChange={(text) => setNameFolder(text.target.value)}
-            maxLength={30}
-            className="w-[80%] bg-transparent border-black dark:border-white border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] px-[5px] py-[3px] outline-none"
-            placeholder="Digite o nome da pasta"
-          />
+          <input placeholder="Digite o nome da pasta" onChange={(text) => setNameFolder(text.target.value)} maxLength={30} className="w-[80%] bg-transparent border-black dark:border-white border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] px-[5px] py-[3px] outline-none"/>
           <p className="text-[20px] mt-[15px] font-[500] dark:text-white">
             Cor da pasta:
           </p>
           <div className="gap-[10px] flex">
-            <div
-              className={`w-[30px] h-[30px] bg-[#005694] rounded-[4px] hover:scale-105 cursor-pointer ${
-                color === "#005694" ? "border-[#0093FF] border-[3px]" : <></>
-              }`}
-              onClick={() => setColor("#005694")}
-            />
-            <div
-              className={`w-[30px] h-[30px] bg-[#C7A03C] rounded-[4px] hover:scale-105 cursor-pointer ${
-                color === "#C7A03C" ? "border-[#0093FF] border-[3px]" : <></>
-              }`}
-              onClick={() => setColor("#C7A03C")}
-            />
-            <div
-              className={`w-[30px] h-[30px] bg-[#248B2E] rounded-[4px] hover:scale-105 cursor-pointer ${
-                color === "#248B2E" ? "border-[#0093FF] border-[3px]" : <></>
-              }`}
-              onClick={() => setColor("#248B2E")}
-            />
-            <div
-              className={`w-[30px] h-[30px] bg-[#BE0000] rounded-[4px] hover:scale-105 cursor-pointer ${
-                color === "#BE0000" ? "border-[#0093FF] border-[3px]" : <></>
-              }`}
-              onClick={() => setColor("#BE0000")}
-            />
-            <div
-              className={`w-[30px] h-[30px] bg-[#E135D0] rounded-[4px] hover:scale-105 cursor-pointer ${
-                color === "#E135D0" ? "border-[#0093FF] border-[3px]" : <></>
-              }`}
-              onClick={() => setColor("#E135D0")}
-            />
-            <div
-              className={`w-[30px] h-[30px] bg-[#000000] rounded-[4px] hover:scale-105 cursor-pointer ${
-                color === "#000000" ? "border-[#0093FF] border-[3px]" : <></>
-              }`}
-              onClick={() => setColor("#000000")}
-            />
-            <div
-              className={`w-[30px] h-[30px] bg-[#9E9E9E] rounded-[4px] hover:scale-105 cursor-pointer ${
-                color === "#9E9E9E" ? "border-[#0093FF] border-[3px]" : <></>
-              }`}
-              onClick={() => setColor("#9E9E9E")}
-            />
+            <div onClick={() => setColor("#005694")} className={`w-[30px] h-[30px] bg-[#005694] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#005694" ? "border-[#0093FF] border-[3px]" : <></> }`}/>
+            <div onClick={() => setColor("#C7A03C")} className={`w-[30px] h-[30px] bg-[#C7A03C] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#C7A03C" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setColor("#248B2E")} className={`w-[30px] h-[30px] bg-[#248B2E] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#248B2E" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setColor("#BE0000")} className={`w-[30px] h-[30px] bg-[#BE0000] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#BE0000" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setColor("#E135D0")} className={`w-[30px] h-[30px] bg-[#E135D0] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#E135D0" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setColor("#000000")} className={`w-[30px] h-[30px] bg-[#000000] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#000000" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setColor("#9E9E9E")} className={`w-[30px] h-[30px] bg-[#9E9E9E] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#9E9E9E" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
           </div>
-          <div
-            className="flex mt-5 items-center cursor-pointer"
-            onClick={() => setIsPrivate((value) => !value)}
-          >
+          <div className="flex mt-5 items-center cursor-pointer" onClick={() => setIsPrivate((value) => !value)}>
             {theme == "light" ? (
               <Switch.Root
                 className="w-[42px] h-[25px] bg-blackA9 rounded-full relative shadow-[0_2px_10px] shadow-blackA7 focus:shadow-[0_0_0_2px] focus:shadow-black data-[state=checked]:bg-black outline-none cursor-pointer"
@@ -162,22 +106,10 @@ function CreateFolder({
           </div>
         </div>
         <div className="flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]">
-          <button
-            onClick={() => setCreateFolder(false)}
-            className="bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white "
-          >
+          <button onClick={() => setCreateFolder(false)} className="bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white">
             Cancelar
           </button>
-          <button
-            onClick={() =>
-              toast.promise(CreateFolder(), {
-                pending: "Criando pasta.",
-                success: "Pasta criada.",
-                error: "Não foi possivel criar esta pasta.",
-              })
-            }
-            className="bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white "
-          >
+          <button onClick={() => toast.promise(CreateFolder(), toastCreateFolder)}className="bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white ">
             Confirmar
           </button>
         </div>

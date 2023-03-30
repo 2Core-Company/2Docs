@@ -11,7 +11,6 @@
   export interface WindowsAction{
     createUser: boolean,
     updateUser: boolean,
-    deletUser: boolean
   }
 
   export interface Modal{
@@ -25,14 +24,14 @@
   }
 
   export interface DataUser{
-    cnpj:string 
+    cnpj?:string 
     created_date?:string 
-    email:string 
+    email?:string 
     id?:string 
     id_company?:string 
-    name:string 
+    name?:string 
     nameImage?:string 
-    password:string     
+    password?:string     
     permission?:number
     folders?: Folders[]
     phone?:string 
@@ -98,6 +97,7 @@
     id?:string,
     contact:Array<string>,
     questions:Array<{response:string, question:string}>
+    gbFiles?:{type:string, size:number, porcentage:number}
   }
 
   export interface Filter {

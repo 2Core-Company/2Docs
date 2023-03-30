@@ -31,7 +31,7 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
       filesDownloaded[i].checked = false
       
       if(from === "user" && filesDownloaded[i].folder != "Cliente"){
-        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
+        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
           viwed: true
         })
         if(files){
@@ -40,7 +40,7 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
           childToParentDownload(files)
         }
       } else if(from === "admin" && filesDownloaded[i].folder == "Cliente"){
-        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "Arquivos", filesDownloaded[i].id_file), {
+        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
           viwed: true
         })
         if(files){

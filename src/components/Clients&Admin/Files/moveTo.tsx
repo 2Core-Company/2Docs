@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState} from 'react'
+import React, { useEffect, useState} from 'react'
 import { db } from '../../../../firebase'
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
@@ -15,37 +15,36 @@ function MoveTo({file, files, setMoveTo, childToParentDownload}:Props) {
     const [folders, setFolders] = useState([])
     const [folderName, setFolderName] = useState(undefined)
     const messageToast = {pending:"Movendo o arquivo.", success:"Arquivo movido com sucesso.", error:"Não foi possivel mover o arquivo"}
-    const toastId = "moveTo"
     
-    useLayoutEffect(() =>{
+    useEffect(() =>{
       GetFolders()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     async function GetFolders(){
-      const docRef = doc(db, "users", file.id_company, "Clientes", file.id_user);
+      const docRef = doc(db, "companies", file.id_company, "clients", file.id_user);
       const docSnap = await getDoc(docRef);
       const foldersHere = docSnap.data().folders.filter(folder => folder.id_enterprise === file.id_enterprise || folder.name === "Favoritos" || folder.name === "Cliente")
       if(foldersHere.length > 3){
         setFolders(foldersHere)
       } else {
         setMoveTo(false)
-        throw toast.error("Você precisa ter no minimo 2 pastas para conseguir copiar um arquivo.", {toastId:toastId})
+        throw toast.error("Você precisa ter no minimo 2 pastas para conseguir mover um arquivo.")
       }
     }
 
     async function ChangeFolder(){
       try{
-          await updateDoc(doc(db, 'files', file.id_company, "Arquivos", file.id_file), {
-            folder: folderName
-          })
-          const index:number = files.findIndex(file => file.id_file === file.id_file)
-          files.splice(index, 1);
-          childToParentDownload(files)
-          setMoveTo(false)
+        await updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
+          folder: folderName
+        })
+        const index:number = files.findIndex(file => file.id_file === file.id_file)
+        files.splice(index, 1);
+        childToParentDownload(files)
+        setMoveTo(false)
       } catch(e) {
-          console.log(e)
-          throw toast.error("Não foi possivél trocar a pasta deste arquivo.")
+        console.log(e)
+        throw toast.error("Não foi possivél trocar a pasta deste arquivo.")
       }
     }
 
@@ -58,9 +57,9 @@ function MoveTo({file, files, setMoveTo, childToParentDownload}:Props) {
           <div className=' px-[10px]'>
             <p className='text-[26px] mt-[10px]'>Para qual pasta voce deseja mover este arquivo? </p>
             <div className='flex w-full flex-wrap justify-center gap-[20px]'>
-            {folders?.map((folder) =>{
+            {folders?.map((folder) => {
                 if(folder.name === "Favoritos" || folder.name === "Cliente" || folder.name === file.folder){
-                    return
+                  return
                 }
                 return (
                   <div onClick={() => folderName === folder.name ? setFolderName(undefined) : setFolderName(folder.name)} key={folder.name} className={`${folder.name === folderName ? "bg-blue/10" : "" } cursor-pointer group mt-[30px] w-[110px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]`}>
@@ -71,7 +70,8 @@ function MoveTo({file, files, setMoveTo, childToParentDownload}:Props) {
                     </div>
                     <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>{folder.name === "Cliente" ? "Meus" : folder.name}</p>
                   </div>
-                )})}
+                )
+              })}
             </div>
 
           </div>

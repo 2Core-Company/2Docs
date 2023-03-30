@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
-import calendarBuild from "./calendarbuild";
+import calendarBuild from "./Calendarbuild";
 import { TriangleLeftIcon, TriangleRightIcon } from '@radix-ui/react-icons';
 import CreateEvent from "./createEvent";
 import { Enterprise } from '../../../types/interfaces'
+
 
 interface Props{
   id:string
@@ -60,17 +61,17 @@ export default function ModalEvent({email, id, enterprises, userName, setModalEv
           <>
             <p className="font-poiretOne text-[40px]">Calendário</p>
             <div className="flex">
-                <div className="w-full flex justify-between">
-                    <MonthCard
-                      month={month[indexMonth]}
-                      currentYear={currentYear}
-                      dateSelected={dateSelected}
-                      setDateSelected={setDateSelected}
-                      setCurrentYear={setCurrentYear}
-                      setIndexMonth={setIndexMonth}
-                      indexMonth={indexMonth}
-                    />
-                </div>
+              <div className="w-full flex justify-between">
+                <MonthCard
+                  month={month[indexMonth]}
+                  currentYear={currentYear}
+                  dateSelected={dateSelected}
+                  setDateSelected={setDateSelected}
+                  setCurrentYear={setCurrentYear}
+                  setIndexMonth={setIndexMonth}
+                  indexMonth={indexMonth}
+                />
+              </div>
             </div>
           </>
         }
@@ -120,7 +121,6 @@ function MonthCard({month, indexMonth, currentYear, dateSelected, setDateSelecte
     setCalendar(calendarBuild(value));
   }, [value, month]);
 
-
   return (
     <div className="w-full flex flex-col mx-[10px]">
       <div className="flex items-center justify-center ml-[10px]">
@@ -159,6 +159,7 @@ function MonthCard({month, indexMonth, currentYear, dateSelected, setDateSelecte
     </div>
   );
 }
+
 
 function DayCard(props) {
   const [state, setState] = useState("");

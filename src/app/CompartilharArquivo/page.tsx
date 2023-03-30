@@ -7,7 +7,7 @@ import { db } from '../../../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Files } from '../../types/interfaces'
 import { toast } from 'react-toastify';
-import { FormatDate } from '../../components/Clients&Admin/Utils/FormatDate'
+import { FormatDate } from '../../Utils/Other/FormatDate'
 
 function ShareFile() {
   const params = useSearchParams()
@@ -24,7 +24,7 @@ function ShareFile() {
   },[])
   
   async function GetFile(){
-    const docRefFile = doc(db, "files", id_company, "Arquivos", id_file);
+    const docRefFile = doc(db, "files", id_company, "documents", id_file);
     const dataFile = await getDoc(docRefFile)
     setFile(dataFile.data())
   } 
@@ -47,7 +47,7 @@ function ShareFile() {
   
         element.parentNode.removeChild(element);
         
-        await updateDoc(doc(db, 'files', file.id_company, "Arquivos", file.id_file), {
+        await updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
           viwed: true
         })
         setFile({...file, viwed:true})

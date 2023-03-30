@@ -1,10 +1,10 @@
 import * as Tabs from '@radix-ui/react-tabs';
 import { EyeClosedIcon, EyeOpenIcon} from '@radix-ui/react-icons';
-import { useState, useContext} from 'react';
-import AppContext from '../AppContext';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { useState, useContext, useEffect } from 'react';
+import { loadingContext } from '../../../app/contextLoading'
+import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
 import { auth } from '../../../../firebase'
-import ErrorFirebase from '../ErrorFirebase'
+import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LogoPretoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.png'
@@ -12,66 +12,86 @@ import LogoBrancoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.
 import { toast } from 'react-toastify';
 import { signOut} from "firebase/auth";
 import { useTheme } from "../../../hooks/useTheme"
-
+import { DataUser } from '../../../types/interfaces'
 
 function Signin(){
-  const context = useContext(AppContext)
+  const contextLoading = useContext(loadingContext)
   const [dataUser, setDataUser] = useState<DataUser>({email: "", password: "", checked: false})
-  const [eye, setEye] = useState(false)
+  const [loading , setLoading] = useState<boolean>(true)
+  const [eye, setEye] = useState<boolean>(false)
   const router = useRouter()
 
-  interface DataUser {
-    email: string,
-    password: string,
-    checked: boolean
-  }
-
-  function SignIn(e: { preventDefault: () => void; }) {
-    e.preventDefault()
-    context.setLoading(true)
-    signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
-    .then((userCredential) => {
-      if(userCredential.user.emailVerified && userCredential.user.displayName){
-        router.push("/Clientes")
+  //Verifica se o usuário ja esta logado
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user?.emailVerified) {
+        auth.currentUser.getIdTokenResult().then((idTokenResult) => {
+          if(idTokenResult.claims.admin){
+            return router.replace("/Dashboard/Admin")
+          } else {
+            return router.replace("/Dashboard/Clientes")
+          }
+        })
       } else {
-        context.setLoading(false)
-        toast.error("Você não concluiu o cadastro da sua empresa.")
-        signOut(auth)
+        setLoading(false)
       }
-    })
-    .catch((error) => {
-      context.setLoading(false)
-      ErrorFirebase(error)
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function OnToastLogin(e: { preventDefault: () => void; }){
+    e.preventDefault()
+    contextLoading.setLoading(true)
+    toast.promise(SignIn(),{pending:'Entrando...', success:'Você esta logado.'})
   }
 
-  function AlterPassword(email:string){
+  //Funçaõ de login
+  async function SignIn() {
+    try{
+      const userCredential = await signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
+      if(userCredential.user.emailVerified && userCredential.user.displayName){
+        router.replace("/Dashboard/Clientes")
+      } else {
+        signOut(auth)
+        throw toast.error("Você não concluiu o cadastro da sua empresa.")
+      }
+    } catch(e){
+      contextLoading.setLoading(false)
+      ErrorFirebase(e)
+      throw e
+    }
+  }
+
+  //Funçaõ de recuperar senha
+  async function AlterPassword(email:string){
     if(dataUser.email === ""){
       return toast.error("Preencha o campo de email.")
     }
-    sendPasswordResetEmail(auth, email)
-    .then((data) => {
-      context.setLoading(false)
+    try{
+      const result = await sendPasswordResetEmail(auth, email)
+      contextLoading.setLoading(false)
       toast.success(`Enviamos um link para o email: ${email}, Verifique a caixa de SPAN.`)
-    })
-    .catch((error) => {
-      context.setLoading(false)
-      ErrorFirebase(error)
-    });
+    }catch(e){
+      contextLoading.setLoading(false)
+      ErrorFirebase(e)
+    }
   }
-  const { theme, setTheme } = useTheme();
-    return (
-      <section className="bg-primary dark:bg-dprimary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
+
+  const { theme } = useTheme();
+
+  if(!loading)
+    return(
+      <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
         {theme == "light" ? (
-        <Image src={LogoPretoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='rounded-full'/>
+          <Image src={LogoPretoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='max-md:h-[250px] max-md:w-[250px] rounded-full'/>
         ) : (
-        <Image src={LogoBrancoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='rounded-full'/>
+          <Image src={LogoBrancoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='rounded-full'/>
         )}
-        <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
+        <Tabs.Root  className="w-[400px] max-lsm:w-[320px] pb-[15px]" defaultValue="tab1">
           <p className="text-[40px] font-poiretOne dark:text-white">Login</p>
           <p className="text-[25px]  font-poiretOne dark:text-white">Entre com os dados enviados</p>
           <Tabs.Content className="mt-[20px]" value="tab1">
-            <form onSubmit={SignIn} className="outline-none">
+            <form onSubmit={OnToastLogin} className="outline-none">
               <fieldset className="flex flex-col">
                 <label className="text-[18px] dark:text-white" htmlFor="Email">
                   Email
@@ -99,7 +119,7 @@ function Signin(){
           </Tabs.Content>
         </Tabs.Root>
       </section>
-  )
+    ) 
 }
 
 export default Signin;

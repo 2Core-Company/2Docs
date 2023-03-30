@@ -1,10 +1,10 @@
 import React, {useContext, useState, useEffect} from 'react'
 import { ArrowLeftIcon, UploadIcon, DownloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Event } from '../../../types/interfaces'
-import { FormatDate } from '../Utils/FormatDate';
+import { FormatDate } from '../../../Utils/Other/FormatDate';
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../../../../firebase';
-import AppContext from '../AppContext';
+import { userContext } from "../../../app/contextUser";
 import { toast } from 'react-toastify';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Image from 'next/image';
@@ -12,6 +12,8 @@ import style from './calendar.module.css'
 import styles from '../../Admin/Home/home.module.css'
 import DownloadsFile from '../Files/dowloadFiles';
 import DeletEvents from './deletEvents';
+import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany';
+
 
 interface Props{
     eventSelected:Event
@@ -19,13 +21,12 @@ interface Props{
     events:Event[]
     admin:boolean
     elementFather:string
-    VerifyNotificationEvent?:Function
     setEventSelected:Function
     setEventsThatDay?:Function
 }
 
-function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay, VerifyNotificationEvent}:Props) {
-    const context = useContext(AppContext)
+function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay}:Props) {
+    const {dataUser} = useContext(userContext)
     const [files, setFiles]= useState([])
     const [newFiles, setNewFiles]= useState([])
     const [dataEvent, setDataEvent] = useState({style:'', text:'', upload:true})
@@ -45,16 +46,17 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             setDataEvent({style:'border-red bg-red/20', text:'Incompleto', upload:false})
         }
 
-        if(context.dataUser != undefined){
+        if(dataUser != undefined){
           GetFiles()
           UpdatedEventViwed()
         }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      },[context.dataUser])
+      },[dataUser])
 
+    //Puxando arquivos dos eventos
     async function GetFiles(){
         const getFiles = []
-        var q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_event", "==",  eventSelected.id));
+        var q = query(collection(db, "files", dataUser.id_company, "documents"), where("id_event", "==",  eventSelected.id));
 
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
@@ -64,6 +66,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         setFiles(getFiles)
     }
 
+    //Pegando arquivos do input file
     async function SelectFiles(e){
         const newFilesHere = [...newFiles]
         const filesHere = [...files]
@@ -82,6 +85,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         e.value = null
     }
 
+    //Buscando o tipo
     function FindTypeFile(file){
         var type = file.type.split('/')
         var type2 = file.name.split('.')
@@ -102,6 +106,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         return type
     }
 
+    //Guardando arquivos no storage
     function UploadFiles(){
         if(files.length < 0){
             return toast.error("Faça o armazenamento de algum arquivo para salvar.")
@@ -110,8 +115,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     }
 
     async function  UploadFileStorage() {
+        var totalSize = 0
         for await (const file of newFiles) {
-            const docsRef = ref(storage, `${context.dataUser.id_company}/files/${context.dataUser.id + "/" + file.id_file}`);
+            const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id + "/" + file.id_file}`);
             try{
                 const upload = await uploadBytes(docsRef, file)
                 const url = await GetUrlDownload(upload.metadata.fullPath)
@@ -119,20 +125,24 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             }catch(e){
                 console.log(e)
             }
+            totalSize = totalSize + file.size
         }
+        AlterSizeCompany({id_company: dataUser.id_company, action:'sum', size:totalSize})
         setEventSelected()
     }
 
+    //Pegando url dos arquivos
     async function GetUrlDownload(path:string){
         return await getDownloadURL(ref(storage, path))
     }
 
+    //Guardando arquivos no firestore 
     async function UploadFilestore({type, name, nameFile, size, url}){
         const date = new Date() + ""
         const data = {
             id_user: eventSelected.id_user,
             id_file: nameFile,
-            id_company: context.dataUser.id_company,
+            id_company: dataUser.id_company,
             id_enterprise: eventSelected.enterprise.id,
             id_event:eventSelected.id,
             url: url,
@@ -147,9 +157,10 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         }
 
         try {
+            const result = setDoc(doc(db, "files", dataUser.id_company, "documents", nameFile), data)
             await Promise.all([
-                setDoc(doc(db, "files", context.dataUser.id_company, "Arquivos", nameFile), data),
-                UpdatedEventComplete()
+                await result,
+                await UpdatedEventComplete()
             ])
         } catch (e) {
             toast.error("Não foi possivel armazenar o " + name)
@@ -157,8 +168,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         } 
     }
 
+    //setando evento completo
     async function UpdatedEventComplete(){
-        await updateDoc(doc(db, 'companies', context.dataUser.id_company, "events", eventSelected.id), {
+        await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
             complete:true
         })
         const index1 = events.findIndex(event => event.id == eventSelected.id)
@@ -170,8 +182,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         }
     }
 
+    //setando evento visualizado
     async function UpdatedEventViwed(){
-        await updateDoc(doc(db, 'companies', context.dataUser.id_company, "events", eventSelected.id), {
+        await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
             viwed:true
         })
 
@@ -183,7 +196,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     function DownloadFiles(file){
         if(file.url){
-         return   DownloadsFile({filesDownloaded:[file], from:from})
+         return DownloadsFile({filesDownloaded:[file], from:from})
         }
         toast.error('Clique em salvar e depois faça download deste arquivo')
     }
@@ -197,19 +210,18 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             if(fileOfStorage.length === 1){
                 toast.error('Você não pode deletar todos os arquivos deste evento após ele ja estar completo.')
                 throw Error
-                return 
             }
             try{
                 const desertRef = ref(storage, file.id_company + '/files/' + file.id_user + "/" + file.id_file);
                 await Promise.all([
-                    deleteDoc(doc(db, 'files', file.id_company, "Arquivos", file.id_file)),
+                    deleteDoc(doc(db, 'files', file.id_company, "documents", file.id_file)),
                     deleteObject(desertRef)
                 ])
+                AlterSizeCompany({id_company: dataUser.id_company, action:'subtraction', size:file.size})
             } catch(e){
                 console.log(e)
                 throw Error
             }
-
         } 
 
         const index2 = newFiles.findIndex(file => file.id === file.id)
@@ -280,7 +292,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
 
                     {admin ? 
-                        <DeletEvents files={files} eventSelected={eventSelected} eventsThatDay={eventsThatDay} events={events} id_company={context.dataUser.id_company} setEventSelected={setEventSelected} setEventsThatDay={ setEventsThatDay} />
+                        <DeletEvents files={files} eventSelected={eventSelected} eventsThatDay={eventsThatDay} events={events} id_company={dataUser.id_company} setEventSelected={setEventSelected} setEventsThatDay={ setEventsThatDay} />
                     : 
                         <div className={`${files.length > 0 ? 'border-greenV ' : 'border-neutral-400'} border-[2px] self-center rounded-[4px] mt-[15px] hover:scale-105`}>
                             <button onClick={() => UploadFiles() } className={`${files.length > 0 ? 'text-greenV bg-greenV/20' : 'text-neutral-[500] bg-neutral-300'} cursor-pointer   self-center text-[20px] max-lsm:text-[18px] px-[8px] py-[2]`}>Salvar</button>

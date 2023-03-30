@@ -1,109 +1,54 @@
 import { db } from '../../../../firebase'
-import { doc, updateDoc,  collection, getDocs, query} from "firebase/firestore";
+import { doc, updateDoc} from "firebase/firestore";
 import Image from 'next/image';
-import { useContext, useLayoutEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import styles from './home.module.css'
 import { toast } from 'react-toastify';
-import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { QuestionMarkCircledIcon, PlusIcon } from '@radix-ui/react-icons';
 import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
 import { Files, DataCompany} from '../../../types/interfaces' 
-import AppContext from '../../Clients&Admin/AppContext';
-import { getDoc } from "firebase/firestore";  
+import { userContext }  from '../../../app/contextUser'
+import { PhoneMask } from '../../../Utils/Other/Masks';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
+import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles'
+import { GetDataCompanyAdmin } from './getDataCompany';
+import AddContactImage from '../../../../public/icons/addContact.png'
+import { loadingContext } from '../../../app/contextLoading';
+
 
 function ComponentHome () {
-  const context = useContext(AppContext)
-  const [gb, setGb] = useState<string>()
-  const [gbPorcentage, setGbPorcentage] = useState<number>(0)
+  const { dataUser } = useContext(userContext)
+  const { setLoading } = useContext(loadingContext)
   const [recentsFile, setRecentsFile]= useState<Files[]>([])
-  const [dataCompany, setDataCompany] = useState<DataCompany>({contact:[], questions:[]})
-  const [files, setFiles] = useState([])
+  const [dataCompany, setDataCompany] = useState<DataCompany>({contact:[], questions:[], gbFiles:{type:'', size:0, porcentage:0}})
 
-  useLayoutEffect(() => {
-    if(context.dataUser != undefined){
-      GetFiles()
-      GetContact()
+  //Chamando as funçoes que puxam os arquivos e o contato
+  useEffect(() => {
+    if(dataUser != undefined){
+      GetFilesOrderByDate({id_company:dataUser.id_company, setRecentsFile:setRecentsFile, from:'user'})
+      GetDataCompanyAdmin({id_company:dataUser.id_company, dataCompany:dataCompany, setDataCompany:setDataCompany})
+      setLoading(false)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[context.dataUser])
+  },[dataUser])
 
-  async function GetFiles(){
-    const files = []
-    const q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      files.push(doc.data())
-    });
-    setFiles(files)
-  }
 
-  useLayoutEffect(() => {
-      CalculatingGb()
-      FilterDate()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[files])
-
-  function CalculatingGb(){
-    const gbAll = 5000000
-    var numbers: number | string | any  = 0
-    for(var i = 0; i < files.length ; i++){
-      numbers = numbers + files[i].size
-    }
-    const porcentage = (Math.ceil((numbers * 100) / gbAll))
-    setGbPorcentage(porcentage)
-    setGb((numbers / 1000000).toFixed(1))
-  }
-
-  async function FilterDate(){
-    const filesHere = [...files].filter(file => file.trash === false && file.from === "user")
-    const recents = []
-    filesHere.sort((a, b) =>{ 
-      a.created_date = new Date(a.created_date)
-      b.created_date = new Date(b.created_date)
-      return (a.created_date.getTime() - b.created_date.getTime())
-    });
-    for (var i = 0; 5 > i && i < (filesHere.length); i++) {
-      recents.push(filesHere[i])
-    }
-    setRecentsFile(recents)
-  }
-
-  async function GetContact(){
-    const docRef = doc(db, "users", context.dataUser.id_company);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      setDataCompany({...dataCompany, contact:docSnap.data().contact, id:docSnap.data().id, questions:docSnap.data().questions})
-    } else {
-      console.log("No such document!");
-    }
-  }
-
+  //Funçaõ que edita o useState dos contatos
   function ChangeContact(content:{index:number, text:string}){
     var contacts = []
     if(dataCompany.contact){
       contacts = [...dataCompany.contact]
     }
     contacts[content.index] = content.text
+    if(content.text.length === 0){
+      contacts.splice(content.index,1)
+    }
     setDataCompany({...dataCompany, contact:contacts})
   }
 
-  const phoneMask = (value:string) => {
-    if(value != undefined){
-      return value
-      .replaceAll("(", "")
-      .replaceAll("(", "")
-      .replaceAll("-", "")
-      .replaceAll("-", "")
-      .replace(/\D+/g, '') // não deixa ser digitado nenhuma letra
-      .replace(/^(\d{2})(\d)/g,"($1) $2")
-      .replace(/(\d)(\d{4})$/,"$1-$2")// captura 2 grupos de número o primeiro com 2 digitos e o segundo de com 3 digitos, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de número
-    }
-    return ""
-  }
-
+  //Funçaõ que atualiza o banco de dados dos contatos
   async function UpdateBdContact(){
-    await updateDoc(doc(db, 'users', context.dataUser.id_company), {
+    await updateDoc(doc(db, 'companies', dataUser.id_company), {
       contact: dataCompany.contact
     })
     .then(() => {
@@ -115,13 +60,27 @@ function ComponentHome () {
     }) 
   }
 
+  //Funçaõ de adicionar contato
+  function AddContact(){
+    if(dataCompany.contact.length < 3){
+      var contacts = []
+      if(dataCompany.contact){
+        contacts = [...dataCompany.contact]
+      }
+      contacts.push('') 
+      setDataCompany({...dataCompany, contact:contacts})
+    } else {
+      toast.error('Sua empresa ja atingiu o numero maximo telefone adicionado.')
+    }
+  }
+
+  //Funçaõ que edita o useState das questões
   function ChangeQuestion(content:{index: number, text:string}){
     var questions = []
 
     if(dataCompany.questions){
       questions = [...dataCompany.questions]
     } 
-    console.log(dataCompany.questions)
     if(questions[content.index] === undefined){
       questions.push({question:content.text, response: ""})
     } else {
@@ -130,13 +89,13 @@ function ComponentHome () {
     setDataCompany({...dataCompany, questions:questions})
   }
 
+  //Funçaõ que edita o useState das respostas
   function ChangeResponse(content:{index: number, text:string}){
     var questions = []
 
     if(dataCompany.questions){
       questions = [...dataCompany.questions]
     }
-    console.log(questions[content.index])
     if(questions[content.index] === undefined){
       questions.push({question:"", response: content.text})
     } else {
@@ -146,8 +105,9 @@ function ComponentHome () {
     setDataCompany({...dataCompany, questions:questions})
   }
 
+  //Funçaõ que atualiza o banco de dados das perguntas/respostas frequentes
   async function UpdateBdQuestion(){
-    await updateDoc(doc(db, 'users', context.dataUser.id_company), {
+    await updateDoc(doc(db, 'users', dataUser.id_company), {
       questions: dataCompany.questions
     })
     .then(() => {
@@ -159,34 +119,27 @@ function ComponentHome () {
     }) 
   }
 
-  function childToParentDownload(files){
-    setFiles(files)
-  }
-
   return (
     <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
       <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>        
         <LightModeSwitch />
-        {context.dataUser != undefined ? <Image src={context.dataUser.photo_url} alt="Logo da empresa" width={100} height={100} className="border-[2px] border-secondary dark:border-dsecondary w-[100px] h-[100px] max-lg:w-[90px] max-lg:h-[90px] max-md:w-[80px] max-md:h-[80px] max-sm:w-[70px] max-sm:h-[70px] rounded-full absolute right-[20px]"/> : <></>}
         <p className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Home</p>        
         <p  className=' font-poiretOne mt-[20px] text-[40px] max-sm:text-[35px] dark:text-white'>Uso</p>
         <div className='flex items-center gap-[30px] max-md:gap-[10px]'>
           <div className='w-[250px] h-[15px] bg-hilight border-[2px] border-black rounded-[4px]'>
-            <div className="h-[11px] bg-[#BB8702] duration-700" style={{width:`${gbPorcentage}%`}}/>
+            <div className="h-[11px] bg-[#BB8702] duration-700" style={{width:`${dataCompany.gbFiles.porcentage}%`}}/>
           </div>
-          <p className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] dark:text-[#b1b1b1] font-[600]'><span className='text-[#BB8702]'>{gb}</span>Gb/<span className='text-secondary'>5</span>Gb</p>
+          <p className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] dark:text-[#b1b1b1] font-[600]'><span className='text-[#BB8702]'>{dataCompany.gbFiles.size}</span>{dataCompany.gbFiles.type}/<span className='text-secondary'>5</span>Gb</p>
         </div>
-
 
         <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
           <div>
             <p  className='font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Uploads Recentes</p>
             <div  className='border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[210px] pr-[5px] rounded-[12px]'>
               <div id={styles.boxFiles} className='h-full overflow-y-scroll pb-[5px] px-[5px]'>
-                {recentsFile.length > 0 ?
-                recentsFile.map((file) =>{
+                {recentsFile.length > 0 ? recentsFile.map((file) => {
                     return(
-                      <div onClick={() => DownloadFiles({filesDownloaded:[file], files:files, from:"admin", childToParentDownload:childToParentDownload})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
+                      <div onClick={() => DownloadFiles({filesDownloaded:[file], from:"admin"})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                         <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white'>{file.name}</p>
                       </div>
@@ -199,27 +152,28 @@ function ComponentHome () {
 
           <div>
             <p  className='font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Contato</p>
-            <div className='border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[210px] pr-[5px] rounded-[12px]'>
-              <div id={styles.boxFiles} className='h-full overflow-y-scroll px-[5px] flex flex-col'>
-                <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
-                  <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact ? dataCompany.contact[0] : undefined)} onChange={(text) => ChangeContact({index:0, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
+            <div className='relative border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[220px] px-[5px] rounded-[12px]'>
+              {dataCompany?.contact[0] != undefined ? 
+                <div className='pt-[15px] flex flex-col items-center'>
+                  <PlusIcon onClick={() => AddContact()} width={25} height={25} className='absolute right-0 top-0 text-[#34bf1b] cursor-pointer'/>
+                  {dataCompany?.contact?.map((contact, index) => {
+                    return (
+                      <div key={index} className="flex items-center gap-[10px] mt-[10px]">
+                        <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
+                        <input  maxLength={15} type="text" value={PhoneMask(contact)} onChange={(text) => ChangeContact({index:index, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
+                      </div>
+                    )
+                  })}
+                  <button onClick={() => UpdateBdContact()} className="cursor-pointer flex rounded-[8px] text-[20px] items-center mt-[10px] py-[2px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center mb-[10px]" >
+                    Salvar
+                  </button>
                 </div>
-
-                <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
-                  <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact ? dataCompany.contact[1] : undefined)} onChange={(text) => ChangeContact({index:1, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
-                </div>
-
-                <div className="flex items-center gap-[10px] mt-[10px] h-[50px]">
-                  <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                  <input  maxLength={15} type="text" value={phoneMask(dataCompany.contact ? dataCompany.contact[2] : undefined)} onChange={(text) => ChangeContact({index:2, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
-                </div>
-
-                <button onClick={() => UpdateBdContact()} className="cursor-pointer flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center mb-[10px]" >
-                  Salvar
-                </button>
-              </div>
+                : 
+                  <div onClick={() => AddContact()} className='w-full h-full flex flex-col justify-center items-center cursor-pointer'>
+                    <p className='text-center'>Adicione o telefone da sua empresa</p>
+                    <Image src={AddContactImage} height={100} width={100} alt="Celular"/>
+                  </div>
+                }
             </div>
           </div>
         </div>

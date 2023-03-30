@@ -3,90 +3,66 @@ import IconFolder from '../../../../public/icons/folder.svg'
 import Image from 'next/image'
 import { DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import React, {useEffect, useContext, useState} from 'react'
-import AppContext from '../../Clients&Admin/AppContext';
+import { userContext } from '../../../app/contextUser';
 import Link from 'next/link';
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Enterprise, Files, Folders } from '../../../types/interfaces' 
-import {db} from '../../../../firebase'
-import { where, collection, query, getDocs} from "firebase/firestore"; 
 import Enterprises from '../../Clients&Admin/Enterprise';
 import { useSearchParams } from 'next/navigation';
-import { folder } from 'jszip';
+import { Search } from '../../../Utils/Other/Search';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { db } from '../../../../firebase';
 
   function ComponentFolder(){
-    const context = useContext(AppContext)
+    const {dataUser, setDataUser} = useContext(userContext)
     const params = useSearchParams()
-    const [recentsFile, setRecentsFile] = useState<Files[]>([])
+    const [recentFiles, setRecentFiles] = useState<Files[]>([])
     const [foldersFilter, setFoldersFilter] = useState<Folders[]>([])
-    const [searchFolders, setSearchFolders] = useState<string>("")
     const id_enterprise:string  = params.get("id_enterprise")
     const [enterprise, setEnterprise] = useState<Enterprise>()
     const [files, setFiles] = useState([])
     
     useEffect(() =>{
-      if(context.dataUser != undefined){
+      if(dataUser != undefined){
         var enterprise_id
         if(id_enterprise){
-          console.log(id_enterprise)
-          const index = context.dataUser.enterprises.findIndex(enterprise => enterprise.id == id_enterprise)
-          console.log(context.dataUser.enterprises)
-          setEnterprise(context.dataUser.enterprises[index])
-          enterprise_id = context.dataUser.enterprises[index].id
+          const index = dataUser.enterprises.findIndex(enterprise => enterprise.id == id_enterprise)
+          setEnterprise(dataUser.enterprises[index])
+          enterprise_id = dataUser.enterprises[index].id
         } else {
-          setEnterprise(context.dataUser.enterprises[0])
-          enterprise_id = context.dataUser.enterprises[0].id
+          setEnterprise(dataUser.enterprises[0])
+          enterprise_id = dataUser.enterprises[0].id
         }
-        setFoldersFilter(context.dataUser.folders)
-        GetFiles()
+        setFoldersFilter(dataUser.folders)
+        GetFiles(enterprise_id)
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[context.dataUser])
+    },[dataUser])
 
-    async function GetFiles(){
+    async function GetFiles(enterprise_id){
       var getFiles = []
-      var q = query(collection(db, "files", context.dataUser.id_company, "Arquivos"), where("id_user", "==",  context.dataUser.id));
+      var getRecentFiles = []
+      const q = query(collection(db, "files", dataUser.id_company, "documents"),where('id_enterprise', '==', enterprise_id),  where("id_user", "==",  dataUser.id), where("trash", "==", false), orderBy("created_date"));
+    
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        getFiles.push(doc.data())
+        querySnapshot.forEach((doc) => {
+          getFiles.push(doc.data())
       });
-      setFiles(getFiles)
-    }
 
-    useEffect(() =>{
-      const filesHere = [...files].filter(file => file.trash === false && file.from === "admin")
-      const recents = []
-      filesHere.sort((a, b) =>{ 
-        a.created_date = new Date(a.created_date)
-        b.created_date = new Date(b.created_date)
-        return (a.created_date.getTime() - b.created_date.getTime())
-      });
-      for (var i = 0; 3 > i && i < (filesHere.length); i++) {
-        recents.push(filesHere[i])
-      }
-      setRecentsFile(recents)
-    },[files])
-
-    useEffect(() => {
-      if(searchFolders != null && context.dataUser != undefined){
-        const searchFoldersFilter = []
-        for (var i = 0; i < context.dataUser.folders.length; i++) {
-          if(context.dataUser.folders[i].name.toLowerCase().includes(searchFolders.toLowerCase().trim())){
-            searchFoldersFilter.push(context.dataUser.folders[i])
-          }
+      for(var i = 0; i < 3; i++){
+        if(getFiles[i]){
+          getRecentFiles.push(getFiles[i])
         }
-        setFoldersFilter(searchFoldersFilter)
       }
-    },[searchFolders, context.dataUser])
-
-    function childToParentDownload(files){
-      setFiles(files)
+      setFiles(getFiles)
+      setRecentFiles(getRecentFiles)
     }
 
     return(
       <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
-      {context?.dataUser?.enterprises[0] && enterprise ? <Enterprises enterprises={context.dataUser.enterprises} enterprise={enterprise} user={context.dataUser} setUser={context.setDataUser} setEnterprise={setEnterprise} from={"user"}/> : <></>}
+      {dataUser?.enterprises[0] && enterprise ? <Enterprises enterprises={dataUser.enterprises} enterprise={enterprise} user={dataUser} setUser={setDataUser} setEnterprise={setEnterprise} from={"user"}/> : <></>}
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-          {recentsFile.length > 0 ? 
+          {recentFiles.length > 0 ? 
           <>
             <p className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Uploads recentes</p>
             <div className='flex items-top'>
@@ -95,20 +71,21 @@ import { folder } from 'jszip';
             </div>
 
             <div className='flex flex-wrap mt-[30px]'>
-              {recentsFile.map((file) =>{
+              {recentFiles.map((file) =>{
                 let index = foldersFilter.findIndex((folder) => folder.name == file.folder)
 
-                if(file.id_enterprise === enterprise.id && foldersFilter[index].isPrivate === false){
-                return (
-                  <div key={file.id_file} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                    <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"user", childToParentDownload:childToParentDownload})}>
-                      <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
-                    </button>
-                    <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>
-                    <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>{file.name}</p>
-                  </div>
-                )
-              }})}
+                if(file?.id_enterprise === enterprise.id && foldersFilter[index]?.isPrivate === false){
+                  return (
+                    <div key={file.id_file} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
+                      <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"user"})}>
+                        <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
+                      </button>
+                      <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>
+                      <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>{file.name}</p>
+                    </div>
+                  )
+                }
+              })}
             </div>
           </>
             : <></>}
@@ -116,7 +93,7 @@ import { folder } from 'jszip';
             <div className='w-[500px] max-md:w-[90%] flex justify-between'>
               <label className='flex w-[80%] justify-center items-center'>
                 <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px]"/>
-                <input onChange={(text) => setSearchFolders(text.target.value)} type="text"  className='w-[90%] text-black dark:text-white bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px] border-b-black dark:border-b-white border-b-[2px] dark:placeholder:text-gray-500' placeholder='Buscar' ></input>
+                <input onChange={(text) => Search({text:text.target.value, data:dataUser.folders, setReturn:setFoldersFilter })} type="text"  className='w-[90%] text-black dark:text-white bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px] border-b-black dark:border-b-white border-b-[2px] dark:placeholder:text-gray-500' placeholder='Buscar' ></input>
               </label>
             </div>
 
@@ -126,7 +103,7 @@ import { folder } from 'jszip';
                 if(folder.isPrivate === false && folder.id_enterprise == enterprise?.id || folder.name === "Favoritos" || folder.name === "Cliente"){
                   const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === enterprise.id) : files.filter(file => file.folder === folder.name && file.trash === false && file.id_enterprise === enterprise.id)
                 return (
-                  <Link href={{pathname: "/Clientes/Arquivos", query:{folder:folder.name, id_enterprise:enterprise.id}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
+                  <Link href={{pathname: "Dashboard/Clientes/Arquivos", query:{folder:folder.name, id_enterprise:enterprise.id}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
                     <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>
                       <p className='font-500 text-[18px] w-[25px] h-[25px] bg-secondary dark:bg-dsecondary rounded-full absolute text-center text-[#fff] right-[-10px]'>{qtdFiles.length}</p>
                       <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none" xmlns="http://www.w3.org/2000/svg">

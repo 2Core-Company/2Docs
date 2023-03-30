@@ -36,13 +36,13 @@ import { Files } from '../../../types/interfaces'
 
   return (
     <>      {url.includes("/Admin") && file.from === "admin" || url.includes("/Clientes") && file.from === "user" ?
-            <div onClick={() => setModalMessage({...modalMessage, permission:"edit", status:true})} className='bg-[#15E08B] w-[33px] h-[33px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
-                {file?.message?.length > 0 ?  <Image src={MessageIcon} width={25} height={25} alt="Chat"/> : <PlusCircledIcon className='w-[25px] h-[25px] text-white'/> }
-            </div>
+                <div onClick={() => setModalMessage({...modalMessage, permission:"edit", status:true})} className='bg-[#15E08B] p-[3px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
+                    {file?.message?.length > 0 ?  <Image src={MessageIcon} width={22} height={22} alt="Chat"/> : <PlusCircledIcon width={22} height={22} className='text-white'/> }
+                </div>
              : 
                 file?.message?.length > 0 ?
-                    <div onClick={() => setModalMessage({...modalMessage, permission:"viwed", status:true})} className='bg-[#15E08B] w-[33px] h-[33px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
-                        <Image src={MessageIcon} width={25} height={25} alt="Chat"/>
+                    <div onClick={() => setModalMessage({...modalMessage, permission:"viwed", status:true})} className='bg-[#15E08B] p-[2px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
+                        <Image src={MessageIcon} width={22} height={22} alt="Chat"/>
                     </div>
                 : <></>
              }

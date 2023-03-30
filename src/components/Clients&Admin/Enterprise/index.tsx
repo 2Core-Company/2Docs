@@ -28,7 +28,7 @@ function Enterprises({enterprises, enterprise, user, setUser, setEnterprise, fro
                     <div className='w-[20px] h-[20px] rounded-full border-black dark:border-white p-[2px] border-[2px]'>
                         <div className='bg-black dark:bg-white w-full h-full rounded-full'></div>
                     </div>
-                    <Image src={Arrow} alt="flecha" className={`w-[15px] ml-[5px] duration-200 dark:invert ¨${changeEnterprise ? " rotate-180" : ""}`}/>
+                    <Image src={Arrow} alt="flecha" className={`cursor-pointer w-[15px] ml-[5px] duration-200 dark:invert ¨${changeEnterprise ? " rotate-180" : ""}`}/>
                 </div>
             </div>
 
@@ -36,12 +36,12 @@ function Enterprises({enterprises, enterprise, user, setUser, setEnterprise, fro
                 {enterprises.map((data, index) =>{
                     if(data.id == enterprise.id) return ""
                     return (
-                        <div key={data.id} className="flex itens-center mt-[5px] justify-between px-[7px]">
+                        <div key={data.id} className="hover:bg-neutral-300 flex itens-center mt-[5px] justify-between px-[7px]">
                             <p onClick={() => (setEnterprise(enterprises[index]), setChangeEnterprise(false))} className="cursor-pointer w-[100%] max-w-[150px] overflow-hidden text-ellipsis">{data.name}</p>
                             {from === "user" ? 
                                 <div onClick={() => (setEnterprise(enterprises[index]), setChangeEnterprise(false))} className='cursor-pointer min-w-[20px] h-[20px] rounded-full border-black dark:border-white p-[2px] border-[2px]' />
                             : 
-                                <Options user={user} index={index} setUser={setUser}/>
+                                <Options user={user} index={index} setUser={setUser} setEnterprise={setEnterprise}/>
                             }
                         </div>
                     )

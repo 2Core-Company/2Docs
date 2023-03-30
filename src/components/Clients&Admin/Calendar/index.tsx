@@ -1,49 +1,25 @@
 'use client'
 import { useContext, useEffect, useState } from "react";
 import moment from "moment";
-import calendarBuild from "./calendarbuild";
+import calendarBuild from "./Calendarbuild";
 import { TriangleLeftIcon, TriangleRightIcon } from '@radix-ui/react-icons';
 import { collection, getDocs, query, where} from "firebase/firestore";
 import { db } from "../../../../firebase";
-import AppContext from "../AppContext";
+import { userContext } from "../../../app/contextUser";
 import Exclamation from '../../../../public/icons/exclamation.svg'
 import Image from "next/image";
 import TableEvents from "./tableEvents";
+import { usePathname } from "next/navigation";
 
 export default function Calendar() {
-  const context = useContext(AppContext)
+  const {dataUser} = useContext(userContext)
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [dateSelected, setDateSelected] = useState([]);
   const [indexMonth, setIndexMonth] = useState(new Date().getMonth())
   const [events, setEvents] = useState([])
   const [eventsThatDay, setEventsThatDay] = useState()
-  const admin = window.location.href === window.location.origin + '/Admin/Calendario' && context?.dataUser?.permission > 0 ? true : false
-
-
-  useEffect(() =>{
-    if(context.dataUser != undefined){
-      GetEvents()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[context.dataUser])
-
-  async function GetEvents(){
-    const events = []
-    var q 
-    if(context?.dataUser?.permission > 0){
-      q = query(collection(db, "companies", context.dataUser.id_company, "events"));
-
-    } else {
-      q = query(collection(db, "companies", context.dataUser.id_company, "events"), where('id_user', '==', context.dataUser.id));
-    }
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      events.push(doc.data())
-    });
-    setEvents(events)
-  }
-  
+  const url = usePathname()
+  const admin = url.includes('Admin') ? true : false
   const month = [
     "January",
     "February",
@@ -58,6 +34,30 @@ export default function Calendar() {
     "November",
     "December",
   ];
+
+  useEffect(() =>{
+    if(dataUser != undefined){
+      GetEvents()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[dataUser])
+
+  //Pegando eventos
+  async function GetEvents(){
+    const events = []
+    var q 
+    if(dataUser?.permission > 0){
+      q = query(collection(db, "companies", dataUser.id_company, "events"));
+    } else {
+      q = query(collection(db, "companies", dataUser.id_company, "events"), where('id_user', '==', dataUser.id));
+    }
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      events.push(doc.data())
+    });
+    setEvents(events)
+  }
 
   moment.updateLocale("pt", {
     months: [
@@ -217,7 +217,6 @@ function DayCard({dataDay, month, year, dateSelected, events, setEventsThatDay})
         }
         const diffInMs   = new Date().getTime() - new Date(event.dateSelected).getTime()
         const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24)) 
-        console.log(diffInDays)
         
         var style 
         if(event.complete){

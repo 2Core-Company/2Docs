@@ -2,6 +2,7 @@ import { storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
+import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany';
 
   interface Props{
     folderName?:string
@@ -13,12 +14,15 @@ import { toast } from 'react-toastify';
     id_enterprise:string
     setFiles:Function
     setMenu:Function
+    setFilesFilter:Function
   }
 
-function UploadFiles({folderName, menu, permission, id, id_company, setFiles, from, id_enterprise, setMenu}: Props) {
+function UploadFiles({folderName, menu, permission, id, id_company,  from, id_enterprise, setFiles, setMenu, setFilesFilter}: Props) {
 
   async function UploadFile(files){
+    var totalSizeFiles = 0
     for await (const file of files.files) {
+      totalSizeFiles = file.size + totalSizeFiles
       if(file.size > 30000000){
         files.value = null
         return toast.error("Os arquivos só podem ter no maximo 30mb.")
@@ -33,6 +37,7 @@ function UploadFiles({folderName, menu, permission, id, id_company, setFiles, fr
     }
     files.value = null
     setMenu(false)
+    AlterSizeCompany({id_company:id_company, action:'sum', size:totalSizeFiles})
   }
 
   async function GetUrlDownload(params){
@@ -69,7 +74,7 @@ function UploadFiles({folderName, menu, permission, id, id_company, setFiles, fr
     const date = new Date() + ""
 
     try {
-      const docRef = await setDoc(doc(db, "files", id_company, "Arquivos", params.nameFile), {
+      const docRef = await setDoc(doc(db, "files", id_company, "documents", params.nameFile), {
         id_user: id,
         id_file: params.nameFile,
         id_company: id_company,
@@ -102,7 +107,8 @@ function UploadFiles({folderName, menu, permission, id, id_company, setFiles, fr
         folder: folderName,
         from: from
       }
-      setFiles((files) => [...files, data])
+      setFiles((files) => [data, ...files])
+      setFilesFilter((filesFilter) => [data, ...filesFilter])
     } catch (e) {
       toast.error("Não foi possivel armazenar o " + params.name)
       console.log(e)
@@ -112,16 +118,16 @@ function UploadFiles({folderName, menu, permission, id, id_company, setFiles, fr
   return(
     <>
       {permission > 0 ? (
-      <label className={`${folderName === "Cliente" &&  permission > 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
+        <label className={`${folderName === "Cliente" &&  permission > 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
           <p>+ Upload</p>
           <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
-      </label>
-      ) : (
+        </label>
+        ) : (
         <label className={`${folderName !== "Cliente" &&  permission === 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`} >
           <p>+ Upload</p>
           <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
         </label>
-      )
+        )
       }
     </>
   )
