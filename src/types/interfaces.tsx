@@ -77,6 +77,7 @@
     size?:number
     url?:string
     viwed?:boolean
+    viewedDate?:string,
     from?:string,
     urlDownload?:string
     id_company?:string

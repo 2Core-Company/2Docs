@@ -9,6 +9,7 @@ import OptionsFile  from './options'
 import Message from './message'
 import { FormatDate } from '../../../Utils/Other/FormatDate'
 import { FilterAlphabetical, FilterSize, FilterDate, FilterStatus } from '../../../Utils/Other/Filters'
+import * as HoverCard from "@radix-ui/react-hover-card";
 
 interface Props{
   filesFilter:Files[]
@@ -91,35 +92,101 @@ export default function TableFiles({ pages, trash, filesFilter, files, folderNam
           {filesFilter.map((file, index) =>{
             var checked = file.checked
             if( showItens.min < index && index < showItens.max){
-              return(
-                <div key={index}  className="w-full grid grid-cols-[20px__1fr_120px_200px_110px_70px] max-lg:grid-cols-[20px__1fr_120px_110px_70px] max-md:grid-cols-[20px__1fr_110px_70px] max-sm:grid-cols-[20px__1fr_70px] px-[5px] gap-x-[15px] text-[16px] font-[500] border-b-[1px] border-b-neutral-400 items-center py-[5px]">
-                  <input aria-label="Selecionar Arquivos" type="checkbox" checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)} onClick={() => SelectFile(index)} className='w-[20px] h-[20px]'/>
-                  
-                  <div className='flex items-center'>
-                    <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={40} height={40}  className='text-[10px] mr-[10px] w-[30px] max-lg:w-[25px]  h-[30px] max-lg:h-[25px]'/>
-                    <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white max-w-[700px] max-2xl:max-w-[450px] max-xl:max-w-[220px] max-lg:max-w-[280px] max-sm:max-w-[250px] max-lsm:max-w-[250px]'>{file.name}</p>
+              // let viewedFormated = new Date(file.viewedDate).to
+              return (
+                <div
+                  key={index}
+                  className="w-full grid grid-cols-[20px__1fr_120px_200px_110px_70px] max-lg:grid-cols-[20px__1fr_120px_110px_70px] max-md:grid-cols-[20px__1fr_110px_70px] max-sm:grid-cols-[20px__1fr_70px] px-[5px] gap-x-[15px] text-[16px] font-[500] border-b-[1px] border-b-neutral-400 items-center py-[5px]"
+                >
+                  <input
+                    aria-label="Selecionar Arquivos"
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) =>
+                      (checked = e.target.value === "on" ? true : false)
+                    }
+                    onClick={() => SelectFile(index)}
+                    className="w-[20px] h-[20px]"
+                  />
+
+                  <div className="flex items-center">
+                    <Image
+                      src={`/icons/${file.type}.svg`}
+                      alt="Imagem simbolizando o tipo de arquivo"
+                      width={40}
+                      height={40}
+                      className="text-[10px] mr-[10px] w-[30px] max-lg:w-[25px]  h-[30px] max-lg:h-[25px]"
+                    />
+                    <p className="overflow-hidden whitespace-nowrap text-ellipsis dark:text-white max-w-[700px] max-2xl:max-w-[450px] max-xl:max-w-[220px] max-lg:max-w-[280px] max-sm:max-w-[250px] max-lsm:max-w-[250px]">
+                      {file.name}
+                    </p>
                   </div>
 
-                  <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white ml-[20px] max-md:hidden'>{file.size < 1000 ? file.size + " KB"  : Math.ceil(file.size / 1000) + " MB"} </p>
+                  <p className="overflow-hidden whitespace-nowrap text-ellipsis dark:text-white ml-[20px] max-md:hidden">
+                    {file.size < 1000
+                      ? file.size + " KB"
+                      : Math.ceil(file.size / 1000) + " MB"}{" "}
+                  </p>
 
-                  <p className='font-[400] max-lg:hidden text-left dark:text-white'>{FormatDate(file.created_date)}</p>
+                  <p className="font-[400] max-lg:hidden text-left dark:text-white">
+                    {FormatDate(file.created_date)}
+                  </p>
 
-                  {file.viwed  ? 
-                    <div className='text-[16px] bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-[5px] text-center max-sm:hidden'>
-                      Visualizado
-                    </div>
-                  :
-                    <div className='text-[16px] bg-hilight dark:bg-dhilight max-sm:text-[12px] border-terciary dark:border-dterciary text-secondary dark:text-dsecondary border-[1px] rounded-[5px] text-center max-sm:hidden'>
-                      Visualizado
-                    </div>
-                  }
+                  {file.viwed ? (
+                    <HoverCard.Root>
+                      <HoverCard.Trigger asChild>
+                        <div className="text-[16px] bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-[5px] text-center max-sm:hidden cursor-default">
+                          Visualizado
+                        </div>
+                      </HoverCard.Trigger>
+                      <HoverCard.Portal>
+                        <HoverCard.Content
+                          className="text-black data-[side=bottom]:animate-slideUpAndFade data-[side=right]:animate-slideLeftAndFade data-[side=left]:animate-slideRightAndFade data-[side=top]:animate-slideDownAndFade w-[300px] rounded-md bg-white p-2 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] data-[state=open]:transition-all"
+                          sideOffset={5}
+                        >
+                          <p className="text-[14px] text-center cursor-default">Visualizado em: {new Date(file.viewedDate).toLocaleString()}</p>
+                          <HoverCard.Arrow className="fill-white" />
+                        </HoverCard.Content>
+                      </HoverCard.Portal>
+                    </HoverCard.Root>
+                  ) : (
+                    <HoverCard.Root>
+                      <HoverCard.Trigger asChild>
+                        <div className="text-[16px] bg-hilight dark:bg-dhilight max-sm:text-[12px] border-terciary dark:border-dterciary text-secondary dark:text-dsecondary border-[1px] rounded-[5px] text-center max-sm:hidden cursor-default">
+                          Visualizado
+                        </div>
+                      </HoverCard.Trigger>
+                      <HoverCard.Portal>
+                        <HoverCard.Content
+                          className="text-black data-[side=bottom]:animate-slideUpAndFade data-[side=right]:animate-slideLeftAndFade data-[side=left]:animate-slideRightAndFade data-[side=top]:animate-slideDownAndFade w-[300px] rounded-md bg-white p-2 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] data-[state=open]:transition-all"
+                          sideOffset={5}
+                        >
+                          <p className="text-[14px] text-center cursor-default">Este arquivo ainda não foi visualizado</p>
+                          <HoverCard.Arrow className="fill-white" />
+                        </HoverCard.Content>
+                      </HoverCard.Portal>
+                    </HoverCard.Root>
+                  )}
 
-                  <div className='flex justify-center items-center gap-[10px]'>
-                    <Message file={file} childToParentDownload={childToParentDownload} files={files}/>
-                    <OptionsFile index={index} from={from} file={file} files={files} DownloadFile={DownloadFile} ConfirmationDeleteFile={ConfirmationDeleteFile}  trash={Boolean(trash)} childToParentDownload={childToParentDownload}/>
+                  <div className="flex justify-center items-center gap-[10px]">
+                    <Message
+                      file={file}
+                      childToParentDownload={childToParentDownload}
+                      files={files}
+                    />
+                    <OptionsFile
+                      index={index}
+                      from={from}
+                      file={file}
+                      files={files}
+                      DownloadFile={DownloadFile}
+                      ConfirmationDeleteFile={ConfirmationDeleteFile}
+                      trash={Boolean(trash)}
+                      childToParentDownload={childToParentDownload}
+                    />
                   </div>
                 </div>
-              )
+              );
             }
           })}
         </>
