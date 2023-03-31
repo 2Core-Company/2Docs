@@ -144,7 +144,7 @@ export default function TableFiles({ pages, trash, filesFilter, files, folderNam
                           className="text-black data-[side=bottom]:animate-slideUpAndFade data-[side=right]:animate-slideLeftAndFade data-[side=left]:animate-slideRightAndFade data-[side=top]:animate-slideDownAndFade w-[300px] rounded-md bg-white p-2 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] data-[state=open]:transition-all"
                           sideOffset={5}
                         >
-                          <p className="text-[14px] text-center cursor-default">Visualizado em: {new Date(file.viewedDate).toLocaleString()}</p>
+                          <p className="text-[14px] text-center cursor-default">Visualizado em: {new Date(file.viewedDate).toLocaleDateString() + " " + new Date(file.viewedDate).toLocaleTimeString()}</p>
                           <HoverCard.Arrow className="fill-white" />
                         </HoverCard.Content>
                       </HoverCard.Portal>
