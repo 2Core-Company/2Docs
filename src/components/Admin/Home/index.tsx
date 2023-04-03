@@ -153,7 +153,7 @@ function ComponentHome () {
           <div>
             <p  className='font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Contato</p>
             <div className='relative border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[220px] px-[5px] rounded-[12px]'>
-              {dataCompany?.contact[0] != undefined ? 
+              {dataCompany.contact?.length > 0 ? 
                 <div className='pt-[15px] flex flex-col items-center'>
                   <PlusIcon onClick={() => AddContact()} width={25} height={25} className='absolute right-0 top-0 text-[#34bf1b] cursor-pointer'/>
                   {dataCompany?.contact?.map((contact, index) => {
