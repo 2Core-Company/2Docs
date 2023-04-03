@@ -59,7 +59,7 @@ function Notification({dataUser}:Props) {
     <>
         {events.length > 0 ? 
             <div>
-                {eventSelected ? <ViwedEvent elementFather={'home'} eventSelected={eventSelected}  events={events} admin={false} setEventSelected={setEventSelected}/> : <></>}
+                {eventSelected ? <ViwedEvent  elementFather={'home'} eventSelected={eventSelected}  events={events} admin={false} setEventSelected={setEventSelected}/> : <></>}
                 <div onClick={() => setTableNotification(!tableNotification)} className='cursor-pointer w-[50px] h-[50px] bg-[#cbe8f2] rounded-full justify-center items-center flex relative'>
                     {tableNotification ? 
                         <div className='h-[3px] w-[25px] bg-black rotate-45 rounded-[8px] after:h-[3px] after:w-[25px] after:bg-black after:rotate-90 after:rounded-[8px] after:block '/>

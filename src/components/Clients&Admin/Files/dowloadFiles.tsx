@@ -2,6 +2,7 @@ import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/interfaces'
+import ViwedEvent from '../Calendar/viwedEvent';
 
 interface Props{
   filesDownloaded:Files[]
@@ -29,30 +30,40 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
       element.parentNode.removeChild(element);
 
       filesDownloaded[i].checked = false
+
+      let viewedDate = new Date().toString();
+      console.log(viewedDate);
       
-      if(from === "user" && filesDownloaded[i].folder != "Cliente"){
+      if(from === "user" && filesDownloaded[i].folder != "Cliente" && filesDownloaded[i].viwed === false){
         await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
-          viwed: true
+          viwed: true,
+          viewedDate: viewedDate
         })
+
         if(files){
           const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
           files[index].viwed = true
+          files[index].viewedDate = viewedDate;
+
           childToParentDownload(files)
         }
-      } else if(from === "admin" && filesDownloaded[i].folder == "Cliente"){
-        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
-          viwed: true
-        })
-        if(files){
-          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
-          files[index].viwed = true
-          childToParentDownload(files)
+        }else if(from === "admin" && filesDownloaded[i].folder == "Cliente" && filesDownloaded[i].viwed === false){
+          await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
+            viwed: true,
+            viewedDate: viewedDate
+          })
+          if(files){
+            const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+            files[index].viwed = true
+            files[index].viewedDate = viewedDate;
+
+            childToParentDownload(files)
+          }
         }
-      }
     }
   } catch(e) {
     console.log(e)
-    toast.error("Não foi possivél baixar os arquivos.")
+    toast.error("Não foi possível baixar os arquivos.")
   }
 }
 
