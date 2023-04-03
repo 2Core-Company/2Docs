@@ -60,7 +60,7 @@ import { db } from '../../../../firebase';
 
     return(
       <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
-      {dataUser?.enterprises[0] && enterprise ? <Enterprises enterprises={dataUser.enterprises} enterprise={enterprise} user={dataUser} setUser={setDataUser} setEnterprise={setEnterprise} from={"user"}/> : <></>}
+      {dataUser?.enterprises?.length > 0 && enterprise ? <Enterprises enterprises={dataUser.enterprises} enterprise={enterprise} user={dataUser} setUser={setDataUser} setEnterprise={setEnterprise} from={"user"}/> : <></>}
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           {recentFiles.length > 0 ? 
           <>
