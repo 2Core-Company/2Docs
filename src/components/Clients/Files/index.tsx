@@ -13,10 +13,10 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import Modals from '../../Clients&Admin/Modals'
 import DeletFiles from '../../Admin/Files/DeletFiles';
 import { Files, Modal} from '../../../types/interfaces' 
-import { where, collection, query, getDocs, doc, getDoc} from "firebase/firestore"; 
+import { where, collection, query, getDocs } from "firebase/firestore"; 
 import {db} from '../../../../firebase'
-import { userContext } from '../../../app/contextUser';
-import { loadingContext } from '../../../app/contextLoading';
+import { userContext } from '../../../app/Context/contextUser'
+import { loadingContext } from '../../../app/Context/contextLoading';
 import { Search } from '../../../Utils/Other/Search';
 
 function Files(){

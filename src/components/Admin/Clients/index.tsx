@@ -1,7 +1,7 @@
 "use client";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import React, { useState, useContext, useEffect, use, useRef } from "react";
-import { userContext } from '../../../app/contextUser';
+import React, { useState, useContext, useEffect } from "react";
+import { userContext } from '../../../app/Context/contextUser';
 import EditUser from "./editUser";
 import CreateUser from "./createUser";
 import { toast } from "react-toastify";

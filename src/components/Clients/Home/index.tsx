@@ -1,16 +1,13 @@
-import { db } from '../../../../firebase'
-import { doc, collection, getDocs, query, where, getDoc} from "firebase/firestore";
 import Image from 'next/image';
 import { useEffect, useState, useContext } from 'react'
 import styles from './home.module.css'
 import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
 import { Files, DataCompany} from '../../../types/interfaces' 
-import { userContext } from '../../../app/contextUser';
+import { userContext } from '../../../app/Context/contextUser';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import Notification from './notification';
 import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
-import { GetDataCompanyUser } from '../../Admin/Home/getDataCompany';
-import { loadingContext } from '../../../app/contextLoading';
+import { loadingContext } from '../../../app/Context/contextLoading';
 import Link from 'next/link';
 
 function ComponentHome () {
@@ -22,7 +19,6 @@ function ComponentHome () {
   useEffect(() => {
     if(dataUser != undefined){
       GetFilesOrderByDate({id_company:dataUser.id_company, setRecentsFile:setRecentsFile, from:'admin'})
-      GetDataCompanyUser({id_company:dataUser.id_company, dataCompany:dataCompany, setDataCompany:setDataCompany})
       setLoading(false)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

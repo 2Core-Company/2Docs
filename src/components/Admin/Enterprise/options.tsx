@@ -9,7 +9,7 @@ import Modals from '../../Clients&Admin/Modals'
 import { toast } from 'react-toastify';
 import { db } from '../../../../firebase'
 import { doc, updateDoc, query, collection, getDocs, where} from "firebase/firestore";
-import { loadingContext } from '../../../app/contextLoading';
+import { loadingContext } from '../../../app/Context/contextLoading';
 import DeletFiles from '../Files/DeletFiles';
  
 interface Props{

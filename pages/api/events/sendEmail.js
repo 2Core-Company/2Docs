@@ -42,11 +42,11 @@ export default async function SendEmail(req, res) {
       `, 
     }, (err, info) => {
       if (err) {
-          console.error(err);
-          reject(err);
+        console.error(err);
+        reject(err);
       } else {
-          res.status(200).send({message:'Email enviado!'})
-          resolve(info);
+        res.status(200).send({message:'Email enviado!'})
+        resolve(info);
       }
   });
   })

@@ -3,7 +3,7 @@ import IconFolder from '../../../../public/icons/folder.svg'
 import Image from 'next/image'
 import { DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import React, {useEffect, useContext, useState} from 'react'
-import { userContext } from '../../../app/contextUser';
+import { userContext } from '../../../app/Context/contextUser';
 import Link from 'next/link';
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Enterprise, Files, Folders } from '../../../types/interfaces' 

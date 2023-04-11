@@ -4,7 +4,8 @@ import { Event } from '../../../types/interfaces'
 import { FormatDate } from '../../../Utils/Other/FormatDate';
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../../../../firebase';
-import { userContext } from "../../../app/contextUser";
+import { userContext } from "../../../app/Context/contextUser";
+import { companyContext } from '../../../app/Context/contextCompany';
 import { toast } from 'react-toastify';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Image from 'next/image';
@@ -27,6 +28,7 @@ interface Props{
 
 function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay}:Props) {
     const {dataUser} = useContext(userContext)
+    const {dataCompany} = useContext(companyContext)
     const [files, setFiles]= useState([])
     const [newFiles, setNewFiles]= useState([])
     const [dataEvent, setDataEvent] = useState({style:'', text:'', upload:true})
@@ -111,6 +113,13 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         if(files.length < 0){
             return toast.error("Faça o armazenamento de algum arquivo para salvar.")
         } 
+
+        if(dataCompany.gbFiles.type === 'Gb'){
+            if(dataCompany.gbFiles.size >= dataCompany.plan.maxSize){
+                toast.error('O plano da sua empresa excedeu o limite de armazenamento, comunique um responsavel desta empresa.')
+                throw ''
+            }
+        }
         toast.promise(UploadFileStorage(),{pending:'Armazenando os arquivos...', success:'Arquivos aramazenados com sucesso.', error:'Não foi possivel armazerar estes arquivos.'})
     }
 

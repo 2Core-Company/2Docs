@@ -6,27 +6,26 @@ import styles from './home.module.css'
 import { toast } from 'react-toastify';
 import { QuestionMarkCircledIcon, PlusIcon } from '@radix-ui/react-icons';
 import DownloadFiles from '../../Clients&Admin/Files/dowloadFiles'
-import { Files, DataCompany} from '../../../types/interfaces' 
-import { userContext }  from '../../../app/contextUser'
+import { Files } from '../../../types/interfaces' 
+import { userContext }  from '../../../app/Context/contextUser'
+import { companyContext } from '../../../app/Context/contextCompany';
 import { PhoneMask } from '../../../Utils/Other/Masks';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles'
-import { GetDataCompanyAdmin } from './getDataCompany';
 import AddContactImage from '../../../../public/icons/addContact.png'
-import { loadingContext } from '../../../app/contextLoading';
+import { loadingContext } from '../../../app/Context/contextLoading';
 
 
 function ComponentHome () {
   const { dataUser } = useContext(userContext)
   const { setLoading } = useContext(loadingContext)
   const [recentsFile, setRecentsFile]= useState<Files[]>([])
-  const [dataCompany, setDataCompany] = useState<DataCompany>({contact:[], questions:[], gbFiles:{type:'', size:0, porcentage:0}})
+  const { dataCompany, setDataCompany } = useContext(companyContext)
 
   //Chamando as funçoes que puxam os arquivos e o contato
   useEffect(() => {
     if(dataUser != undefined){
       GetFilesOrderByDate({id_company:dataUser.id_company, setRecentsFile:setRecentsFile, from:'user'})
-      GetDataCompanyAdmin({id_company:dataUser.id_company, dataCompany:dataCompany, setDataCompany:setDataCompany})
       setLoading(false)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,7 +61,7 @@ function ComponentHome () {
 
   //Funçaõ de adicionar contato
   function AddContact(){
-    if(dataCompany.contact.length < 3){
+    if(dataCompany.contact === undefined  || dataCompany.contact.length < 3){
       var contacts = []
       if(dataCompany.contact){
         contacts = [...dataCompany.contact]
@@ -107,7 +106,7 @@ function ComponentHome () {
 
   //Funçaõ que atualiza o banco de dados das perguntas/respostas frequentes
   async function UpdateBdQuestion(){
-    await updateDoc(doc(db, 'users', dataUser.id_company), {
+    await updateDoc(doc(db, 'companies', dataUser.id_company), {
       questions: dataCompany.questions
     })
     .then(() => {
@@ -127,9 +126,9 @@ function ComponentHome () {
         <p  className=' font-poiretOne mt-[20px] text-[40px] max-sm:text-[35px] dark:text-white'>Uso</p>
         <div className='flex items-center gap-[30px] max-md:gap-[10px]'>
           <div className='w-[250px] h-[15px] bg-hilight border-[2px] border-black rounded-[4px]'>
-            <div className="h-[11px] bg-[#BB8702] duration-700" style={{width:`${dataCompany.gbFiles.porcentage}%`}}/>
+            <div className="h-[11px] bg-[#BB8702] duration-700" style={{width:`${dataCompany?.gbFiles.porcentage}%`}}/>
           </div>
-          <p className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] dark:text-[#b1b1b1] font-[600]'><span className='text-[#BB8702]'>{dataCompany.gbFiles.size}</span>{dataCompany.gbFiles.type}/<span className='text-secondary'>5</span>Gb</p>
+          <p className='text-[40px] max-lg:text-[30px] max-md:text-[25px] text-[#686868] dark:text-[#b1b1b1] font-[600]'><span className='text-[#BB8702]'>{dataCompany?.gbFiles.size}</span>{dataCompany?.gbFiles.type}/<span className='text-secondary'>{dataCompany?.plan?.maxSize}</span>Gb</p>
         </div>
 
         <div className='flex gap-[30px] max-md:gap-[10px] flex-wrap mt-[20px]'>
@@ -153,7 +152,7 @@ function ComponentHome () {
           <div>
             <p  className='font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Contato</p>
             <div className='relative border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[220px] px-[5px] rounded-[12px]'>
-              {dataCompany.contact?.length > 0 ? 
+              {dataCompany?.contact?.length > 0 ? 
                 <div className='pt-[15px] flex flex-col items-center'>
                   <PlusIcon onClick={() => AddContact()} width={25} height={25} className='absolute right-0 top-0 text-[#34bf1b] cursor-pointer'/>
                   {dataCompany?.contact?.map((contact, index) => {
@@ -185,9 +184,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px] dark:text-white"/>
               <div className='border-black dark:border-white border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p className='dark:text-white'>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions ? dataCompany.questions[0]?.question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany?.questions ? dataCompany?.questions[0]?.question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
                 <p className='dark:text-white'>Resposta:</p>
-                <textarea  id={styles.boxFiles} rows={3} value={dataCompany.questions ? dataCompany.questions[0]?.response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <textarea  id={styles.boxFiles} rows={3} value={dataCompany?.questions ? dataCompany?.questions[0]?.response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
               </div>
             </div>
 
@@ -195,9 +194,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px] dark:text-white"/>
               <div className='border-black dark:border-white border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p className='dark:text-white'>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions ? dataCompany.questions[1]?.question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany?.questions ? dataCompany?.questions[1]?.question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
                 <p className='dark:text-white'>Resposta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions ? dataCompany.questions[1]?.response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany?.questions ? dataCompany?.questions[1]?.response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
               </div>
             </div>
 
@@ -205,9 +204,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px] dark:text-white"/>
               <div className='border-black dark:border-white border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p className='dark:text-white'>Pergunta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions ? dataCompany.questions[2]?.question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany?.questions ? dataCompany?.questions[2]?.question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black dark:border-b-white border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
                 <p className='dark:text-white'>Resposta:</p>
-                <textarea id={styles.boxFiles} rows={3} value={dataCompany.questions ? dataCompany.questions[2]?.response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
+                <textarea id={styles.boxFiles} rows={3} value={dataCompany?.questions ? dataCompany?.questions[2]?.response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px] dark:text-white'/>
               </div>
             </div>
             <button onClick={() => UpdateBdQuestion()} className="cursor-pointer flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center" >

@@ -1,11 +1,11 @@
 "use client";
 import IconFolder from "../../../../public/icons/folder.svg";
 import Image from "next/image";
-import { TrashIcon, DownloadIcon, MagnifyingGlassIcon, LockClosedIcon, LockOpen1Icon, PersonIcon} from "@radix-ui/react-icons";
+import { TrashIcon, DownloadIcon, MagnifyingGlassIcon, LockClosedIcon, LockOpen1Icon, PersonIcon, ArchiveIcon} from "@radix-ui/react-icons";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useContext, useState } from "react";
-import { userContext } from '../../../app/contextUser'
-import {getDoc, where, doc, updateDoc} from "firebase/firestore";
+import { userContext } from '../../../app/Context/contextUser'
+import {getDoc, doc, updateDoc} from "firebase/firestore";
 import { db } from "../../../../firebase";
 import CreateFolder from "./createFolder";
 import DeleteFolder from "./DeletFolder";
@@ -141,14 +141,16 @@ function ComponentFolder() {
           <div onClick={() => router.push('/Dashboard/Admin/Clientes')} className="flex cursor-pointer">
             <PersonIcon height={25} width={25} />
             <p className="cursor-pointer text-[18px] flex mr-[15px] text-secondary dark:text-dsecondary">
-              {"Usuários    >"} 
+              {"Usuários    >"}
             </p>
           </div>
 
-          <Image src={IconFolder} alt="Imagem de uma pasta" />
-          <p className="text-[18px] flex ml-[5px] text-secondary dark:text-dsecondary">
-            Pastas
-          </p>
+          <div className="flex">
+            <Image src={IconFolder}  alt="Imagem de uma pasta" />
+            <p className="text-[18px] flex ml-[5px] text-secondary dark:text-dsecondary">
+              Pastas
+            </p>
+          </div>
         </div>
         {recentsFile.length > 0 ? (
           <>

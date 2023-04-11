@@ -2,8 +2,8 @@
 import { MagnifyingGlassIcon, PersonIcon} from '@radix-ui/react-icons';
 import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
-import { userContext } from '../../../app/contextUser';
-import { loadingContext } from '../../../app/contextLoading';
+import { userContext } from '../../../app/Context/contextUser';
+import { loadingContext } from '../../../app/Context/contextLoading';
 import {db} from '../../../../firebase'
 import { doc, getDoc} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';

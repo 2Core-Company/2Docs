@@ -1,6 +1,6 @@
 'use client'
 import { createContext, useState } from 'react';
-import { DataUser } from '../types/interfaces' 
+import { DataUser } from '../../types/interfaces' 
 
 export const userContext = createContext(null);
 
