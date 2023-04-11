@@ -5,8 +5,9 @@ import Loading from '../components/Clients&Admin/Loading'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'
 import ThemeContextProvider from '../hooks/useTheme'
-import ContextUser from './contextUser'
-import ContextLoading from './contextLoading'
+import ContextUser from './Context/contextUser'
+import ContextLoading from './Context/contextLoading'
+import ContextCompany from './Context/contextCompany'
 
 const poiretOne = Poiret_One({
   display: 'swap',
@@ -29,8 +30,10 @@ export default function RootLayout({children,}: {children: React.ReactNode}) {
         <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins max-w-screen`}>
           <ContextUser>
             <ContextLoading>
-              <Loading />
-              {children}
+              <ContextCompany>
+                <Loading />
+                {children}
+              </ContextCompany>
             </ContextLoading>
           </ContextUser>
           <ToastContainer autoClose={3000}/>

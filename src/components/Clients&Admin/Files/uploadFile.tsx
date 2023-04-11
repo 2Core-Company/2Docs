@@ -3,6 +3,8 @@ import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany';
+import { useContext } from 'react';
+import { companyContext } from '../../../app/Context/contextCompany';
 
   interface Props{
     folderName?:string
@@ -18,8 +20,18 @@ import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany';
   }
 
 function UploadFiles({folderName, menu, permission, id, id_company,  from, id_enterprise, setFiles, setMenu, setFilesFilter}: Props) {
-
+  const {dataCompany} = useContext(companyContext)
+  
   async function UploadFile(files){
+    console.log(dataCompany)
+    if(dataCompany.gbFiles.type === 'Gb'){
+      if(dataCompany.gbFiles.size >= dataCompany.plan.maxSize){
+        files.value = null
+        toast.error('O plano da sua empresa excedeu o limite de armazenamento, comunique um responsavel desta empresa.')
+        throw ''
+      }
+    }
+
     var totalSizeFiles = 0
     for await (const file of files.files) {
       totalSizeFiles = file.size + totalSizeFiles

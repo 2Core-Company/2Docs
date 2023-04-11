@@ -5,7 +5,7 @@ import calendarBuild from "./Calendarbuild";
 import { TriangleLeftIcon, TriangleRightIcon } from '@radix-ui/react-icons';
 import { collection, getDocs, query, where} from "firebase/firestore";
 import { db } from "../../../../firebase";
-import { userContext } from "../../../app/contextUser";
+import { userContext } from "../../../app/Context/contextUser";
 import Exclamation from '../../../../public/icons/exclamation.svg'
 import Image from "next/image";
 import TableEvents from "./tableEvents";

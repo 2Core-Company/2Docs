@@ -1,7 +1,7 @@
 import * as Tabs from '@radix-ui/react-tabs';
 import { EyeClosedIcon, EyeOpenIcon} from '@radix-ui/react-icons';
 import { useState, useContext, useEffect } from 'react';
-import { loadingContext } from '../../../app/contextLoading'
+import { loadingContext } from '../../../app/Context/contextLoading'
 import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
 import { auth } from '../../../../firebase'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'

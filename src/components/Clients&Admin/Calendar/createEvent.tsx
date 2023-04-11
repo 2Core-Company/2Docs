@@ -6,7 +6,7 @@ import styles from '../../Admin/Home/home.module.css'
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import { useContext, useState } from 'react'
-import { userContext } from '../../../app/contextUser';
+import { userContext } from '../../../app/Context/contextUser';
 import { toast } from 'react-toastify';
 import { Enterprise } from '../../../types/interfaces'
 import Arrow from '../../../../public/icons/arrow.svg'
