@@ -13,13 +13,15 @@ const poiretOne = Poiret_One({
   display: 'swap',
   weight: ['400'],
   variable: '--font-poiretOne',
+  subsets: ['latin'],
 })
 
 const poppins = Poppins({
-  display: 'swap',
-  weight: ['400'],
-  variable: '--font-poppins',
-})
+  display: "swap",
+  weight: ["400"],
+  variable: "--font-poppins",
+  subsets: ["latin"],
+});
 
 export default function RootLayout({children,}: {children: React.ReactNode}) {
   return (

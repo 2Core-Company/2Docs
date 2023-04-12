@@ -10,7 +10,7 @@ const nextConfig = {
     appDir: true,
     optimizeFonts: true, // aqui está a propriedade optimizeFonts dentro de experimental
     fontLoaders: [
-      { loader: '@next/font/google', options: { subsets: ['latin'] } },
+      { loader: '@next/font/google' },
     ],
   },
 }
