@@ -37,7 +37,7 @@ function UploadFiles({folderName, menu, permission, id, id_company,  from, id_en
       totalSizeFiles = file.size + totalSizeFiles
       if(file.size > 30000000){
         files.value = null
-        return toast.error("Os arquivos só podem ter no maximo 30mb.")
+        return toast.error("Os arquivos só podem ter no máximo 30mb.")
       }
     }
     
@@ -122,7 +122,7 @@ function UploadFiles({folderName, menu, permission, id, id_company,  from, id_en
       setFiles((files) => [data, ...files])
       setFilesFilter((filesFilter) => [data, ...filesFilter])
     } catch (e) {
-      toast.error("Não foi possivel armazenar o " + params.name)
+      toast.error("Não foi possível armazenar o " + params.name)
       console.log(e)
     } 
   }
