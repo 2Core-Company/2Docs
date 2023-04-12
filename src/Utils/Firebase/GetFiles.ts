@@ -12,7 +12,7 @@ export async function GetFilesOrderByDate({id_company, from, setRecentsFile}:Pro
     const files = []
     const q = query(collection(db, "files", id_company, "documents"), where('from', '==', from), orderBy("created_date"), limit(5));
     const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
+    querySnapshot.forEach((doc) => {      
       files.push(doc.data())
     });
     setRecentsFile(files)

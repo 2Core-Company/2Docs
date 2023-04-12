@@ -1,5 +1,5 @@
 'use client'
-import {Poiret_One, Poppins } from '@next/font/google'
+import {Poiret_One, Poppins } from 'next/font/google'
 import "../../styles/globals.css";
 import Loading from '../components/Clients&Admin/Loading'
 import { ToastContainer } from 'react-toastify';

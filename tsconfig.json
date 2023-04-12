@@ -22,7 +22,8 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "strictNullChecks": false
   },
   "include": [
     "next-env.d.ts",
@@ -30,8 +31,17 @@
     "**/*.tsx",
     "src/pages/app/dashboard/teste.jsx",
     "src/pages/app/dashboard/layout.jsx",
-    ".next/types/**/*.ts"
-, "src/app/layout.tsx", "src/components/Admin/Clients/editUser.tsx", "src/app/Admin/layout.tsx", "src/components/Admin/Home/index.jsx", "src/components/AppContext.tsx", "src/components/Clients/Folder/index.jsx", "src/components/Clients&Admin/Calendar/calendarStyled.js", "src/pages/api/events/sendEmail.js", "src/app/createdContext.js"  ],
+    ".next/types/**/*.ts",
+    "src/app/layout.tsx",
+    "src/components/Admin/Clients/editUser.tsx",
+    "src/app/Admin/layout.tsx",
+    "src/components/Admin/Home/index.jsx",
+    "src/components/AppContext.tsx",
+    "src/components/Clients/Folder/index.jsx",
+    "src/components/Clients&Admin/Calendar/calendarStyled.js",
+    "src/pages/api/events/sendEmail.js",
+    "src/app/createdContext.js"
+  ],
   "exclude": [
     "node_modules"
   ]
