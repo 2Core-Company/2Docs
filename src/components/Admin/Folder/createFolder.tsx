@@ -22,7 +22,7 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
   const [color, setColor] = useState<string>("#005694");
   const [nameFolder, setNameFolder] = useState<string>();
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
-  const toastCreateFolder = {pending: "Criando pasta.", success: "Pasta criada.",error: "Não foi possivel criar esta pasta."}
+  const toastCreateFolder = {pending: "Criando pasta.", success: "Pasta criada.",error: "Não foi possível criar esta pasta."}
   const { theme } = useTheme();
 
   //Função de criar pasta
@@ -59,7 +59,7 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
       <div className="bg-primary dark:bg-dprimary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col">
         <div className={`bg-[${color}] w-full h-[15px] rounded-t-[4px]`} />
         <div className="px-[10px] pl-[20px]">
-          <p className="text-[26px] mt-[10px] font-[500] dark:text-white" onClick={() => console.log(isPrivate)}>
+          <p className="text-[26px] mt-[10px] font-[500] dark:text-white">
             Criar Nova Pasta
           </p>
           <p className="text-[20px] mt-[10px] font-[500] dark:text-white">
