@@ -9,6 +9,7 @@ import {getDoc, doc, updateDoc} from "firebase/firestore";
 import { db } from "../../../../firebase";
 import CreateFolder from "./createFolder";
 import DeleteFolder from "./DeletFolder";
+import FolderConfig from "./folderConfig";
 import Link from "next/link";
 import DownloadsFile from "../../Clients&Admin/Files/dowloadFiles";
 import Modals from "../../Clients&Admin/Modals";
@@ -27,6 +28,7 @@ function ComponentFolder() {
   const [files, setFiles] = useState<Files[]>([]);
   const [recentsFile, setRecentsFile] = useState<Files[]>([]);
   const [createFolder, setCreateFolder] = useState<boolean>(false);
+  const [follderConfig, setFolderConfig] = useState<boolean>(false);
   const [user, setUser] = useState<DataUser>();
   const [foldersFilter, setFoldersFilter] = useState([]);
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""});
@@ -110,7 +112,7 @@ function ComponentFolder() {
     try{
       toast.promise(
         updateDoc(
-          doc(db, "users", dataUser.id_company, "Clientes", user.id),
+          doc(db, "companies", dataUser.id_company, "clients", user.id),
           {
             folders: foldersFilter,
           }
@@ -251,6 +253,11 @@ function ComponentFolder() {
       </div>
       {createFolder ? (
         <CreateFolder id_company={dataUser.id_company} enterprise={enterprise} id={id_user} user={user} setCreateFolder={setCreateFolder} setUser={setUser} setFoldersFilter={setFoldersFilter}/>
+      ) : (
+        <></>
+      )}
+      {createFolder ? (
+        <FolderConfig />
       ) : (
         <></>
       )}
