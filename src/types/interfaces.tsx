@@ -92,6 +92,9 @@ export interface Folders {
   color: string;
   id_enterprise: string;
   isPrivate: boolean;
+  singleDownload: boolean;
+  onlyMonthDownload: boolean;
+  timeFile: number;
 }
 
 export interface DataCompany {
@@ -128,6 +131,10 @@ export interface Event {
 
 export interface FolderCfg {
   status: boolean;
-  folderName?: string;
-  folderColor?: string;
+  name?: string;
+  color?: string;
+  isPrivate?: boolean;
+  singleDownload?: boolean;
+  onlyMonthDownload?: boolean;
+  timeFile?: number;
 }

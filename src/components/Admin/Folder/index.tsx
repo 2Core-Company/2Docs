@@ -14,7 +14,7 @@ import Link from "next/link";
 import DownloadsFile from "../../Clients&Admin/Files/dowloadFiles";
 import Modals from "../../Clients&Admin/Modals";
 import { toast } from "react-toastify";
-import { DataUser, Files, Modal, Enterprise, FolderCfg } from "../../../types/interfaces";
+import { DataUser, Files, Modal, Enterprise, FolderCfg, Folders } from "../../../types/interfaces";
 import Enterprises from "../../Clients&Admin/Enterprise";
 import { GetFilesToAllFolders } from "../../../Utils/Firebase/GetFiles";
 import { Search } from "../../../Utils/Other/Search";
@@ -30,7 +30,7 @@ function ComponentFolder() {
   const [createFolder, setCreateFolder] = useState<boolean>(false);
   const [folderConfig, setFolderConfig] = useState<FolderCfg>({status: false});
   const [user, setUser] = useState<DataUser>();
-  const [foldersFilter, setFoldersFilter] = useState([]);
+  const [foldersFilter, setFoldersFilter] = useState<Folders[]>([]);
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""});
   const [deletFolder, setDeletFolder] = useState<string>();
   const [enterprise, setEnterprise] = useState<Enterprise>();
@@ -109,6 +109,7 @@ function ComponentFolder() {
 
   async function PrivateFolderChange(privateState: boolean, index: number) {    
     foldersFilter[index].isPrivate = !privateState;
+    user.folders[index].isPrivate = !privateState;
     try{
       toast.promise(
         updateDoc(
@@ -214,7 +215,7 @@ function ComponentFolder() {
                         <LockOpen1Icon height={24} width={24} onClick={() => {PrivateFolderChange(folder.isPrivate, index);}} className="absolute top-[5px] right-[40px] group-hover:block cursor-pointer hidden"/>
                       )}
                       <TrashIcon height={25} width={25} onClick={() => ConfirmationDeleteFolder(folder.name)} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden"/>
-                      <GearIcon height={25} width={25} onClick={() => setFolderConfig({status: true, folderName: folder.name, folderColor: folder.color})} className="absolute bottom-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
+                      <GearIcon height={25} width={25} onClick={() => setFolderConfig({status: true, name: folder.name, color: folder.color, isPrivate: folder.isPrivate, singleDownload: folder.singleDownload, onlyMonthDownload: folder.onlyMonthDownload, timeFile: folder.timeFile})} className="absolute bottom-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                     </div>
                   )}
                   
@@ -258,7 +259,7 @@ function ComponentFolder() {
         <></>
       )}
       {folderConfig.status ? (
-        <FolderConfig folderColor={folderConfig.folderColor} folderName={folderConfig.folderName} setFolderConfig={setFolderConfig} />
+        <FolderConfig setFoldersFilter={setFoldersFilter} foldersFilter={foldersFilter} setUser={setUser} user={user} enterprise={enterprise} id={id_user} id_company={dataUser.id_company} setFolderConfig={setFolderConfig} folderConfig={folderConfig}/>
       ) : (
         <></>
       )}

@@ -1,24 +1,77 @@
 import React from "react";
-import { useState } from "react";
-import { doc, updateDoc } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../firebase";
+import { toast } from "react-toastify";
+import { DataUser, FolderCfg, Folders } from "../../../types/interfaces";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import * as Switch from "@radix-ui/react-switch"
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 interface Props {
-  folderName: string;
-  folderColor: string;
+  setFoldersFilter: Function;
+  foldersFilter: Folders[];
+  setUser: Function,
+  user: DataUser;
+  enterprise: { id: string };
+  id: string;
+  id_company: string;
   setFolderConfig: Function;
+  folderConfig: FolderCfg;
 }
 
-function FolderConfig({ folderColor, folderName, setFolderConfig }: Props) {
-  const [nameFolder, setNameFolder] = useState<string>(folderName);
-  const [color, setColor] = useState<string>(folderColor);
-  const [timeFile, setTimeFile] = useState<number>(0);
-  const [singleDownload, setSingleDownload] = useState<boolean>(false);
-  const [onlyMonthDownload, setOnlyMonthDownload] = useState<boolean>(false);
+function FolderConfig({setFoldersFilter, foldersFilter, setUser, user, enterprise, id, id_company, setFolderConfig, folderConfig}: Props) {  
+  const [nameFolder, setNameFolder] = useState<string>(folderConfig.name);
+  const [color, setColor] = useState<string>(folderConfig.color);
+  const [timeFile, setTimeFile] = useState<number>(folderConfig.timeFile);
+  const [singleDownload, setSingleDownload] = useState<boolean>(folderConfig.singleDownload);
+  const [onlyMonthDownload, setOnlyMonthDownload] = useState<boolean>(folderConfig.onlyMonthDownload);
+
+  const toastUpdateCfg = {pending: "Salvando configurações.", success: "Salvamento concluído."}
+
+  async function UpdateCfg() {
+    const docRef = doc(db, "companies", id_company, "clients", id);
+    const docSnap = await getDoc(docRef);
+    const folders = docSnap.data().folders;
+    
+    const index = folders.findIndex((folder) => folder.name === folderConfig.name && folder.id_enterprise === enterprise.id);
+
+    setFoldersFilter(folders)
+    setUser({...user, folders})
+
+    try{      
+      if(index === -1) {
+        setFolderConfig(false);
+        throw "Pasta não encontrada/inexistente/excluída.";
+      }
+      if(color === undefined || nameFolder === "") {
+        throw "Selecione uma cor e/ou um nome para a pasta.";
+      }
+      for(let i = 0; i < foldersFilter.length; i++) {        
+        if(foldersFilter[i].name === nameFolder && i !== index) {
+          throw "Este nome já está em uso."
+        }
+      }
+
+      let folds = foldersFilter;
+      folds[index] = {...folds[index], name: nameFolder, color: color, singleDownload: singleDownload, onlyMonthDownload: onlyMonthDownload, timeFile: timeFile}
+
+      setFoldersFilter(folds)
+      setUser({...user, folders: folds})
+
+      updateDoc(
+        doc(db, "companies", id_company, "clients", user.id),
+        {
+          folders: foldersFilter,
+        }
+      )
+
+      setFolderConfig(false); //Fecha a tela
+    }catch(e) {
+      throw toast.error("Erro ao realizar a ação: " + e)
+    }
+  }
 
   const marks = {
     0: "1 dia",
@@ -49,7 +102,7 @@ function FolderConfig({ folderColor, folderName, setFolderConfig }: Props) {
               viewBox="0 0 79 79"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              onClick={() => {console.log(singleDownload + "\n" + onlyMonthDownload)}}
+              onClick={() => {console.log(singleDownload + "\n" + onlyMonthDownload + "\n" + nameFolder)}}
             >              
               <path
                 d="M77.537 15.361H34.4308L29.0135 7.23427C28.7414 6.82757 28.2849 6.58325 27.7963 6.58325H1.46296C0.655407 6.58325 0 7.2372 0 8.04621V16.824V22.6758V65.1062C0 69.1381 3.27704 72.4166 7.30604 72.4166H71.694C75.723 72.4166 79 69.1381 79 65.1062V22.6758V16.824C79 16.015 78.3446 15.361 77.537 15.361ZM76.0741 21.2129H2.92593V18.287H33.6481H76.0741V21.2129ZM2.92593 9.50918H27.0136L30.9153 15.361H2.92593V9.50918ZM76.0741 65.1062C76.0741 67.523 74.1093 69.4907 71.694 69.4907H7.30604C4.89069 69.4907 2.92593 67.523 2.92593 65.1062V24.1388H76.0741V65.1062Z"
@@ -57,7 +110,7 @@ function FolderConfig({ folderColor, folderName, setFolderConfig }: Props) {
               />
             </svg>
             <p className={`text-[24px] ml-2 ${nameFolder === "" ? "opacity-50" : ""}`} style={{color: color}}>
-              {nameFolder === "" ? folderName : nameFolder}
+              {nameFolder === "" ? folderConfig.name : nameFolder}
             </p>
           </div>
           <div className="my-6">
@@ -66,7 +119,7 @@ function FolderConfig({ folderColor, folderName, setFolderConfig }: Props) {
             </p>
             <input
               placeholder="Digite o nome da pasta"
-              onChange={(text) => setNameFolder(text.target.value)}
+              onChange={(text) => text.target.value !== "" ? setNameFolder(text.target.value) : setNameFolder(folderConfig.name)}
               maxLength={30}
               className="w-[80%] bg-transparent border-black dark:border-white border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] px-[5px] py-[3px] mt-1 outline-none"
             />
@@ -93,7 +146,7 @@ function FolderConfig({ folderColor, folderName, setFolderConfig }: Props) {
               className="w-[42px] h-[25px] bg-blackA9 rounded-full relative shadow-[0_2px_10px] shadow-blackA7 focus:shadow-[0_0_0_2px] focus:shadow-black data-[state=checked]:bg-black outline-none cursor-pointer"
               id="singleDownload"
               onClick={() => setSingleDownload(!singleDownload)}
-              checked={singleDownload ? true : false}
+              checked={singleDownload}
             >
               <Switch.Thumb className="block w-[21px] h-[21px] bg-white rounded-full shadow-[0_2px_2px] shadow-blackA7 transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
             </Switch.Root>
@@ -106,7 +159,7 @@ function FolderConfig({ folderColor, folderName, setFolderConfig }: Props) {
               className="w-[42px] h-[25px] bg-blackA9 rounded-full relative shadow-[0_2px_10px] shadow-blackA7 focus:shadow-[0_0_0_2px] focus:shadow-black data-[state=checked]:bg-black outline-none cursor-pointer"
               id="onlyMonthDownload"
               onClick={() => setOnlyMonthDownload(!onlyMonthDownload)}
-              checked={onlyMonthDownload ? true : false}
+              checked={onlyMonthDownload}
             >
               <Switch.Thumb className="block w-[21px] h-[21px] bg-white rounded-full shadow-[0_2px_2px] shadow-blackA7 transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
             </Switch.Root>
@@ -123,15 +176,15 @@ function FolderConfig({ folderColor, folderName, setFolderConfig }: Props) {
                     marks={marks}
                     step={null}
                     onChange={(value: number) => {setTimeFile(value)}}
-                    defaultValue={3}
+                    defaultValue={timeFile}
             />
           </div>
           <div className="flex gap-5 mb-6 mt-11 mr-3 justify-end">
             <button onClick={() => {setFolderConfig(false)}} className="bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px] border-2 border-strong rounded-[8px] text-[20px] max-sm:text-[18px] text-white">
               Cancelar
             </button>
-            <button onClick={() => {}}className="bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white ">
-              Confirmar
+            <button onClick={() => toast.promise(UpdateCfg(), toastUpdateCfg)}className="bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white ">
+              Atualizar
             </button>        
           </div>
         </div>
