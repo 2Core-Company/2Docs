@@ -28,7 +28,7 @@ function EnableFiles({selectFiles, menu, folders, files, setMenu, setFiles}:Prop
       for(let i = 0; i < selectFiles.length; i++){
         const folderStatus = folders.findIndex(folder => folder.name === selectFiles[i].folder)
         if(folderStatus  == -1){
-          folders.push({name: selectFiles[i].folder, color: "#BE0000", id_enterprise:selectFiles[i].id_enterprise, isPrivate:false})
+          folders.push({name: selectFiles[i].folder, color: "#BE0000", id_enterprise:selectFiles[i].id_enterprise, isPrivate:false, singleDownload: false, onlyMonthDownload: false, timeFile: 3})
           updateDoc(doc(db, 'companies', selectFiles[i].id_company, "clients", selectFiles[i].id_user), {
             folders: folders
           })
