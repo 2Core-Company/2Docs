@@ -205,7 +205,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     function DownloadFiles(file){
         if(file.url){
-         return DownloadsFile({filesDownloaded:[file], from:from})
+         return DownloadsFile({filesDownloaded:[file], from:from, folderName: file.folder})
         }
         toast.error('Clique em salvar e depois faça download deste arquivo')
     }

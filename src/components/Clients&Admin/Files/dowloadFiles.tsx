@@ -13,7 +13,7 @@ interface Props{
 }
 
 async function DownloadsFile({filesDownloaded, files, childToParentDownload, from, folderName}:Props){
-  const docRef = doc(db, "companies", files[0].id_company, "clients", files[0].id_user);
+  const docRef = doc(db, "companies", filesDownloaded[0].id_company, "clients", filesDownloaded[0].id_user);
   const docSnap = await getDoc(docRef);
   let folder = docSnap.data().folders.filter((folder) => folder.name == folderName);
 
@@ -49,9 +49,6 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
       })
 
       let viewedDate = new Date().toString();
-
-      const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
-      files[index].downloaded = true;
       
       if(from === "user" && filesDownloaded[i].folder != "Cliente" && filesDownloaded[i].viwed === false){
         await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
@@ -59,7 +56,10 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
           viewedDate: viewedDate,
         })
 
-        if(files){          
+        if(files){
+          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+          files[index].downloaded = true;
+
           files[index].viwed = true
           files[index].viewedDate = viewedDate;
 
@@ -71,6 +71,9 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
             viewedDate: viewedDate
           })
           if(files){            
+            const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+            files[index].downloaded = true;
+
             files[index].viwed = true
             files[index].viewedDate = viewedDate;            
 
