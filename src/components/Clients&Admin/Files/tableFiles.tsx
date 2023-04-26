@@ -53,7 +53,7 @@ export default function TableFiles({ pages, trash, filesFilter, files, folderNam
 
    // <--------------------------------- Download Files --------------------------------->
   function DownloadFile(file){
-    DownloadsFile({filesDownloaded:[file], files:files, from:from, childToParentDownload:childToParentDownload})
+    DownloadsFile({filesDownloaded:[file], files:files, from:from, childToParentDownload:childToParentDownload, folderName: folderName})
   }
 
 

@@ -164,7 +164,7 @@ function ComponentFolder() {
               {recentsFile.map((file) => {
                 return (
                   <div key={file.id_file}className="group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] dark:hover:shadow-[#414141] relative">
-                    <button onClick={() => DownloadsFile({filesDownloaded: [file], from: "admin"})}>
+                    <button onClick={() => DownloadsFile({filesDownloaded: [file], from: "admin", folderName: file.folder})}>
                       <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden"/>
                     </button>
                     <Image src={`/icons/${file.type}.svg`} alt="Imagem de um arquivo" width={90} height={90} className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]"/>

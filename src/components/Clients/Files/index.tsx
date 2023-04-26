@@ -110,9 +110,9 @@ function Files(){
     setSelectFiles([])
   }
 
-  function DowloadFiles(){
+  function DowloadFiles(){    
     if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
-    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"user", childToParentDownload:childToParentDownload}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."})
+    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"user", childToParentDownload:childToParentDownload, folderName: folderName}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possível fazer o download."})
   }
 
 

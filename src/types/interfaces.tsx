@@ -78,6 +78,7 @@ export interface Files {
   url?: string;
   viwed?: boolean;
   viewedDate?: string;
+  downloaded?: boolean;
   from?: string;
   urlDownload?: string;
   id_company?: string;

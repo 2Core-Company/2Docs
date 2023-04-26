@@ -42,7 +42,7 @@ function Files(){
   const [user, setUser] = useState<DataUser>()
   const toastDownload = {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."}
 
-  // <--------------------------------- GetFiles --------------------------------->
+  // <--------------------------------- GetFiles --------------------------------->  
   useEffect(() =>{
     if(dataUser != undefined){
       setLoading(true)
@@ -118,7 +118,7 @@ function Files(){
     if(selectFiles.length === 0){
       throw toast.error("Selecione um arquivo para baixar.")
     } 
-    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"admin", childToParentDownload:childToParentDownload}), toastDownload)
+    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"admin", childToParentDownload:childToParentDownload, folderName: folderName}), toastDownload)
   }
 
   function childToParentDownload(files){
