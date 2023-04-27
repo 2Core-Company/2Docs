@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/app/dashboard/teste.jsx",
+    "src/pages/app/dashboard/layout.jsx",
+    ".next/types/**/*.ts",
+    "src/app/layout.tsx",
+    "src/components/Admin/Clients/editUser.tsx",
+    "src/app/Admin/layout.tsx",
+    "src/components/Admin/Home/index.jsx",
+    "src/components/AppContext.tsx",
+    "src/components/Clients/Folder/index.jsx",
+    "src/components/Clients&Admin/Calendar/calendarStyled.js",
+    "src/pages/api/events/sendEmail.js",
+    "src/app/createdContext.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
