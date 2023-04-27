@@ -97,6 +97,7 @@ function UploadFiles({folderName, menu, permission, id, id_company,  from, id_en
         type:type, 
         trash: false,
         viwed: false,
+        downloaded: false,
         folder: folderName,
         from: from
       });
@@ -114,6 +115,7 @@ function UploadFiles({folderName, menu, permission, id, id_company,  from, id_en
         urlDownload: urlDownload,
         trash: false,
         viwed: false,
+        downloaded: false,
         checked:false,
         folder: folderName,
         from: from

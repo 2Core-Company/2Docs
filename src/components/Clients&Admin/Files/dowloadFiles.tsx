@@ -1,7 +1,7 @@
 import { db } from '../../../../firebase'
 import { doc, getDoc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
-import { Files } from '../../../types/interfaces'
+import { Files, Folders } from '../../../types/interfaces'
 import ViwedEvent from '../Calendar/viwedEvent';
 
 interface Props{
@@ -15,12 +15,18 @@ interface Props{
 async function DownloadsFile({filesDownloaded, files, childToParentDownload, from, folderName}:Props){
   const docRef = doc(db, "companies", filesDownloaded[0].id_company, "clients", filesDownloaded[0].id_user);
   const docSnap = await getDoc(docRef);
-  let folder = docSnap.data().folders.filter((folder) => folder.name == folderName);
+  let folder:Folders[] = docSnap.data().folders.filter((folder) => folder.name == folderName);
 
   try{
     for(var i = 0; i < filesDownloaded.length; i++){
-      if(folder[0].singleDownload === true && filesDownloaded[i].downloaded === true) {
-        return toast.error("Há arquivos selecionados que já foram baixados uma vez (Pasta configurada para downloads únicos).")
+      let date:Number = new Date(filesDownloaded[i].created_date).getMonth(), monthNow:Number = new Date().getMonth()
+
+      if(from === "user" && filesDownloaded[i].folder != "Cliente" && folder[0].singleDownload === true && filesDownloaded[i].downloaded === true) {
+        return toast.error("Este(s) arquivo(s) já foram baixados uma vez (Pasta configurada para downloads únicos).")
+      }
+
+      if(from === "user" && filesDownloaded[i].folder != "Cliente" && folder[0].onlyMonthDownload === true && date !== monthNow) {
+        return toast.error("Este(s) arquivo(s) são do mês passado (Pasta configurada para download no mês).")
       }
 
       let blob = await fetch(filesDownloaded[i].url).then(r => r.blob());
@@ -44,9 +50,28 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
 
       filesDownloaded[i].checked = false
 
-      await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
-        downloaded: true
-      })
+      if(from === "user" && filesDownloaded[i].folder != "Cliente" && filesDownloaded[i].downloaded === false) {
+        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
+          downloaded: true
+        })
+
+        if(files){
+          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+          files[index].downloaded = true;
+          childToParentDownload(files)
+        }
+      } else if(from === "admin" && filesDownloaded[i].folder == "Cliente" && filesDownloaded[i].downloaded === false) {
+        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
+          downloaded: true
+        })
+
+        if(files){
+          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+          files[index].downloaded = true;
+
+          childToParentDownload(files)
+        }
+      }
 
       let viewedDate = new Date().toString();
       
