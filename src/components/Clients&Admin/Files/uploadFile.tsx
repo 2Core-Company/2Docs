@@ -23,7 +23,6 @@ function UploadFiles({folderName, menu, permission, id, id_company,  from, id_en
   const {dataCompany} = useContext(companyContext)
   
   async function UploadFile(files){
-    console.log(dataCompany)
     if(dataCompany.gbFiles.type === 'Gb'){
       if(dataCompany.gbFiles.size >= dataCompany.plan.maxSize){
         files.value = null

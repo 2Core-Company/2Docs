@@ -79,7 +79,6 @@ interface GetFilesToNormal{
 }
 
 export async function GetFilesToNormal({id_company,  id_user, id_enterprise, folderName, setFiles, setFilesFilter, setPages}:GetFilesToNormal){
-  console.log(folderName)
   const files = []
   const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==",  id_user), where("folder", "==", folderName), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
