@@ -29,7 +29,6 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
   const domain = new URL(window.location.href).origin
   const [right, setRight] = useState("right-[-600px]")
 
-
   useEffect(() =>{
     setRight("right-0")
   },[])
