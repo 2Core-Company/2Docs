@@ -12,8 +12,8 @@ import TableFiles from '../../Clients&Admin/Files/tableFiles'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import Modals from '../../Clients&Admin/Modals'
 import DeletFiles from '../../Admin/Files/DeletFiles';
-import { Files, Modal} from '../../../types/interfaces' 
-import { where, collection, query, getDocs } from "firebase/firestore"; 
+import { Files, Modal, Folders } from '../../../types/interfaces' 
+import { where, collection, query, getDocs, getDoc, doc, updateDoc } from "firebase/firestore"; 
 import {db} from '../../../../firebase'
 import { userContext } from '../../../app/Context/contextUser'
 import { loadingContext } from '../../../app/Context/contextLoading';
@@ -53,28 +53,77 @@ function Files(){
   }
 
   async function GetFiles(){
-    var getFiles = []
-    var q
+    var getFiles = [];
+    let q;
+
     if(folderName === "Favoritos"){
       q = query(collection(db, "files", dataUser.id_company, "documents"), where("id_user", "==",  dataUser.id), where("id_enterprise", "==", id_enterprise), where("favorite", "==", true), where("trash", "==", false));
     } else {
       q = query(collection(db, "files", dataUser.id_company, "documents"), where("id_user", "==",  dataUser.id), where("id_enterprise", "==", id_enterprise), where("folder", "==", folderName));
     }
 
-    const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        getFiles.push(doc.data())
-    });
+    const docRef = doc(db, "companies", dataUser.id_company, "clients", dataUser.id);
+    const docSnap = await getDoc(docRef);
+    let folder: Folders[] = docSnap.data().folders.filter((folder) => folder.name == folderName);
 
-    for(var i = 0; i < getFiles.length; i++){
-      getFiles[i].checked = false
-      getFiles[i].created_date = getFiles[i].created_date + ""
+    const querySnapshot = await getDocs(q);
+
+    try {
+      querySnapshot.forEach((document) => {
+        let file: Files = document.data();
+        let timeDiff = Date.now() - Date.parse(file.created_date);
+
+        switch(folder[0].timeFile) {
+          case 3:
+            getFiles.push(file);
+            break;
+          case 2:
+            if(timeDiff > 2592000000) {
+              updateDoc(doc(db, 'files', dataUser.id_company, "documents", file.id_file), {
+                ...file,
+                trash: true
+              })
+            } else {
+              getFiles.push(file);
+            }
+            break;
+          case 1:
+            if(timeDiff > 604800000) {
+              updateDoc(doc(db, 'files', dataUser.id_company, "documents", file.id_file), {
+                ...file,
+                trash: true
+              })
+            } else {
+              getFiles.push(file);
+            }
+            break;
+          case 0:
+            if(timeDiff > 86400000) {
+              updateDoc(doc(db, 'files', dataUser.id_company, "documents", file.id_file), {
+                ...file,
+                trash: true
+              })
+            } else {
+              getFiles.push(file);
+            }
+            break;
+          default:
+            throw "A configuração de algum arquivo foi corrompida! Reinicie a página."
+        }
+      });
+    } catch(e) {
+      toast.error("Erro: " + e)
     }
 
-    setPages(Math.ceil(getFiles.length / 10))
-    setFiles(getFiles)
-    setFilesFilter(getFiles)
-    setLoading(false)
+    for(var i = 0; i < getFiles.length; i++){
+      getFiles[i].checked = false;
+      getFiles[i].created_date = getFiles[i].created_date + "";
+    }
+
+    setPages(Math.ceil(getFiles.length / 10));
+    setFiles(getFiles);
+    setFilesFilter(getFiles);
+    setLoading(false);
   }
 
   // <--------------------------------- Select File --------------------------------->

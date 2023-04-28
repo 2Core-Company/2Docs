@@ -1,6 +1,8 @@
 import { folder } from 'jszip';
-import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where, doc, getDoc, updateDoc } from "firebase/firestore";
+import { Folders, Files } from '../../types/interfaces';
 import { db } from "../../../firebase";
+import { toast } from 'react-toastify';
 
 interface Props_GetFilesOrderByDate{
     id_company:string
@@ -80,13 +82,62 @@ interface GetFilesToNormal{
 
 export async function GetFilesToNormal({id_company,  id_user, id_enterprise, folderName, setFiles, setFilesFilter, setPages}:GetFilesToNormal){
   const files = []
+
   const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==",  id_user), where("folder", "==", folderName), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
+
+  const docRef = doc(db, "companies", id_company, "clients", id_user);
+  const docSnap = await getDoc(docRef);
+  let folder: Folders[] = docSnap.data().folders.filter((folder) => folder.name == folderName);
+
   const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    var file = doc.data()
-    file.checked = false
-    files.push(file)
-  });
+
+  try {
+    querySnapshot.forEach((document) => {
+      let file: Files = document.data();
+      let timeDiff = Date.now() - Date.parse(file.created_date);
+
+      switch(folder[0].timeFile) {
+        case 3:
+          files.push(file);
+          break;
+        case 2:
+          if(timeDiff > 2592000000) {
+            updateDoc(doc(db, 'files', id_company, "documents", file.id_file), {
+              ...file,
+              trash: true
+            })
+          } else {
+            files.push(file);
+          }
+          break;
+        case 1:
+          if(timeDiff > 604800000) {
+            updateDoc(doc(db, 'files', id_company, "documents", file.id_file), {
+              ...file,
+              trash: true
+            })
+          } else {
+            files.push(file);
+          }
+          break;
+        case 0:
+          if(timeDiff > 86400000) {
+            updateDoc(doc(db, 'files', id_company, "documents", file.id_file), {
+              ...file,
+              trash: true
+            })
+          } else {
+            files.push(file);
+          }
+          break;
+        default:
+          throw "A configuração de algum arquivo foi corrompida! Reinicie a página."
+      }
+    });
+  }catch (e) {
+    toast.error("Erro: " + e)
+  }
+  
   setFiles(files)
   setFilesFilter(files)
   setPages(Math.ceil(files.length / 10))
