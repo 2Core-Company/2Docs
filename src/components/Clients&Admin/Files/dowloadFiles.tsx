@@ -19,13 +19,13 @@ async function DownloadsFile({filesDownloaded, files, childToParentDownload, fro
 
   try{
     for(var i = 0; i < filesDownloaded.length; i++){
-      let date:Number = new Date(filesDownloaded[i].created_date).getMonth(), monthNow:Number = new Date().getMonth()
+      let monthDownload:Number = new Date(filesDownloaded[i].created_date).getMonth(), monthNow:Number = new Date().getMonth()
 
       if(from === "user" && filesDownloaded[i].folder != "Cliente" && folder[0].singleDownload === true && filesDownloaded[i].downloaded === true) {
         return toast.error("Este(s) arquivo(s) já foram baixados uma vez (Pasta configurada para downloads únicos).")
       }
 
-      if(from === "user" && filesDownloaded[i].folder != "Cliente" && folder[0].onlyMonthDownload === true && date !== monthNow) {
+      if(from === "user" && filesDownloaded[i].folder != "Cliente" && folder[0].onlyMonthDownload === true && monthDownload !== monthNow) {
         return toast.error("Este(s) arquivo(s) são do mês passado (Pasta configurada para download no mês).")
       }
 
