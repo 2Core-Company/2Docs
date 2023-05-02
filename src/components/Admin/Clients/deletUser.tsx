@@ -103,7 +103,15 @@ function DeletUser({selectUsers, users, menu, childToParentDelet}:Props) {
         name:doc.data()?.name,
         url:doc.data()?.url,
         viewedDate:doc.data()?.viewedDate,
-        type:doc.data()?.type
+        type:doc.data()?.type,
+        created_date:doc.data()?.created_date,
+        id_event: doc.data()?.id_event,
+        viwed:doc.data()?.viwed,
+        from:doc.data()?.from,
+        urlDownload:doc.data()?.urlDownload,
+        message:doc.data()?.message,
+        nameCompany:doc.data()?.nameCompany,
+        downloaded:doc.data()?.downloaded,
       })
     })
     await DeletFiles({selectFiles:getFiles})
