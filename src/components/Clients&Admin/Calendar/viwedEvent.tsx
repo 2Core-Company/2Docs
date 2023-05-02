@@ -75,7 +75,15 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             name:doc.data()?.name,
             url:doc.data()?.url,
             viewedDate:doc.data()?.viewedDate,
-            type:doc.data()?.type
+            type:doc.data()?.type,
+            created_date:doc.data()?.created_date,
+            id_event: doc.data()?.id_event,
+            viwed:doc.data()?.viwed,
+            from:doc.data()?.from,
+            urlDownload:doc.data()?.urlDownload,
+            message:doc.data()?.message,
+            nameCompany:doc.data()?.nameCompany,
+            downloaded:doc.data()?.downloaded,
           })
         });
 
@@ -221,7 +229,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     function DownloadFiles(file){
         if(file.url){
-         return DownloadsFile({filesDownloaded:[file], from:from})
+         return DownloadsFile({filesDownloaded:[file], from:from, folderName: file.folder})
         }
         toast.error('Clique em salvar e depois faça download deste arquivo')
     }

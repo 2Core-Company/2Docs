@@ -38,7 +38,7 @@ function ComponentHome () {
               <div id={styles.boxFiles} className='w-full h-full overflow-y-auto'>
                 {recentsFile?.map((file) =>{
                   return(
-                    <div onClick={() => DownloadFiles({filesDownloaded:[file], from:"user"})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
+                    <div onClick={() => DownloadFiles({filesDownloaded:[file], from:"user", folderName: file.folder})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
                       <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                       <p className='overflow-hidden whitespace-nowrap text-ellipsis mr-[5px]'>{file.name}</p>
                     </div>

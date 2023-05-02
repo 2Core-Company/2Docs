@@ -37,7 +37,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   //Acionar o toast
   async function OnToast(e: { preventDefault: () => void; }){
     e.preventDefault()
-    toast.promise(SignUp(),{pending: "Criando usuário.", success:"Usuário criado com sucesso", error:"Não foi possivel criar um usuário"})
+    toast.promise(SignUp(),{pending: "Criando usuário.", success:"Usuário criado com sucesso", error:"Não foi possível criar um usuário"})
   }
 
   //Cria o usuário no auth
@@ -102,7 +102,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
     var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
     var date = new Date() + ""
     
-    const data = {
+    let data: DataUser = {
       id: user.id,
       name: name,
       email: dataUser.email,
@@ -114,42 +114,22 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
       nameImage: user.referencesFile,
       created_date: date,
       status: false,
-      checked: false,
       permission: 0,
       fixed:false,
-      folders: [
-        {color:"#005694", name: "Cliente", id_enterprise:enterprise.id},
-        {color:"#C7A03C", name: "Favoritos", id_enterprise:enterprise.id}
+      folders: [        
+        {color:"#005694", name: "Cliente", id_enterprise:enterprise.id, isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
+        {color:"#C7A03C", name: "Favoritos", id_enterprise:enterprise.id, isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3} 
       ],
       enterprises:[enterprise]
     }
 
-    childToParentCreate(data)
+    childToParentCreate({...data, checked: false})
 
     try {
-      const docRef = await setDoc(doc(db, "companies", contextUser.id_company, "clients", user.id), {
-        id: user.id,
-        name: name,
-        email: dataUser.email,
-        cnpj: dataUser.cnpj,
-        password: dataUser.password,
-        phone: dataUser.phone,
-        id_company: contextUser.id_company,
-        photo_url: user.url,
-        nameImage: user.referencesFile,
-        created_date: date,
-        status: false,
-        permission: 0,
-        fixed:false,
-        folders: [        
-          {color:"#005694", name: "Cliente", id_enterprise:enterprise.id},
-          {color:"#C7A03C", name: "Favoritos", id_enterprise:enterprise.id}
-        ],
-        enterprises:[enterprise]
-      });
+      const docRef = await setDoc(doc(db, "companies", contextUser.id_company, "clients", user.id), data);
     } catch (e) {
       console.log(e)
-      toast.error("Não foi possivel criar o usuário.")
+      toast.error("Não foi possível criar o usuário.")
     }
   }
 
@@ -206,7 +186,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   },[dataUser.name])
 
   return (
-    <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] ${right} duration-300 flex flex-col items-center`}>
+    <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] ${right} transition-[right] ease-in-out duration-300 flex flex-col items-center`}>
       <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full max-sm:z-50'>
         <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]'/>
         <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Cadastrar</p>
@@ -235,7 +215,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
 
         <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
           <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
-            Cnpj
+            CNPJ
             <input maxLength={18} required  value={dataUser.cnpj} onChange={Text => CNPJMask({value:Text.target.value, setDataUser})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o CNPJ'/>
           </label>
 

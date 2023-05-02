@@ -57,7 +57,15 @@ import { db } from '../../../../firebase';
             name:doc.data()?.name,
             url:doc.data()?.url,
             viewedDate:doc.data()?.viewedDate,
-            type:doc.data()?.type
+            type:doc.data()?.type,
+            created_date:doc.data()?.created_date,
+            id_event: doc.data()?.id_event,
+            viwed:doc.data()?.viwed,
+            from:doc.data()?.from,
+            urlDownload:doc.data()?.urlDownload,
+            message:doc.data()?.message,
+            nameCompany:doc.data()?.nameCompany,
+            downloaded:doc.data()?.downloaded,
           })
       });
 
@@ -89,7 +97,7 @@ import { db } from '../../../../firebase';
                 if(file?.id_enterprise === enterprise.id && dataUser.folders[index]?.isPrivate === false){
                   return (
                     <div key={file.id_file} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                      <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"user"})}>
+                      <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"user", folderName: file.folder})}>
                         <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                       </button>
                       <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>

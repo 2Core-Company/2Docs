@@ -138,13 +138,13 @@ function ComponentHome () {
             <div  className='border-[2px] border-secondary dark:border-dsecondary w-[300px] h-[210px] pr-[5px] rounded-[12px]'>
               <div id={styles.boxFiles} className='h-full overflow-y-scroll pb-[5px] px-[5px]'>
                 {recentsFile.length > 0 ? recentsFile.map((file) => {
-                  return(
-                    <div onClick={() => DownloadFiles({filesDownloaded:[file], from:"admin"})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
-                      <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                      <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white'>{file.name}</p>
-                    </div>
-                  )
-                })
+                    return(
+                      <div onClick={() => DownloadFiles({filesDownloaded:[file], from:"admin", folderName: file.folder})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
+                        <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
+                        <p className='overflow-hidden whitespace-nowrap text-ellipsis dark:text-white'>{file.name}</p>
+                      </div>
+                    )
+                  })
                 : <></>}
               </div>
             </div>

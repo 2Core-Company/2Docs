@@ -54,7 +54,7 @@ export default function TableFiles({ pages, trash, textSearch, files, folderName
 
    // <--------------------------------- Download Files --------------------------------->
   function DownloadFile(file){
-    DownloadsFile({filesDownloaded:[file], files:files, from:from, childToParentDownload:childToParentDownload})
+    DownloadsFile({filesDownloaded:[file], files:files, from:from, childToParentDownload:childToParentDownload, folderName: folderName})
   }
 
   console.log(files)
