@@ -4,9 +4,10 @@ import { getAuth } from '../sdkFirebase'
     const user = await getAuth().getUser(req.body.uid)
     if (user.customClaims.admin) {
       try{
-        const result = await getAuth().deleteUser(req.body.users[0].id)
-        res.status(200)
+        const result = await getAuth().deleteUser(req.body.users.id)
+        res.status(200).json('Usuário excluido com sucesso')
       } catch (err){
+        console.log(err)
         res.json(err)
       }
     }

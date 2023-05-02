@@ -64,12 +64,14 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
 
   //Armazena a foto de perfil do usuário
   async function UploadPhoto(id:string) {
-    const referencesFile = Math.floor(Math.random() * 65536) + file.name;
+    var referencesFile 
     try{
       if(file.name != "padraoCliente.png"){
+        referencesFile = Math.floor(Math.random() * 65536) + file.name;
         const storageRef = ref(storage, `${contextUser.id_company }/images/` + referencesFile);
         const result = await uploadBytes(storageRef, file)
       } else {
+        referencesFile = "padraoCliente.png"
         const url = 'https://firebasestorage.googleapis.com/v0/b/docs-dc26e.appspot.com/o/padraoCliente.png?alt=media&token=ccd2b303-b4f2-49a0-a1b3-e78ed0921b8f'
         SignUpDb({url: url, referencesFile: "padraoCliente.png", id: id})
       }
@@ -78,7 +80,9 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
       console.log(e)
       throw e
     } finally {
-      await GetUrlPhoto(referencesFile, id)
+      if(file.name != "padraoCliente.png"){
+        await GetUrlPhoto(referencesFile, id)
+      }
     }
 
   }

@@ -72,11 +72,11 @@ function DeletUser({selectUsers, users, menu, childToParentDelet}:Props) {
 
   //Deletando o arquivo do usuário
   async function DeletFile(){
+    const allUsers = [...users]
+    const result = await deleteDoc(doc(db, "companies", selectUsers[0].id_company, "clients", selectUsers[0].id))
+    const index = allUsers.findIndex(user => user.id === selectUsers[0].id)
+    allUsers.splice(index, 1);
     try{
-      const allUsers = [...users]
-      const result = await deleteDoc(doc(db, "companies", selectUsers[0].id_company, "clients", selectUsers[0].id))
-      const index = allUsers.findIndex(user => user.id === selectUsers[0].id)
-      users.splice(index, 1);
       await Promise.all([GetFiles(selectUsers[0].id), DeletEvents()]).then((values) => {
         childToParentDelet(allUsers)
       });

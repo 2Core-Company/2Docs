@@ -64,7 +64,6 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
           await DeletePhoto()
           const storageRef = ref(storage, contextUser.id_company +  "/images/" + referencesFile);
           const result = await uploadBytes(storageRef, file)
-          
         }
       }catch(e){
         console.log(e)
@@ -77,7 +76,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
     }
   }
 
-    //Pega url da foto de perfil
+  //Pega url da foto de perfil
   async function GetUrlPhoto(referencesFile:string) {
     var url = ""
     try{
@@ -105,7 +104,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
   }
 
   async function UpdateBdUser(data){
-    const userAfterEdit:DataUser = {
+    const userAfterEdit = {
       id: user.id,
       id_company:user.id_company,
       permission:0,
@@ -120,19 +119,11 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
       status: user.status,
       created_date: user.created_date,
       folders:user.folders,
-      checked: false
     }
 
-    await (updateDoc(doc(db, 'companies', contextUser.id_company, "clients", user.id), {
-      name: dataUser.name,
-      email: dataUser.email,
-      cnpj: dataUser.cnpj,
-      password: dataUser.password,
-      phone: dataUser.phone,
-      photo_url: data.photo_url,
-      nameImage: data.nameImage,
-    }))
-    childToParentEdit(userAfterEdit)
+    await (updateDoc(doc(db, 'companies', contextUser.id_company, "clients", user.id), userAfterEdit))
+
+    childToParentEdit({...userAfterEdit, checked: false})
   }
   
   //Trocar foto de perfil
