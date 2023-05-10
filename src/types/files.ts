@@ -8,18 +8,18 @@ export interface Files{
     favorite:boolean
     id_enterprise:string
     name:string
-    url:string
+    path:string
     viewedDate:string
     type:string
-    created_date:string
+    created_date:string | number
     id_event?:string
     checked?:boolean
     viwed?:boolean
     from?:string
-    urlDownload?:string
     message?:string
     nameCompany?:string
     downloaded?: boolean
+    type2?:string
   }
 
   export interface OptionsFiles{

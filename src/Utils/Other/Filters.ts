@@ -1,11 +1,12 @@
 
   // <--------------------------------- filtar por user fixado --------------------------------->
   export function FilterFixed(users) {
-    return users.sort(function (x, y) {
+    const usersFilter = [...users].sort(function (x, y) {
       let a = x.fixed;
       let b = y.fixed;
       return a == b ? 0 : a < b ? 1 : -1;
     });
+    return usersFilter
   }
 
     // <--------------------------------- Filtrar pot alfabeto  --------------------------------->

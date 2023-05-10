@@ -25,6 +25,7 @@ import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import { GetFilesToTrash, GetFilesToFavorites, GetFilesToNormal } from '../../../Utils/Firebase/GetFiles';
 import { useRouter } from 'next/navigation';
 
+
 function Files(){
   const { dataUser } = useContext(userContext)
   const router = useRouter()
@@ -32,7 +33,7 @@ function Files(){
   const [files, setFiles] = useState<Files[]>([])
   const [selectFiles, setSelectFiles] = useState<Files[]>([])
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
-  const [pages, setPages] = useState<number>(0)
+  const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:0, maxPages:0})
   const [menu, setMenu] = useState<boolean>(true)
   const [textSearch, setTextSearch] = useState<string>('')
   const params:any = useSearchParams()
@@ -54,12 +55,12 @@ function Files(){
   
   async function GetFiles(){
     if(trash){
-      await GetFilesToTrash({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, setFiles:setFiles, setPages:setPages})
+      await GetFilesToTrash({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
       GetUser()
     } else if(folderName === "Favoritos"){
-      await GetFilesToFavorites({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, setFiles:setFiles, setPages:setPages})
+      await GetFilesToFavorites({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
     } else {
-      await GetFilesToNormal({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, folderName:folderName, setFiles:setFiles, setPages:setPages})
+      await GetFilesToNormal({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, folderName:folderName, setFiles:setFiles, setDataPages:setDataPages})
     }
     setLoading(false)
   }
@@ -91,14 +92,14 @@ function Files(){
 
   // <--------------------------------- Select Files --------------------------------->
   async function SelectFile(index:number){
-    if (files.filter((file) => file.checked === true).length <= 9) {
+    if (files.filter((file) => file.checked === true).length > 9 && files[index].checked === false) {
+      toast.error("Você só pode selecionar 10 arquivos");
+    } else {
       const allFiles = [...files];
       allFiles[index].checked = !allFiles[index].checked;
       const fileSelect = allFiles.filter((file) => file.checked === true);
       setSelectFiles(fileSelect);
       setFiles(allFiles);
-    } else {
-      toast.error("Você só pode selecionar 10 arquivos");
     }
   }
 
@@ -125,9 +126,15 @@ function Files(){
   }
 
   function childToParentDelet(files){
+    const maxPage = Math.ceil(files.length / 10)
+    var page = dataPages.page
+    if(maxPage < dataPages.page){
+      page = maxPage
+    }
     setFiles([...files])
-    setSelectFiles([])
     setMenu(true)
+    setSelectFiles([])
+    setDataPages({maxPages:maxPage, page:page})
   }
 
   // <--------------------------------- Download File --------------------------------->
@@ -135,13 +142,14 @@ function Files(){
     if(selectFiles.length === 0){
       throw toast.error("Selecione um arquivo para baixar.")
     } 
-    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"admin", childToParentDownload:childToParentDownload, folderName: folderName}), toastDownload)
+    toast.promise(DownloadsFile({selectFiles:selectFiles, files:files, from:"admin", childToParentDownload:childToParentDownload, folderName: folderName}), toastDownload)
   }
 
   function childToParentDownload(files){
     setFiles([...files])
     setMenu(true)
     setSelectFiles([])
+    setDataPages({...dataPages, maxPages:Math.ceil(files.length / 10)})
   }
 
   return (
@@ -151,15 +159,15 @@ function Files(){
         <p  className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>{trash ? "Deletados" : "Documentos"}</p>
         <div className='flex items-top'>
           <div onClick={() => router.push('/Dashboard/Admin/Clientes')} className="flex cursor-pointer">
-            <PersonIcon height={25} width={25} />
+            <PersonIcon height={25} width={25} className='text-secondary'/>
             <p className="cursor-pointer text-[18px] flex mr-[15px] text-secondary dark:text-dsecondary">
               {"Usuários    >"} 
             </p>
           </div>
 
           <Image src={folder} alt="Imagem de uma pasta"/> 
-            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id:id, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
-          <FileIcon className="dark:text-dsecondary" height={21} width={21}/>
+            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id:id}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
+          <FileIcon className="dark:text-dsecondary text-secondary" height={21} width={21}/>
           <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{trash ? "Lixeira" : folderName}</p> 
         </div>
         
@@ -177,23 +185,27 @@ function Files(){
                 <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
               </button>
 
-              <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
-                Download
-              </button>
+              {
+                trash ? <></> 
+              :
+                <button onClick={() => DowloadFiles()} className={`hover:brightness-[.85] cursor-pointer border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
+                  Download
+                </button>
+              }
 
-              <button onClick={() => ConfirmationDeleteFile()} className={`text-center border-[2px] p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer  ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary  text-strong dark:text-dstrong"} ${menu ? "max-lg:hidden" : ""}`}>
+              <button onClick={() => ConfirmationDeleteFile()} className={`hover:brightness-[.85] text-center border-[2px] p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer  ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary  text-strong dark:text-dstrong"} ${menu ? "max-lg:hidden" : ""}`}>
                 Deletar
               </button>
 
               {trash ? 
                 <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles}  selectFiles={selectFiles} folders={user.folders} />
               : 
-                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile folderName={folderName}  permission={dataUser?.permission} id={id} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}  setFiles={setFiles} setMenu={setMenu}/> : <></>
+                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile files={files} childToParentDownload={childToParentDownload} folderName={folderName}  permission={dataUser?.permission} id={id} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
               }
             </div>
           </div>
           {/*<-------------- Table of Files --------------> */}
-          <TableFiles  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} pages={pages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles}/>
+          <TableFiles  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
         </div>
       </div>
       {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}

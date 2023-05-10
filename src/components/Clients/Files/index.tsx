@@ -19,14 +19,13 @@ import { where, collection, query, getDocs, getDoc, doc, updateDoc } from "fireb
 import {db} from '../../../../firebase'
 import { userContext } from '../../../app/Context/contextUser'
 import { loadingContext } from '../../../app/Context/contextLoading';
-import { Search } from '../../../Utils/Other/Search';
 
 function Files(){
   const {dataUser} = useContext(userContext)
   const {setLoading} = useContext(loadingContext)
   const [files, setFiles] = useState<Files[]>([])
   const [selectFiles, setSelectFiles] = useState<Files[]>([])
-  const [pages, setPages] = useState<number>(0)
+  const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:0, maxPages:0})
   const [menu, setMenu] = useState<boolean>(true)
   const params:any = useSearchParams()
   const folderName:string = params.get("folder")
@@ -35,6 +34,7 @@ function Files(){
   const id_enterprise:string  = params.get("id_enterprise")
   const [textSearch, setTextSearch] = useState('')
   const router = useRouter();
+
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
@@ -58,9 +58,9 @@ function Files(){
     var getFiles:Files[] = []
     var q
     if(folderName === "Favoritos"){
-      q = query(collection(db, "files", dataUser.id_company, "documents"), where("id_user", "==",  dataUser.id), where("id_enterprise", "==", id_enterprise), where("favorite", "==", true), where("trash", "==", false));
+      q = query(collection(db, "files", dataUser.id_company, dataUser.id), where("id_user", "==",  dataUser.id), where("id_enterprise", "==", id_enterprise), where("favorite", "==", true), where("trash", "==", false));
     } else {
-      q = query(collection(db, "files", dataUser.id_company, "documents"), where("id_user", "==",  dataUser.id), where("id_enterprise", "==", id_enterprise), where("folder", "==", folderName));
+      q = query(collection(db, "files", dataUser.id_company, dataUser.id), where("id_user", "==",  dataUser.id), where("id_enterprise", "==", id_enterprise), where("folder", "==", folderName));
     }
 
     const docRef = doc(db, "companies", dataUser.id_company, "clients", dataUser.id);
@@ -85,7 +85,7 @@ function Files(){
           viewedDate:document.data()?.viewedDate,
           type:document.data()?.type
         });
-        let timeDiff = Date.now() - Date.parse(file.created_date);
+        let timeDiff = Date.now() - Date.parse(file.created_date.toString());
 
         switch(folder[0].timeFile) {
           case 3:
@@ -134,18 +134,22 @@ function Files(){
       getFiles[i].created_date = getFiles[i].created_date + "";
     }
 
-    setPages(Math.ceil(getFiles.length / 10));
+    setDataPages({page:1, maxPages:Math.ceil(getFiles.length / 10)});
     setFiles(getFiles);
     setLoading(false);
   }
 
   // <--------------------------------- Select File --------------------------------->
   async function SelectFile(index:number){
-    const allFiles = [...files]
-    allFiles[index].checked = !allFiles[index].checked
-    const fileSelect = files.filter(file => file.checked === true);
-    setSelectFiles(fileSelect)
-    setFiles(files)
+    if (files.filter((file) => file.checked === true).length > 9 && files[index].checked === false) {
+      toast.error("Você só pode selecionar 10 arquivos");
+    } else {
+      const allFiles = [...files];
+      allFiles[index].checked = !allFiles[index].checked;
+      const fileSelect = allFiles.filter((file) => file.checked === true);
+      setSelectFiles(fileSelect);
+      setFiles(allFiles);
+    }
   }
 
   // <--------------------------------- Delet File --------------------------------->
@@ -156,7 +160,7 @@ function Files(){
   
   const childModal = async () => {
     setModal({...modal, status:false})
-    toast.promise(DeletFiles({files:files, selectFiles:[files[indexFile]], childToParentDelet}),{pending:"Deletando arquivos.", success:"Arquivos deletados com sucesso.", error:"Não foi possivel deletar os arquivos."})
+    toast.promise(DeletFiles({files:files, selectFiles:[files[indexFile]], childToParentDelet}),{pending:"Deletando arquivo.", success:"Arquivo deletado com sucesso.", error:"Não foi possivel deletar os arquivos."})
   }
 
   function childToParentDelet(files){
@@ -174,7 +178,7 @@ function Files(){
 
   function DowloadFiles(){    
     if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
-    toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, from:"user", childToParentDownload:childToParentDownload, folderName: folderName}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possível fazer o download."})
+    toast.promise(DownloadsFile({selectFiles:selectFiles, files:files, from:"user", childToParentDownload:childToParentDownload, folderName: folderName}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possível fazer o download."})
   }
 
 
@@ -185,7 +189,7 @@ return (
           <div className='flex items-top'>
             <Image src={folder} alt="Imagem de uma pasta" width={21} height={21}/> 
               <Link href={{pathname:"Dashboard/Clientes/Pastas", query:{id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary'>{"Pastas    >"}</Link> 
-            <FileIcon height={21} width={21}/>
+            <FileIcon height={21} width={21} className={'text-secondary'}/>
             <p  className='text-[18px] flex mx-[5px] text-secondary'>{folderName}</p> 
           </div>
           <div className=' w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
@@ -202,11 +206,11 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
                 <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
-                <UploadFile setMenu={setMenu} id_enterprise={id_enterprise} folderName={folderName}  permission={dataUser?.permission} id={dataUser?.id} id_company={dataUser?.id_company} menu={menu} from={"user"} setFiles={setFiles}/>
+                <UploadFile files={files} childToParentDownload={childToParentDownload}  id_enterprise={id_enterprise} folderName={folderName}  permission={dataUser?.permission} id={dataUser?.id} id_company={dataUser?.id_company} menu={menu} from={"user"}/>
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles  files={files} pages={pages} ConfirmationDeleteFile={ConfirmationDeleteFile} childToParentDownload={childToParentDownload} SelectFile={SelectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch}/>
+            <TableFiles dataPages={dataPages} files={files} ConfirmationDeleteFile={ConfirmationDeleteFile} childToParentDownload={childToParentDownload} SelectFile={SelectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch} setDataPages={setDataPages}/>
           </div>
         </div>
         {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}

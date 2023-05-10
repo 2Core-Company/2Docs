@@ -4,7 +4,6 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { Files } from '../../../types/files' 
-import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany';
 import { Folders } from '../../../types/folders';
 
 interface Props{
@@ -28,6 +27,7 @@ function  CopyTo({file, setCopyTo}: Props) {
       const docRef = doc(db, "companies", file.id_company, "clients", file.id_user);
       const docSnap = await getDoc(docRef);
       const foldersHere = docSnap.data()?.folders.filter(folder => folder.id_enterprise === file.id_enterprise || folder.name === "Favoritos" || folder.name === "Cliente")
+      console.log(file.id_enterprise)
       if(foldersHere.length > 3){
         setFolders(foldersHere)
       } else {
@@ -37,14 +37,17 @@ function  CopyTo({file, setCopyTo}: Props) {
     }
 
     async function GetFile(){
-      var xhr = new XMLHttpRequest;
-      xhr.responseType = 'blob';
-      xhr.onload = function () {
-        var recoveredBlob = xhr.response;
-        setFileCopy(recoveredBlob)
-      };
-      xhr.open('GET', file.url);
-      xhr.send();
+      await getDownloadURL(ref(storage, file.path))
+      .then(async (url) => {
+        var xhr = new XMLHttpRequest;
+        xhr.responseType = 'blob';
+        xhr.onload = function () {
+          var recoveredBlob = xhr.response;
+          setFileCopy(recoveredBlob)
+        };
+        xhr.open('GET', url);
+        xhr.send();
+      })
     }
 
     async function CopyngFileStorage(){
@@ -53,35 +56,24 @@ function  CopyTo({file, setCopyTo}: Props) {
         const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
         const docsRef = ref(storage, file.id_company + "/files/" + file.id_user + "/" + referencesFile );
         const upload = await uploadBytes(docsRef, fileCopy)
-        await GetUrlDownload({referencesFile:referencesFile, path:upload.metadata.fullPath})
+        await UploadFilestore({path:upload.metadata.fullPath, nameFile:referencesFile, name:file.name})
+
       }catch(e){
         throw toast.error("Não foi possivel copiar o arquivo")
       }
     }
 
-    async function GetUrlDownload(data){
-      try{
-        const name = file.name
-        const url = await getDownloadURL(ref(storage, data.path))
-        await UploadFilestore({url, nameFile:data.referencesFile, name:name})
-      }catch(e){
-        throw toast.error("Não foi possivel copiar o arquivo")
-      }
-    }
-
-    async function UploadFilestore(params){
-      let blob = await fetch(params.url).then(r => r.blob());
-      var urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
+    async function UploadFilestore({path, nameFile, name}){
       const size = file.size
       const date = new Date() + ""
       try {
-        const docRef = await setDoc(doc(db, "files", file.id_company, "documents", params.nameFile), {
+        const docRef = await setDoc(doc(db, "files", file.id_company, file.id_user, nameFile), {
           id_user: file.id_user,
-          id_file: params.nameFile,
+          id_file: nameFile,
           id_company: file.id_company,
           id_enterprise: file.id_enterprise,
-          url: params.url,
-          name: params.name,
+          path: path,
+          name: name,
           size: size,
           created_date: date,
           type:file.type, 
@@ -90,7 +82,6 @@ function  CopyTo({file, setCopyTo}: Props) {
           folder: folderName,
           from: file.from
         });
-        AlterSizeCompany({id_company: file.id_company, action:'sum', size: size * 1000})
       } catch (e) {
         console.log(e)
         throw toast.error("Não foi possivel copiar o arquivo")

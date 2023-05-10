@@ -20,7 +20,7 @@ async function UnFix({ user, users, FilterFixed, setUsers }: Props) {
     setUsers(FilterFixed(users));
   } catch (e) {
     console.log(e);
-    throw toast.error("Não foi possível fixar este usuário.");
+    throw toast.error("Não foi possível desfixar este usuário.");
   }
 }
 

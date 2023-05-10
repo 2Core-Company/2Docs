@@ -109,10 +109,10 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
           </div>
         </div>
         <div className="flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]">
-          <button onClick={() => setCreateFolder(false)} className="bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white">
+          <button onClick={() => setCreateFolder(false)} className="cursor-pointer bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] max-sm:text-[18px] text-white">
             Cancelar
           </button>
-          <button onClick={() => toast.promise(CreateFolder(), toastCreateFolder)}className="bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white ">
+          <button onClick={() => toast.promise(CreateFolder(), toastCreateFolder)}className="cursor-pointer bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white ">
             Confirmar
           </button>
         </div>

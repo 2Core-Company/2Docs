@@ -1,19 +1,21 @@
-import { folder } from 'jszip';
-import { collection, getDocs, limit, orderBy, query, where, doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc, updateDoc } from "firebase/firestore";
 import { Files } from '../../types/files';
 import { Folders } from '../../types/folders';
 import { db } from "../../../firebase";
 import { toast } from 'react-toastify';
 
 interface Props_GetFilesOrderByDate{
+  id_user:string
   id_company:string
   from:string
-  setRecentsFile:Function
+  id_enterprise:string
+  setRecentsFiles:Function
 }
 
-export async function GetFilesOrderByDate({id_company, from, setRecentsFile}:Props_GetFilesOrderByDate){
+export async function GetFilesOrderByDate({id_company, from, id_user, setRecentsFiles, id_enterprise}:Props_GetFilesOrderByDate){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, "documents"), where('from', '==', from), orderBy("created_date"), limit(5));
+
+  const q = query(collection(db, "files", id_company, id_user), where("id_enterprise", "==", id_enterprise), where('from', '==', from), where("trash", "==", false));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {      
     files.push({
@@ -24,22 +26,23 @@ export async function GetFilesOrderByDate({id_company, from, setRecentsFile}:Pro
       size:doc.data()?.size,
       id_company:doc.data()?.id_company,
       favorite:doc.data()?.favorite,
-      id_enterprise:doc.data()?.enterprises,
+      id_enterprise:doc.data()?.id_enterprise,
       name:doc.data()?.name,
-      url:doc.data()?.url,
+      path:doc.data()?.path,
       viewedDate:doc.data()?.viewedDate,
       type:doc.data()?.type,
-      created_date:doc.data()?.created_date,
+      created_date:Date.parse(doc.data()?.created_date),
       id_event: doc.data()?.id_event,
       viwed:doc.data()?.viwed,
       from:doc.data()?.from,
-      urlDownload:doc.data()?.urlDownload,
       message:doc.data()?.message,
       nameCompany:doc.data()?.nameCompany,
       downloaded:doc.data()?.downloaded,
     })
   });
-  setRecentsFile(files)
+
+  files.sort((a:any, b:any) => b.created_date - a.created_date);
+  setRecentsFiles(files.slice(0, 3))
 }
 
 
@@ -48,12 +51,12 @@ interface Props_GetFilesToTrash{
   id_user:string
   id_enterprise:string
   setFiles:Function
-  setPages:Function
+  setDataPages:Function
 }
 
-export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setFiles, setPages}:Props_GetFilesToTrash){
+export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setFiles, setDataPages}:Props_GetFilesToTrash){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==",  id_user), where("trash", "==", true), where("id_enterprise", "==", id_enterprise));
+  const q = query(collection(db, "files", id_company, id_user), where("trash", "==", true), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     var file:Files = {
@@ -64,25 +67,25 @@ export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setF
       size:doc.data()?.size,
       id_company:doc.data()?.id_company,
       favorite:doc.data()?.favorite,
-      id_enterprise:doc.data()?.enterprises,
+      id_enterprise:doc.data()?.id_enterprise,
       name:doc.data()?.name,
-      url:doc.data()?.url,
+      path:doc.data()?.path,
       viewedDate:doc.data()?.viewedDate,
       type:doc.data()?.type,
       created_date:doc.data()?.created_date,
       id_event: doc.data()?.id_event,
       viwed:doc.data()?.viwed,
       from:doc.data()?.from,
-      urlDownload:doc.data()?.urlDownload,
       message:doc.data()?.message,
       nameCompany:doc.data()?.nameCompany,
       downloaded:doc.data()?.downloaded,
+      checked: false
     }
     file.checked = false
     files.push(file)
   });
   setFiles(files)
-  setPages(Math.ceil(files.length / 10))
+  setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
 }
 
 
@@ -91,12 +94,12 @@ interface Props_GetFilesToFavorites{
   id_user:string
   id_enterprise:string
   setFiles:Function
-  setPages:Function
+  setDataPages:Function
 }
 
-export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, setFiles, setPages}:Props_GetFilesToFavorites){
+export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, setFiles, setDataPages}:Props_GetFilesToFavorites){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==",  id_user), where("favorite", "==", true), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
+  const q = query(collection(db, "files", id_company, id_user), where("favorite", "==", true), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     var file:Files = {
@@ -107,25 +110,25 @@ export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, 
       size:doc.data()?.size,
       id_company:doc.data()?.id_company,
       favorite:doc.data()?.favorite,
-      id_enterprise:doc.data()?.enterprises,
+      id_enterprise:doc.data()?.id_enterprise,
       name:doc.data()?.name,
-      url:doc.data()?.url,
+      path:doc.data()?.path,
       viewedDate:doc.data()?.viewedDate,
       type:doc.data()?.type,
       created_date:doc.data()?.created_date,
       id_event: doc.data()?.id_event,
       viwed:doc.data()?.viwed,
       from:doc.data()?.from,
-      urlDownload:doc.data()?.urlDownload,
       message:doc.data()?.message,
       nameCompany:doc.data()?.nameCompany,
       downloaded:doc.data()?.downloaded,
+      checked: false
     }
     file.checked = false
     files.push(file)
   });
   setFiles(files)
-  setPages(Math.ceil(files.length / 10))
+  setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
 }
 
 
@@ -136,12 +139,12 @@ interface GetFilesToNormal{
   id_enterprise:string
   folderName:string
   setFiles:Function
-  setPages:Function
+  setDataPages:Function
 }
 
-export async function GetFilesToNormal({id_company,  id_user, id_enterprise, folderName, setFiles, setPages}:GetFilesToNormal){
+export async function GetFilesToNormal({id_company,  id_user, id_enterprise, folderName, setFiles, setDataPages}:GetFilesToNormal){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==",  id_user), where("folder", "==", folderName), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
+  const q = query(collection(db, "files", id_company, id_user),  where("folder", "==", folderName), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
 
   const docRef = doc(db, "companies", id_company, "clients", id_user);
   const docSnap = await getDoc(docRef);
@@ -159,21 +162,21 @@ export async function GetFilesToNormal({id_company,  id_user, id_enterprise, fol
         size:document.data()?.size,
         id_company:document.data()?.id_company,
         favorite:document.data()?.favorite,
-        id_enterprise:document.data()?.enterprises,
+        id_enterprise:document.data()?.id_enterprise,
         name:document.data()?.name,
-        url:document.data()?.url,
+        path:document.data()?.path,
         viewedDate:document.data()?.viewedDate,
         type:document.data()?.type,
         created_date:document.data()?.created_date,
-        id_event: document.data()?.id_event,
+        id_event:document.data()?.id_event,
         viwed:document.data()?.viwed,
         from:document.data()?.from,
-        urlDownload:document.data()?.urlDownload,
         message:document.data()?.message,
         nameCompany:document.data()?.nameCompany,
         downloaded:document.data()?.downloaded,
+        checked: false
       }
-      let timeDiff = Date.now() - Date.parse(file.created_date);
+      let timeDiff = Date.now() - Date.parse(file.created_date.toString());
 
       switch(folder[0].timeFile) {
         case 3:
@@ -218,59 +221,5 @@ export async function GetFilesToNormal({id_company,  id_user, id_enterprise, fol
   }
   
   setFiles(files)
-  setPages(Math.ceil(files.length / 10))
-}
-
-
-interface GetFilesToAllFolders{
-  id_company:string
-  id_user:string
-  id_enterprise:string
-  from:string
-  setFiles:Function
-  setRecentFiles:Function
-}
-
-export async function GetFilesToAllFolders({id_company,  id_user, id_enterprise, from,  setFiles, setRecentFiles}:GetFilesToAllFolders){
-  const files:Files[] = [];
-
-  try{
-    const recentFiles:Files[] = []
-  const q = query(collection(db, "files", id_company, "documents"), where("id_user", "==", id_user), where("id_enterprise", "==", id_enterprise), orderBy("created_date"));
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    files.push({
-      id_file:doc.data()?.id_file,
-      id_user:doc.data()?.id_user,
-      folder:doc.data()?.folder,
-      trash:doc.data()?.trash,
-      size:doc.data()?.size,
-      id_company:doc.data()?.id_company,
-      favorite:doc.data()?.favorite,
-      id_enterprise:doc.data()?.enterprises,
-      name:doc.data()?.name,
-      url:doc.data()?.url,
-      viewedDate:doc.data()?.viewedDate,
-      type:doc.data()?.type,
-      created_date:doc.data()?.created_date,
-      id_event: doc.data()?.id_event,
-      viwed:doc.data()?.viwed,
-      from:doc.data()?.from,
-      urlDownload:doc.data()?.urlDownload,
-      message:doc.data()?.message,
-      nameCompany:doc.data()?.nameCompany,
-      downloaded:doc.data()?.downloaded,
-    });
-  });
-  setFiles(files)
-  
-  for(var i = 0; i < 3 ; i++){
-    if(files[i]?.from === from){
-      recentFiles.push(files[i])
-    }
-  }
-  setRecentFiles(recentFiles)
-  }catch(e){
-    console.log(e)
-  }
+  setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
 }

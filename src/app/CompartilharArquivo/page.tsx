@@ -3,15 +3,17 @@ import React, { useEffect } from 'react'
 import Image from 'next/image'
 import DrawerFile from '../../../public/icons/drawerFile.svg'
 import { useSearchParams } from 'next/navigation';
-import { db } from '../../../firebase';
+import { db, storage } from '../../../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { FormatDate } from '../../Utils/Other/FormatDate'
+import { getDownloadURL, ref } from 'firebase/storage';
 
 function ShareFile() {
   const params:any = useSearchParams()
-  const id_company:any = params.get('ic')
-  const id_file:any = params.get('if')
+  const id_company = params.get('ic')
+  const id_file = params.get('if')
+  const id_user = params.get('iu')
   const [file, setFile] = React.useState<any>()
   const nameCompany = params.get('nc')
   const nameFile = params.get('n')
@@ -23,17 +25,19 @@ function ShareFile() {
   },[])
   
   async function GetFile(){
-    const docRefFile = doc(db, "files", id_company, "documents", id_file);
+    const docRefFile = doc(db, "files", id_company, id_user, id_file);
     const dataFile = await getDoc(docRefFile)
     setFile(dataFile.data())
   } 
 
   async function DownloadFile(){
-    if(file.viwed){
-      return toast.error('Este arquivo ja foi baixado, por isso não sera possivel iniciar este download.')
-    }  
     if(file){
-      let blob = await fetch(file.url).then(r => r.blob());
+      if(file.viwed){
+        return toast.error('Este arquivo ja foi baixado, por isso não sera possivel iniciar este download.')
+      }  
+      
+      const url = await getDownloadURL(ref(storage, file.path))
+      let blob = await fetch(url).then(r => r.blob());
       file.urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
       try{
         const element:any = document.createElement("a");
@@ -46,7 +50,7 @@ function ShareFile() {
   
         element.parentNode.removeChild(element);
         
-        await updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
+        await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
           viwed: true
         })
         setFile({...file, viwed:true})

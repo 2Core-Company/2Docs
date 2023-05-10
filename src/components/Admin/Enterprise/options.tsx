@@ -8,10 +8,10 @@ import Image from 'next/image'
 import Rename from './rename';
 import Modals from '../../Clients&Admin/Modals'
 import { toast } from 'react-toastify';
-import { db } from '../../../../firebase'
-import { doc, updateDoc, query, collection, getDocs, where} from "firebase/firestore";
+import { db, storage } from '../../../../firebase'
+import { doc, updateDoc, query, collection, getDocs, where, writeBatch} from "firebase/firestore";
 import { loadingContext } from '../../../app/Context/contextLoading';
-import DeletFiles from '../Files/DeletFiles';
+import { deleteObject, ref } from 'firebase/storage';
  
 interface Props{
   user:DataUser,
@@ -24,6 +24,7 @@ function Options({user, index, setUser, setEnterprise}: Props){
   const [rename, setRename] = useState(false)
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:""})
   const {setLoading} = useContext(loadingContext)
+  const batch = writeBatch(db);
 
   //Confirmação de deletar empresa
   function ConfirmationDeleteEmpresa(){
@@ -51,7 +52,7 @@ function Options({user, index, setUser, setEnterprise}: Props){
       setEnterprise(enterprises[0])
       setUser({...user, enterprises:enterprises})
       setRename(false)
-      await GetFilesToDelet()
+      await Promise.all([DeletFiles(), ])
     } catch(e) {
       console.log(e)
       setLoading(false)
@@ -60,15 +61,22 @@ function Options({user, index, setUser, setEnterprise}: Props){
   }
 
   //Puxando arquivos para deletar daquela empresa
-  async function  GetFilesToDelet(){
+  async function DeletFiles(){
+    const dataFiles:any = []
+    const storageRef = ref(storage, `${user.id_company}/files/${user.id + "/"}`);
+    var q = query(collection(db, "files", user.id_company, user.id), where("id_user", "==", user.id), where("id_enterprise", "==", user.enterprises[index].id))
     try{
-      const getFiles:any = []
-      var q = query(collection(db, "files", user.id_company, "documents"), where("id_user", "==", user.id), where("id_enterprise", "==", user.enterprises[index].id))
       const querySnapshot = await getDocs(q);
-      const a = querySnapshot.forEach((doc) => {
-        getFiles.push(doc.data())
+      const a = querySnapshot.forEach((file) => {
+        const laRef = doc(db, "files", user.id_company, user.id, file.data().id_file);
+        batch.delete(laRef)
+
+        var docRef = ref(storageRef, file.id);
+        dataFiles.push(deleteObject(docRef))
       }); 
-      DeletFiles({selectFiles:getFiles})
+      console.log(dataFiles)
+      await Promise.all([batch.commit(), dataFiles])
+
       setLoading(false)
     } catch(e){
       setLoading(false)

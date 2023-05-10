@@ -36,7 +36,7 @@ function MoveTo({file, files, setMoveTo, childToParentDownload}:Props) {
 
     async function ChangeFolder(){
       try{
-        await updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
+        await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
           folder: folderName
         })
         const index:number = files.findIndex(file => file.id_file === file.id_file)

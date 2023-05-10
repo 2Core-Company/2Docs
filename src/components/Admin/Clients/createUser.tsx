@@ -5,7 +5,7 @@ import React, {useState, useEffect} from 'react'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, setDoc } from "firebase/firestore";  
+import { collection, doc, setDoc } from "firebase/firestore";  
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -13,6 +13,7 @@ import { DataUser } from '../../../types/users'
 import { v4 as uuidv4 } from 'uuid';
 import { CNPJMask } from '../../../Utils/Other/Masks';
 import { PhoneMask } from '../../../Utils/Other/Masks';
+import { Firestore } from '@google-cloud/firestore';
 
 interface Props{
   contextUser:DataUser
@@ -49,6 +50,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
     }
     try{
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser?.uid})
+      console.log(result)
       if(result.data.uid){
         const id = result.data.uid
         await UploadPhoto(id)
@@ -95,6 +97,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
     }catch(e){
       ErrorFirebase(e)
       console.log(e)
+      url = 'https://firebasestorage.googleapis.com/v0/b/docs-dc26e.appspot.com/o/padraoCliente.png?alt=media&token=ccd2b303-b4f2-49a0-a1b3-e78ed0921b8f'
       throw e
     } finally {
       SignUpDb({url: url, referencesFile: referencesFile, id: id})
@@ -103,6 +106,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   
   //Armazena o arquivo no firestore
   async function SignUpDb(user:{id:string, url:string, referencesFile:string}){
+    console.log('aaaaaaa')
     var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
     var date = new Date() + ""
     
@@ -220,12 +224,12 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
         <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
           <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
             CNPJ
-            <input maxLength={18} required  value={dataUser.cnpj} onChange={Text => CNPJMask({value:Text.target.value, setDataUser})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o CNPJ'/>
+            <input maxLength={18} minLength={18} required  value={dataUser.cnpj} onChange={Text => CNPJMask({value:Text.target.value, setDataUser})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o CNPJ'/>
           </label>
 
           <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
             Telefone
-            <input maxLength={15} required  value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone'/>
+            <input maxLength={15} minLength={15} required  value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone'/>
           </label>
         </div>
 

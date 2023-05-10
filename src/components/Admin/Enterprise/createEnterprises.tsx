@@ -34,6 +34,10 @@ function  CreateEnterprises({user, setUser, setCreateEnterprises}:Props) {
 
   function OnToast(e: { preventDefault: () => void; }){
     e.preventDefault()
+    const result = user.enterprises.findIndex((enterprise) => enterprise.name ===  nameEmprise)
+    if(result >= 0){
+      return toast.error('Já existe uma empresa com este nome.')
+    }
     toast.promise(CreateEnterprise(), messageToast, {position: "bottom-right"})
   }
 
@@ -49,8 +53,8 @@ function  CreateEnterprises({user, setUser, setCreateEnterprises}:Props) {
             </div>
           </div>
           <div className='flex w-full justify-end gap-4 bg-hilight self-end pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-            <button  onClick={() => setCreateEnterprises(false)} className='bg-strong/40 border-[2px] border-strong hover:scale-[1.10] duration-300 p-[3px]  rounded-[8px] text-[18px] text-white '>Cancelar</button>
-            <button type='submit' className={`${nameEmprise.length  ? "bg-[rgba(138,129,184,0.40)] border-[rgba(138,129,184,1)]": "bg-strong/30 border-strong text-white" } border-2 hover:scale-[1.10]  duration-300 py-[3px] px-[10px] rounded-[8px] text-[18px] text-white `}>Criar</button>
+            <button  onClick={() => setCreateEnterprises(false)} className='cursor-pointer bg-strong/40 border-[2px] border-strong hover:scale-[1.10] duration-300 p-[3px]  rounded-[8px] text-[18px] text-white '>Cancelar</button>
+            <button type='submit' className={`cursor-pointer ${nameEmprise.length  ? "bg-[rgba(138,129,184,0.40)] border-[rgba(138,129,184,1)]": "bg-strong/30 border-strong text-white" } border-2 hover:scale-[1.10]  duration-300 py-[3px] px-[10px] rounded-[8px] text-[18px] text-white `}>Criar</button>
           </div>
         </form>
       </div>

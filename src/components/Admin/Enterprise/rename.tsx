@@ -18,7 +18,7 @@ function  Rename({user, index, setUser, setRename}:Props) {
     enterprises[index].name = nameEnterprise
     try{
         await updateDoc(doc(db, 'companies', user.id_company, "clients", user.id), {
-            enterprises: enterprises
+          enterprises: enterprises
         })
         setUser({...user, enterprises:enterprises})
         setRename(false)

@@ -12,12 +12,11 @@ import Enterprises from '../../Clients&Admin/Enterprise';
 import { useSearchParams } from 'next/navigation';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { db } from '../../../../firebase';
+import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
 
   function ComponentFolder(){
     const {dataUser, setDataUser} = useContext(userContext)
-    const params:any = useSearchParams()
-    const [recentFiles, setRecentFiles] = useState<Files[]>([])
-    const id_enterprise:string  = params.get("id_enterprise")
+    const [recentFiles, setRecentsFiles] = useState<Files[]>([])
     const [enterprise, setEnterprise] = useState<Enterprise>({name:"", id:""})
     const [files, setFiles] = useState<Files[]>([])
     const [textSearch, setTextSearch] = useState<string>('')
@@ -25,57 +24,15 @@ import { db } from '../../../../firebase';
     useEffect(() =>{
       if(dataUser != undefined){
         var enterprise_id
-        if(id_enterprise){
-          const index = dataUser.enterprises.findIndex(enterprise => enterprise.id == id_enterprise)
-          setEnterprise(dataUser.enterprises[index])
-          enterprise_id = dataUser.enterprises[index].id
-        } else {
-          setEnterprise(dataUser.enterprises[0])
-          enterprise_id = dataUser.enterprises[0].id
-        }
+        setEnterprise(dataUser.enterprises[0])
+        enterprise_id = dataUser.enterprises[0].id
         GetFiles(enterprise_id)
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[dataUser])
 
     async function GetFiles(enterprise_id){
-      var getFiles:Files[] = []
-      var getRecentFiles:Files[] = []
-      const q = query(collection(db, "files", dataUser.id_company, "documents"),where('id_enterprise', '==', enterprise_id),  where("id_user", "==",  dataUser.id), where("trash", "==", false), orderBy("created_date"));
-    
-      const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          getFiles.push({
-            id_file:doc.data()?.id_file,
-            id_user:doc.data()?.id_user,
-            folder:doc.data()?.folder,
-            trash:doc.data()?.trash,
-            size:doc.data()?.size,
-            id_company:doc.data()?.id_company,
-            favorite:doc.data()?.favorite,
-            id_enterprise:doc.data()?.enterprises,
-            name:doc.data()?.name,
-            url:doc.data()?.url,
-            viewedDate:doc.data()?.viewedDate,
-            type:doc.data()?.type,
-            created_date:doc.data()?.created_date,
-            id_event: doc.data()?.id_event,
-            viwed:doc.data()?.viwed,
-            from:doc.data()?.from,
-            urlDownload:doc.data()?.urlDownload,
-            message:doc.data()?.message,
-            nameCompany:doc.data()?.nameCompany,
-            downloaded:doc.data()?.downloaded,
-          })
-      });
-
-      for(var i = 0; i < 3; i++){
-        if(getFiles[i]){
-          getRecentFiles.push(getFiles[i])
-        }
-      }
-      setFiles(getFiles)
-      setRecentFiles(getRecentFiles)
+      GetFilesOrderByDate({id_company:dataUser.id_company,  id_user:dataUser.id, id_enterprise:enterprise_id, from:'admin', setRecentsFiles:setRecentsFiles});
     }
 
     return(
@@ -97,7 +54,7 @@ import { db } from '../../../../firebase';
                 if(file?.id_enterprise === enterprise.id && dataUser.folders[index]?.isPrivate === false){
                   return (
                     <div key={file.id_file} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                      <button onClick={() => DownloadsFile({filesDownloaded:[file], files:files, from:"user", folderName: file.folder})}>
+                      <button onClick={() => DownloadsFile({selectFiles:[file], files:files, from:"user", folderName: file.folder})}>
                         <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                       </button>
                       <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>
@@ -118,8 +75,8 @@ import { db } from '../../../../firebase';
             </div>
 
             <div className='flex flex-wrap mt-[10px]'>
-              {dataUser.folders.filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ? 
-                dataUser.folders
+              {dataUser?.folders?.filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ? 
+                dataUser?.folders
                 .filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
                 .map((folder) =>{
                 if(folder.isPrivate === false && folder.id_enterprise == enterprise?.id || folder.name === "Favoritos" || folder.name === "Cliente"){

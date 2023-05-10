@@ -1,126 +1,108 @@
 import { storage, db } from '../../../../firebase'
-import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, setDoc } from "firebase/firestore";  
+import { ref,  uploadBytes } from "firebase/storage";
+import { collection, doc, setDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
-import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany';
-import { useContext } from 'react';
-import { companyContext } from '../../../app/Context/contextCompany';
+import { Files } from '../../../types/files';
 
   interface Props{
-    folderName?:string
+    files:Files[]
+    folderName:string
     menu:boolean
     permission: number
     id:string
     id_company:string
     from:string
     id_enterprise:string
-    setFiles:Function
-    setMenu:Function
+    childToParentDownload:Function
   }
 
-function UploadFiles({folderName, menu, permission, id, id_company,  from, id_enterprise, setFiles, setMenu}: Props) {
-  const {dataCompany} = useContext(companyContext)
-  
+function UploadFiles({files, folderName, menu, permission, id, id_company,  from, id_enterprise, childToParentDownload}: Props) {
+
   async function UploadFile(files){
-    if(dataCompany.gbFiles.type === 'Gb'){
-      if(dataCompany.gbFiles.size >= dataCompany.plan.maxSize){
-        files.value = null
-        toast.error('O plano da sua empresa excedeu o limite de armazenamento, comunique um responsavel desta empresa.')
-        throw ''
-      }
-    }
+    const docsRef = ref(storage, `${id_company}/files/${id + "/"}`);
+    const allFiles:any = await Promise.all(files.files)
+    const allFilesFilter:any = []
+    var promises:any = []
 
-    var totalSizeFiles = 0
-    for await (const file of files.files) {
-      totalSizeFiles = file.size + totalSizeFiles
-      if(file.size > 30000000){
-        files.value = null
-        return toast.error("Os arquivos só podem ter no máximo 30mb.")
+    allFiles.map(async (file) => {
+      if (file.size > 30000000) {
+        files.value = null;
+        toast.error(`Erro ao upar o arquivo: ${file.name}, ele excede o limite de 30mb`);
+      } else {
+        const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
+        const docRef = ref(docsRef, referencesFile);
+        promises.push(uploadBytes(docRef , file));
+        allFilesFilter.push(file)
       }
-    }
-    
-    for await (const file of files.files) {
-      const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
-      const docsRef = ref(storage, `${id_company}/files/${id + "/" + referencesFile}`);
-      const upload = await uploadBytes(docsRef, file)
-      await GetUrlDownload({referencesFile:referencesFile, file:file, path:upload.metadata.fullPath})
-    }
-    files.value = null
-    setMenu(false)
-    AlterSizeCompany({id_company:id_company, action:'sum', size:totalSizeFiles})
+    });
+
+    await Promise.all(promises)
+    .then((result) => {
+      OrganizeFilesInArray({files:allFilesFilter, result:result.filter((file) => file != undefined)})
+    }).catch((error) => {
+      console.error('Erro ao fazer upload dos arquivos:', error);
+    });
   }
 
-  async function GetUrlDownload(params){
-    const type = params.file.type
-    const name = params.file.name
-    const size = params.file.size
-    const url = await getDownloadURL(ref(storage, params.path))
-    UploadFilestore({url, nameFile:params.referencesFile, name:name, size:size, file: type})
-  }
+  async function OrganizeFilesInArray({files, result}){
+    const promises:any = []
+    const allDataFiles:any = []
+    const collectionRef = collection(db, "files", id_company, id)
 
-  async function UploadFilestore(params){
-    let blob = await fetch(params.url).then(r => r.blob());
-    var urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
+    for(var i = 0; i < files.length; i++){
+      var type = files[i].type.split('/')
+      var type2 = files[i].name.split('.')
+  
+      if (type.at(0) === 'image'){
+        type = "images"
+      } else if (type.at(1) === "pdf"){
+        type = "pdfs"
+      } else if(type.at(1) === "x-zip-compressed" || type2[1] === 'rar') {
+        type = "zip"
+      } else if(type.at(0) === "text") {
+        type = "txt"
+      } else if(type[1] === "vnd.openxmlformats-officedocument.spreadsheetml.sheet" || type2[1] === 'xlsx'){
+        type = "excel"
+      } else {
+        type = "docs"
+      }
+      const date = new Date() + ""
 
-    var type = params.file.split('/')
-    var type2 = params.name.split('.')
-
-    if (type.at(0) === 'image'){
-      type = "images"
-    } else if (type.at(1) === "pdf"){
-      type = "pdfs"
-    } else if(type.at(1) === "x-zip-compressed" || type2[1] === 'rar') {
-      type = "zip"
-    } else if(type.at(0) === "text") {
-      type = "txt"
-    } else if(type[1] === "vnd.openxmlformats-officedocument.spreadsheetml.sheet" || type2[1] === 'xlsx'){
-      type = "excel"
-    } else {
-      type = "docs"
-    }
-    const date = new Date() + ""
-
-    try {
-      const docRef = await setDoc(doc(db, "files", id_company, "documents", params.nameFile), {
+      const data:Files = {
         id_user: id,
-        id_file: params.nameFile,
+        id_file: result[i].metadata.name,
         id_company: id_company,
         id_enterprise: id_enterprise,
-        url: params.url,
-        name: params.name,
-        size: Math.ceil(params.size / 1000),
-        created_date: date,
-        type:type, 
-        trash: false,
-        viwed: false,
-        downloaded: false,
-        folder: folderName,
-        from: from
-      });
-
-      const data = {
-        id_user: id,
-        id_file: params.nameFile,
-        id_company: id_company,
-        id_enterprise: id_enterprise,
-        url: params.url,
-        name: params.name,
-        size: Math.ceil(params.size / 1000),
+        path: result[i].metadata.fullPath,
+        name: files[i].name,
+        size: Math.ceil(files[i].size / 1000),
         created_date: date,
         type:type,
-        urlDownload: urlDownload,
         trash: false,
         viwed: false,
         downloaded: false,
-        checked:false,
         folder: folderName,
-        from: from
+        from: from,
+        favorite:false,
+        viewedDate:''
       }
-      setFiles((files) => [data, ...files])
-    } catch (e) {
-      toast.error("Não foi possível armazenar o " + params.name)
-      console.log(e)
-    } 
+      const docRef  = doc(collectionRef, result[i].metadata.name);
+      promises.push(setDoc(docRef, data))
+      data.checked = false
+      allDataFiles.push(data)
+    }
+
+    UploadFilestore({promises, allDataFiles})
+  }
+
+  async function UploadFilestore({promises, allDataFiles}){
+    await Promise.all(promises)
+    .then(() => {
+      childToParentDownload(allDataFiles.concat(files))
+    })
+    .catch(error => {
+      console.error('Erro ao fazer upload dos dados:', error);
+    });
   }
 
   return(

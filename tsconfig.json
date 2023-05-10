@@ -41,7 +41,7 @@
     "src/components/Clients&Admin/Calendar/calendarStyled.js",
     "src/pages/api/events/sendEmail.js",
     "src/app/createdContext.js"
-  ],
+, "pages/api/files/deletCollection.ts"  ],
   "exclude": [
     "node_modules"
   ]

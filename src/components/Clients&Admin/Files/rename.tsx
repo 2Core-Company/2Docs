@@ -2,15 +2,24 @@ import React, { useState } from 'react'
 import { db } from '../../../../firebase'
 import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
+import { Files } from '../../../types/files';
 
-function  Rename({file, files, setRename, childToParentDownload}) {
+interface Props{
+  file: Files
+  files:Files[]
+  setRename:Function
+  childToParentDownload:Function
+}
+
+
+function  Rename({file, files, setRename, childToParentDownload}:Props) {
   const [nameFile, setNameFile] = useState(file.name)
   const messageToast = {pending:"Alterando nome.", success:"O nome do arquivo foi alterado com sucesso."}
 
   async function ChangeName(){
     try{
-      await updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
-          name: nameFile
+      await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
+        name: nameFile
       })
       const index = files.findIndex(file => file.id_file == file.id_file)
       files[index].name = nameFile

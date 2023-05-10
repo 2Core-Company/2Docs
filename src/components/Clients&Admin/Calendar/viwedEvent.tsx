@@ -13,7 +13,6 @@ import style from './calendar.module.css'
 import styles from '../../Admin/Home/home.module.css'
 import DownloadsFile from '../Files/dowloadFiles';
 import DeletEvents from './deletEvents';
-import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany';
 import { Files } from '../../../types/files';
 
 
@@ -29,7 +28,6 @@ interface Props{
 
 function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay}:Props) {
     const {dataUser} = useContext(userContext)
-    const {dataCompany} = useContext(companyContext)
     const [files, setFiles]= useState<Files[]>([])
     const [newFiles, setNewFiles]= useState<any>([])
     const [dataEvent, setDataEvent] = useState({style:'', text:'', upload:true})
@@ -59,7 +57,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     //Puxando arquivos dos eventos
     async function GetFiles(){
         const getFiles:Files[] = []
-        var q = query(collection(db, "files", dataUser.id_company, "documents"), where("id_event", "==",  eventSelected.id));
+        var q = query(collection(db, "files", dataUser.id_company, eventSelected.id_user), where("id_event", "==",  eventSelected.id));
 
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
@@ -73,14 +71,13 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             favorite:doc.data()?.favorite,
             id_enterprise:doc.data()?.enterprises,
             name:doc.data()?.name,
-            url:doc.data()?.url,
+            path:doc.data()?.path,
             viewedDate:doc.data()?.viewedDate,
             type:doc.data()?.type,
             created_date:doc.data()?.created_date,
             id_event: doc.data()?.id_event,
             viwed:doc.data()?.viwed,
             from:doc.data()?.from,
-            urlDownload:doc.data()?.urlDownload,
             message:doc.data()?.message,
             nameCompany:doc.data()?.nameCompany,
             downloaded:doc.data()?.downloaded,
@@ -89,6 +86,19 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
         setFiles(getFiles)
     }
+
+    //setando evento visualizado
+    async function UpdatedEventViwed(){
+        await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
+            viwed:true
+        })
+
+        if(elementFather === 'home'){
+            const index1 = events.findIndex(event => event.id == eventSelected.id)
+            events.splice(index1, 1)
+        }
+    }
+    
 
     //Pegando arquivos do input file
     async function SelectFiles(e){
@@ -136,65 +146,58 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             return toast.error("Faça o armazenamento de algum arquivo para salvar.")
         } 
 
-        if(dataCompany.gbFiles.type === 'Gb'){
-            if(dataCompany.gbFiles.size >= dataCompany.plan.maxSize){
-                toast.error('O plano da sua empresa excedeu o limite de armazenamento, comunique um responsavel desta empresa.')
-                throw ''
-            }
-        }
         toast.promise(UploadFileStorage(),{pending:'Armazenando os arquivos...', success:'Arquivos aramazenados com sucesso.', error:'Não foi possivel armazerar estes arquivos.'})
     }
 
     async function  UploadFileStorage() {
-        var totalSize = 0
+        const promises:any = []
         for await (const file of newFiles) {
             const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id + "/" + file.id_file}`);
-            try{
-                const upload = await uploadBytes(docsRef, file)
-                const url = await GetUrlDownload(upload.metadata.fullPath)
-                await UploadFilestore({nameFile:file.id_file, name:file.name, size:file.size, type:file.type2, url:url})
-            }catch(e){
-                console.log(e)
-            }
-            totalSize = totalSize + file.size
+            promises.push(uploadBytes(docsRef, file))
         }
-        AlterSizeCompany({id_company: dataUser.id_company, action:'sum', size:totalSize})
+        try{
+            await Promise.all(promises).then(async (result) => {
+                await UploadFilestore(result)
+            })
+        } catch(e){
+            console.log(e)
+        }
+        UpdatedEventComplete()
+
         if(setEventSelected){
             setEventSelected()
         }
     }
 
-    //Pegando url dos arquivos
-    async function GetUrlDownload(path:string){
-        return await getDownloadURL(ref(storage, path))
-    }
-
     //Guardando arquivos no firestore 
-    async function UploadFilestore({type, name, nameFile, size, url}){
+    async function UploadFilestore(result){
         const date = new Date() + ""
-        const data = {
-            id_user: eventSelected.id_user,
-            id_file: nameFile,
-            id_company: dataUser.id_company,
-            id_enterprise: eventSelected.enterprise.id,
-            id_event:eventSelected.id,
-            url: url,
-            name: name,
-            size: Math.ceil(size / 1000),
-            created_date: date,
-            type:type, 
-            trash: false,
-            viwed: false,
-            folder: 'Cliente',
-            from: 'user'
-        }
+
+        const promises:any = []
+        for(var i = 0; i < newFiles.length; i++){
+            console.log(newFiles[i])
+            const data = {
+                id_user: eventSelected.id_user,
+                id_file: newFiles[i].id_file,
+                path:result[i].metadata.fullPath,
+                id_company: dataUser.id_company,
+                id_enterprise: eventSelected.enterprise.id,
+                id_event:eventSelected.id,
+                name: newFiles[i].name,
+                size: Math.ceil(files[i].size / 1000),
+                created_date: date,
+                type:newFiles[i].type2, 
+                trash: false,
+                viwed: false,
+                folder: 'Cliente',
+                from: 'user'
+            }
+            const docRef  =doc(db, "files", dataUser.id_company, eventSelected.id_user, newFiles[i].id_file)
+            promises.push(setDoc(docRef, data))
+        }   
 
         try {
-            const result = setDoc(doc(db, "files", dataUser.id_company, "documents", nameFile), data)
-            await Promise.all([
-                await result,
-                await UpdatedEventComplete()
-            ])
+            await Promise.all(promises)
         } catch (e) {
             toast.error("Não foi possivel armazenar o " + name)
             console.log(e)
@@ -206,8 +209,11 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
             complete:true
         })
-        const index1 = events.findIndex(event => event.id == eventSelected.id)
-        events[index1].complete = true
+
+        if(events.length > 0){
+            const index1 = events.findIndex(event => event.id == eventSelected.id)
+            events[index1].complete = true
+        }
 
         if(elementFather === 'table' && eventsThatDay){
             const index2 =  eventsThatDay.findIndex(event => event.id == eventSelected.id)
@@ -215,21 +221,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         }
     }
 
-    //setando evento visualizado
-    async function UpdatedEventViwed(){
-        await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
-            viwed:true
-        })
-
-        if(elementFather === 'home'){
-            const index1 = events.findIndex(event => event.id == eventSelected.id)
-            events.splice(index1, 1)
-        }
-    }
-
     function DownloadFiles(file){
-        if(file.url){
-         return DownloadsFile({filesDownloaded:[file], from:from, folderName: file.folder})
+        if(file.path){
+         return DownloadsFile({selectFiles:[file], from:from, folderName: file.folder})
         }
         toast.error('Clique em salvar e depois faça download deste arquivo')
     }
@@ -247,10 +241,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             try{
                 const desertRef = ref(storage, file.id_company + '/files/' + file.id_user + "/" + file.id_file);
                 await Promise.all([
-                    deleteDoc(doc(db, 'files', file.id_company, "documents", file.id_file)),
+                    deleteDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file)),
                     deleteObject(desertRef)
                 ])
-                AlterSizeCompany({id_company: dataUser.id_company, action:'subtraction', size:file.size})
             } catch(e){
                 console.log(e)
                 throw Error
@@ -291,7 +284,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     <p className={`px-[5px] border-[1px] ml-[5px] leading-[3px] font-[600] text-[16px] flex items-center rounded-[4px] text-center ${dataEvent.style}`} >{dataEvent.text}</p>
                 </div>
             </div>
-            {dataEvent.upload && setEventSelected && setEventsThatDay ? 
+            {dataEvent.upload && setEventSelected ? 
                 <>
                     {admin ? <></> 
                     : 
@@ -324,7 +317,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     </div>
 
 
-                    {admin && eventsThatDay ? 
+                    {admin && eventsThatDay && setEventsThatDay ? 
                         <DeletEvents files={files} eventSelected={eventSelected} eventsThatDay={eventsThatDay} events={events} id_company={dataUser.id_company} setEventSelected={setEventSelected} setEventsThatDay={ setEventsThatDay} />
                     : 
                         <div className={`${files.length > 0 ? 'border-greenV ' : 'border-neutral-400'} border-[2px] self-center rounded-[4px] mt-[15px] hover:scale-105`}>

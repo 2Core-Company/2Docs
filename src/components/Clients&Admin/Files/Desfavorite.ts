@@ -12,7 +12,7 @@ interface Props{
 
   function Desfavorite({desfavoriteFile, files, childToParentDownload, folderName}: Props) {                                                                                   
     try{
-        updateDoc(doc(db, 'files', desfavoriteFile.id_company, "documents", desfavoriteFile.id_file), {
+        updateDoc(doc(db, 'files', desfavoriteFile.id_company, desfavoriteFile.id_user, desfavoriteFile.id_file), {
             favorite: false
         })
         const index = files.findIndex(file => file.id_file == desfavoriteFile.id_file)

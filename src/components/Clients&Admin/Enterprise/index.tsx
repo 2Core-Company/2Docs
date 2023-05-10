@@ -4,6 +4,8 @@ import Arrow from '../../../../public/icons/arrow.svg'
 import CreateEnterprises from '../../Admin/Enterprise/createEnterprises'
 import { DataUser } from '../../../types/users'
 import Options from '../../Admin/Enterprise/options'
+import { usePathname } from 'next/navigation'
+
 
 
 interface Props{
@@ -18,7 +20,8 @@ interface Props{
 function Enterprises({enterprises, enterprise, user, setUser, setEnterprise, from}:Props) {
     const [changeEnterprise, setChangeEnterprise] = useState(false)
     const [createEnterprises, setCreateEnterprises] = useState(false)
-
+    const pathName = usePathname()
+    console.log(pathName)
   return (
         <div className='absolute right-[20px] top-[10px] bg-neutral-200 dark:bg-neutral-200/20 border-[2px] border-black dark:border-white rounded-[4px] pt-[3px]'>
             {createEnterprises ? <CreateEnterprises user={user} setUser={setUser} setCreateEnterprises={setCreateEnterprises}/> : <></>}
@@ -47,9 +50,12 @@ function Enterprises({enterprises, enterprise, user, setUser, setEnterprise, fro
                     )
                 })}
 
-                <button onClick={() => setCreateEnterprises(true)} className='flex items-center text-center w-full justify-center mt-[10px] hover:bg-neutral-300 dark:hover:bg-neutral-300/10 border-t-[2px] cursor-pointer border-black dark:border-white'>
-                    <p>Criar</p>
-                </button>
+                {pathName === '/Dashboard/Admin/Pastas' ? 
+                    <button onClick={() => setCreateEnterprises(true)} className='flex items-center text-center w-full justify-center mt-[10px] hover:bg-neutral-300 dark:hover:bg-neutral-300/10 border-t-[2px] cursor-pointer border-black dark:border-white'>
+                        <p>Criar</p>
+                    </button> 
+                : 
+                <></>}
             </div>
         </div>
     )

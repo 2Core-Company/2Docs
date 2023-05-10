@@ -32,11 +32,6 @@ function ComponentClients() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataUser]);
 
-  // <--------------------------------- Delete User --------------------------------->
-  const childToParentDelet = (childdata: DataUser[]) => {
-    ResetConfig(childdata);
-  };
-
   // <--------------------------------- Disable User --------------------------------->
   async function GetFunctionDisableUser() {
     await DisableUser({users, selectUsers, id_company:dataUser.id_company, setMenu, setSelectUsers, setUsers})
@@ -88,7 +83,7 @@ function ComponentClients() {
 
       <LightModeSwitch />
       <div className="w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]">
-        <p className="font-poiretOne text-[40px] dark:text-white">Clientes</p>
+        <p  className="font-poiretOne text-[40px] dark:text-white">Clientes</p>
         <div className=" w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
           <div className="mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]">
             <div className="flex items-center bg-transparent">
@@ -106,7 +101,7 @@ function ComponentClients() {
                 <div className={`rounded-[10px] w-[30px] max-lsm:w-[30px] h-[3px] bg-black dark:bg-white my-[4px] transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "hidden"}`}/>
                 <div className={`rounded-[10px] w-[30px] max-lsm:w-[30px] h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
               </button>
-              <DeletUser menu={menu} selectUsers={selectUsers} users={users} childToParentDelet={childToParentDelet}/>
+
               <button onClick={() => toast.promise( GetFunctionDisableUser(), toastDisable)} className={`cursor-pointer border-[2px] p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white": "bg-hilight border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
                 Trocar Status
               </button>
@@ -125,6 +120,7 @@ function ComponentClients() {
             setUserEdit={setUserEdit}
             setWindowsAction={setWindowsAction}
             setUsers={setUsers}
+            ResetConfig={ResetConfig}
           />
         </div>
       </div>
@@ -146,3 +142,4 @@ function ComponentClients() {
   );
 }
 export default ComponentClients;
+

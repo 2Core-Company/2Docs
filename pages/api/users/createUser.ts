@@ -2,14 +2,14 @@ import { getAuth } from '../sdkFirebase'
 
 export default async function CreateUser(req, res) {
     const user = await getAuth().getUser(req.body.uid)
-    if (user.customClaims.admin) {
+    if (user?.customClaims?.admin) {
       try {
         const response = await getAuth()
         .createUser({
-            email: req.body.data.email,
-            password: req.body.data.password,
-            displayName:req.body.data.id_company,
-            emailVerified:true
+          email: req.body.data.email,
+          password: req.body.data.password,
+          displayName:req.body.data.id_company,
+          emailVerified:true
         })
         return res.json(response)
       } catch (e) {

@@ -1,6 +1,6 @@
 'use client'
 import { db } from '../../../../firebase'
-import { doc, updateDoc } from "firebase/firestore";  
+import { doc, writeBatch } from "firebase/firestore";  
 import { toast } from 'react-toastify'; 
 import { Files } from '../../../types/files'
 
@@ -12,14 +12,17 @@ interface Props{
 
 async function DisableFiles({files, selectFiles, childToParentDelet}:Props) {
   const allFiles = [...files]
+  const batch = writeBatch(db);
   try{
     for await (const file of selectFiles){
-      updateDoc(doc(db, 'files', file.id_company, "documents", file.id_file), {
-        trash: true
-      })
+      const laRef = doc(db, "files", file.id_company, file.id_user, file.id_file);
+      batch.update(laRef, {trash:true})
+
       const index:number = allFiles.findIndex(file => file.id_file === file.id_file)
+      file.checked = false
       allFiles.splice(index, 1);
     } 
+    await batch.commit();
     childToParentDelet(allFiles)
   }catch(e){
     console.log(e)

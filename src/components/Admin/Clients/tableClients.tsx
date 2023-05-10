@@ -19,9 +19,10 @@ interface Props {
   setUserEdit: Function;
   setUsers:Function
   setWindowsAction: Function;
+  ResetConfig:Function
 }
 
-function TableClients({users, searchText, pages, windowsAction, setUsers, SelectUsers, setUserEdit, setWindowsAction}: Props) {
+function TableClients({users, searchText, pages, windowsAction, setUsers, SelectUsers, setUserEdit, setWindowsAction, ResetConfig}: Props) {
   const [showItens, setShowItens] = useState<{ min: number; max: number }>({min: -1,max: 10,});
   const [filter, setFilter] = useState<{name: boolean;date: boolean;status: boolean;}>({ name: false, date: false, status: false });
 
@@ -69,7 +70,7 @@ function TableClients({users, searchText, pages, windowsAction, setUsers, Select
               var checked = user.checked;
               if (showItens.min < index && index < showItens.max) {
                 return (
-                  <div key={index} className="w-full gap-y-[5px] grid grid-cols-[20px__repeat(2,1fr)_200px_65px_60px] max-lg:grid-cols-[20px__repeat(2,1fr)_65px_60px] max-md:grid-cols-[20px__1fr_65px_60px] border-b-[1px] border-b-neutral-400 px-[5px] gap-x-[15px] text-[18px] font-[500] items-center py-[5px]">
+                  <div key={index} className={`w-full gap-y-[5px] grid grid-cols-[20px__repeat(2,1fr)_200px_65px_60px] max-lg:grid-cols-[20px__repeat(2,1fr)_65px_60px] max-md:grid-cols-[20px__1fr_65px_60px] border-b-[1px] border-b-neutral-400 px-[5px] gap-x-[15px] text-[18px] font-[500] items-center py-[5px] ${user.fixed ? 'bg-neutral-300' : ''}`}>
                     <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)} onClick={() => SelectUsers(index)} className="cursor-pointer  w-full h-[20px]"/>
 
                     <div className="max-w-[350px] max-2xl:max-w-[250px] max-md:max-w-[380px] max-sm:max-w-[200px] max-lsm:max-w-[130px] flex items-center">
@@ -103,6 +104,7 @@ function TableClients({users, searchText, pages, windowsAction, setUsers, Select
                         setUserEdit={setUserEdit}
                         setWindowsAction={setWindowsAction}
                         setUsers={setUsers}
+                        ResetConfig={ResetConfig}
                       />
                     </div>
                   </div>

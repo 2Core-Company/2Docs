@@ -17,7 +17,7 @@ async function ShareFile({file}:Props) {
         const nameCompany = docSnap.data()?.name
 
         const url = window.location.origin
-        const urlFile = `${url}/CompartilharArquivo?ic=${file.id_company}&&if=${file.id_file}&&n=${file.name}&&d=${file.created_date}&&nc=${nameCompany}`
+        const urlFile = `${url}/CompartilharArquivo?ic=${file.id_company}&&if=${file.id_file}&&iu=${file.id_user}&&n=${file.name}&&d=${file.created_date}&&nc=${nameCompany}`
         copy(urlFile)
         toast.success('Link copiado!')
     } 

@@ -56,7 +56,7 @@ function NavBar({permission, image}:Props) {
                 </Tooltip.Root>
             </Tooltip.Provider>
 
-            <div className={`w-[80px] relative max-sm:max-w-[70px] h-screen overflow-hidden  ${menu ? "max-lg:left-[-150px]" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
+            <div className={`w-[80px] relative max-sm:max-w-[70px] h-screen overflow-hidden  ${menu ? "max-lg:left-[-150px] max-lg:w-0" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
                 <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>

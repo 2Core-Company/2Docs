@@ -183,11 +183,10 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
           <p  className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Editar</p>
         </div>
         <form  onSubmit={OnToast} className='w-full px-[10%] flex flex-col gap-y-[20px] max-sm:gap-y-[5px] text-[20px] max-sm:text-[18px]'>
-
-        <label className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[30px] max-sm:mt-[15px] relative'>
-          <input  type="file" className='hidden' accept='.png, .jpg, .jpeg' onChange={(e) => ChangePhoto(e.target)} />
-          <Image src={fileDataURL} width={180} height={180} alt="preview" className='w-full h-full rounded-full border-[2px] border-secondary dark:border-dsecondary' /> 
-        </label>
+          <label className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[30px] max-sm:mt-[15px] relative'>
+            <input  type="file" className='hidden' accept='.png, .jpg, .jpeg' onChange={(e) => ChangePhoto(e.target)} />
+            <Image src={fileDataURL} width={180} height={180} alt="preview" className='w-full h-full rounded-full border-[2px] border-secondary dark:border-dsecondary' /> 
+          </label>
 
           <label  className='flex flex-col max-sm dark:text-white'>
             Nome
@@ -202,7 +201,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
           <label className='flex flex-col dark:text-white'>
             Senha provisória
             <div className='border-2 border-black dark:border-white rounded-[8px] flex items-center'>
-              <input required type="text" value={dataUser.password} disabled={true} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>
+              <input required type={eye ? "text" : "password"} value={dataUser.password} disabled={true} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>
               {eye ? 
               <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
               :
@@ -213,12 +212,12 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
           <div className='flex max-sm:flex-col justify-between gap-[5px] '>
             <label className='flex flex-col dark:text-white'>
               Cnpj
-              <input maxLength={18} required  value={dataUser.cnpj} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o CNPJ'/>
+              <input maxLength={18} minLength={18} required  value={dataUser.cnpj} onChange={(Text) => CNPJMask({value:Text.target.value, setDataUser})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o CNPJ'/>
             </label>
 
             <label className='flex flex-col dark:text-white'>
               Telefone
-              <input required  maxLength={15} value={PhoneMask(dataUser.phone)} onChange={(Text) => CNPJMask({value:Text.target.value, setDataUser})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o telefone'/>
+              <input required  maxLength={15} minLength={15} value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o telefone'/>
             </label>
           </div>
           <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full max-sm:w-[80%] self-center h-[55px] max-sm:h-[50px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>

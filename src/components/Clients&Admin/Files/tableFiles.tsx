@@ -11,9 +11,13 @@ import Message from './message'
 import { FormatDate } from '../../../Utils/Other/FormatDate'
 import { FilterAlphabetical, FilterSize, FilterDate, FilterStatus } from '../../../Utils/Other/Filters'
 import * as HoverCard from "@radix-ui/react-hover-card";
+import { toast } from 'react-toastify'
+import { usePathname } from 'next/navigation'
+import MessageIcon from "../../../../public/icons/message.svg";
+import { PlusCircledIcon } from '@radix-ui/react-icons';
 
 interface Props{
-  pages:number
+  dataPages:{page:number, maxPages:number}
   trash:boolean
   files:Files[]
   folderName:string
@@ -23,13 +27,15 @@ interface Props{
   setFiles:Function
   ConfirmationDeleteFile:Function
   childToParentDownload:Function
+  setDataPages:Function
 }
 
-export default function TableFiles({ pages, trash, textSearch, files, folderName, from, SelectFile, ConfirmationDeleteFile, childToParentDownload, setFiles}:Props) {
+export default function TableFiles({ dataPages, trash, textSearch, files, folderName, from, SelectFile, ConfirmationDeleteFile, childToParentDownload, setFiles, setDataPages}:Props) {
   const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
-  const [showItens, setShowItens] = useState({min:-1, max:10})
   const url = window.location.href
   const [messageEmpty, setMessageEmpty] = useState<string>()
+  const [modalMessage, setModalMessage] = useState<{status:boolean, permission:string, index:number}>({status:false, permission:'', index:0})
+  const pathName = usePathname()
 
   useEffect(() => {
     if(url.includes("Clientes") === true  && folderName === "Cliente" ){
@@ -42,8 +48,12 @@ export default function TableFiles({ pages, trash, textSearch, files, folderName
 
    // <--------------------------------- Select Files --------------------------------->
   function SelectAllFiles(){
-    var i = showItens.max - 10
-    for(i; showItens.max > i; i++){
+    var i = (dataPages.page - 1) * 10 
+    for(i; dataPages.page * 10 > i && i > ((dataPages.page - 2) * 10) ; i++){
+      if (files.filter((file) => file.checked === true).length > 9 && files[i].checked === false) {
+        return toast.error("Você só pode selecionar 10 arquivos");
+      }
+
       if(files[i]){
         SelectFile(i)
       } else{
@@ -54,15 +64,15 @@ export default function TableFiles({ pages, trash, textSearch, files, folderName
 
    // <--------------------------------- Download Files --------------------------------->
   function DownloadFile(file){
-    DownloadsFile({filesDownloaded:[file], files:files, from:from, childToParentDownload:childToParentDownload, folderName: folderName})
+    DownloadsFile({selectFiles:[file], files:files, from:from, childToParentDownload:childToParentDownload, folderName: folderName})
   }
-
-  console.log(files)
 
   return (
     <>
       {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
+      
         <>
+          {modalMessage.status ? <Message modalMessage={modalMessage} files={files} childToParentDownload={childToParentDownload}  setModalMessage={setModalMessage}/> : <></>}
           {/* <--------------------------------- HeadTable ---------------------------------> */}
           <div className="w-full mt-[10px] grid grid-cols-[20px__1fr_120px_200px_110px_70px] max-lg:grid-cols-[20px__1fr_120px_110px_70px] max-md:grid-cols-[20px__1fr_110px_70px] max-sm:grid-cols-[20px__1fr_70px] gap-x-[15px] text-[18px] font-[500] border-y-[1px] border-y-neutral-400  bg-neutral-300  items-center py-[5px]">
             <button aria-label="checkbox demonstrativo" onClick={() => SelectAllFiles()} className='w-[22px] h-[22px] cursor-pointer bg-white rounded-[4px] ml-[5px] border-[1px] border-black'/>
@@ -93,24 +103,20 @@ export default function TableFiles({ pages, trash, textSearch, files, folderName
           {/* <--------------------------------- BodyTable ---------------------------------> */}
           {files
           .filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
-          .map((file:Files, index) =>{
+          .map((file:Files, index) => {
             var checked = file.checked
-            if( showItens.min < index && index < showItens.max){
-              // let viewedFormated = new Date(file.viewedDate).to
+            if((dataPages.page * 10 - (11)) < index && index < dataPages.page * 10){
               return (
                 <div
                   key={index}
-                  className="w-full grid grid-cols-[20px__1fr_120px_200px_110px_70px] max-lg:grid-cols-[20px__1fr_120px_110px_70px] max-md:grid-cols-[20px__1fr_110px_70px] max-sm:grid-cols-[20px__1fr_70px] px-[5px] gap-x-[15px] text-[16px] font-[500] border-b-[1px] border-b-neutral-400 items-center py-[5px]"
+                  className="w-full grid grid-cols-[20px__1fr_120px_200px_110px_70px] max-lg:grid-cols-[20px__1fr_120px_110px_70px] max-md:grid-cols-[20px__1fr_110px_70px] max-sm:grid-cols-[20px__1fr_70px] px-[5px] gap-x-[15px] text-[16px] font-[500] border-b-[1px] border-b-neutral-400 items-center py-[5px] max-sm:gap-x-[10px]"
                 >
                   <input
                     aria-label="Selecionar Arquivos"
                     type="checkbox"
-                    checked={checked}
-                    onChange={(e) =>
-                      (checked = e.target.value === "on" ? true : false)
-                    }
+                    checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)}
                     onClick={() => SelectFile(index)}
-                    className="w-[20px] h-[20px]"
+                    className="w-[20px] h-[20px] cursor-pointer"
                   />
 
                   <div className="flex items-center">
@@ -121,7 +127,7 @@ export default function TableFiles({ pages, trash, textSearch, files, folderName
                       height={40}
                       className="text-[10px] mr-[10px] w-[30px] max-lg:w-[25px]  h-[30px] max-lg:h-[25px]"
                     />
-                    <p className="overflow-hidden whitespace-nowrap text-ellipsis dark:text-white max-w-[700px] max-2xl:max-w-[450px] max-xl:max-w-[220px] max-lg:max-w-[280px] max-sm:max-w-[250px] max-lsm:max-w-[250px]">
+                    <p className="overflow-hidden whitespace-nowrap text-ellipsis dark:text-white max-w-[700px] max-2xl:max-w-[450px] max-xl:max-w-[220px] max-lg:max-w-[280px] max-sm:max-w-[250px] max-lsm:max-w-[200px]">
                       {file.name}
                     </p>
                   </div>
@@ -133,7 +139,7 @@ export default function TableFiles({ pages, trash, textSearch, files, folderName
                   </p>
 
                   <p className="font-[400] max-lg:hidden text-left dark:text-white">
-                    {FormatDate(file.created_date)}
+                    {FormatDate(file.created_date.toString())}
                   </p>
 
                   {file.viwed ? (
@@ -173,11 +179,20 @@ export default function TableFiles({ pages, trash, textSearch, files, folderName
                   )}
 
                   <div className="flex justify-center items-center gap-[10px]">
-                    <Message
-                      file={file}
-                      childToParentDownload={childToParentDownload}
-                      files={files}
-                    />
+
+                  {pathName == '/Dashboard/Admin/Arquivos' && file.from === "admin" || pathName == '/Dashboard/Clientes/Arquivos' && file.from === "user" ?
+                      <div onClick={() => setModalMessage({index:index, permission:"edit", status:true})} className='bg-[#15E08B] p-[3px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
+                          {file?.message && file?.message?.length > 0 ?  <Image src={MessageIcon} width={22} height={22} alt="Chat"/> : <PlusCircledIcon width={22} height={22} className='text-white'/> }
+                      </div>
+                  : 
+                      file?.message && file?.message?.length > 0 ?
+                          <div onClick={() => setModalMessage({...modalMessage, permission:"viwed", status:true})} className='bg-[#15E08B] p-[2px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
+                              <Image src={MessageIcon} width={22} height={22} alt="Chat"/>
+                          </div>
+                      : <></>
+                  }
+
+
                     <OptionsFile
                       index={index}
                       from={from}
@@ -209,10 +224,10 @@ export default function TableFiles({ pages, trash, textSearch, files, folderName
         {/* <--------------------------------- NavBar table ---------------------------------> */}
         {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
           <div className='w-full px-[10px] flex justify-between h-[50px] mt-[10px]'>
-              <div className='flex justify-between w-full h-[40px] max-sm:h-[30px]'>
-                  <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
-                    <p className="dark:text-white">{`Página ${showItens.max / 10} de ${pages}`}</p>
-                  <button onClick={() => {showItens.max / 10 != pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == pages ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
+              <div className='flex justify-between w-full h-[40px] max-sm:h-[30px] items-center'>
+                  <button onClick={() => {dataPages.page > 1 ? setDataPages({...dataPages, page: dataPages.page - 1}) : ""}} className={`px-[8px] py-[3px] border-[2px] ${dataPages.page == 1 ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "cursor-pointer bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"}  rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
+                    <p className="dark:text-white">{`Página ${dataPages.page} de ${dataPages.maxPages}`}</p>
+                  <button onClick={() => {dataPages.page < dataPages.maxPages ? setDataPages({...dataPages, page: dataPages.page + 1}) : ""}} className={`px-[8px] py-[3px] border-[2px] ${files.length / 10 <= dataPages.page ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "cursor-pointer bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"} rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
               </div>
           </div>
         :<></>}

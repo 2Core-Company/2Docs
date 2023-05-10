@@ -33,7 +33,7 @@ function OptionsFile({file, files, from,  index, trash, DownloadFile, Confirmati
   const [moveTo, setMoveTo] = useState(false)
   const [copyTo, setCopyTo] = useState(false)
   const [rename, setRename] = useState(false)
-  const [viwedFile, setViwedFile] = useState<{viwed:boolean, url:string}>({viwed:false, url:""})
+  const [viwedFile, setViwedFile] = useState<boolean>(false)
   const params:any = useSearchParams()
   const folderName:string = params.get("folder")
 
@@ -43,7 +43,7 @@ function OptionsFile({file, files, from,  index, trash, DownloadFile, Confirmati
       {moveTo ? <MoveTo file={file} files={files} setMoveTo={setMoveTo} childToParentDownload={childToParentDownload}/> : <> </>}
       {copyTo ? <CopyTo file={file} setCopyTo={setCopyTo} /> : <> </>}
       {rename ? <Rename file={file} files={files} setRename={setRename} childToParentDownload={childToParentDownload}/> : <> </>}
-      {viwedFile.viwed ? <ViewFile viwedFile={viwedFile} files={files} file={file} from={from} childToParentDownload={childToParentDownload} setViwedFile={setViwedFile}  /> : <></>}
+      {viwedFile ? <ViewFile files={files} file={file} from={from} childToParentDownload={childToParentDownload} setViwedFile={setViwedFile}  /> : <></>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -57,7 +57,7 @@ function OptionsFile({file, files, from,  index, trash, DownloadFile, Confirmati
         <DropdownMenu.Portal >
           <DropdownMenu.Content align="end" alignOffset={-25}  className="bg-primary text-black text-[18px] rounded-[6px] flex flex-col gap-[5px] drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
             <DropdownMenu.Item  className="cursor-pointer rounded-t-[6px] hover:outline-none  hover:bg-neutral-300">
-              <div onClick={() => setViwedFile({viwed:true, url:file.url})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => setViwedFile(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <EyeOpenIcon width={22} height={22} />
                 Visualizar
               </div>
@@ -70,7 +70,7 @@ function OptionsFile({file, files, from,  index, trash, DownloadFile, Confirmati
               </div>
             </DropdownMenu.Item>
 
-          {trash || from === 'admin' || file.from === "user" || folderName === "Favoritos" ? <></>
+          {trash  || folderName === "Favoritos" || file.from === "user"  ? <></>
           :
             <>
               <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">

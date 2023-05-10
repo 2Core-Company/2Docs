@@ -15,7 +15,7 @@ interface Props{
         await updateDoc(doc(db, 'companies', user.id_company, "clients", user.id), {
             fixed: true
         })
-        const index = users.findIndex(user => user.id == user.id)
+        const index = users.findIndex((userFind) => user.id == userFind.id)
         users[index].fixed = true
         setUsers(FilterFixed(users))
     } catch(e) {

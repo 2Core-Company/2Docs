@@ -1,116 +1,134 @@
-import { db } from '../../../../firebase'
-import { doc, getDoc, updateDoc } from "firebase/firestore";  
+import { db, storage } from '../../../../firebase'
+import { doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { Folders } from '../../../types/folders'
 import ViwedEvent from '../Calendar/viwedEvent';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 interface Props{
-  filesDownloaded:Files[]
+  selectFiles:Files[]
   files?:Files[]
   folderName: string
   from:string
   childToParentDownload?:Function
 }
 
-async function DownloadsFile({filesDownloaded, files, childToParentDownload, from, folderName}:Props){
-  const docRef = doc(db, "companies", filesDownloaded[0].id_company, "clients", filesDownloaded[0].id_user);
+
+
+async function DownloadsFile({selectFiles, files, childToParentDownload, from, folderName}:Props){
+  const docRef = doc(db, "companies", selectFiles[0].id_company, "clients", selectFiles[0].id_user);
   const docSnap = await getDoc(docRef);
   let folder:Folders[] = docSnap.data()?.folders.filter((folder) => folder.name == folderName);
+  const batch = writeBatch(db);
 
-  try{
-    for(var i = 0; i < filesDownloaded.length; i++){
-      let monthDownload:Number = new Date(filesDownloaded[i].created_date).getMonth(), monthNow:Number = new Date().getMonth()
+  await GetUrlDownloadFile()
 
-      if(from === "user" && filesDownloaded[i].folder != "Cliente" && folder[0].singleDownload === true && filesDownloaded[i].downloaded === true) {
-        return toast.error("Este(s) arquivo(s) já foram baixados uma vez (Pasta configurada para downloads únicos).")
+  async function GetUrlDownloadFile(){
+    const promises:any = []
+    const promises2:any = []
+    try{
+      for await(const file of selectFiles){
+        let monthDownload:Number = new Date(file.created_date).getMonth(), monthNow:Number = new Date().getMonth()
+
+        if(from === "user" && file.folder != "Cliente" && folder[0].singleDownload === true && file.downloaded === true) {
+          return toast.error("Este(s) arquivo(s) já foram baixados uma vez (Pasta configurada para downloads únicos).")
+        }
+    
+        if(from === "user" && file.folder != "Cliente" && folder[0].onlyMonthDownload === true && monthDownload !== monthNow) {
+          return toast.error("Este(s) arquivo(s) são do mês passado (Pasta configurada para download no mês).")
+        }
+
+        promises.push(getDownloadURL(ref(storage, file.path)))
       }
 
-      if(from === "user" && filesDownloaded[i].folder != "Cliente" && folder[0].onlyMonthDownload === true && monthDownload !== monthNow) {
-        return toast.error("Este(s) arquivo(s) são do mês passado (Pasta configurada para download no mês).")
+      const result = await Promise.all(promises)
+
+      for await(const url of result){
+        promises2.push(fetch(url).then(r => r.blob()))
       }
 
-      let blob = await fetch(filesDownloaded[i].url).then(r => r.blob());
-      filesDownloaded[i].urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
+      const allUrls = await Promise.all(promises2)
+
+      StartDownload(allUrls)
+
+    }catch(e) {
+      toast.error("Erro: " + e)
     }
-  }catch(e) {
-    toast.error("Erro: " + e)
   }
 
-  try{
-    for(let i = 0; i < filesDownloaded.length; i++) {
+  async function StartDownload(allUrls){
+    for(var i = 0; i < allUrls.length; i++){
+      const url = (window.URL ? URL : webkitURL).createObjectURL(allUrls[i])
       const element:any = document.createElement("a");
-      element.href = filesDownloaded[i].urlDownload
-      element.download = filesDownloaded[i].name;
+      element.href = url
+      element.download = selectFiles[i].name;
 
       document.body.appendChild(element);
 
       element.click();
 
       element.parentNode.removeChild(element);
+    }
 
-      filesDownloaded[i].checked = false
+    await Promise.all([VerifyDownload(), VerifyViwed()])
+    .then(async () => {
+      await batch.commit()
+    })
+    if(childToParentDownload){
+      childToParentDownload(files)
+    }
+  }
 
-      if(from === "user" && filesDownloaded[i].folder != "Cliente" && filesDownloaded[i].downloaded === false) {
-        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
-          downloaded: true
-        })
+  async function VerifyDownload(){
+    for(let i = 0; i < selectFiles.length; i++) {
+      selectFiles[i].checked = false
 
+      if(from === "user" && selectFiles[i].folder != "Cliente" && selectFiles[i].downloaded === false) {
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id_file);
+        batch.update(laRef, {downloaded: true})
         if(files && childToParentDownload){
-          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+          const index = files.findIndex(file => file.id_file == selectFiles[i].id_file)
           files[index].downloaded = true;
-          childToParentDownload(files)
         }
-      } else if(from === "admin" && filesDownloaded[i].folder == "Cliente" && filesDownloaded[i].downloaded === false) {
-        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
-          downloaded: true
-        })
-
+      } else if (from === "admin" && selectFiles[i].folder == "Cliente" && selectFiles[i].downloaded === false) {
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id_file);
+        batch.update(laRef, {downloaded: true})
         if(files && childToParentDownload){
-          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
+          const index = files.findIndex(file => file.id_file == selectFiles[i].id_file)
           files[index].downloaded = true;
-
-          childToParentDownload(files)
         }
       }
+    }
+  }
 
+  async function VerifyViwed(){
+    for(let i = 0; i < selectFiles.length; i++) {
       let viewedDate = new Date().toString();
       
-      if(from === "user" && filesDownloaded[i].folder != "Cliente" && filesDownloaded[i].viwed === false){
-        await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
-          viwed: true,
-          viewedDate: viewedDate,
-        })
+      if(from === "user" && selectFiles[i].folder != "Cliente" && selectFiles[i].viwed === false){
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id_file);
+        batch.update(laRef, {viwed: true,viewedDate: viewedDate})
 
         if(files && childToParentDownload){
-          const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
-          files[index].downloaded = true;
-
+          const index = files.findIndex(file => file.id_file == selectFiles[i].id_file)
           files[index].viwed = true
           files[index].viewedDate = viewedDate;
-
-          childToParentDownload(files)
         }
-        }else if(from === "admin" && filesDownloaded[i].folder == "Cliente" && filesDownloaded[i].viwed === false){
-          await updateDoc(doc(db, 'files', filesDownloaded[i].id_company, "documents", filesDownloaded[i].id_file), {
-            viwed: true,
-            viewedDate: viewedDate
-          })
-          if(files && childToParentDownload){
-            const index = files.findIndex(file => file.id_file == filesDownloaded[i].id_file)
-            files[index].downloaded = true;
 
-            files[index].viwed = true
-            files[index].viewedDate = viewedDate;            
+      }else if(from === "admin" && selectFiles[i].folder == "Cliente" && selectFiles[i].viwed === false){
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id_file);
+        batch.update(laRef, {viwed: true,viewedDate: viewedDate})
 
-            childToParentDownload(files)
-          }
+        if(files && childToParentDownload){
+          const index = files.findIndex(file => file.id_file == selectFiles[i].id_file)
+          files[index].viwed = true
+          files[index].viewedDate = viewedDate;            
         }
+      }
     }
-  } catch(e) {
-    console.log(e)
-    toast.error("Não foi possível baixar os arquivos.")
   }
+
 }
 
   export default DownloadsFile

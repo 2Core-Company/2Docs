@@ -6,7 +6,6 @@ import { db, storage } from '../../../../firebase'
 import {  Files } from '../../../types/files'
 import { Event } from '../../../types/event'
 import { Modal } from '../../../types/others'
-import { AlterSizeCompany } from '../../../Utils/Firebase/AlterSizeCompany'
 import Modals from '../Modals'
 
 
@@ -62,14 +61,9 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
 
     async function DeletFilesFireStore() {
         try{
-            var totalSize = 0
             for await(const file of files){
                 const response = await deleteDoc(doc(db, 'files', file.id_company, "documents", file.id_file))
-                totalSize = totalSize + file.size
             }
-            console.log(files)
-            console.log(totalSize)
-            AlterSizeCompany({id_company: id_company, action:'subtraction', size:totalSize})
         }catch(e){
             console.log(e)
             throw Error
