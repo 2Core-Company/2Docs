@@ -9,11 +9,13 @@ import { userContext } from '../Context/contextUser'
 import { companyContext } from '../Context/contextCompany';
 import { stripe } from '../../../lib/stripe'
 import {  DataUserContext } from '../../types/users';
+import { loadingContext } from '../Context/contextLoading';
 
 
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
   const {dataUser, setDataUser} = useContext(userContext)
+  const {setLoading} = useContext(loadingContext)
   const {setDataCompany} = useContext(companyContext)
   const [onLoad, setOnLoad] = useState(false)
   const router = useRouter()
@@ -34,6 +36,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       await GetDataCompanyUser({id_company:user.displayName, plan:plan})
 
       setOnLoad(true)
+      setLoading(false)
       
       if(idTokenResult?.claims.admin && page.includes('/Dashboard/Clientes')){
         return router.replace("/Dashboard/Admin")
@@ -52,7 +55,6 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       if(dataUser.id_company === '' && user.displayName){
         const docRef = doc(db, "companies", user.displayName, "clients", user.uid);
         const docSnap = await getDoc(docRef);
-        console.log(docSnap.data())
         setUrlImageProfile(docSnap.data()?.photo_url)
         var allDataUser:DataUserContext = {
           cnpj:docSnap.data()?.cnpj, 
