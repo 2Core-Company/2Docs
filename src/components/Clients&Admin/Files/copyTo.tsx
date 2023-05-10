@@ -27,7 +27,6 @@ function  CopyTo({file, setCopyTo}: Props) {
       const docRef = doc(db, "companies", file.id_company, "clients", file.id_user);
       const docSnap = await getDoc(docRef);
       const foldersHere = docSnap.data()?.folders.filter(folder => folder.id_enterprise === file.id_enterprise || folder.name === "Favoritos" || folder.name === "Cliente")
-      console.log(file.id_enterprise)
       if(foldersHere.length > 3){
         setFolders(foldersHere)
       } else {

@@ -74,7 +74,6 @@ function Options({user, index, setUser, setEnterprise}: Props){
         var docRef = ref(storageRef, file.id);
         dataFiles.push(deleteObject(docRef))
       }); 
-      console.log(dataFiles)
       await Promise.all([batch.commit(), dataFiles])
 
       setLoading(false)

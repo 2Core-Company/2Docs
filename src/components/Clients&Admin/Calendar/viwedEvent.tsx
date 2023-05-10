@@ -175,7 +175,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
         const promises:any = []
         for(var i = 0; i < newFiles.length; i++){
-            console.log(newFiles[i])
             const data = {
                 id_user: eventSelected.id_user,
                 id_file: newFiles[i].id_file,

@@ -50,7 +50,6 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
     }
     try{
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser?.uid})
-      console.log(result)
       if(result.data.uid){
         const id = result.data.uid
         await UploadPhoto(id)
@@ -106,7 +105,6 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   
   //Armazena o arquivo no firestore
   async function SignUpDb(user:{id:string, url:string, referencesFile:string}){
-    console.log('aaaaaaa')
     var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
     var date = new Date() + ""
     

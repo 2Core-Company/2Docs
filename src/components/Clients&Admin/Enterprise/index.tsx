@@ -21,7 +21,6 @@ function Enterprises({enterprises, enterprise, user, setUser, setEnterprise, fro
     const [changeEnterprise, setChangeEnterprise] = useState(false)
     const [createEnterprises, setCreateEnterprises] = useState(false)
     const pathName = usePathname()
-    console.log(pathName)
   return (
         <div className='absolute right-[20px] top-[10px] bg-neutral-200 dark:bg-neutral-200/20 border-[2px] border-black dark:border-white rounded-[4px] pt-[3px]'>
             {createEnterprises ? <CreateEnterprises user={user} setUser={setUser} setCreateEnterprises={setCreateEnterprises}/> : <></>}
