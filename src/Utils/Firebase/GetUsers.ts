@@ -30,7 +30,6 @@ export async function GetUsers({id_company, setPages, setUsers}:PropsGetUsers) {
       cnpj:doc.data()?.cnpj,
       nameImage:doc.data()?.nameImage,
       phone:doc.data()?.phone,
-      folders:doc.data()?.folders
     }));
 
     setPages(Math.ceil(getUsers.length / 10));
