@@ -22,7 +22,7 @@ import { PhoneMask, CNPJMask } from '../../../Utils/Other/Masks';
 
 function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState<DataUser>({id:user.id, id_company:user.id_company, permission:0, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, nameImage: user.nameImage, photo_url: user.photo_url, enterprises: user.enterprises, folders:user.folders})
+  const [dataUser, setDataUser] = useState<DataUser>({id:user.id, id_company:user.id_company, permission:0, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, nameImage: user.nameImage, photo_url: user.photo_url, enterprises: user.enterprises})
   const [file, setFile] : Array<{name:string}> | any  = useState({name: "padraoCliente.png"})
   const [fileDataURL, setFileDataURL] = useState<string>(user.photo_url);
   const [eye , setEye] = useState(false)
@@ -117,8 +117,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
       photo_url: data.photo_url,
       nameImage: data.nameImage,
       status: user.status,
-      created_date: user.created_date,
-      folders:user.folders,
+      created_date: user.created_date
     }
 
     await (updateDoc(doc(db, 'companies', contextUser.id_company, "clients", user.id), userAfterEdit))
