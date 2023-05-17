@@ -1,9 +1,10 @@
 import React, { useEffect, useState} from 'react'
-import { db } from '../../../../firebase'
+import { db, storage } from '../../../../firebase'
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { Folders } from '../../../types/folders';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 interface Props{
   file:Files
@@ -13,41 +14,77 @@ interface Props{
 }
 
 function MoveTo({file, files, setMoveTo, childToParentDownload}:Props) {
-    const [folders, setFolders] = useState([])
-    const [folderName, setFolderName] = useState<string>()
-    const messageToast = {pending:"Movendo o arquivo.", success:"Arquivo movido com sucesso.", error:"Não foi possivel mover o arquivo"}
-    
-    useEffect(() =>{
-      GetFolders()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+  const [folders, setFolders] = useState([])
+  const [folderName, setFolderName] = useState<string>()
+  const messageToast = {pending:"Movendo o arquivo.", success:"Arquivo movido com sucesso.", error:"Não foi possivel mover o arquivo"}
+  
+  useEffect(() =>{
+    GetFolders()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
 
-    async function GetFolders(){
-      const docRef = doc(db, "companies", file.id_company, "clients", file.id_user);
-      const docSnap = await getDoc(docRef);
-      const foldersHere = docSnap.data()?.folders.filter(folder => folder.id_enterprise === file.id_enterprise || folder.name === "Favoritos" || folder.name === "Cliente")
-      if(foldersHere.length > 3){
-        setFolders(foldersHere)
-      } else {
-        setMoveTo(false)
-        throw toast.error("Você precisa ter no minimo 2 pastas para conseguir mover um arquivo.")
-      }
-    }
+  async function GetFolders(){
+    const docRef = doc(db, "companies", file.id_company, "clients", file.id_user);
+    const docSnap = await getDoc(docRef);
+    let enterprises = docSnap.data()?.enterprises
+    let enterprise = enterprises.find((data) => file.id_enterprise == data.id) 
+    const foldersHere = enterprise.folders
 
-    async function ChangeFolder(){
-      try{
-        await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
-          folder: folderName
-        })
-        const index:number = files.findIndex(file => file.id_file === file.id_file)
-        files.splice(index, 1);
-        childToParentDownload(files)
-        setMoveTo(false)
-      } catch(e) {
-        console.log(e)
-        throw toast.error("Não foi possivél trocar a pasta deste arquivo.")
-      }
+    if(foldersHere.length > 3){
+      setFolders(foldersHere)
+    } else {
+      setMoveTo(false)
+      throw toast.error("Você precisa ter no minimo 2 pastas para conseguir mover um arquivo.")
     }
+  }
+
+  async function GetFile(){
+    await getDownloadURL(ref(storage, file.path))
+    .then(async (url) => {
+      var xhr = new XMLHttpRequest;
+      xhr.responseType = 'blob';
+      xhr.onload = function () {
+        var recoveredBlob = xhr.response;
+        CopyngFileStorage(recoveredBlob)
+      };
+      xhr.open('GET', url);
+      xhr.send();
+    })
+  }
+  
+  async function CopyngFileStorage(blob){
+    try{
+      const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
+      const docsRef = ref(storage, `${file.id_company}/files/${file.id_user}/${file.id_enterprise}/${folderName}/${file.id_file}`);
+      const docsRef2 = ref(storage, `${file.id_company}/files/${file.id_user}/${file.id_enterprise}/${file.folder}/${file.id_file}`);
+      const [promise1, promise2] = await Promise.all([
+        deleteObject(docsRef2),
+        uploadBytes(docsRef, blob)
+      ])
+      ChangeFolder({path:promise2.metadata.fullPath})
+    }catch(e){
+      throw toast.error("Não foi possivel copiar o arquivo")
+    }
+  }
+
+  async function ChangeFolder({path}:{path:string}){
+    try{
+      await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
+        folder: folderName,
+        path:path
+      })
+
+      const index:number = files.findIndex(file => file.id_file === file.id_file)
+      files.splice(index, 1);
+      childToParentDownload(files)
+      setMoveTo(false)
+    } catch(e) {
+      console.log(e)
+      throw toast.error("Não foi possivél trocar a pasta deste arquivo.")
+    }
+  }
+
+ 
 
 
     return (
@@ -59,7 +96,7 @@ function MoveTo({file, files, setMoveTo, childToParentDownload}:Props) {
             <p className='text-[26px] mt-[10px]'>Para qual pasta voce deseja mover este arquivo? </p>
             <div className='flex w-full flex-wrap justify-center gap-[20px]'>
             {folders?.map((folder:Folders) => {
-                if(folder.name === "Favoritos" || folder.name === "Cliente" || folder.name === file.folder){
+                if(folder.name === "Favoritos" || folder.name === "Cliente" || folder.name === file.folder || folder.name === "Lixeira" ){
                   return
                 }
                 return (
@@ -77,8 +114,8 @@ function MoveTo({file, files, setMoveTo, childToParentDownload}:Props) {
 
           </div>
           <div className='flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-            <button onClick={() => setMoveTo(false)} className='bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong dark:border-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
-            <button  onClick={() => toast.promise(ChangeFolder(), messageToast)} className={`${folderName != undefined ? "bg-blue/40 border-blue cursor-pointer": "bg-strong/30 dark:bg-dstrong/20 border-strong dark:border-dstrong cursor-not-allowed text-white" } border-2 hover:scale-[1.10]  duration-300 py-[5px] px-[15px] rounded-[8px] text-[20px] text-white `}>Mover</button>
+            <button onClick={() => setMoveTo(false)} className='cursor-pointer bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong dark:border-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
+            <button  onClick={() => toast.promise(GetFile(), messageToast)} className={`cursor-pointer ${folderName != undefined ? "bg-blue/40 border-blue cursor-pointer": "bg-strong/30 dark:bg-dstrong/20 border-strong dark:border-dstrong cursor-not-allowed text-white" } border-2 hover:scale-[1.10]  duration-300 py-[5px] px-[15px] rounded-[8px] text-[20px] text-white `}>Mover</button>
           </div>
         </div>
       </div>

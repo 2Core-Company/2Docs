@@ -10,7 +10,7 @@ import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
 import TableFiles from '../../Clients&Admin/Files/tableFiles'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
-import Modals from '../../Clients&Admin/Modals'
+import ModalDelete from '../../../Utils/Other/ModalDelete'
 import DeletFiles from '../../Admin/Files/DeletFiles';
 import { Files } from '../../../types/files'
 import { Modal } from '../../../types/others'
@@ -47,9 +47,10 @@ function Files(){
   },[dataUser])
 
   async function verifyFolder() {
-    let mockFolder = dataUser.folders.filter((folder) => folder.name === folderName && folder.id_enterprise === id_enterprise);
+    let enterprise = dataUser.enterprises.find((data) => data.id === id_enterprise)
+    let mockFolder = enterprise?.folders.find((folder) => folder.name === folderName);
 
-    if(mockFolder[0].isPrivate === true) {
+    if(mockFolder?.isPrivate === true) {
       router.push("Dashboard/Clientes/Pastas");
     }
   }
@@ -65,7 +66,8 @@ function Files(){
 
     const docRef = doc(db, "companies", dataUser.id_company, "clients", dataUser.id);
     const docSnap = await getDoc(docRef);
-    let folder: Folders[] = docSnap.data()?.folders.filter((folder) => folder.name == folderName);
+    let enterprise = docSnap.data()?.enterprises.find((data) => data.id === id_enterprise)
+    let folder: Folders[] = enterprise.folders.filter((folder) => folder.name == folderName);
 
     const querySnapshot: any = await getDocs(q);
 
@@ -93,7 +95,7 @@ function Files(){
             break;
           case 2:
             if(timeDiff > 2592000000) {
-              updateDoc(doc(db, 'files', dataUser.id_company, "documents", file.id_file), {
+              updateDoc(doc(db, 'files', dataUser.id_company, file.id_user, file.id_file), {
                 ...file,
                 trash: true
               })
@@ -103,7 +105,7 @@ function Files(){
             break;
           case 1:
             if(timeDiff > 604800000) {
-              updateDoc(doc(db, 'files', dataUser.id_company, "documents", file.id_file), {
+              updateDoc(doc(db, 'files', dataUser.id_company, file.id_user, file.id_file), {
                 ...file,
                 trash: true
               })
@@ -113,7 +115,7 @@ function Files(){
             break;
           case 0:
             if(timeDiff > 86400000) {
-              updateDoc(doc(db, 'files', dataUser.id_company, "documents", file.id_file), {
+              updateDoc(doc(db, 'files', dataUser.id_company, file.id_user, file.id_file), {
                 ...file,
                 trash: true
               })
@@ -131,7 +133,6 @@ function Files(){
 
     for(var i = 0; i < getFiles.length; i++){
       getFiles[i].checked = false;
-      getFiles[i].created_date = getFiles[i].created_date + "";
     }
 
     setDataPages({page:1, maxPages:Math.ceil(getFiles.length / 10)});
@@ -213,7 +214,7 @@ return (
             <TableFiles dataPages={dataPages} files={files} ConfirmationDeleteFile={ConfirmationDeleteFile} childToParentDownload={childToParentDownload} SelectFile={SelectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch} setDataPages={setDataPages}/>
           </div>
         </div>
-        {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
+        {modal.status ? <ModalDelete confirmation={false} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
       </div>
   )
   }

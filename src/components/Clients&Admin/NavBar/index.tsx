@@ -4,7 +4,7 @@ import { HomeIcon, FileTextIcon, PersonIcon } from '@radix-ui/react-icons';
 import * as Avatar from '@radix-ui/react-avatar';
 import iconExit from '../../../../public/icons/exit.svg'
 import Image from 'next/image'
-import Modals from '../Modals'
+import ModalExit from './ModalExit'
 import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
 import { auth } from '../../../../firebase'
@@ -27,7 +27,6 @@ function NavBar({permission, image}:Props) {
  
     const childModal = () => {
         signOut(auth).then(() => {
-            setModal({status: false, message: ""})
             router.push("/")
         }).catch((error) => {
             console.log(error)
@@ -167,8 +166,8 @@ function NavBar({permission, image}:Props) {
                         </Tooltip.Portal>
                     </Tooltip.Root>
                 </Tooltip.Provider>
-                </div>
-                {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={undefined} subMessage2={undefined} childModal={childModal}/> : <></>}
+            </div>
+                {modal.status ? <ModalExit setModal={setModal} message={modal.message} childModal={childModal}/> : <></>}
         </div>
     )
 }

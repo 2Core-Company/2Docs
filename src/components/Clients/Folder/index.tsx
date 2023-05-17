@@ -9,15 +9,12 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Files } from '../../../types/files'
 import { Enterprise } from '../../../types/others'; 
 import Enterprises from '../../Clients&Admin/Enterprise';
-import { useSearchParams } from 'next/navigation';
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { db } from '../../../../firebase';
 import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
 
   function ComponentFolder(){
     const {dataUser, setDataUser} = useContext(userContext)
     const [recentFiles, setRecentsFiles] = useState<Files[]>([])
-    const [enterprise, setEnterprise] = useState<Enterprise>({name:"", id:""})
+    const [enterprise, setEnterprise] = useState<Enterprise>({name:"", id:"", folders:[]})
     const [files, setFiles] = useState<Files[]>([])
     const [textSearch, setTextSearch] = useState<string>('')
     
@@ -49,9 +46,9 @@ import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
 
             <div className='flex flex-wrap mt-[30px]'>
               {recentFiles.map((file) =>{
-                let index = dataUser.folders.findIndex((folder) => folder.name == file.folder)
+                let index = enterprise.folders.findIndex((folder) => folder.name == file.folder)
 
-                if(file?.id_enterprise === enterprise.id && dataUser.folders[index]?.isPrivate === false){
+                if(file?.id_enterprise === enterprise.id && enterprise.folders[index]?.isPrivate === false){
                   return (
                     <div key={file.id_file} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
                       <button onClick={() => DownloadsFile({selectFiles:[file], files:files, from:"user", folderName: file.folder})}>
@@ -75,11 +72,11 @@ import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
             </div>
 
             <div className='flex flex-wrap mt-[10px]'>
-              {dataUser?.folders?.filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ? 
-                dataUser?.folders
+              {enterprise?.folders?.filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ? 
+                enterprise?.folders
                 .filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
                 .map((folder) =>{
-                if(folder.isPrivate === false && folder.id_enterprise == enterprise?.id || folder.name === "Favoritos" || folder.name === "Cliente"){
+                if(folder.isPrivate === false || folder.name === 'Lixeira'){
                   const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === enterprise.id) : files.filter(file => file.folder === folder.name && file.trash === false && file.id_enterprise === enterprise.id)
                 return (
                   <Link href={{pathname: "Dashboard/Clientes/Arquivos", query:{folder:folder.name, id_enterprise:enterprise.id}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>

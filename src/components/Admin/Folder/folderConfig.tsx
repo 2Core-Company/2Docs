@@ -17,10 +17,11 @@ interface Props {
   id: string;
   id_company: string;
   setFolderConfig: Function;
+  setEnterprise:Function
   folderConfig: FolderCfg;
 }
 
-function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfig, folderConfig}: Props) {  
+function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfig, folderConfig, setEnterprise}: Props) {  
   const [nameFolder, setNameFolder] = useState<string>(folderConfig.name);
   const [color, setColor] = useState<string>(folderConfig.color);
   const [timeFile, setTimeFile] = useState<number>(folderConfig.timeFile);
@@ -32,18 +33,13 @@ function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfi
   async function UpdateCfg() {
     const docRef = doc(db, "companies", id_company, "clients", id);
     const docSnap = await getDoc(docRef);
-    const folders: Folders[] = [{name: docSnap.data()?.folders.name,
-                                 color: docSnap.data()?.folders.color,
-                                 id_enterprise: docSnap.data()?.folders.id_enterprise,
-                                 isPrivate: docSnap.data()?.folders.isPrivate,
-                                 singleDownload: docSnap.data()?.folders.singleDownload,
-                                 onlyMonthDownload: docSnap.data()?.folders.onlyMonthDownload,
-                                 timeFile: docSnap.data()?.folders.timeFile
-                                }];
-    
-    const index = folders.findIndex((folder) => folder.name === folderConfig.name && folder.id_enterprise === enterprise.id);
+    const enterprises = docSnap.data()?.enterprises
+    const index2 = enterprises.find((data) => data.id === enterprise.id)
+    const folders = user.enterprises[index2].folders
+    const index = folders.findIndex((folder) => folder.name === folderConfig.name);
 
-    setUser({...user, folders})
+    setUser({...user, enterprises:enterprises})
+
 
     try{      
       if(index === -1) {
@@ -53,21 +49,22 @@ function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfi
       if(color === undefined || nameFolder === "") {
         throw "Selecione uma cor e/ou um nome para a pasta.";
       }
-      for(let i = 0; i < user.folders.length; i++) {        
-        if(user.folders[i].name === nameFolder && i !== index) {
+      for(let i = 0; i < folders.length; i++) {        
+        if(folders[i].name === nameFolder && i !== index) {
           throw "Este nome já está em uso."
         }
       }
 
-      let folds = user.folders;
-      folds[index] = {...folds[index], name: nameFolder, color: color, singleDownload: singleDownload, onlyMonthDownload: onlyMonthDownload, timeFile: timeFile}
+      folders[index] = {...folders[index], name: nameFolder, color: color, singleDownload: singleDownload, onlyMonthDownload: onlyMonthDownload, timeFile: timeFile}
 
-      setUser({...user, folders: folds})
+      user.enterprises[index2].folders = folders
+      setEnterprise(user.enterprises[index2])
+      setUser({...user, enterprises: user.enterprises})
 
       updateDoc(
         doc(db, "companies", id_company, "clients", user.id),
         {
-          folders: user.folders,
+          enterprises: user.enterprises,
         }
       )
 
@@ -184,10 +181,10 @@ function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfi
             />
           </div>
           <div className="flex gap-5 mb-6 mt-11 mr-3 justify-end">
-            <button onClick={() => {setFolderConfig(false)}} className="bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px] border-2 border-strong rounded-[8px] text-[20px] max-sm:text-[18px] text-white">
+            <button onClick={() => {setFolderConfig(false)}} className="cursor-pointer bg-strong dark:bg-dstrong hover:scale-[1.10] duration-300 p-[5px] border-2 border-strong rounded-[8px] text-[20px] max-sm:text-[18px] text-white">
               Cancelar
             </button>
-            <button onClick={() => toast.promise(UpdateCfg(), toastUpdateCfg)}className="bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white ">
+            <button onClick={() => toast.promise(UpdateCfg(), toastUpdateCfg)}className="cursor-pointer bg-greenV/40 border-2 border-greenV hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] max-sm:text-[18px] text-white ">
               Atualizar
             </button>        
           </div>

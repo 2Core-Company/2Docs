@@ -1,5 +1,4 @@
 import { Enterprise } from "./others"
-import { Folders } from "./folders"
 
 
 export interface DataUserContext{
@@ -12,7 +11,6 @@ export interface DataUserContext{
     nameImage?:string 
     password:string     
     permission:number
-    folders?: Folders[]
     phone:string 
     photo_url?:string 
     status?:boolean
@@ -31,7 +29,6 @@ export interface DataUserContext{
     nameImage?:string 
     password:string     
     permission:number
-    folders: Folders[]
     phone?:string 
     photo_url:string 
     status?:boolean

@@ -1,3 +1,5 @@
+import { Folders } from "./folders"
+
   export interface WindowsAction{
     createUser: boolean,
     updateUser: boolean,
@@ -14,6 +16,7 @@
   export interface Enterprise{
     name:string, 
     id:string
+    folders: Folders[]
   }
 
   export interface Filter {

@@ -1,9 +1,8 @@
 import { db, storage } from '../../../../firebase'
-import { doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";  
+import { doc, getDoc, writeBatch } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { Folders } from '../../../types/folders'
-import ViwedEvent from '../Calendar/viwedEvent';
 import { getDownloadURL, ref } from 'firebase/storage';
 
 interface Props{
@@ -19,7 +18,10 @@ interface Props{
 async function DownloadsFile({selectFiles, files, childToParentDownload, from, folderName}:Props){
   const docRef = doc(db, "companies", selectFiles[0].id_company, "clients", selectFiles[0].id_user);
   const docSnap = await getDoc(docRef);
-  let folder:Folders[] = docSnap.data()?.folders.filter((folder) => folder.name == folderName);
+  let enterprises = docSnap.data()?.enterprises
+  console.log(selectFiles[0])
+  let enterprise = enterprises.find((data) => selectFiles[0].id_enterprise == data.id) 
+  let folder:Folders = enterprise.folders.find((folder) => folder.name === folderName)
   const batch = writeBatch(db);
 
   await GetUrlDownloadFile()
@@ -31,11 +33,11 @@ async function DownloadsFile({selectFiles, files, childToParentDownload, from, f
       for await(const file of selectFiles){
         let monthDownload:Number = new Date(file.created_date).getMonth(), monthNow:Number = new Date().getMonth()
 
-        if(from === "user" && file.folder != "Cliente" && folder[0].singleDownload === true && file.downloaded === true) {
+        if(from === "user" && file.folder != "Cliente" && folder.singleDownload === true && file.downloaded === true) {
           return toast.error("Este(s) arquivo(s) já foram baixados uma vez (Pasta configurada para downloads únicos).")
         }
     
-        if(from === "user" && file.folder != "Cliente" && folder[0].onlyMonthDownload === true && monthDownload !== monthNow) {
+        if(from === "user" && file.folder != "Cliente" && folder.onlyMonthDownload === true && monthDownload !== monthNow) {
           return toast.error("Este(s) arquivo(s) são do mês passado (Pasta configurada para download no mês).")
         }
 
@@ -50,7 +52,7 @@ async function DownloadsFile({selectFiles, files, childToParentDownload, from, f
 
       const allUrls = await Promise.all(promises2)
 
-      StartDownload(allUrls)
+      await StartDownload(allUrls)
 
     }catch(e) {
       toast.error("Erro: " + e)

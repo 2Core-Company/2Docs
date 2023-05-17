@@ -9,13 +9,12 @@ import React  from 'react'
 interface Props{
   selectFiles:Files[], 
   menu:boolean, 
-  folders:Folders[], 
   files:Files[]
   setMenu:Function
   setFiles:Function
 }
 
-function EnableFiles({selectFiles, menu, folders, files, setMenu, setFiles}:Props) {
+function EnableFiles({selectFiles, menu, files, setMenu, setFiles}:Props) {
 
   function ConfirmationEnableFile(){
     if(selectFiles.length > 0){
@@ -30,14 +29,6 @@ function EnableFiles({selectFiles, menu, folders, files, setMenu, setFiles}:Prop
     try{
       for await (const file of selectFiles){
         const laRef1 = doc(db, "files", file.id_company, file.id_user, file.id_file);
-        const laRef2 = doc(db, 'companies', file.id_company, "clients", file.id_user);
-
-        const folderStatus = folders.findIndex(folder => folder.name === file.folder)
-        if(folderStatus  == -1){
-          folders.push({name: file.folder, color: "#BE0000", id_enterprise:file.id_enterprise, isPrivate:false, singleDownload: false, onlyMonthDownload: false, timeFile: 3})
-          batch.update(laRef2, {folders: folders})
-        }
-
         batch.update(laRef1, {trash: false})
         const index = files.findIndex(file => file.id_file === file.id_file)
         files.splice(index,1)

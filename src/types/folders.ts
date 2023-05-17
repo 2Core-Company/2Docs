@@ -1,12 +1,12 @@
+
 export interface Folders{
-    name:string, 
-    color:string
-    id_enterprise:string
-    isPrivate:boolean
-    singleDownload: boolean
-    onlyMonthDownload: boolean
-    timeFile: number
-  }
+  name:string, 
+  color:string
+  isPrivate:boolean
+  singleDownload: boolean
+  onlyMonthDownload: boolean
+  timeFile: number
+}
 
   export interface FolderCfg {
     status: boolean;

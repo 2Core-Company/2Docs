@@ -6,10 +6,12 @@ import { toast } from "react-toastify";
 import { DataUser } from "../../../types/users";
 import * as Switch from "@radix-ui/react-switch";
 import { useTheme } from "../../../hooks/useTheme";
+import { Enterprise} from "../../../types/others";
+import { Folders } from "../../../types/folders";
 
 interface Props {
   user: DataUser;
-  enterprise: { id: string };
+  enterprise: Enterprise;
   id: string;
   id_company: string;
   setUser: Function;
@@ -17,7 +19,7 @@ interface Props {
 }
 
 function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolder}: Props) {
-  const folders = user.folders;
+  const folders:Folders[] = enterprise.folders;
   const [color, setColor] = useState<string>("#005694");
   const [nameFolder, setNameFolder] = useState<string>("");
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
@@ -26,23 +28,26 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
 
   //Função de criar pasta
   async function CreateFolder() {
-    const result = folders.findIndex((folder) => folder.name === nameFolder && folder.id_enterprise == enterprise.id);
+    const result = folders.findIndex((folder) => folder.name === nameFolder);
     if (result === -1) {
       if (color != undefined && nameFolder.length > 0) {
         folders.push({
           name: nameFolder,
           color: color,
-          id_enterprise: enterprise.id,
           isPrivate: isPrivate,
           singleDownload: false,
           onlyMonthDownload: false,
           timeFile: 3 //Permanent
         });
+
+        const index = user.enterprises.findIndex((data) => enterprise.id === data.id)
+        user.enterprises[index] = enterprise
+
         try {
           await updateDoc(doc(db, "companies", id_company, "clients", id), {
-            folders: folders,
+            enterprises: user.enterprises,
           });
-          setUser({ ...user, folders: folders });
+          setUser({ ...user, enterprises:user.enterprises});
           setCreateFolder(false);
         } catch (err) {
           console.log(err);

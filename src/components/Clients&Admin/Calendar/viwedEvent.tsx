@@ -69,7 +69,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             size:doc.data()?.size,
             id_company:doc.data()?.id_company,
             favorite:doc.data()?.favorite,
-            id_enterprise:doc.data()?.enterprises,
+            id_enterprise:doc.data()?.id_enterprise,
             name:doc.data()?.name,
             path:doc.data()?.path,
             viewedDate:doc.data()?.viewedDate,
@@ -79,7 +79,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             viwed:doc.data()?.viwed,
             from:doc.data()?.from,
             message:doc.data()?.message,
-            nameCompany:doc.data()?.nameCompany,
             downloaded:doc.data()?.downloaded,
           })
         });
@@ -152,11 +151,12 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     async function  UploadFileStorage() {
         const promises:any = []
         for await (const file of newFiles) {
-            const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id + "/" + file.id_file}`);
+            const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id}/${eventSelected.enterprise.id}/Cliente/${file.id_file}`);
             promises.push(uploadBytes(docsRef, file))
         }
         try{
             await Promise.all(promises).then(async (result) => {
+                console.log(result)
                 await UploadFilestore(result)
             })
         } catch(e){
@@ -175,7 +175,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
         const promises:any = []
         for(var i = 0; i < newFiles.length; i++){
-            const data = {
+            const data:Files= {
                 id_user: eventSelected.id_user,
                 id_file: newFiles[i].id_file,
                 path:result[i].metadata.fullPath,
@@ -189,7 +189,11 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                 trash: false,
                 viwed: false,
                 folder: 'Cliente',
-                from: 'user'
+                from: 'user',
+                favorite:false,
+                viewedDate:'',
+                message:'',
+                downloaded:false
             }
             const docRef  =doc(db, "files", dataUser.id_company, eventSelected.id_user, newFiles[i].id_file)
             promises.push(setDoc(docRef, data))
@@ -210,13 +214,15 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         })
 
         if(events.length > 0){
-            const index1 = events.findIndex(event => event.id == eventSelected.id)
-            events[index1].complete = true
-        }
-
-        if(elementFather === 'table' && eventsThatDay){
-            const index2 =  eventsThatDay.findIndex(event => event.id == eventSelected.id)
-            eventsThatDay[index2].complete = true
+            const index = events.findIndex(event => event.id == eventSelected.id)
+            events[index].complete = true
+        } 
+        
+        if (elementFather === 'table' && eventsThatDay && setEventsThatDay){
+            const index =  eventsThatDay.findIndex(event => event.id == eventSelected.id)
+            eventsThatDay[index].complete = true
+            
+            setEventsThatDay([...eventsThatDay])
         }
     }
 
@@ -238,7 +244,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                 throw Error
             }
             try{
-                const desertRef = ref(storage, file.id_company + '/files/' + file.id_user + "/" + file.id_file);
+                const desertRef = ref(storage, `${file.path}`);
                 await Promise.all([
                     deleteDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file)),
                     deleteObject(desertRef)

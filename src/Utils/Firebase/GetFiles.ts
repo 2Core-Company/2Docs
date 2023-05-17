@@ -148,7 +148,9 @@ export async function GetFilesToNormal({id_company,  id_user, id_enterprise, fol
 
   const docRef = doc(db, "companies", id_company, "clients", id_user);
   const docSnap = await getDoc(docRef);
-  let folder: Folders[] = docSnap.data()?.folders.filter((folder) => folder.name == folderName);
+  let enterprises =  docSnap.data()?.enterprises
+  let enterprise = enterprises.find((data) => data.id === id_enterprise)
+  let folder: Folders[] = enterprise.folders.filter((folder) => folder.name == folderName);
 
   const querySnapshot = await getDocs(q);
 
@@ -184,7 +186,7 @@ export async function GetFilesToNormal({id_company,  id_user, id_enterprise, fol
           break;
         case 2:
           if(timeDiff > 2592000000) {
-            updateDoc(doc(db, 'files', id_company, "documents", file.id_file), {
+            updateDoc(doc(db, 'files', id_company, file.id_user, file.id_file), {
               ...file,
               trash: true
             })
@@ -194,7 +196,7 @@ export async function GetFilesToNormal({id_company,  id_user, id_enterprise, fol
           break;
         case 1:
           if(timeDiff > 604800000) {
-            updateDoc(doc(db, 'files', id_company, "documents", file.id_file), {
+            updateDoc(doc(db, 'files', id_company, file.id_user, file.id_file), {
               ...file,
               trash: true
             })
@@ -204,7 +206,7 @@ export async function GetFilesToNormal({id_company,  id_user, id_enterprise, fol
           break;
         case 0:
           if(timeDiff > 86400000) {
-            updateDoc(doc(db, 'files', id_company, "documents", file.id_file), {
+            updateDoc(doc(db, 'files', id_company, file.id_user, file.id_file), {
               ...file,
               trash: true
             })

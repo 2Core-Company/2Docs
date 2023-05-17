@@ -18,7 +18,16 @@ function  CreateEnterprises({user, setUser, setCreateEnterprises}:Props) {
   async function CreateEnterprise(){
     const enterprises = user.enterprises
     const userHere = user
-    enterprises.push({name:nameEmprise, id:uuidv4()})
+    enterprises.push({
+      name:nameEmprise, 
+      id:uuidv4(),
+      folders:[        
+        {color:"#005694", name: "Cliente", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
+        {color:"#C7A03C", name: "Favoritos", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
+        {color:"#9E9E9E", name: "Lixeira", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3} 
+      ]
+    })
+    
     try{
       await updateDoc(doc(db, 'companies', user.id_company, "clients", user.id), {
         enterprises:enterprises

@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CNPJMask } from '../../../Utils/Other/Masks';
 import { PhoneMask } from '../../../Utils/Other/Masks';
 import { Firestore } from '@google-cloud/firestore';
+import { Enterprise } from '../../../types/others';
 
 interface Props{
   contextUser:DataUser
@@ -23,13 +24,22 @@ interface Props{
 
 function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], folders:[]})
+  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[]})
   const [file, setFile] = useState<{name: string} | any>({name: "padraoCliente.png"})
   const [fileDataURL, setFileDataURL] = useState<string | undefined>(undefined);
   const [eye , setEye] = useState(true)
   const domain:string = new URL(window.location.href).origin
   const [right, setRight] = useState("right-[-600px]")
-  const [enterprise, setEnterprise] = useState({name:"", id:uuidv4()})
+  const [enterprise, setEnterprise] = useState<Enterprise>({
+    name:"", 
+    id:uuidv4(), 
+    folders:[        
+      {color:"#005694", name: "Cliente", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
+      {color:"#C7A03C", name: "Favoritos", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
+      {color:"#9E9E9E", name: "Lixeira", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3} 
+    ]
+  })
+
 
   useEffect(() =>{
     setRight("right-0")
@@ -50,6 +60,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
     }
     try{
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser?.uid})
+      console.log(result)
       if(result.data.uid){
         const id = result.data.uid
         await UploadPhoto(id)
@@ -122,11 +133,9 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
       status: false,
       permission: 0,
       fixed:false,
-      folders: [        
-        {color:"#005694", name: "Cliente", id_enterprise:enterprise.id, isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
-        {color:"#C7A03C", name: "Favoritos", id_enterprise:enterprise.id, isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3} 
-      ],
-      enterprises:[enterprise]
+      enterprises:[
+        enterprise
+      ]
     }
 
     childToParentCreate({...data, checked: false})
@@ -234,7 +243,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
         <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
           <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
             Empresa
-            <input maxLength={30} required onChange={(Text) => setEnterprise({name:Text.target.value, id:enterprise.id})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Nome da empresa'/>
+            <input maxLength={30} required onChange={(Text) => setEnterprise({...enterprise, name:Text.target.value})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Nome da empresa'/>
           </label>
 
           <label className='flex flex-col w-[50%] dark:text-white'>

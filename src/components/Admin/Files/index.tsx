@@ -8,7 +8,7 @@ import {db} from '../../../../firebase'
 import { doc, getDoc} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';
 import UploadFile from '../../Clients&Admin/Files/uploadFile'
-import Modals from '../../Clients&Admin/Modals'
+import ModalDelete from '../../../Utils/Other/ModalDelete'
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import folder from '../../../../public/icons/folder.svg'
@@ -33,7 +33,7 @@ function Files(){
   const [files, setFiles] = useState<Files[]>([])
   const [selectFiles, setSelectFiles] = useState<Files[]>([])
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
-  const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:0, maxPages:0})
+  const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:1, maxPages:1})
   const [menu, setMenu] = useState<boolean>(true)
   const [textSearch, setTextSearch] = useState<string>('')
   const params:any = useSearchParams()
@@ -41,7 +41,7 @@ function Files(){
   const id:string  = params.get("id")
   const id_enterprise:string  = params.get("id_enterprise")
   const folderName:string  = params.get("folder")
-  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], folders:[]})
+  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[]})
   const toastDownload = {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."}
 
   // <--------------------------------- GetFiles --------------------------------->  
@@ -84,8 +84,7 @@ function Files(){
       id_company:docSnap.data()?.id_company,
       cnpj:docSnap.data()?.cnpj,
       nameImage:docSnap.data()?.nameImage,
-      phone:docSnap.data()?.phone,
-      folders:docSnap.data()?.folders
+      phone:docSnap.data()?.phone
     })
   }
 
@@ -146,10 +145,15 @@ function Files(){
   }
 
   function childToParentDownload(files){
+    const maxPages = Math.ceil(files.length / 10)
+    var page = dataPages.page
+    if(maxPages < dataPages.page){
+      page = maxPages
+    }
     setFiles([...files])
     setMenu(true)
     setSelectFiles([])
-    setDataPages({...dataPages, maxPages:Math.ceil(files.length / 10)})
+    setDataPages({page:page, maxPages:maxPages})
   }
 
   return (
@@ -198,7 +202,7 @@ function Files(){
               </button>
 
               {trash ? 
-                <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles}  selectFiles={selectFiles} folders={user.folders} />
+                <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles}  selectFiles={selectFiles}/>
               : 
                 folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile files={files} childToParentDownload={childToParentDownload} folderName={folderName}  permission={dataUser?.permission} id={id} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
               }
@@ -208,7 +212,7 @@ function Files(){
           <TableFiles  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
         </div>
       </div>
-      {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}
+      {modal.status ? <ModalDelete confirmation={false} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}
     </div>
   )
 }
