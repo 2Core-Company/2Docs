@@ -30,27 +30,26 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       }
       const page = window.location.pathname
       const idTokenResult = await auth.currentUser?.getIdTokenResult()
-
-      await GetUser(user)
+      await GetUser(user, idTokenResult?.claims.permission)
       const plan = await SearchCostumer({id_company:user.displayName})
       await GetDataCompanyUser({id_company:user.displayName, plan:plan})
 
       setOnLoad(true)
       setLoading(false)
       
-      if(idTokenResult?.claims.admin && page.includes('/Dashboard/Clientes')){
+      if(idTokenResult?.claims.permission > 0 && page.includes('/Dashboard/Clientes')){
         return router.replace("/Dashboard/Admin")
       }
 
-      if(!idTokenResult?.claims.admin && page.includes('/Dashboard/Admin')){
+      if(idTokenResult?.claims.permission === 0 && page.includes('/Dashboard/Admin')){
         router.replace("/Dashboard/Clientes")
       }
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[url])
 
   //Pegando credenciais dos usuários
-  async function GetUser(user:User){
+  async function GetUser(user, permission){
     try{
       if(dataUser.id_company === '' && user.displayName){
         const docRef = doc(db, "companies", user.displayName, "clients", user.uid);
@@ -63,12 +62,10 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
           id_company:docSnap.data()?.id_company, 
           name:docSnap.data()?.name, 
           password:docSnap.data()?.password,     
-          permission:docSnap.data()?.permission, 
+          permission:permission, 
           phone:docSnap.data()?.phone, 
           enterprises:docSnap.data()?.enterprises,
-          folders:docSnap.data()?.folders
         }
-
         setDataUser(allDataUser)
       }
     }catch(e){

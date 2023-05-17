@@ -12,7 +12,7 @@ interface Props {
 }
 
 function TableEvents({eventsThatDay, events, admin, setEventsThatDay}:Props) {
-
+  console.log(eventsThatDay)
   const [eventSelected, setEventSelected] = useState<Event>()
   return (
     <div className='bg-black/20 backdrop-blur-sm absolute z-50 w-screen h-screen flex flex-col justify-center items-center text-left'>

@@ -70,7 +70,7 @@ function ShareFile() {
           <p className='text-black text-ellipsis w-full overflow-hidden'><span className='font-[600]'>Nome: </span>{nameFile}</p>
           <p className='text-black text-ellipsis w-full overflow-hidden'><span className='font-[600]'>Compartilhado por: </span>{nameCompany}</p>
           <p className='text-black text-ellipsis w-full overflow-hidden'><span className='font-[600]'>Data de Upload: </span> {FormatDate(created_date)}</p>
-          <Image src={`/icons/${'images'}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={70} height={0} className="self-center mt-[15px] max-sm:w-[60px] max-lsm:w-[50px]"/>
+          <Image src={`/icons/${file?.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={70} height={0} className="self-center mt-[15px] max-sm:w-[60px] max-lsm:w-[50px]"/>
           <div className='flex justify-center mt-[15px]'>
             <button onClick={() =>  DownloadFile()} className='bg-[rgba(3,238,46,0.20)] px-[10px] max-lsm:px-[8px] py-[5px] max-lsm:py-[3px] max-lsm:text-[16px] rounded-[8px] hover:scale-105 text-black border-[1px] border-greenV'>Download</button>
           </div>

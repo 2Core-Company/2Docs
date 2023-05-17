@@ -19,12 +19,12 @@ import { Files } from '../../../types/files';
 function UploadFiles({files, folderName, menu, permission, id, id_company,  from, id_enterprise, childToParentDownload}: Props) {
 
   async function UploadFile(files){
-    const docsRef = ref(storage, `${id_company}/files/${id + "/"}`);
+    const docsRef = ref(storage, `${id_company}/files/${id}/${id_enterprise}/${folderName}`);
     const allFiles:any = await Promise.all(files.files)
     const allFilesFilter:any = []
     var promises:any = []
 
-    allFiles.map(async (file) => {
+    allFiles.map((file) => {
       if (file.size > 30000000) {
         files.value = null;
         toast.error(`Erro ao upar o arquivo: ${file.name}, ele excede o limite de 30mb`);
@@ -84,7 +84,9 @@ function UploadFiles({files, folderName, menu, permission, id, id_company,  from
         folder: folderName,
         from: from,
         favorite:false,
-        viewedDate:''
+        viewedDate:'', 
+        id_event:'',
+        message:''
       }
       const docRef  = doc(collectionRef, result[i].metadata.name);
       promises.push(setDoc(docRef, data))

@@ -6,12 +6,13 @@ import { DataUser } from '../../../types/users';
 import RenameIcon from '../../../../public/icons/rename.svg'
 import Image from 'next/image'
 import Rename from './rename';
-import Modals from '../../Clients&Admin/Modals'
+import ModalDelete from '../../../Utils/Other/ModalDelete';
 import { toast } from 'react-toastify';
 import { db, storage } from '../../../../firebase'
 import { doc, updateDoc, query, collection, getDocs, where, writeBatch} from "firebase/firestore";
 import { loadingContext } from '../../../app/Context/contextLoading';
 import { deleteObject, ref } from 'firebase/storage';
+import axios from 'axios';
  
 interface Props{
   user:DataUser,
@@ -22,32 +23,29 @@ interface Props{
 
 function Options({user, index, setUser, setEnterprise}: Props){
   const [rename, setRename] = useState(false)
-  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:""})
+  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
   const {setLoading} = useContext(loadingContext)
   const batch = writeBatch(db);
 
   //Confirmação de deletar empresa
   function ConfirmationDeleteEmpresa(){
-    setModal({...modal, status:true, message: "Tem certeza que deseja excluir a empresa:", subMessage1: "Você excluirá todos arquivos dela.", subMessage2:"Será permanente.", user:user.enterprises[index].name})
+    setModal({...modal, status:true, message: `Tem certeza que deseja excluir a empresa: ${user.enterprises[index].name}?`, subMessage1: "Você excluirá todos arquivos dela.", subMessage2:"Será permanente."})
   }
 
   //Resposta do modal
   const childModal = () => {
     setLoading(true)
-    setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:""})
+    setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
     toast.promise(DeletEnterprise(),{pending:"Deletando empresa...", success:"Empresa deletada com sucesso."}, {position: "bottom-right"})
   }
 
   //Deletando pastas e empresa
   async function DeletEnterprise(){
-    const allFolders = [...user.folders]
     const enterprises = [...user.enterprises]
-    const folders = allFolders.filter(folder => folder.id_enterprise != user.enterprises[index].id || folder.name === 'Cliente' || folder.name === 'Favoritos')
     enterprises.splice(index, 1)
     try{
       await updateDoc(doc(db, 'companies', user.id_company, "clients", user.id), {
         enterprises: enterprises,
-        folders:folders
       })
       setEnterprise(enterprises[0])
       setUser({...user, enterprises:enterprises})
@@ -62,19 +60,18 @@ function Options({user, index, setUser, setEnterprise}: Props){
 
   //Puxando arquivos para deletar daquela empresa
   async function DeletFiles(){
-    const dataFiles:any = []
-    const storageRef = ref(storage, `${user.id_company}/files/${user.id + "/"}`);
+    const domain:string = new URL(window.location.href).origin
     var q = query(collection(db, "files", user.id_company, user.id), where("id_user", "==", user.id), where("id_enterprise", "==", user.enterprises[index].id))
     try{
       const querySnapshot = await getDocs(q);
       const a = querySnapshot.forEach((file) => {
         const laRef = doc(db, "files", user.id_company, user.id, file.data().id_file);
         batch.delete(laRef)
-
-        var docRef = ref(storageRef, file.id);
-        dataFiles.push(deleteObject(docRef))
       }); 
-      await Promise.all([batch.commit(), dataFiles])
+      await Promise.all([
+        batch.commit(), 
+        axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${user.enterprises[index].id}`})
+      ])
 
       setLoading(false)
     } catch(e){
@@ -117,7 +114,7 @@ function Options({user, index, setUser, setEnterprise}: Props){
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
-      {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} user={modal.user} childModal={childModal}/> : <></>}
+      {modal.status ? <ModalDelete confirmation={true}  message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal} setModal={setModal}/> : <></>}
     </>
   );
 };

@@ -12,13 +12,13 @@ export interface Files{
     viewedDate:string
     type:string
     created_date:string | number
-    id_event?:string
+    id_event:string
     checked?:boolean
-    viwed?:boolean
-    from?:string
-    message?:string
+    viwed:boolean
+    from:string
+    message:string
     nameCompany?:string
-    downloaded?: boolean
+    downloaded: boolean
     type2?:string
   }
 

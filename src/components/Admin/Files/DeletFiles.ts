@@ -16,7 +16,7 @@ async function DeletFiles({files, selectFiles, childToParentDelet}:Props) {
     if(selectFiles.length > 0) {
       for await (const file of selectFiles){
         const ref1 = doc(db, 'files', file.id_company, file.id_user, file.id_file)
-        const desertRef = ref(storage, file.id_company + '/files/' + file.id_user + "/" + file.id_file);
+        const desertRef = ref(storage, `${file.id_company}/files/${file.id_user}/${file.id_enterprise}/${file.folder}/${file.id_file}`);
         promises.push(deleteObject(desertRef))
         batch.delete(ref1)
         if(files && childToParentDelet){

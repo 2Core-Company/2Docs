@@ -17,6 +17,7 @@ import ShareFile from './shareFile';
 import ViewFile from './viewFile';
 import Favorite from './Favorite';
 import Desfavorite from './Desfavorite';
+import { toast } from 'react-toastify';
 
 
 interface Props{
@@ -34,6 +35,8 @@ function OptionsFile({file, files, from,  index, trash, DownloadFile, Confirmati
   const [copyTo, setCopyTo] = useState(false)
   const [rename, setRename] = useState(false)
   const [viwedFile, setViwedFile] = useState<boolean>(false)
+  const toastFavorite = {pending:'Favoritando arquivo...', success:'Arquivo Favoritado com sucesso.', error:'Não foi possivel favoritar este arquivo.'}
+  const toastDesfavorite = {pending:'Desfavoritando arquivo...', success:'Arquivo Desfavoritado com sucesso.', error:'Não foi possivel desfavoritar este arquivo.'}
   const params:any = useSearchParams()
   const folderName:string = params.get("folder")
 
@@ -101,12 +104,12 @@ function OptionsFile({file, files, from,  index, trash, DownloadFile, Confirmati
           
           <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
             {file?.favorite ? 
-              <div onClick={() => Desfavorite({desfavoriteFile:file, files:files, childToParentDownload:childToParentDownload, folderName:folderName})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => toast.promise(Desfavorite({desfavoriteFile:file, files:files, childToParentDownload:childToParentDownload, folderName:folderName}),toastDesfavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={DesfavoriteIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Desfavoritar
               </div>
             :
-              <div onClick={() => Favorite({favoriteFile:file, files:files, childToParentDownload:childToParentDownload})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => toast.promise(Favorite({favoriteFile:file, files:files, childToParentDownload:childToParentDownload}), toastFavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={FavoriteIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Favoritar
               </div>

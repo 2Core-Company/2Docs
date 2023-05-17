@@ -9,9 +9,9 @@ import { Files } from '../../../types/files'
         childToParentDownload:Function
     }
 
-  function Favorite({favoriteFile, files, childToParentDownload}:Props) {                                                                       
+  async function Favorite({favoriteFile, files, childToParentDownload}:Props) {                                                                       
     try{
-        updateDoc(doc(db, 'files', favoriteFile.id_company, favoriteFile.id_user, favoriteFile.id_file), {
+        await updateDoc(doc(db, 'files', favoriteFile.id_company, favoriteFile.id_user, favoriteFile.id_file), {
             favorite: true
         })
         const index = files.findIndex(file => file.id_file == favoriteFile.id_file)

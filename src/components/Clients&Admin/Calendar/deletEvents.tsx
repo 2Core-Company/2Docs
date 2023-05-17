@@ -1,4 +1,4 @@
-import { deleteDoc, doc } from 'firebase/firestore'
+import { deleteDoc, doc, writeBatch } from 'firebase/firestore'
 import { deleteObject, ref } from 'firebase/storage'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
@@ -6,7 +6,7 @@ import { db, storage } from '../../../../firebase'
 import {  Files } from '../../../types/files'
 import { Event } from '../../../types/event'
 import { Modal } from '../../../types/others'
-import Modals from '../Modals'
+import ModalDelete from '../../../Utils/Other/ModalDelete'
 
 
 interface Props{
@@ -22,7 +22,7 @@ interface Props{
 function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, setEventSelected,  setEventsThatDay}:Props) {
     const messageToast = {pending:'Deletando evento....', success:'Evento deletado com sucesso.', error:'Não foi possivel deletar este evento.'}
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2:""})
-    const messageModal = {status: true, message: "Tem certeza que deseja excluir este evento?", subMessage1: "Sera deletado os arquivos armazenados nele.", subMessage2: "Não sera possivel recupera-los."}
+    const messageModal = {status: true, message: "Tem certeza que deseja excluir este evento?", subMessage1: "Todos os arquivos vinculados a este evento serão apagados.", subMessage2: "Não sera possivel recupera-los."}
 
     const childModal = () => {
         setModal({status: false, message: "", subMessage1: ""})
@@ -49,10 +49,12 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
 
     async function DeletFilesStorage() {
         try{
-            for(let i = 0; i < files.length; i++){
-                const desertRef = ref(storage, files[i].id_company + '/files/' + files[i].id_user + "/" + files[i].id_file);
-                const result = await deleteObject(desertRef)
+            const promises:any = []
+            for(const file of files){
+                const desertRef = ref(storage, file.path);
+                promises.push(deleteObject(desertRef))
             }
+            await Promise.all(promises)
         }catch(e){
             console.log(e)
             throw Error
@@ -60,10 +62,12 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
     }
 
     async function DeletFilesFireStore() {
+        const batch = writeBatch(db);
         try{
             for await(const file of files){
-                const response = await deleteDoc(doc(db, 'files', file.id_company, "documents", file.id_file))
+                batch.delete(doc(db, 'files', file.id_company, file.id_user, file.id_file))
             }
+            await batch.commit()
         }catch(e){
             console.log(e)
             throw Error
@@ -72,7 +76,7 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
     
   return (
     <>
-        {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal}/> : <></>}
+        {modal.status ? <ModalDelete confirmation={true} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal}/> : <></>}
         <div className='border-red border-[2px] self-center rounded-[4px] mt-[15px] hover:scale-105'>
             <button onClick={() => setModal(messageModal) } className="cursor-pointer text-red bg-red/20  self-center text-[20px] max-lsm:text-[18px] px-[8px] py-[2]">Deletar</button>
         </div>

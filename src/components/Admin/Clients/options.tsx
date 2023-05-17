@@ -11,7 +11,7 @@ import ModalEvent from '../../Clients&Admin/Calendar/modalEvent'
 import Calendar from '../../../../public/icons/calendar.svg'
 import Image from 'next/image';
 import DeletUser from './deletUser';
-import ComponentModal from '../../Clients&Admin/Modals';
+import ModalDelete from '../../../Utils/Other/ModalDelete'
 
 interface Props{
   idUser:string
@@ -29,23 +29,23 @@ function Options({idUser, user, users, windowsAction, setWindowsAction, setUserE
   const messageFix = {pending:"Fixando usuário...", success:"Usuário fixado com sucesso."}
   const messageUnFix = {pending:"Desfixando usuário...", success:"Usuário fixado com sucesso."}
   const [modalEvent, setModalEvent] = useState<boolean>(false)
-  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
+  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
   
 
     //Confirmação de deletar usuário
     function ConfirmationDeleteUser(){
-      setModal({...modal, status:true, message: `Tem certeza que deseja excluir o usuário: ${user.name}`, subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user: user.name + "?"})
+      setModal({...modal, status:true, message: `Tem certeza que deseja excluir o usuário: ${user.name}`, subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também."})
     }
   
     //Resposta da confirmação
     const childModal = () => {
       toast.promise(DeletUser({user:user, users:users, ResetConfig:ResetConfig}), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
-      setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
+      setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
     }
 
   return (
     <>
-      {modal.status ? <ComponentModal setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} user={modal.user} childModal={childModal}/> : <></>}
+      {modal.status ? <ModalDelete confirmation={true} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal}/> : <></>}
       {modalEvent ? <ModalEvent id={user.id} email={user.email} enterprises={user.enterprises} userName={user.name} setModalEvent={setModalEvent}/> : <></>}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild className='flex justify-center items-center'>
