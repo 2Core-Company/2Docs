@@ -16,7 +16,7 @@ import { DataUser } from '../../../types/users'
 
 function Signin(){
   const contextLoading = useContext(loadingContext)
-  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], folders:[]})
+  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[]})
   const [loading , setLoading] = useState<boolean>(true)
   const [eye, setEye] = useState<boolean>(false)
   const router = useRouter()

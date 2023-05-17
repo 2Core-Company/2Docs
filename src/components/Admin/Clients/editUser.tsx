@@ -117,7 +117,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
       photo_url: data.photo_url,
       nameImage: data.nameImage,
       status: user.status,
-      created_date: user.created_date,
+      created_date: user.created_date
     }
 
     await (updateDoc(doc(db, 'companies', contextUser.id_company, "clients", user.id), userAfterEdit))
