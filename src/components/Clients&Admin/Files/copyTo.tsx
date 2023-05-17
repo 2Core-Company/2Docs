@@ -55,7 +55,7 @@ function  CopyTo({file, setCopyTo}: Props) {
     setCopyTo(false)
     try{
       const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
-      const docsRef = ref(storage, `${file.id_company}/files/${file.id_user}/${file.id_enterprise}/Cliente/${file.id_file}`);
+      const docsRef = ref(storage, `${file.id_company}/files/${file.id_user}/${file.id_enterprise}/${folderName}/${referencesFile}`);
       const upload = await uploadBytes(docsRef, fileCopy)
       await UploadFilestore({path:upload.metadata.fullPath, nameFile:referencesFile, name:file.name})
     }catch(e){
