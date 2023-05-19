@@ -18,10 +18,10 @@ function  Rename({file, files, setRename, childToParentDownload}:Props) {
 
   async function ChangeName(){
     try{
-      await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
+      await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id), {
         name: nameFile
       })
-      const index = files.findIndex(file => file.id_file == file.id_file)
+      const index = files.findIndex(file => file.id == file.id)
       files[index].name = nameFile
       setRename(false)
       childToParentDownload(files)

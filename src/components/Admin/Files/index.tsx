@@ -22,7 +22,7 @@ import { DataUser } from '../../../types/users'
 import { Modal } from '../../../types/others';
 import { Files } from '../../../types/files';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
-import { GetFilesToTrash, GetFilesToFavorites, GetFilesToNormal } from '../../../Utils/Firebase/GetFiles';
+import { GetFilesToTrash, GetFilesToFavorites, GetFilesAdmin } from '../../../Utils/Firebase/GetFiles';
 import { useRouter } from 'next/navigation';
 
 
@@ -38,10 +38,10 @@ function Files(){
   const [textSearch, setTextSearch] = useState<string>('')
   const params:any = useSearchParams()
   const trash:boolean = Boolean(params.get("trash"))
-  const id:string  = params.get("id")
+  const folderName:string  = params.get("folderName")
+  const id_user:string  = params.get("id_user")
   const id_enterprise:string  = params.get("id_enterprise")
-  const folderName:string  = params.get("folder")
-  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[]})
+  const id_folder:string  = params.get("id_folder")
   const toastDownload = {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possivel fazer o download."}
 
   // <--------------------------------- GetFiles --------------------------------->  
@@ -55,38 +55,16 @@ function Files(){
   
   async function GetFiles(){
     if(trash){
-      await GetFilesToTrash({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
-      GetUser()
+      await GetFilesToTrash({id_company:dataUser.id_company, id_user:id_user, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
     } else if(folderName === "Favoritos"){
-      await GetFilesToFavorites({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
+      await GetFilesToFavorites({id_company:dataUser.id_company, id_user:id_user, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
     } else {
-      await GetFilesToNormal({id_company:dataUser.id_company, id_user:id, id_enterprise:id_enterprise, folderName:folderName, setFiles:setFiles, setDataPages:setDataPages})
+      await GetFilesAdmin({id_company:dataUser.id_company, id_user:id_user, id_enterprise:id_enterprise, id_folder:id_folder, setFiles:setFiles, setDataPages:setDataPages})
     }
     setLoading(false)
   }
 
-  // <--------------------------------- GetUser --------------------------------->
-  async function GetUser(){
-    const docRef = doc(db, "companies", dataUser.id_company, "clients", id);
-    const docSnap = await getDoc(docRef);
-    setUser({
-      id:docSnap.data()?.id, 
-      name:docSnap.data()?.name,
-      email:docSnap.data()?.email,
-      password:docSnap.data()?.password,
-      permission:docSnap.data()?.permission,
-      enterprises:docSnap.data()?.enterprises,
-      photo_url:docSnap.data()?.photo_url,
-      status:docSnap.data()?.status, 
-      checked:false,
-      created_date:docSnap.data()?.created_date,
-      fixed:docSnap.data()?.fixed,
-      id_company:docSnap.data()?.id_company,
-      cnpj:docSnap.data()?.cnpj,
-      nameImage:docSnap.data()?.nameImage,
-      phone:docSnap.data()?.phone
-    })
-  }
+
 
 
   // <--------------------------------- Select Files --------------------------------->
@@ -141,7 +119,7 @@ function Files(){
     if(selectFiles.length === 0){
       throw toast.error("Selecione um arquivo para baixar.")
     } 
-    toast.promise(DownloadsFile({selectFiles:selectFiles, files:files, from:"admin", childToParentDownload:childToParentDownload, folderName: folderName}), toastDownload)
+    toast.promise(DownloadsFile({selectFiles:selectFiles, files:files, from:"admin", childToParentDownload:childToParentDownload, id_folder: id_folder}), toastDownload)
   }
 
   function childToParentDownload(files){
@@ -170,7 +148,7 @@ function Files(){
           </div>
 
           <Image src={folder} alt="Imagem de uma pasta"/> 
-            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id:id}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
+            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id_user:id_user}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
           <FileIcon className="dark:text-dsecondary text-secondary" height={21} width={21}/>
           <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{trash ? "Lixeira" : folderName}</p> 
         </div>
@@ -204,12 +182,12 @@ function Files(){
               {trash ? 
                 <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles}  selectFiles={selectFiles}/>
               : 
-                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile files={files} childToParentDownload={childToParentDownload} folderName={folderName}  permission={dataUser?.permission} id={id} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
+                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  permission={dataUser?.permission} id={id_user} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
               }
             </div>
           </div>
           {/*<-------------- Table of Files --------------> */}
-          <TableFiles  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
+          <TableFiles id_folder={id_folder}  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
         </div>
       </div>
       {modal.status ? <ModalDelete confirmation={false} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}

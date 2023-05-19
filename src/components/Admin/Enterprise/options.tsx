@@ -1,35 +1,36 @@
 import React, { useState, useContext } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { TrashIcon } from '@radix-ui/react-icons';
-import { Modal } from '../../../types/others'
+import { Enterprise, Modal } from '../../../types/others'
 import { DataUser } from '../../../types/users';
 import RenameIcon from '../../../../public/icons/rename.svg'
 import Image from 'next/image'
 import Rename from './rename';
 import ModalDelete from '../../../Utils/Other/ModalDelete';
 import { toast } from 'react-toastify';
-import { db, storage } from '../../../../firebase'
+import { db } from '../../../../firebase'
 import { doc, updateDoc, query, collection, getDocs, where, writeBatch} from "firebase/firestore";
 import { loadingContext } from '../../../app/Context/contextLoading';
-import { deleteObject, ref } from 'firebase/storage';
 import axios from 'axios';
  
 interface Props{
-  user:DataUser,
   index:number
+  user:DataUser,
+  enterprise:Enterprise
   setUser:Function
   setEnterprise: Function
 }
 
-function Options({user, index, setUser, setEnterprise}: Props){
+function Options({index, user, enterprise, setUser, setEnterprise}: Props){
   const [rename, setRename] = useState(false)
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
   const {setLoading} = useContext(loadingContext)
   const batch = writeBatch(db);
 
+
   //Confirmação de deletar empresa
   function ConfirmationDeleteEmpresa(){
-    setModal({...modal, status:true, message: `Tem certeza que deseja excluir a empresa: ${user.enterprises[index].name}?`, subMessage1: "Você excluirá todos arquivos dela.", subMessage2:"Será permanente."})
+    setModal({...modal, status:true, message: `Tem certeza que deseja excluir a empresa: ${enterprise.name}?`, subMessage1: "Você excluirá todos arquivos dela.", subMessage2:"Será permanente."})
   }
 
   //Resposta do modal
@@ -42,15 +43,13 @@ function Options({user, index, setUser, setEnterprise}: Props){
   //Deletando pastas e empresa
   async function DeletEnterprise(){
     const enterprises = [...user.enterprises]
-    enterprises.splice(index, 1)
+    const entrepisesUpdated = enterprises.filter((data) => enterprise.id != data.id)
     try{
       await updateDoc(doc(db, 'companies', user.id_company, "clients", user.id), {
-        enterprises: enterprises,
+        enterprises: entrepisesUpdated,
       })
-      setEnterprise(enterprises[0])
-      setUser({...user, enterprises:enterprises})
       setRename(false)
-      await Promise.all([DeletFiles(), ])
+      await DeletFiles(entrepisesUpdated)
     } catch(e) {
       console.log(e)
       setLoading(false)
@@ -59,19 +58,23 @@ function Options({user, index, setUser, setEnterprise}: Props){
   }
 
   //Puxando arquivos para deletar daquela empresa
-  async function DeletFiles(){
+  async function DeletFiles(entrepisesUpdated){
     const domain:string = new URL(window.location.href).origin
-    var q = query(collection(db, "files", user.id_company, user.id), where("id_user", "==", user.id), where("id_enterprise", "==", user.enterprises[index].id))
+    var q = query(collection(db, "files", user.id_company, user.id), where("id_enterprise", "==", enterprise.id))
     try{
       const querySnapshot = await getDocs(q);
       const a = querySnapshot.forEach((file) => {
-        const laRef = doc(db, "files", user.id_company, user.id, file.data().id_file);
+        const laRef = doc(db, "files", user.id_company, user.id, file.data().id);
         batch.delete(laRef)
       }); 
+      
       await Promise.all([
         batch.commit(), 
-        axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${user.enterprises[index].id}`})
+        axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}`})
       ])
+
+      setEnterprise(entrepisesUpdated[0])
+      setUser({...user, enterprises:entrepisesUpdated})
 
       setLoading(false)
     } catch(e){
@@ -84,7 +87,7 @@ function Options({user, index, setUser, setEnterprise}: Props){
 
   return (
     <>
-     {rename ? <Rename user={user} index={index} setUser={setUser} setRename={setRename}/> : <></>}
+     {rename ? <Rename user={user} index={1} setUser={setUser} setRename={setRename}/> : <></>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild className='flex justify-center items-center ml-[10px]'>

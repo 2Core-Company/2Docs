@@ -12,10 +12,10 @@ interface Props{
 
   async function Desfavorite({desfavoriteFile, files, childToParentDownload, folderName}: Props) {                                                                                   
     try{
-        await updateDoc(doc(db, 'files', desfavoriteFile.id_company, desfavoriteFile.id_user, desfavoriteFile.id_file), {
+        await updateDoc(doc(db, 'files', desfavoriteFile.id_company, desfavoriteFile.id_user, desfavoriteFile.id), {
             favorite: false
         })
-        const index = files.findIndex(file => file.id_file == desfavoriteFile.id_file)
+        const index = files.findIndex(file => file.id == desfavoriteFile.id)
         if(folderName === "Favoritos"){
             files.splice(index, 1);
         } else {

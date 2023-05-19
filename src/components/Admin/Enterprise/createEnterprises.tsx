@@ -22,9 +22,9 @@ function  CreateEnterprises({user, setUser, setCreateEnterprises}:Props) {
       name:nameEmprise, 
       id:uuidv4(),
       folders:[        
-        {color:"#005694", name: "Cliente", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
-        {color:"#C7A03C", name: "Favoritos", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
-        {color:"#9E9E9E", name: "Lixeira", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3} 
+        {color:"#005694", name: "Cliente", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3, docs:0, id:uuidv4()}, 
+        {color:"#C7A03C", name: "Favoritos", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3, docs:0, id:uuidv4()},
+        {color:"#9E9E9E", name: "Lixeira", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3, docs:0, id:uuidv4()} 
       ]
     })
     

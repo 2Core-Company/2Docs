@@ -15,10 +15,10 @@ async function DisableFiles({files, selectFiles, childToParentDelet}:Props) {
   const batch = writeBatch(db);
   try{
     for await (const file of selectFiles){
-      const laRef = doc(db, "files", file.id_company, file.id_user, file.id_file);
+      const laRef = doc(db, "files", file.id_company, file.id_user, file.id);
       batch.update(laRef, {trash:true})
 
-      const index:number = allFiles.findIndex(file => file.id_file === file.id_file)
+      const index:number = allFiles.findIndex(file => file.id === file.id)
       file.checked = false
       allFiles.splice(index, 1);
     } 

@@ -10,7 +10,7 @@ interface Props {
   setUsers: Function;
 }
 
-async function UnFix({ user, users, FilterFixed, setUsers }: Props) {
+async function UnFix({user, users, FilterFixed, setUsers }: Props) {
   try {
     await updateDoc(doc(db, "companies", user.id_company, "clients", user.id), {
       fixed: false,

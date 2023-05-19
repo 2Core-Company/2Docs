@@ -3,7 +3,6 @@ import { db } from '../../../../firebase'
 import { doc, updateDoc, writeBatch } from "firebase/firestore";  
 import { toast } from 'react-toastify'; 
 import { Files } from '../../../types/files'
-import { Folders } from '../../../types/folders';
 import React  from 'react'
 
 interface Props{
@@ -28,9 +27,9 @@ function EnableFiles({selectFiles, menu, files, setMenu, setFiles}:Props) {
     const batch = writeBatch(db);
     try{
       for await (const file of selectFiles){
-        const laRef1 = doc(db, "files", file.id_company, file.id_user, file.id_file);
+        const laRef1 = doc(db, "files", file.id_company, file.id_user, file.id);
         batch.update(laRef1, {trash: false})
-        const index = files.findIndex(file => file.id_file === file.id_file)
+        const index = files.findIndex(file => file.id === file.id)
         files.splice(index,1)
       } 
       await batch.commit();

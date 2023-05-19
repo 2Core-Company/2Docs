@@ -1,29 +1,23 @@
 export interface Files{
-    id_file:string
-    id_user:string
-    folder:string
-    trash:boolean
-    size:number
-    id_company:string
-    favorite:boolean
-    id_enterprise:string
-    name:string
-    path:string
-    viewedDate:string
-    type:string
-    created_date:string | number
-    id_event:string
-    checked?:boolean
-    viwed:boolean
-    from:string
-    message:string
-    nameCompany?:string
-    downloaded: boolean
-    type2?:string
-  }
-
-  export interface OptionsFiles{
-    url?:string,
-    viwed?:boolean
-    downlowed?: boolean
-  }
+  id:string
+  id_user:string
+  id_company:string
+  id_enterprise:string
+  id_event:string
+  id_folder:string
+  size:number
+  name:string
+  path:string
+  viewedDate:string
+  type:string
+  from:string
+  message:string
+  created_date:string | number
+  checked?:boolean
+  viewed:boolean
+  trash:boolean
+  favorite:boolean
+  downloaded: boolean
+  nameCompany?:string
+  type2?:string
+}

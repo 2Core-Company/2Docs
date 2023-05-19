@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 
 
 interface Props{
+  id_folder:string
   file:Files, 
   files:Files[] 
   index:number
@@ -30,7 +31,7 @@ interface Props{
   ConfirmationDeleteFile:Function
   childToParentDownload:Function}
 
-function OptionsFile({file, files, from,  index, trash, DownloadFile, ConfirmationDeleteFile, childToParentDownload}: Props){
+function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile, ConfirmationDeleteFile, childToParentDownload}: Props){
   const [moveTo, setMoveTo] = useState(false)
   const [copyTo, setCopyTo] = useState(false)
   const [rename, setRename] = useState(false)
@@ -46,7 +47,7 @@ function OptionsFile({file, files, from,  index, trash, DownloadFile, Confirmati
       {moveTo ? <MoveTo file={file} files={files} setMoveTo={setMoveTo} childToParentDownload={childToParentDownload}/> : <> </>}
       {copyTo ? <CopyTo file={file} setCopyTo={setCopyTo} /> : <> </>}
       {rename ? <Rename file={file} files={files} setRename={setRename} childToParentDownload={childToParentDownload}/> : <> </>}
-      {viwedFile ? <ViewFile files={files} file={file} from={from} childToParentDownload={childToParentDownload} setViwedFile={setViwedFile}  /> : <></>}
+      {viwedFile ? <ViewFile id_folder={id_folder} files={files} file={file} from={from} childToParentDownload={childToParentDownload} setViwedFile={setViwedFile}  /> : <></>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -73,7 +74,7 @@ function OptionsFile({file, files, from,  index, trash, DownloadFile, Confirmati
               </div>
             </DropdownMenu.Item>
 
-          {trash  || folderName === "Favoritos" || file.from === "user"  ? <></>
+          {trash  || folderName === "Favoritos" || file.from === "user" || from === 'user' ? <></>
           :
             <>
               <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-dsecondary/30">

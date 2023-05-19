@@ -8,6 +8,7 @@ import * as Switch from "@radix-ui/react-switch";
 import { useTheme } from "../../../hooks/useTheme";
 import { Enterprise} from "../../../types/others";
 import { Folders } from "../../../types/folders";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   user: DataUser;
@@ -20,26 +21,26 @@ interface Props {
 
 function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolder}: Props) {
   const folders:Folders[] = enterprise.folders;
-  const [color, setColor] = useState<string>("#005694");
-  const [nameFolder, setNameFolder] = useState<string>("");
+  const [dataFolder, setDataFolder] = useState({color:'#005694', name:''})
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const toastCreateFolder = {pending: "Criando pasta.", success: "Pasta criada.",error: "Não foi possível criar esta pasta."}
   const { theme } = useTheme();
 
   //Função de criar pasta
   async function CreateFolder() {
-    const result = folders.findIndex((folder) => folder.name === nameFolder);
+    const result = folders.findIndex((folder) => folder.name === dataFolder.name);
     if (result === -1) {
-      if (color != undefined && nameFolder.length > 0) {
+      if (dataFolder.color != undefined && dataFolder.name.length > 0) {
         folders.push({
-          name: nameFolder,
-          color: color,
+          name: dataFolder.name,
+          color: dataFolder.color,
           isPrivate: isPrivate,
           singleDownload: false,
           onlyMonthDownload: false,
-          timeFile: 3 //Permanent
+          timeFile: 3, //Permanent
+          docs:0,
+          id:uuidv4()
         });
-
         const index = user.enterprises.findIndex((data) => enterprise.id === data.id)
         user.enterprises[index] = enterprise
 
@@ -63,7 +64,7 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
   return (
     <div className="w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black z-50">
       <div className="bg-primary dark:bg-dprimary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col">
-        <div className={`bg-[${color}] w-full h-[15px] rounded-t-[4px]`} />
+        <div className={`bg-[${dataFolder.color}] w-full h-[15px] rounded-t-[4px]`} />
         <div className="px-[10px] pl-[20px]">
           <p className="text-[26px] mt-[10px] font-[500] dark:text-white">
             Criar Nova Pasta
@@ -71,18 +72,18 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
           <p className="text-[20px] mt-[10px] font-[500] dark:text-white">
             Nome da Pasta:
           </p>
-          <input placeholder="Digite o nome da pasta" onChange={(text) => setNameFolder(text.target.value)} maxLength={30} className="w-[80%] bg-transparent border-black dark:border-white border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] px-[5px] py-[3px] outline-none"/>
+          <input placeholder="Digite o nome da pasta" onChange={(text) => setDataFolder({...dataFolder, name: text.target.value})} maxLength={30} className="w-[80%] bg-transparent border-black dark:border-white border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] px-[5px] py-[3px] outline-none"/>
           <p className="text-[20px] mt-[15px] font-[500] dark:text-white">
             Cor da pasta:
           </p>
           <div className="gap-[10px] flex">
-            <div onClick={() => setColor("#005694")} className={`w-[30px] h-[30px] bg-[#005694] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#005694" ? "border-[#0093FF] border-[3px]" : <></> }`}/>
-            <div onClick={() => setColor("#C7A03C")} className={`w-[30px] h-[30px] bg-[#C7A03C] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#C7A03C" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
-            <div onClick={() => setColor("#248B2E")} className={`w-[30px] h-[30px] bg-[#248B2E] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#248B2E" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
-            <div onClick={() => setColor("#BE0000")} className={`w-[30px] h-[30px] bg-[#BE0000] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#BE0000" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
-            <div onClick={() => setColor("#E135D0")} className={`w-[30px] h-[30px] bg-[#E135D0] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#E135D0" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
-            <div onClick={() => setColor("#000000")} className={`w-[30px] h-[30px] bg-[#000000] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#000000" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
-            <div onClick={() => setColor("#9E9E9E")} className={`w-[30px] h-[30px] bg-[#9E9E9E] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#9E9E9E" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setDataFolder({...dataFolder, color:"#005694"})} className={`w-[30px] h-[30px] bg-[#005694] rounded-[4px] hover:scale-105 cursor-pointer ${dataFolder.color === "#005694" ? "border-[#0093FF] border-[3px]" : <></> }`}/>
+            <div onClick={() => setDataFolder({...dataFolder, color:"#C7A03C"})} className={`w-[30px] h-[30px] bg-[#C7A03C] rounded-[4px] hover:scale-105 cursor-pointer ${dataFolder.color === "#C7A03C" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setDataFolder({...dataFolder, color:"#248B2E"})} className={`w-[30px] h-[30px] bg-[#248B2E] rounded-[4px] hover:scale-105 cursor-pointer ${dataFolder.color === "#248B2E" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setDataFolder({...dataFolder, color:"#BE0000"})} className={`w-[30px] h-[30px] bg-[#BE0000] rounded-[4px] hover:scale-105 cursor-pointer ${dataFolder.color === "#BE0000" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setDataFolder({...dataFolder, color:"#E135D0"})} className={`w-[30px] h-[30px] bg-[#E135D0] rounded-[4px] hover:scale-105 cursor-pointer ${dataFolder.color === "#E135D0" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setDataFolder({...dataFolder, color:"#000000"})} className={`w-[30px] h-[30px] bg-[#000000] rounded-[4px] hover:scale-105 cursor-pointer ${dataFolder.color === "#000000" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
+            <div onClick={() => setDataFolder({...dataFolder, color:"#9E9E9E"})} className={`w-[30px] h-[30px] bg-[#9E9E9E] rounded-[4px] hover:scale-105 cursor-pointer ${dataFolder.color === "#9E9E9E" ? "border-[#0093FF] border-[3px]" : <></>}`}/>
           </div>
           <div className="flex mt-5 items-center cursor-pointer">
             {theme == "light" ? (
@@ -127,3 +128,4 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
 }
 
 export default CreateFolder;
+

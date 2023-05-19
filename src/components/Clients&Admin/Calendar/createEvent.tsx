@@ -12,6 +12,7 @@ import { Enterprise } from '../../../types/others'
 import Arrow from '../../../../public/icons/arrow.svg'
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import { Event } from '../../../types/event';
 
 
 interface Props{
@@ -27,7 +28,7 @@ interface Props{
 function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, userName, setModalEvent}:Props) {
     const contextUser = useContext(userContext)
     const [changeEnterprise, setChangeEnterprise] = useState(false)
-    const [dataEvent, setDataEvent] = useState({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, enterprise: enterprises[0], userName:userName, viwed: false})
+    const [dataEvent, setDataEvent] = useState<Event>({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, enterprise: enterprises[0], userName:userName, viewed: false})
     const messageToast = {pending: 'Criando evento...', success:'Evento criado com sucesso.', error:'Não foi possivel criar este evento.'}
 
     async function CreatedEvent(){

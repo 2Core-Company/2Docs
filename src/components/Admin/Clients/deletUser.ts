@@ -33,7 +33,6 @@ async function DeletUser({user, users, ResetConfig}:Props) {
     }catch(e){
       console.log(e)
     }
-
   }
 
   //Deletando a photo de perfil do usuário

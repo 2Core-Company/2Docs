@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { db, storage } from '../../../../firebase'
-import { doc, updateDoc } from "firebase/firestore";  
+import { doc, getDoc, updateDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { getDownloadURL, ref } from 'firebase/storage';
+import { Folders } from '../../../types/folders';
+import { GetFolders } from '../../../Utils/folders/getFolders';
 
   interface Props{
+    id_folder:string
     file:Files
     files:Files[],
     from:string,
@@ -13,7 +16,7 @@ import { getDownloadURL, ref } from 'firebase/storage';
     childToParentDownload:Function
   }
 
-  function ViewFile({file, files, from, setViwedFile, childToParentDownload}:Props) {
+  function ViewFile({id_folder, file, files, from, setViwedFile, childToParentDownload}:Props) {
     const[url, setUrl] = useState('')
     useEffect(() => {
       
@@ -28,26 +31,30 @@ import { getDownloadURL, ref } from 'firebase/storage';
     }
 
     async function UpdateFireStore(){
+      const folders = await GetFolders({id_company:file.id_company, id_enterprise:file.id_enterprise, id_user:file.id_user})
+      let folder:Folders = folders.find((folder) => folder.id === id_folder)
+      let folderCliente = folders.find((folder) => folder.name === "Cliente")
+
       try{
         let viewedDate = new Date().toString();
 
-        if(from === "user" && file.folder != "Cliente" && file.viwed === false){
-          updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
-            viwed: true,
+        if(from === "user" && file.id_folder != folderCliente.id && file.viewed === false){
+          updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id), {
+            viewed: true,
             viewedDate: viewedDate
           })
-          const index = files.findIndex(file => file.id_file == file.id_file)
+          const index = files.findIndex((data) => data.id == file.id)
 
-          files[index].viwed = true
+          files[index].viewed = true
           files[index].viewedDate = viewedDate;
-        } else if(from === "admin" && file.folder == "Cliente" && file.viwed === false){
-            updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
-            viwed: true,
+        } else if(from === "admin" && file.id_folder == folderCliente.id && file.viewed === false){
+            updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id), {
+            viewed: true,
             viewedDate: viewedDate
           })
 
-          const index = files.findIndex(file => file.id_file == file.id_file)
-          files[index].viwed = true
+          const index = files.findIndex((data) => data.id == file.id)
+          files[index].viewed = true
           files[index].viewedDate = viewedDate;
         }
         childToParentDownload(files)

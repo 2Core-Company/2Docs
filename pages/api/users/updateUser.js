@@ -2,7 +2,7 @@ import { getAuth } from '../sdkFirebase'
 
 export default async function updateUser(req, res) {
     const user = await getAuth().getUser(req.body.uid)
-    if (user.customClaims.admin) {
+    if (user.customClaims.permission > 0) {
       try {
         const response = await getAuth()
         .updateUser(req.body.userId, {

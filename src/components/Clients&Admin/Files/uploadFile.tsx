@@ -3,23 +3,27 @@ import { ref,  uploadBytes } from "firebase/storage";
 import { collection, doc, setDoc } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files';
+import { usePathname } from 'next/navigation';
+
 
   interface Props{
-    files:Files[]
+    id_enterprise:string
+    id_company:string
+    id_folder:string
     folderName:string
     menu:boolean
     permission: number
     id:string
-    id_company:string
     from:string
-    id_enterprise:string
+    files:Files[]
     childToParentDownload:Function
   }
 
-function UploadFiles({files, folderName, menu, permission, id, id_company,  from, id_enterprise, childToParentDownload}: Props) {
+function UploadFiles({folderName, files, id_folder, menu, permission, id, id_company,  from, id_enterprise, childToParentDownload}: Props) {
+  const path = usePathname()
 
   async function UploadFile(files){
-    const docsRef = ref(storage, `${id_company}/files/${id}/${id_enterprise}/${folderName}`);
+    const docsRef = ref(storage, `${id_company}/files/${id}/${id_enterprise}/${id_folder}`);
     const allFiles:any = await Promise.all(files.files)
     const allFilesFilter:any = []
     var promises:any = []
@@ -70,7 +74,7 @@ function UploadFiles({files, folderName, menu, permission, id, id_company,  from
 
       const data:Files = {
         id_user: id,
-        id_file: result[i].metadata.name,
+        id: result[i].metadata.name,
         id_company: id_company,
         id_enterprise: id_enterprise,
         path: result[i].metadata.fullPath,
@@ -79,9 +83,9 @@ function UploadFiles({files, folderName, menu, permission, id, id_company,  from
         created_date: date,
         type:type,
         trash: false,
-        viwed: false,
+        viewed: false,
         downloaded: false,
-        folder: folderName,
+        id_folder: id_folder,
         from: from,
         favorite:false,
         viewedDate:'', 
@@ -109,17 +113,20 @@ function UploadFiles({files, folderName, menu, permission, id, id_company,  from
 
   return(
     <>
-      {permission > 0 ? (
-        <label className={`${folderName === "Cliente" &&  permission > 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
+      {permission > 0 && folderName != 'Cliente' && folderName != 'Favoritos' ? (
+        <label className={`bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
           <p>+ Upload</p>
           <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
         </label>
-        ) : (
-        <label className={`${folderName !== "Cliente" &&  permission === 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`} >
-          <p>+ Upload</p>
-          <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
-        </label>
-        )
+      ) : 
+        permission === 0 && folderName === 'Cliente' ?
+        (
+          <label className={`${path === "Dashboard/Clientes/Cliente" &&  permission === 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`} >
+            <p>+ Upload</p>
+            <input onChange={ (e) => toast.promise(UploadFile(e.target) ,{pending:"Armazenando arquivos...", success:"Arquivos armazenados.", error:"Não foi possivel armazenar os arquivos"})} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
+          </label>
+        ) 
+        : <></>
       }
     </>
   )

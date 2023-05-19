@@ -9,7 +9,6 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Files } from '../../../types/files'
 import { Enterprise } from '../../../types/others'; 
 import Enterprises from '../../Clients&Admin/Enterprise';
-import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
 
   function ComponentFolder(){
     const {dataUser, setDataUser} = useContext(userContext)
@@ -20,17 +19,11 @@ import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
     
     useEffect(() =>{
       if(dataUser != undefined){
-        var enterprise_id
         setEnterprise(dataUser.enterprises[0])
-        enterprise_id = dataUser.enterprises[0].id
-        GetFiles(enterprise_id)
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[dataUser])
 
-    async function GetFiles(enterprise_id){
-      GetFilesOrderByDate({id_company:dataUser.id_company,  id_user:dataUser.id, id_enterprise:enterprise_id, from:'admin', setRecentsFiles:setRecentsFiles});
-    }
 
     return(
       <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
@@ -46,12 +39,12 @@ import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
 
             <div className='flex flex-wrap mt-[30px]'>
               {recentFiles.map((file) =>{
-                let index = enterprise.folders.findIndex((folder) => folder.name == file.folder)
+                let index = enterprise.folders.findIndex((folder) => folder.id == file.id_folder)
 
                 if(file?.id_enterprise === enterprise.id && enterprise.folders[index]?.isPrivate === false){
                   return (
-                    <div key={file.id_file} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                      <button onClick={() => DownloadsFile({selectFiles:[file], files:files, from:"user", folderName: file.folder})}>
+                    <div key={file.id} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
+                      <button onClick={() => DownloadsFile({selectFiles:[file], files:files, from:"user", id_folder: file.id_folder})}>
                         <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                       </button>
                       <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>
@@ -76,10 +69,12 @@ import { GetFilesOrderByDate } from '../../../Utils/Firebase/GetFiles';
                 enterprise?.folders
                 .filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
                 .map((folder) =>{
-                if(folder.isPrivate === false || folder.name === 'Lixeira'){
-                  const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === enterprise.id) : files.filter(file => file.folder === folder.name && file.trash === false && file.id_enterprise === enterprise.id)
+                  
+                if(folder.name === 'Lixeira'){return}
+                if(folder.isPrivate === false){
+                  const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === enterprise.id) : files.filter(file => file.id_folder === folder.id && file.trash === false && file.id_enterprise === enterprise.id)
                 return (
-                  <Link href={{pathname: "Dashboard/Clientes/Arquivos", query:{folder:folder.name, id_enterprise:enterprise.id}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
+                  <Link href={{pathname: "Dashboard/Clientes/Arquivos", query:{folder:folder.name, id_folder:folder.id, id_enterprise:enterprise.id}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
                     <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>
                       <p className='font-500 text-[18px] w-[25px] h-[25px] bg-secondary dark:bg-dsecondary rounded-full absolute text-center text-[#fff] right-[-10px]'>{qtdFiles.length}</p>
                       <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none" xmlns="http://www.w3.org/2000/svg">

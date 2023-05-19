@@ -14,21 +14,18 @@ import ModalDelete from '../../../Utils/Other/ModalDelete'
 import DeletFiles from '../../Admin/Files/DeletFiles';
 import { Files } from '../../../types/files'
 import { Modal } from '../../../types/others'
-import { Folders } from '../../../types/folders'
-import { where, collection, query, getDocs, getDoc, doc, updateDoc } from "firebase/firestore"; 
-import {db} from '../../../../firebase'
 import { userContext } from '../../../app/Context/contextUser'
-import { loadingContext } from '../../../app/Context/contextLoading';
+import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/GetFiles';
 
 function Files(){
   const {dataUser} = useContext(userContext)
-  const {setLoading} = useContext(loadingContext)
   const [files, setFiles] = useState<Files[]>([])
   const [selectFiles, setSelectFiles] = useState<Files[]>([])
   const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:0, maxPages:0})
   const [menu, setMenu] = useState<boolean>(true)
   const params:any = useSearchParams()
   const folderName:string = params.get("folder")
+  const id_folder: string = params.get("id_folder")
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""})
   const [indexFile, setIndexFile] = useState<number>(0)
   const id_enterprise:string  = params.get("id_enterprise")
@@ -38,10 +35,13 @@ function Files(){
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
-    setLoading(true)
     if(dataUser != undefined){
       verifyFolder();
-      GetFiles();
+      if(folderName === "Favoritos"){
+        GetFilesToFavorites({id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise:id_enterprise, setFiles, setDataPages})
+      } else {
+        GetFilesClient({id_user:dataUser.id, id_company:dataUser.id_company, id_enterprise:id_enterprise, id_folder:id_folder, setFiles, setDataPages})
+      } 
     }    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[dataUser])
@@ -55,90 +55,7 @@ function Files(){
     }
   }
 
-  async function GetFiles(){
-    var getFiles:Files[] = []
-    var q
-    if(folderName === "Favoritos"){
-      q = query(collection(db, "files", dataUser.id_company, dataUser.id), where("id_user", "==",  dataUser.id), where("id_enterprise", "==", id_enterprise), where("favorite", "==", true), where("trash", "==", false));
-    } else {
-      q = query(collection(db, "files", dataUser.id_company, dataUser.id), where("id_user", "==",  dataUser.id), where("id_enterprise", "==", id_enterprise), where("folder", "==", folderName));
-    }
 
-    const docRef = doc(db, "companies", dataUser.id_company, "clients", dataUser.id);
-    const docSnap = await getDoc(docRef);
-    let enterprise = docSnap.data()?.enterprises.find((data) => data.id === id_enterprise)
-    let folder: Folders[] = enterprise.folders.filter((folder) => folder.name == folderName);
-
-    const querySnapshot: any = await getDocs(q);
-
-    try {
-      querySnapshot.forEach((document) => {
-        let file: Files = document.data({
-          id_file:document.data()?.id_file,
-          id_user:document.data()?.id_user,
-          folder:document.data()?.folder,
-          trash:document.data()?.trash,
-          size:document.data()?.size,
-          id_company:document.data()?.id_company,
-          favorite:document.data()?.favorite,
-          id_enterprise:document.data()?.enterprises,
-          name:document.data()?.name,
-          url:document.data()?.url,
-          viewedDate:document.data()?.viewedDate,
-          type:document.data()?.type
-        });
-        let timeDiff = Date.now() - Date.parse(file.created_date.toString());
-
-        switch(folder[0].timeFile) {
-          case 3:
-            getFiles.push(file);
-            break;
-          case 2:
-            if(timeDiff > 2592000000) {
-              updateDoc(doc(db, 'files', dataUser.id_company, file.id_user, file.id_file), {
-                ...file,
-                trash: true
-              })
-            } else {
-              getFiles.push(file);
-            }
-            break;
-          case 1:
-            if(timeDiff > 604800000) {
-              updateDoc(doc(db, 'files', dataUser.id_company, file.id_user, file.id_file), {
-                ...file,
-                trash: true
-              })
-            } else {
-              getFiles.push(file);
-            }
-            break;
-          case 0:
-            if(timeDiff > 86400000) {
-              updateDoc(doc(db, 'files', dataUser.id_company, file.id_user, file.id_file), {
-                ...file,
-                trash: true
-              })
-            } else {
-              getFiles.push(file);
-            }
-            break;
-          default:
-            throw "A configuração de algum arquivo foi corrompida! Reinicie a página."
-        }
-      });
-    } catch(e) {
-      toast.error("Erro: " + e)
-    }
-
-    for(var i = 0; i < getFiles.length; i++){
-      getFiles[i].checked = false;
-    }
-
-    setDataPages({page:1, maxPages:Math.ceil(getFiles.length / 10)});
-    setFiles(getFiles);
-    setLoading(false);
-  }
 
   // <--------------------------------- Select File --------------------------------->
   async function SelectFile(index:number){
@@ -179,7 +96,7 @@ function Files(){
 
   function DowloadFiles(){    
     if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
-    toast.promise(DownloadsFile({selectFiles:selectFiles, files:files, from:"user", childToParentDownload:childToParentDownload, folderName: folderName}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possível fazer o download."})
+    toast.promise(DownloadsFile({selectFiles:selectFiles, files:files, from:"user", childToParentDownload:childToParentDownload, id_folder: id_folder}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possível fazer o download."})
   }
 
 
@@ -207,11 +124,11 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
                 <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
-                <UploadFile files={files} childToParentDownload={childToParentDownload}  id_enterprise={id_enterprise} folderName={folderName}  permission={dataUser?.permission} id={dataUser?.id} id_company={dataUser?.id_company} menu={menu} from={"user"}/>
+                <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  id_enterprise={id_enterprise}  permission={dataUser?.permission} id={dataUser?.id} id_company={dataUser?.id_company} menu={menu} from={"user"}/>
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles dataPages={dataPages} files={files} ConfirmationDeleteFile={ConfirmationDeleteFile} childToParentDownload={childToParentDownload} SelectFile={SelectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch} setDataPages={setDataPages}/>
+            <TableFiles id_folder={id_folder} dataPages={dataPages} files={files} ConfirmationDeleteFile={ConfirmationDeleteFile} childToParentDownload={childToParentDownload} SelectFile={SelectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch} setDataPages={setDataPages}/>
           </div>
         </div>
         {modal.status ? <ModalDelete confirmation={false} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}

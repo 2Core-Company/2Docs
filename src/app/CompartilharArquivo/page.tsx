@@ -8,16 +8,18 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { FormatDate } from '../../Utils/Other/FormatDate'
 import { getDownloadURL, ref } from 'firebase/storage';
+import { Files } from '../../types/files';
+import { GetSpecificFile } from '../../Utils/Firebase/GetFiles'
 
 function ShareFile() {
   const params:any = useSearchParams()
   const id_company = params.get('ic')
   const id_file = params.get('if')
   const id_user = params.get('iu')
-  const [file, setFile] = React.useState<any>()
   const nameCompany = params.get('nc')
   const nameFile = params.get('n')
   const created_date = params.get('d')
+  const [file, setFile] = React.useState<Files | undefined>(undefined)
 
   useEffect(() => {
     GetFile()
@@ -25,23 +27,22 @@ function ShareFile() {
   },[])
   
   async function GetFile(){
-    const docRefFile = doc(db, "files", id_company, id_user, id_file);
-    const dataFile = await getDoc(docRefFile)
-    setFile(dataFile.data())
+    await GetSpecificFile({id_company, id_user, id_file, setFile})
   } 
 
   async function DownloadFile(){
     if(file){
-      if(file.viwed){
+      console.log(file)
+      if(file.viewed){
         return toast.error('Este arquivo ja foi baixado, por isso não sera possivel iniciar este download.')
       }  
       
       const url = await getDownloadURL(ref(storage, file.path))
       let blob = await fetch(url).then(r => r.blob());
-      file.urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
+      const urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)
       try{
         const element:any = document.createElement("a");
-        element.href = file.urlDownload
+        element.href = urlDownload
         element.download = file.name;
   
         document.body.appendChild(element);
@@ -50,17 +51,17 @@ function ShareFile() {
   
         element.parentNode.removeChild(element);
         
-        await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file), {
-          viwed: true
+        await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id), {
+          viewed: true
         })
-        setFile({...file, viwed:true})
+        setFile({...file, viewed:true})
       } catch(e) {
         console.log(e)
         toast.error("Não foi possivél baixar os arquivos.")
       }
     }
   }
-  
+
   return (
     <section className='flex flex-col items-center'>
       <div className='mt-[20px] w-[60%] max-2xl:w-[75%] max-xl:w-[80%] max-lg:w-[85%] max-sm:w-[90%] flex flex-col items-center'>
@@ -81,3 +82,5 @@ function ShareFile() {
 }
 
 export default ShareFile
+
+
