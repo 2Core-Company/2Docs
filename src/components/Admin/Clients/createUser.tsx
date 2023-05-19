@@ -5,7 +5,7 @@ import React, {useState, useEffect} from 'react'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
-import { collection, doc, setDoc } from "firebase/firestore";  
+import { doc, setDoc } from "firebase/firestore";  
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -13,7 +13,6 @@ import { DataUser } from '../../../types/users'
 import { v4 as uuidv4 } from 'uuid';
 import { CNPJMask } from '../../../Utils/Other/Masks';
 import { PhoneMask } from '../../../Utils/Other/Masks';
-import { Firestore } from '@google-cloud/firestore';
 import { Enterprise } from '../../../types/others';
 
 interface Props{
@@ -29,26 +28,20 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   const [fileDataURL, setFileDataURL] = useState<string | undefined>(undefined);
   const [eye , setEye] = useState(true)
   const domain:string = new URL(window.location.href).origin
-  const [right, setRight] = useState("right-[-600px]")
   const [enterprise, setEnterprise] = useState<Enterprise>({
     name:"", 
     id:uuidv4(), 
     folders:[        
-      {color:"#005694", name: "Cliente", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
-      {color:"#C7A03C", name: "Favoritos", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3},
-      {color:"#9E9E9E", name: "Lixeira", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3} 
+      {color:"#005694", name: "Cliente", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3, docs:0, id:uuidv4()}, 
+      {color:"#C7A03C", name: "Favoritos", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3, docs:0, id:uuidv4()},
+      {color:"#9E9E9E", name: "Lixeira", isPrivate: false, onlyMonthDownload: false, singleDownload: false, timeFile: 3, docs:0, id:uuidv4()} 
     ]
   })
-
-
-  useEffect(() =>{
-    setRight("right-0")
-  },[])
 
   //Acionar o toast
   async function OnToast(e: { preventDefault: () => void; }){
     e.preventDefault()
-    toast.promise(SignUp(),{pending: "Criando usuário.", success:"Usuário criado com sucesso", error:"Não foi possível criar um usuário"})
+    toast.promise(SignUp(),{pending: "Criando usuário...", success:"Usuário criado com sucesso", error:"Não foi possível criar este usuário"})
   }
 
   //Cria o usuário no auth
@@ -60,7 +53,6 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
     }
     try{
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser?.uid})
-      console.log(result)
       if(result.data.uid){
         const id = result.data.uid
         await UploadPhoto(id)
@@ -201,7 +193,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   },[dataUser.name])
 
   return (
-    <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] ${right} transition-[right] ease-in-out duration-300 flex flex-col items-center`}>
+    <div className={`w-[600px] max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] right-0 flex flex-col items-center`}>
       <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full max-sm:z-50'>
         <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]'/>
         <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Cadastrar</p>

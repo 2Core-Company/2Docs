@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import TableClients from "./tableClients";
 import { DataUser } from "../../../types/users";
 import { WindowsAction } from "../../../types/others";
-import DeletUser from "./deletUser";
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch";
 import { GetUsers } from "../../../Utils/Firebase/GetUsers";
 import { DisableUser } from "./DisableUser";

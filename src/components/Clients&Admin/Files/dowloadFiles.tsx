@@ -4,24 +4,22 @@ import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { Folders } from '../../../types/folders'
 import { getDownloadURL, ref } from 'firebase/storage';
+import { GetFolders } from '../../../Utils/folders/getFolders';
 
 interface Props{
   selectFiles:Files[]
   files?:Files[]
-  folderName: string
+  id_folder: string
   from:string
   childToParentDownload?:Function
 }
 
 
 
-async function DownloadsFile({selectFiles, files, childToParentDownload, from, folderName}:Props){
-  const docRef = doc(db, "companies", selectFiles[0].id_company, "clients", selectFiles[0].id_user);
-  const docSnap = await getDoc(docRef);
-  let enterprises = docSnap.data()?.enterprises
-  console.log(selectFiles[0])
-  let enterprise = enterprises.find((data) => selectFiles[0].id_enterprise == data.id) 
-  let folder:Folders = enterprise.folders.find((folder) => folder.name === folderName)
+async function DownloadsFile({selectFiles, files, id_folder, from, childToParentDownload}:Props){
+  const folders = await GetFolders({id_company:selectFiles[0].id_company, id_enterprise:selectFiles[0].id_enterprise, id_user:selectFiles[0].id_user})
+  let folder:Folders = folders.find((folder) => folder.id === id_folder)
+  let folderCliente = folders.find((folder) => folder.name === "Cliente")
   const batch = writeBatch(db);
 
   await GetUrlDownloadFile()
@@ -33,11 +31,11 @@ async function DownloadsFile({selectFiles, files, childToParentDownload, from, f
       for await(const file of selectFiles){
         let monthDownload:Number = new Date(file.created_date).getMonth(), monthNow:Number = new Date().getMonth()
 
-        if(from === "user" && file.folder != "Cliente" && folder.singleDownload === true && file.downloaded === true) {
+        if(from === "user" &&  file.id_folder != folderCliente.id && folder.singleDownload === true && file.downloaded === true) {
           return toast.error("Este(s) arquivo(s) já foram baixados uma vez (Pasta configurada para downloads únicos).")
         }
     
-        if(from === "user" && file.folder != "Cliente" && folder.onlyMonthDownload === true && monthDownload !== monthNow) {
+        if(from === "user" && file.id_folder != folderCliente.id && folder.onlyMonthDownload === true && monthDownload !== monthNow) {
           return toast.error("Este(s) arquivo(s) são do mês passado (Pasta configurada para download no mês).")
         }
 
@@ -86,18 +84,18 @@ async function DownloadsFile({selectFiles, files, childToParentDownload, from, f
     for(let i = 0; i < selectFiles.length; i++) {
       selectFiles[i].checked = false
 
-      if(from === "user" && selectFiles[i].folder != "Cliente" && selectFiles[i].downloaded === false) {
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id_file);
+      if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].downloaded === false) {
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id);
         batch.update(laRef, {downloaded: true})
         if(files && childToParentDownload){
-          const index = files.findIndex(file => file.id_file == selectFiles[i].id_file)
+          const index = files.findIndex(file => file.id== selectFiles[i].id)
           files[index].downloaded = true;
         }
-      } else if (from === "admin" && selectFiles[i].folder == "Cliente" && selectFiles[i].downloaded === false) {
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id_file);
+      } else if (from === "admin" && selectFiles[i].id_folder === folderCliente.id && selectFiles[i].downloaded === false) {
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id);
         batch.update(laRef, {downloaded: true})
         if(files && childToParentDownload){
-          const index = files.findIndex(file => file.id_file == selectFiles[i].id_file)
+          const index = files.findIndex(file => file.id == selectFiles[i].id)
           files[index].downloaded = true;
         }
       }
@@ -108,23 +106,23 @@ async function DownloadsFile({selectFiles, files, childToParentDownload, from, f
     for(let i = 0; i < selectFiles.length; i++) {
       let viewedDate = new Date().toString();
       
-      if(from === "user" && selectFiles[i].folder != "Cliente" && selectFiles[i].viwed === false){
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id_file);
-        batch.update(laRef, {viwed: true,viewedDate: viewedDate})
+      if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].viewed === false){
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id);
+        batch.update(laRef, {viewed: true, viewedDate:viewedDate})
 
         if(files && childToParentDownload){
-          const index = files.findIndex(file => file.id_file == selectFiles[i].id_file)
-          files[index].viwed = true
+          const index = files.findIndex(file => file.id == selectFiles[i].id)
+          files[index].viewed = true
           files[index].viewedDate = viewedDate;
         }
 
-      }else if(from === "admin" && selectFiles[i].folder == "Cliente" && selectFiles[i].viwed === false){
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id_file);
-        batch.update(laRef, {viwed: true,viewedDate: viewedDate})
+      }else if(from === "admin" && selectFiles[i].id_folder == folderCliente.id && selectFiles[i].viewed === false){
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id);
+        batch.update(laRef, {viewed: true, viewedDate: viewedDate})
 
         if(files && childToParentDownload){
-          const index = files.findIndex(file => file.id_file == selectFiles[i].id_file)
-          files[index].viwed = true
+          const index = files.findIndex(file => file.id == selectFiles[i].id)
+          files[index].viewed = true
           files[index].viewedDate = viewedDate;            
         }
       }

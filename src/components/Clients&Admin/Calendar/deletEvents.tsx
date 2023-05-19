@@ -65,7 +65,7 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
         const batch = writeBatch(db);
         try{
             for await(const file of files){
-                batch.delete(doc(db, 'files', file.id_company, file.id_user, file.id_file))
+                batch.delete(doc(db, 'files', file.id_company, file.id_user, file.id))
             }
             await batch.commit()
         }catch(e){

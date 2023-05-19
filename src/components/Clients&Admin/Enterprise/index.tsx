@@ -5,6 +5,7 @@ import CreateEnterprises from '../../Admin/Enterprise/createEnterprises'
 import { DataUser } from '../../../types/users'
 import Options from '../../Admin/Enterprise/options'
 import { usePathname } from 'next/navigation'
+import { Enterprise } from '../../../types/others'
 
 
 
@@ -35,15 +36,15 @@ function Enterprises({enterprises, enterprise, user, setUser, setEnterprise, fro
             </div>
 
             <div className={`${changeEnterprise ? "" : "hidden"} duration-500`}>
-                {enterprises.map((data, index) =>{
+                {enterprises.map((data:Enterprise, index) =>{
                     if(data.id == enterprise.id) return ""
                     return (
                         <div key={data.id} className="hover:bg-neutral-300 flex itens-center mt-[5px] justify-between px-[7px]">
-                            <p onClick={() => (setEnterprise(enterprises[index]), setChangeEnterprise(false))} className="cursor-pointer w-[100%] max-w-[150px] overflow-hidden text-ellipsis">{data.name}</p>
+                            <p onClick={() => (setEnterprise(data), setChangeEnterprise(false))} className="cursor-pointer w-[100%] max-w-[150px] overflow-hidden text-ellipsis">{data.name}</p>
                             {from === "user" ? 
-                                <div onClick={() => (setEnterprise(enterprises[index]), setChangeEnterprise(false))} className='cursor-pointer min-w-[20px] h-[20px] rounded-full border-black dark:border-white p-[2px] border-[2px]' />
+                                <div onClick={() => (setEnterprise(data), setChangeEnterprise(false))} className='cursor-pointer min-w-[20px] h-[20px] rounded-full border-black dark:border-white p-[2px] border-[2px]' />
                             : 
-                                <Options user={user} index={index} setUser={setUser} setEnterprise={setEnterprise}/>
+                                <Options index={index} user={user} enterprise={data} setUser={setUser} setEnterprise={setEnterprise}/>
                             }
                         </div>
                     )

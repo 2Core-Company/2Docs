@@ -14,6 +14,7 @@ import styles from '../../Admin/Home/home.module.css'
 import DownloadsFile from '../Files/dowloadFiles';
 import DeletEvents from './deletEvents';
 import { Files } from '../../../types/files';
+import { GetFilesEvent } from '../../../Utils/Firebase/GetFiles'
 
 
 interface Props{
@@ -48,43 +49,12 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         }
 
         if(dataUser != undefined){
-          GetFiles()
-          UpdatedEventViwed()
+            const id_company = dataUser.id_company
+            GetFilesEvent({id_company, eventSelected, setFiles})
+            UpdatedEventViwed()
         }
       // eslint-disable-next-line react-hooks/exhaustive-deps
       },[dataUser])
-
-    //Puxando arquivos dos eventos
-    async function GetFiles(){
-        const getFiles:Files[] = []
-        var q = query(collection(db, "files", dataUser.id_company, eventSelected.id_user), where("id_event", "==",  eventSelected.id));
-
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          getFiles.push({
-            id_file:doc.data()?.id_file,
-            id_user:doc.data()?.id_user,
-            folder:doc.data()?.folder,
-            trash:doc.data()?.trash,
-            size:doc.data()?.size,
-            id_company:doc.data()?.id_company,
-            favorite:doc.data()?.favorite,
-            id_enterprise:doc.data()?.id_enterprise,
-            name:doc.data()?.name,
-            path:doc.data()?.path,
-            viewedDate:doc.data()?.viewedDate,
-            type:doc.data()?.type,
-            created_date:doc.data()?.created_date,
-            id_event: doc.data()?.id_event,
-            viwed:doc.data()?.viwed,
-            from:doc.data()?.from,
-            message:doc.data()?.message,
-            downloaded:doc.data()?.downloaded,
-          })
-        });
-
-        setFiles(getFiles)
-    }
 
     //setando evento visualizado
     async function UpdatedEventViwed(){
@@ -108,7 +78,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                 e.value = null
                 return toast.error("Os arquivos só podem ter no maximo 30mb.")
             }
-            file.id_file = Math.floor(1000 + Math.random() * 9000) + file.name;
+            file.id = Math.floor(1000 + Math.random() * 9000) + file.name;
             file.type2 = FindTypeFile(file)
             filesHere.push(file)
             newFilesHere.push(file)
@@ -151,18 +121,18 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     async function  UploadFileStorage() {
         const promises:any = []
         for await (const file of newFiles) {
-            const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id}/${eventSelected.enterprise.id}/Cliente/${file.id_file}`);
+            const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id}/${eventSelected.enterprise.id}/Cliente/${file.id}`);
             promises.push(uploadBytes(docsRef, file))
         }
         try{
-            await Promise.all(promises).then(async (result) => {
-                console.log(result)
-                await UploadFilestore(result)
-            })
+            const result = await Promise.all(promises)
+
+            await Promise.all([UploadFilestore(result), UpdatedEventComplete()])
+
+
         } catch(e){
             console.log(e)
         }
-        UpdatedEventComplete()
 
         if(setEventSelected){
             setEventSelected()
@@ -171,33 +141,36 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     //Guardando arquivos no firestore 
     async function UploadFilestore(result){
+        const enterprise = dataUser.enterprises.find((data) => data.id === eventSelected.enterprise.id)
+        const folder = enterprise?.folders.find((data) => data.name === 'Cliente')
         const date = new Date() + ""
-
         const promises:any = []
-        for(var i = 0; i < newFiles.length; i++){
-            const data:Files= {
-                id_user: eventSelected.id_user,
-                id_file: newFiles[i].id_file,
-                path:result[i].metadata.fullPath,
-                id_company: dataUser.id_company,
-                id_enterprise: eventSelected.enterprise.id,
-                id_event:eventSelected.id,
-                name: newFiles[i].name,
-                size: Math.ceil(files[i].size / 1000),
-                created_date: date,
-                type:newFiles[i].type2, 
-                trash: false,
-                viwed: false,
-                folder: 'Cliente',
-                from: 'user',
-                favorite:false,
-                viewedDate:'',
-                message:'',
-                downloaded:false
-            }
-            const docRef  =doc(db, "files", dataUser.id_company, eventSelected.id_user, newFiles[i].id_file)
-            promises.push(setDoc(docRef, data))
-        }   
+        if(folder){
+            for(var i = 0; i < newFiles.length; i++){
+                const data:Files= {
+                    id_user: eventSelected.id_user,
+                    id: newFiles[i].id,
+                    path:result[i].metadata.fullPath,
+                    id_company: dataUser.id_company,
+                    id_enterprise: eventSelected.enterprise.id,
+                    id_event:eventSelected.id,
+                    name: newFiles[i].name,
+                    size: Math.ceil(files[i].size / 1000),
+                    created_date: date,
+                    type:newFiles[i].type2, 
+                    trash: false,
+                    viewed: false,
+                    id_folder: folder.id,
+                    from: 'user',
+                    favorite:false,
+                    viewedDate:'',
+                    message:'',
+                    downloaded:false
+                }
+                const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, newFiles[i].id)
+                promises.push(setDoc(docRef, data))
+            } 
+        }
 
         try {
             await Promise.all(promises)
@@ -228,7 +201,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     function DownloadFiles(file){
         if(file.path){
-         return DownloadsFile({selectFiles:[file], from:from, folderName: file.folder})
+         return DownloadsFile({selectFiles:[file], from:from, id_folder: file.id_folder})
         }
         toast.error('Clique em salvar e depois faça download deste arquivo')
     }
@@ -237,16 +210,11 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         const filesFunction = [...files]
         const newFilesFunction = [...newFiles]
 
-        if(file.folder){
-            const fileOfStorage = files.filter(file => file.folder?.length > 5)
-            if(fileOfStorage.length === 1){
-                toast.error('Você não pode deletar todos os arquivos deste evento após ele ja estar completo.')
-                throw Error
-            }
+        if(file.id_folder){
             try{
                 const desertRef = ref(storage, `${file.path}`);
                 await Promise.all([
-                    deleteDoc(doc(db, 'files', file.id_company, file.id_user, file.id_file)),
+                    deleteDoc(doc(db, 'files', file.id_company, file.id_user, file.id)),
                     deleteObject(desertRef)
                 ])
             } catch(e){
@@ -262,7 +230,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
         setFiles(filesFunction)
         setNewFiles(newFilesFunction)
-
     }
 
   return (

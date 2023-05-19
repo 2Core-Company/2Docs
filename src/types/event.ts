@@ -9,5 +9,5 @@ export interface Event{
     observation:string
     complete:boolean
     dateSelected:string
-    viwed:boolean
+    viewed:boolean
   }

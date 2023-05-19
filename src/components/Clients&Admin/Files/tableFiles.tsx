@@ -21,6 +21,7 @@ interface Props{
   trash:boolean
   files:Files[]
   folderName:string
+  id_folder:string
   from:string
   textSearch:string
   SelectFile:Function
@@ -30,17 +31,16 @@ interface Props{
   setDataPages:Function
 }
 
-export default function TableFiles({ dataPages, trash, textSearch, files, folderName, from, SelectFile, ConfirmationDeleteFile, childToParentDownload, setFiles, setDataPages}:Props) {
+export default function TableFiles({id_folder, dataPages, trash, textSearch, files, folderName, from, SelectFile, ConfirmationDeleteFile, childToParentDownload, setFiles, setDataPages}:Props) {
   const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
-  const url = window.location.href
   const [messageEmpty, setMessageEmpty] = useState<string>()
   const [modalMessage, setModalMessage] = useState<{status:boolean, permission:string, index:number}>({status:false, permission:'', index:0})
   const pathName = usePathname()
 
   useEffect(() => {
-    if(url.includes("Clientes") === true  && folderName === "Cliente" ){
+    if(pathName?.includes("Clientes") === true  && folderName === "Cliente" ){
       setMessageEmpty("Envie seu primeiro arquivo!")
-    } else if(url.includes("Admin") === true  && folderName != "Cliente") {
+    } else if(pathName?.includes("Admin") === true  && folderName != "Cliente") {
       setMessageEmpty("Envie seu primeiro arquivo!")
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,7 +64,7 @@ export default function TableFiles({ dataPages, trash, textSearch, files, folder
 
    // <--------------------------------- Download Files --------------------------------->
   function DownloadFile(file){
-    DownloadsFile({selectFiles:[file], files:files, from:from, childToParentDownload:childToParentDownload, folderName: folderName})
+    DownloadsFile({selectFiles:[file], files:files, from:from, childToParentDownload:childToParentDownload, id_folder: id_folder})
   }
 
   return (
@@ -142,7 +142,7 @@ export default function TableFiles({ dataPages, trash, textSearch, files, folder
                     {FormatDate(file.created_date.toString())}
                   </p>
 
-                  {file.viwed ? (
+                  {file.viewed ? (
                     <HoverCard.Root>
                       <HoverCard.Trigger asChild>
                         <div className="text-[16px] bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-[5px] text-center max-sm:hidden cursor-default">
@@ -192,8 +192,8 @@ export default function TableFiles({ dataPages, trash, textSearch, files, folder
                       : <></>
                   }
 
-
                     <OptionsFile
+                      id_folder={file.id_folder}
                       index={index}
                       from={from}
                       file={file}

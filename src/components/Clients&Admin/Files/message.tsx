@@ -15,14 +15,15 @@ import { Files } from '../../../types/files'
  function Message({modalMessage, files, childToParentDownload, setModalMessage}:Props) {
     const i = modalMessage.index
     const [message, setMessage] = useState<string | undefined>(files[i].message ? files[i].message : undefined)
+    const toastoMessage = {pending: 'Atualizando observação...', success: 'Observação atualizada com sucesso!', error: 'Não foi possivel atualizar a observação deste arquivo.'}
 
-    function UploadMessage(){
+    async function UploadMessage(){
         if(message != undefined){
             try{
-                updateDoc(doc(db, 'files', files[i].id_company, files[i].id_user, files[i].id_file), {
+                await updateDoc(doc(db, 'files', files[i].id_company, files[i].id_user, files[i].id), {
                     message: message.trim()
                 })
-                const index = files.findIndex(file => file.id_file == files[i].id_file)
+                const index = files.findIndex(file => file.id == files[i].id)
                 files[index].message = message.trim()
                 childToParentDownload(files)
                 setModalMessage({status:false, permission:'', index:0})
@@ -48,7 +49,7 @@ import { Files } from '../../../types/files'
                         </div>
                     <div className='flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end pr-[10px] py-[10px] rounded-b-[4px] mt-[10px]'>
                         <button  onClick={() => setModalMessage({status:false, permission:'', index:0})} className='cursor-pointer bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong hover:scale-[1.10] duration-300 p-[3px]  rounded-[8px] text-[18px] text-white '>Cancelar</button>
-                        <button onClick={() => UploadMessage()} className={`cursor-pointer bg-[rgba(126,181,163,0.40)] border-[rgba(126,181,163,1)] border-2 hover:scale-[1.10]  duration-300 py-[3px] px-[10px] rounded-[8px] text-[18px] text-white `}>Salvar</button>
+                        <button onClick={() => toast.promise(UploadMessage(), toastoMessage)} className={`cursor-pointer bg-[rgba(126,181,163,0.40)] border-[rgba(126,181,163,1)] border-2 hover:scale-[1.10]  duration-300 py-[3px] px-[10px] rounded-[8px] text-[18px] text-white `}>Salvar</button>
                     </div>
                 </div>
             </div>
@@ -65,7 +66,7 @@ import { Files } from '../../../types/files'
                             <p className='text-left whitespace-pre-wrap w-full text-ellipsis overflow-hidden'>{message}</p>
                         </div>
                     <div className='flex w-full justify-end gap-4 bg-hilight self-end pr-[10px] py-[10px] rounded-b-[4px] mt-[10px]'>
-                        <button onClick={() => UploadMessage()} className={`bg-[rgba(126,181,163,0.40)] border-[rgba(126,181,163,1)] border-2 hover:scale-[1.10]  duration-300 py-[3px] px-[10px] rounded-[8px] text-[18px] text-white `}>Fechar</button>
+                        <button onClick={() => setModalMessage({status:false, permission:'', index:0})} className={`cursor-pointer bg-[rgba(126,181,163,0.40)] border-[rgba(126,181,163,1)] border-2 hover:scale-[1.10]  duration-300 py-[3px] px-[10px] rounded-[8px] text-[18px] text-white `}>Fechar</button>
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ import NotificationIcon from '../../../../public/icons/notification.svg'
 import Image from 'next/image'
 import { FormatDateSmall } from '../../../Utils/Other/FormatDate'
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import ViwedEvent from '../../Clients&Admin/Calendar/viwedEvent'
+import ViwedEvent from '../../Clients&Admin/Calendar/viewedEvent'
 interface Props{
     dataUser:DataUser
 }
@@ -27,7 +27,7 @@ function Notification({dataUser}:Props) {
     },[dataUser])
 
     async function GetEvents(){
-        var q = query(collection(db, "companies", dataUser.id_company, "events"), where('id_user', '==', dataUser.id), where('viwed', '==', false));
+        var q = query(collection(db, "companies", dataUser.id_company, "events"), where('id_user', '==', dataUser.id), where('viewed', '==', false));
         const allEvents:Event[] = []
     
         const querySnapshot = await getDocs(q);
@@ -41,7 +41,7 @@ function Notification({dataUser}:Props) {
                 observation:doc.data().observation,
                 complete:doc.data().complete,
                 dateSelected:doc.data().dateSelected,
-                viwed:doc.data().viwed
+                viewed:doc.data().viewed
             })
         });
         VerifyNotificationEvent(allEvents)
@@ -74,7 +74,7 @@ function Notification({dataUser}:Props) {
 
                 {tableNotification ?
                     <div id={styles.boxFiles} className='w-[350px] max-h-[180px] px-[5px] overflow-auto'>
-                        <p className='font-poiretOne text-[25px]'>Eventos Não Visuzalidos</p>
+                        <p className='font-poiretOne text-[25px]'>Eventos Não Visualizados</p>
                         <div   className='border-[2px] border-neutral-400 rounded-[8px]'>
                             <div className='w-full grid grid-cols-5 gap-4 bg-neutral-300  rounded-t-[8px] px-[3px]'>
                             <p className='font-[600] col-span-2'>Titúlo</p>
@@ -86,8 +86,8 @@ function Notification({dataUser}:Props) {
                                     <div onClick={() => setEventSelected(event)} className="cursor-pointer font-[600] mt-[5px] grid grid-cols-5 gap-4 px-[3px] pb-[3px]" key={index}>
                                         <p className='col-span-2 text-ellipsis overflow-hidden'>{event.title}</p>
                                         <p className='col-span-2'>{FormatDateSmall(event.dateSelected)}</p>
-                                        <div className={`justify-self-center flex justify-center items-center w-[35px] rounded-[16px] ${event.viwed ? 'bg-[#a9e7bd]' : 'bg-[#ea4747]'}`}>
-                                            {event.viwed ?
+                                        <div className={`justify-self-center flex justify-center items-center w-[35px] rounded-[16px] ${event.viewed ? 'bg-[#a9e7bd]' : 'bg-[#ea4747]'}`}>
+                                            {event.viewed ?
                                                 <EyeOpenIcon height={25} width={25}  />   
                                             :
                                                 <EyeClosedIcon height={25} width={25} />
