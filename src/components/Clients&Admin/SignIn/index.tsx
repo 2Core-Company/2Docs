@@ -3,7 +3,7 @@ import { EyeClosedIcon, EyeOpenIcon} from '@radix-ui/react-icons';
 import { useState, useContext, useEffect } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading'
 import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
-import { auth } from '../../../../firebase'
+import { auth, db } from '../../../../firebase'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { signOut} from "firebase/auth";
 import { useTheme } from "../../../hooks/useTheme"
 import { DataUser } from '../../../types/users'
+import { stripe } from '../../../../lib/stripe'
 
 function Signin(){
   const contextLoading = useContext(loadingContext)
@@ -49,12 +50,32 @@ function Signin(){
   async function SignIn() {
     try{
       const userCredential = await signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
-      if(userCredential.user.emailVerified && userCredential.user.displayName){
-        router.replace("/Dashboard/Clientes")
-      } else {
+      const {data} = await stripe.customers.search({
+        query: 'metadata[\'id_company\']:\'' +userCredential.user.displayName+ '\'',
+        limit: 1,
+        expand: ['data.subscriptions']
+      })
+      .catch(err => err)
+      const status = data[0]?.subscriptions.data[0]?.status
+
+      if(!userCredential.user.emailVerified){
         signOut(auth)
-        throw toast.error("Você não concluiu o cadastro da sua empresa.")
+        throw toast.error("Seu email não foi confirmado.")
       }
+
+      if(status != 'active'){
+        signOut(auth)
+        throw  toast.error("Você não tem um plano do 2Docs ativo.")
+      }
+
+      const idTokenResult = await auth.currentUser?.getIdTokenResult()
+      if(idTokenResult?.claims.permission > 0){
+        router.replace("/Dashboard/Admin")      
+      }  else {
+        router.replace("/Dashboard/Clientes")    
+      }
+
+
     } catch(e){
       contextLoading.setLoading(false)
       ErrorFirebase(e)
@@ -96,7 +117,7 @@ function Signin(){
                 <label className="text-[18px] dark:text-white" htmlFor="Email">
                   Email
                 </label>
-                <input required type="email" value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
+                <input required type="email" autoComplete='username' value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
                 <label className="text-[18px] dark:text-white" htmlFor="username">
