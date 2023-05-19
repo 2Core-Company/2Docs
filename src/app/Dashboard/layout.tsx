@@ -93,7 +93,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
         expand: ['data.subscriptions']
     })
     .catch(err => err)
-    const id = data[0].subscriptions.data[0].plan.id
+    const id = data[0]?.subscriptions.data[0]?.plan.id
 
     if(id == 'price_1MX5uXBC8E6EzctJ1TMCPSoE') {
       return 'Empresarial'
