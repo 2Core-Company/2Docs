@@ -65,9 +65,9 @@ import Enterprises from '../../Clients&Admin/Enterprise';
             </div>
 
             <div className='flex flex-wrap mt-[10px]'>
-              {enterprise?.folders?.filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ? 
+              {enterprise?.folders?.filter((folder) => textSearch != "" ?  folder.name === 'Cliente' ? 'meus'.toUpperCase().includes(textSearch.toUpperCase()) : folder.name?.toUpperCase().includes(textSearch.toUpperCase())  : true).length > 0 ? 
                 enterprise?.folders
-                .filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
+                .filter((folder) => textSearch != "" ?  folder.name === 'Cliente' ? 'meus'.toUpperCase().includes(textSearch.toUpperCase()) : folder.name?.toUpperCase().includes(textSearch.toUpperCase())  : true)
                 .map((folder) =>{
                   
                 if(folder.name === 'Lixeira'){return}

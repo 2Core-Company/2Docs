@@ -38,15 +38,16 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
     toast.promise(UpdateDataUserAuth(), {pending:"Editando usuário...", success:"Usuário editado com sucesso", error:"Não foi possivel editar o usuário"})
   }
 
-  //
+
   async function UpdateDataUserAuth() {
     if(dataUser.email != user.email){
       try{  
-        const result:{data:{uid?:string, message: string; code: string; }} = await axios.post(`${domain}/api/users/updateUser`, {userId: user.id, data:{email: dataUser.email}, uid: auth.currentUser?.uid})
+        const result = await axios.post(`${domain}/api/users/updateUser`, {userId: user.id, data:{email: dataUser.email}, uid: auth.currentUser?.uid})
         if(result.data.uid){
           await UpdatePhoto()
         } else {
           ErrorFirebase(result.data)
+          throw Error
         }
       }catch(e){
         console.log(e)
