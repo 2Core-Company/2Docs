@@ -34,7 +34,7 @@ function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfi
     const docRef = doc(db, "companies", id_company, "clients", id);
     const docSnap = await getDoc(docRef);
     const enterprises = docSnap.data()?.enterprises
-    const index2 = enterprises.find((data) => data.id === enterprise.id)
+    const index2 = enterprises.findIndex((data) => data.id === enterprise.id)
     const folders = user.enterprises[index2].folders
     const index = folders.findIndex((folder) => folder.name === folderConfig.name);
 
