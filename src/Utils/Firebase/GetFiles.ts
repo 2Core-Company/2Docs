@@ -271,7 +271,7 @@ interface interfaceGetFilesClient{
 export async function GetFilesClient({id_company,  id_user, id_enterprise, id_folder, setFiles, setDataPages}:interfaceGetFilesClient){
 
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, id_user), where("id_enterprise", "==", id_enterprise), where("id_folder", "==", id_folder));
+  const q = query(collection(db, "files", id_company, id_user), where("trash", "==", false), where("id_enterprise", "==", id_enterprise), where("id_folder", "==", id_folder));
   const querySnapshot = await getDocs(q);
   const folder = await GetFolder({id_company,  id_user, id_enterprise, id_folder})
 

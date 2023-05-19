@@ -21,7 +21,8 @@ function ErrorFirebase({message, code}:Props) {
       } else if(code === "auth/invalid-email"){
         message = "O formato de email digitado não é aceito pelo nosso sistema."
       }
-      toast.error(message);
+      
+      throw toast.error(message);
 }
 
 export default ErrorFirebase

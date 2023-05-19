@@ -89,7 +89,8 @@ function TableClients({users, searchText, pages, windowsAction, setUsers, Select
                     </p>
 
                     {
-                      user.status ? ( <p className="w-full bg-red/20 border-red text-[#c50000] border-[1px] max-sm:text-[16px] rounded-[5px] text-center"> Inativo</p>) 
+                      user.status ? 
+                      ( <p className="w-full bg-red/20 border-red text-[#c50000] border-[1px] max-sm:text-[16px] rounded-[5px] text-center">Inativo</p>) 
                     : 
                       (<p className="w-full bg-greenV/20 border-greenV text-[#00920f] border-[1px] max-sm:text-[16px] rounded-[5px] text-center"> Ativo </p>)
                     }
