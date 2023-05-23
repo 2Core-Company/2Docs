@@ -75,13 +75,13 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         const filesHere = [...files]
         for await (const file of e.files) {
             if(file.size > 30000000){
-                e.value = null
-                return toast.error("Os arquivos só podem ter no maximo 30mb.")
+                toast.error(`O arquivo ${file.name} excede o limite de 30mb.`)
+            } else {
+                file.id = Math.floor(1000 + Math.random() * 9000) + file.name;
+                file.type2 = FindTypeFile(file)
+                filesHere.push(file)
+                newFilesHere.push(file)
             }
-            file.id = Math.floor(1000 + Math.random() * 9000) + file.name;
-            file.type2 = FindTypeFile(file)
-            filesHere.push(file)
-            newFilesHere.push(file)
         }
         setFiles(filesHere)
         setNewFiles(newFilesHere)

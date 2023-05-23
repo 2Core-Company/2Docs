@@ -10,7 +10,7 @@ interface Props{
     childToParentDownload:Function
   }
 
-  async function Desfavorite({desfavoriteFile, files, childToParentDownload, folderName}: Props) {                                                                                   
+  async function Desfavorite({desfavoriteFile, files, childToParentDownload, folderName}: Props) {                                                                          
     try{
         await updateDoc(doc(db, 'files', desfavoriteFile.id_company, desfavoriteFile.id_user, desfavoriteFile.id), {
             favorite: false
@@ -24,7 +24,7 @@ interface Props{
         childToParentDownload(files)
     } catch(e) {
     console.log(e)
-    toast.error("Não foi possivél visualizar este arquivo.")
+    toast.error("Não foi possivél desfavoritar este arquivo.")
     }
 }
 

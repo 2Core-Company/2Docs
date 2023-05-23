@@ -68,10 +68,9 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
   }
 
   return (
-    <>
+    <div className='min-h-[400px] grid'>
       {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
-      
-        <>
+        <div>
           {modalMessage.status ? <Message modalMessage={modalMessage} files={files} childToParentDownload={childToParentDownload}  setModalMessage={setModalMessage}/> : <></>}
           {/* <--------------------------------- HeadTable ---------------------------------> */}
           <div className="w-full mt-[10px] grid grid-cols-[20px__1fr_120px_200px_110px_70px] max-lg:grid-cols-[20px__1fr_120px_110px_70px] max-md:grid-cols-[20px__1fr_110px_70px] max-sm:grid-cols-[20px__1fr_70px] gap-x-[15px] text-[18px] font-[500] border-y-[1px] border-y-neutral-400  bg-neutral-300  items-center py-[5px]">
@@ -181,15 +180,15 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
                   <div className="flex justify-center items-center gap-[10px]">
 
                   {pathName == '/Dashboard/Admin/Arquivos' && file.from === "admin" || pathName == '/Dashboard/Clientes/Arquivos' && file.from === "user" ?
-                      <div onClick={() => setModalMessage({index:index, permission:"edit", status:true})} className='bg-[#15E08B] p-[3px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
-                          {file?.message && file?.message?.length > 0 ?  <Image src={MessageIcon} width={22} height={22} alt="Chat"/> : <PlusCircledIcon width={22} height={22} className='text-white'/> }
-                      </div>
+                    <div onClick={() => setModalMessage({index:index, permission:"edit", status:true})} className='bg-[#15E08B] p-[3px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
+                      {file?.message && file?.message?.length > 0 ?  <Image src={MessageIcon} width={22} height={22} alt="Chat"/> : <PlusCircledIcon width={22} height={22} className='text-white'/> }
+                    </div>
                   : 
-                      file?.message && file?.message?.length > 0 ?
-                          <div onClick={() => setModalMessage({...modalMessage, permission:"viwed", status:true})} className='bg-[#15E08B] p-[2px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
-                              <Image src={MessageIcon} width={22} height={22} alt="Chat"/>
-                          </div>
-                      : <></>
+                    file?.message && file?.message?.length > 0 ?
+                      <div onClick={() => setModalMessage({index:index, permission:"viwed", status:true})} className='bg-[#15E08B] p-[2px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
+                        <Image src={MessageIcon} width={22} height={22} alt="Chat"/>
+                      </div>
+                    : <></>
                   }
 
                     <OptionsFile
@@ -208,22 +207,21 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
               );
             }
           })}
-        </>
-
-        : 
-          <div className='w-full h-full flex justify-center items-center flex-col'>
-            <Image src={files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="Imagem de 2 arquivos" priority className='w-[170px] h-[170px]'/>
-            {trash ? 
-              <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length  <= 0 ? "Nenhum arquivo deletado encontrado." : "Nenhum resultado foi encontrado."} </p>
-            :
-              <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length <= 0 ? messageEmpty : "Nenhum resultado foi encontrado."}</p>
-            }
-          </div>
-        }
+        </div>
+      : 
+        <div className='w-full h-full flex justify-center items-center flex-col'>
+          <Image src={files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="Imagem de 2 arquivos" priority className='w-[170px] h-[170px]'/>
+          {trash ? 
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length  <= 0 ? "Nenhum arquivo deletado encontrado." : "Nenhum resultado foi encontrado."} </p>
+          :
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length <= 0 ? messageEmpty : "Nenhum resultado foi encontrado."}</p>
+          }
+        </div>
+      }
 
         {/* <--------------------------------- NavBar table ---------------------------------> */}
         {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
-          <div className='w-full px-[10px] flex justify-between h-[50px] mt-[10px]'>
+          <div className='w-full px-[10px] flex justify-between h-[50px] mt-[10px] self-end'>
               <div className='flex justify-between w-full h-[40px] max-sm:h-[30px] items-center'>
                   <button onClick={() => {dataPages.page > 1 ? setDataPages({...dataPages, page: dataPages.page - 1}) : ""}} className={`px-[8px] py-[3px] border-[2px] ${dataPages.page == 1 ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "cursor-pointer bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"}  rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
                     <p className="dark:text-white">{`Página ${dataPages.page} de ${dataPages.maxPages}`}</p>
@@ -231,6 +229,6 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
               </div>
           </div>
         :<></>}
-    </>
+    </div>
   )
 }

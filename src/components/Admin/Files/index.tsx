@@ -64,9 +64,6 @@ function Files(){
     setLoading(false)
   }
 
-
-
-
   // <--------------------------------- Select Files --------------------------------->
   async function SelectFile(index:number){
     if (files.filter((file) => file.checked === true).length > 9 && files[index].checked === false) {
@@ -148,12 +145,12 @@ function Files(){
           </div>
 
           <Image src={folder} alt="Imagem de uma pasta"/> 
-            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id_user:id_user}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
+            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id_user:id_user, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
           <FileIcon className="dark:text-dsecondary text-secondary" height={21} width={21}/>
           <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{trash ? "Lixeira" : folderName}</p> 
         </div>
         
-        <div className=' w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
+        <div className='min-h-[400px] w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
           <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
             <div className='flex items-center bg-transparent'>
             <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px] dark:text-white'>{files.length} <span className='text-black dark:text-white'>Documentos</span></p>
@@ -182,11 +179,11 @@ function Files(){
               {trash ? 
                 <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles}  selectFiles={selectFiles}/>
               : 
-                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  permission={dataUser?.permission} id={id_user} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
+                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  permission={dataUser?.permission} id_user={id_user} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
               }
             </div>
           </div>
-          {/*<-------------- Table of Files --------------> */}
+            {/*<-------------- Table of Files --------------> */}
           <TableFiles id_folder={id_folder}  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
         </div>
       </div>

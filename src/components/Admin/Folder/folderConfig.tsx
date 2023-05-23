@@ -40,6 +40,9 @@ function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfi
 
     setUser({...user, enterprises:enterprises})
 
+    if(nameFolder.toLocaleUpperCase() === 'MEUS'){
+      throw toast.error('Você não pode criar uma pasta com o nome "Meus"')
+    }
 
     try{      
       if(index === -1) {
