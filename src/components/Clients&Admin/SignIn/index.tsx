@@ -17,7 +17,7 @@ import { stripe } from '../../../../lib/stripe'
 
 function Signin(){
   const contextLoading = useContext(loadingContext)
-  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], admins: []})
+  const [loginUser, setLoginUser] = useState({email: '', password: ''});
   const [loading , setLoading] = useState<boolean>(true)
   const [eye, setEye] = useState<boolean>(false)
   const router = useRouter()
@@ -49,7 +49,7 @@ function Signin(){
   //Funçaõ de login
   async function SignIn() {
     try{
-      const userCredential = await signInWithEmailAndPassword(auth, dataUser.email, dataUser.password)
+      const userCredential = await signInWithEmailAndPassword(auth, loginUser.email, loginUser.password)
       const {data} = await stripe.customers.search({
         query: 'metadata[\'id_company\']:\'' +userCredential.user.displayName+ '\'',
         limit: 1,
@@ -85,7 +85,7 @@ function Signin(){
 
   //Funçaõ de recuperar senha
   async function AlterPassword(email:string){
-    if(dataUser.email === ""){
+    if(loginUser.email === ""){
       return toast.error("Preencha o campo de email.")
     }
     try{
@@ -117,14 +117,14 @@ function Signin(){
                 <label className="text-[18px] dark:text-white" htmlFor="Email">
                   Email
                 </label>
-                <input required type="email" autoComplete='username' value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
+                <input required type="email" autoComplete='username' value={loginUser.email} name="Email" onChange={(Text) => setLoginUser({...loginUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
                 <label className="text-[18px] dark:text-white" htmlFor="username">
                   Senha
                 </label>
                 <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center dark:border-white'>
-                  <input required minLength={8} type={eye ? "text" : "password"} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
+                  <input required minLength={8} type={eye ? "text" : "password"} onChange={(Text) => setLoginUser({...loginUser, password:Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
                   {eye ? (
                   <EyeOpenIcon onClick={() => setEye(false)} width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
                   ) : (
@@ -132,7 +132,7 @@ function Signin(){
                   )}
                 </div>
               </fieldset>
-              <button type="button" onClick={() => AlterPassword(dataUser.email)} className='w-full flex justify-end underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
+              <button type="button" onClick={() => AlterPassword(loginUser.email)} className='w-full flex justify-end underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
               </button>
