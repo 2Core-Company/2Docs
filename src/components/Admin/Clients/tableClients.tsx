@@ -35,9 +35,9 @@ function TableClients({users, searchText, pages, windowsAction, setUsers, Select
   }
 
   return (
-    <div>
+    <div className="min-h-[400px] grid">
       {users.filter((user) =>  searchText != "" ?  user.name?.toUpperCase().includes(searchText.toUpperCase()) : true).length > 0 ? (
-        <>
+        <div>
           {/* <--------------------------------- HeadTable ---------------------------------> */}
           <div className="w-full mt-[10px] grid grid-cols-[20px__repeat(2,1fr)_200px_65px_60px] max-lg:grid-cols-[20px__repeat(2,1fr)_65px_60px] max-md:grid-cols-[20px__1fr_65px_60px] px-[5px] gap-x-[15px] text-[18px] font-[500] border-y-[1px] border-y-neutral-400  bg-neutral-300  items-center py-[5px]">
             <input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className="w-[20px] h-[20px]"/>
@@ -112,7 +112,7 @@ function TableClients({users, searchText, pages, windowsAction, setUsers, Select
                 );
               }
             })}
-        </> 
+        </div> 
       ) : (
         <div className="w-full h-full flex justify-center items-center flex-col">
           <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="Foto de uma mulher, clique para cadastrar um cliente" className="cursor-pointer w-[170px] h-[170px]"/>
@@ -126,7 +126,7 @@ function TableClients({users, searchText, pages, windowsAction, setUsers, Select
 
       {/* <--------------------------------- NavBar table ---------------------------------> */}
       {users.filter((user) =>  searchText != "" ?  user.name?.toUpperCase().includes(searchText.toUpperCase()) : true).length > 0 ? (
-        <div className="flex items-center justify-between w-full px-[5px] my-[5px]">
+        <div className="flex items-center justify-between w-full px-[5px] my-[5px] self-end">
           <button onClick={() => { showItens.max / 10 != 1 ?  setShowItens({min: showItens.min - 10, max: showItens.max - 10}): toast.error('Não existe paginas inferiores.')}}
             className={`rounded-[4px] px-[5px] py-[2px] text-[18px] max-sm:text-[16px] max-lsm:text-[14px] cursor-pointer ${showItens.max / 10 == 1 ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black" }`}>
             Anterior

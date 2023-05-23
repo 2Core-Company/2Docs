@@ -83,7 +83,7 @@ function ComponentClients() {
       <LightModeSwitch />
       <div className="w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]">
         <p  className="font-poiretOne text-[40px] dark:text-white">Clientes</p>
-        <div className=" w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
+        <div className="min-h-[400px] w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
           <div className="mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]">
             <div className="flex items-center bg-transparent">
               <p className="mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px] dark:text-white">

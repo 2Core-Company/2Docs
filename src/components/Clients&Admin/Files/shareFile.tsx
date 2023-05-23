@@ -10,22 +10,22 @@ interface Props{
 }
 
 async function ShareFile({file}:Props) {
-    if(file.viewed){
-        return toast.error("Você não pode compartilhar um arquivo que ja foi visualizado.")
-    } else {
-        const docRef = doc(db, "companies", file.id_company);
-        const docSnap = await getDoc(docRef)
-        const nameCompany = docSnap.data()?.name
-        const url = window.location.origin
-        const urlFile = `${url}/CompartilharArquivo?ic=${file.id_company}&&if=${file.id}&&iu=${file.id_user}&&n=${file.name}&&d=${file.created_date}&&nc=${nameCompany}`
+  if(file.viewed){
+    return toast.error("Você não pode compartilhar um arquivo que ja foi visualizado.")
+  } else {
+    const docRef = doc(db, "companies", file.id_company);
+    const docSnap = await getDoc(docRef)
+    const nameCompany = docSnap.data()?.name
+    const url = window.location.origin
+    const urlFile = `${url}/CompartilharArquivo?ic=${file.id_company}&&if=${file.id}&&iu=${file.id_user}&&n=${file.name}&&d=${file.created_date}&&nc=${nameCompany}&&ty=${file.type}`
 
-        shortenURL(urlFile).then((shortURL:string) => {
-          copy(shortURL)
-          toast.success('Link copiado!')
-        }).catch((error) => {
-            console.error(error);
-        });
-    } 
+    shortenURL(urlFile).then((shortURL:string) => {
+      copy(shortURL)
+      toast.success('Link copiado!')
+    }).catch((error) => {
+        console.error(error);
+    });
+  } 
 }
 
 export default ShareFile

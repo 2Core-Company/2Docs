@@ -28,6 +28,9 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
 
   //Função de criar pasta
   async function CreateFolder() {
+    if(dataFolder.name.toLocaleUpperCase() === 'MEUS'){
+      throw toast.error('Você não pode criar uma pasta com o nome "Meus"')
+    }
     const result = folders.findIndex((folder) => folder.name === dataFolder.name);
     if (result === -1) {
       if (dataFolder.color != undefined && dataFolder.name.length > 0) {

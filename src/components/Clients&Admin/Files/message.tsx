@@ -71,7 +71,6 @@ import { Files } from '../../../types/files'
                 </div>
             </div>
         :<></>}
-
     </>
   )
 }

@@ -18,6 +18,7 @@ function ShareFile() {
   const id_user = params.get('iu')
   const nameCompany = params.get('nc')
   const nameFile = params.get('n')
+  const type = params.get('ty')
   const created_date = params.get('d')
   const [file, setFile] = React.useState<Files | undefined>(undefined)
 
@@ -32,10 +33,11 @@ function ShareFile() {
 
   async function DownloadFile(){
     if(file){
-      console.log(file)
       if(file.viewed){
         return toast.error('Este arquivo ja foi baixado, por isso não sera possivel iniciar este download.')
       }  
+
+      let viewedDate = new Date().toString();
       
       const url = await getDownloadURL(ref(storage, file.path))
       let blob = await fetch(url).then(r => r.blob());
@@ -52,7 +54,8 @@ function ShareFile() {
         element.parentNode.removeChild(element);
         
         await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id), {
-          viewed: true
+          viewed: true,
+          viewedDate:viewedDate
         })
         setFile({...file, viewed:true})
       } catch(e) {
@@ -71,7 +74,7 @@ function ShareFile() {
           <p className='text-black text-ellipsis w-full overflow-hidden'><span className='font-[600]'>Nome: </span>{nameFile}</p>
           <p className='text-black text-ellipsis w-full overflow-hidden'><span className='font-[600]'>Compartilhado por: </span>{nameCompany}</p>
           <p className='text-black text-ellipsis w-full overflow-hidden'><span className='font-[600]'>Data de Upload: </span> {FormatDate(created_date)}</p>
-          <Image src={`/icons/${file?.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={70} height={0} className="self-center mt-[15px] max-sm:w-[60px] max-lsm:w-[50px]"/>
+          <Image src={`/icons/${type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={70} height={0} className="self-center mt-[15px] max-sm:w-[60px] max-lsm:w-[50px]"/>
           <div className='flex justify-center mt-[15px]'>
             <button onClick={() =>  DownloadFile()} className='bg-[rgba(3,238,46,0.20)] px-[10px] max-lsm:px-[8px] py-[5px] max-lsm:py-[3px] max-lsm:text-[16px] rounded-[8px] hover:scale-105 text-black border-[1px] border-greenV'>Download</button>
           </div>

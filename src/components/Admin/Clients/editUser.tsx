@@ -51,6 +51,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
         }
       }catch(e){
         console.log(e)
+        throw Error
       }
     } else {
       await UpdatePhoto()

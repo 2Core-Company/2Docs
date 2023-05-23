@@ -24,8 +24,8 @@ import { useRouter } from "next/navigation";
 function ComponentFolder() {
   const params:any = useSearchParams();
   const id_user: string = params.get("id_user");
+  const id_enterprise: string = params.get("id_enterprise");
   const { dataUser } = useContext(userContext);
-  const [files, setFiles] = useState<Files[]>([]);
   const [recentsFile, setRecentsFiles] = useState<Files[]>([]);
   const [createFolder, setCreateFolder] = useState<boolean>(false);
   const [folderConfig, setFolderConfig] = useState<FolderCfg>({status: false, name: "", color: "", isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3});
@@ -65,7 +65,8 @@ function ComponentFolder() {
         photo_url:docSnap.data()?.photo_url,
         enterprises:docSnap.data()?.enterprises
       });
-    setEnterprise(docSnap.data()?.enterprises[0]);
+      const enterprise = docSnap.data()?.enterprises.find((enterprise) => enterprise.id === id_enterprise)
+    setEnterprise(enterprise);
   }
 
   //Confirmação de deletar pasta

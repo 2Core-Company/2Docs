@@ -6,7 +6,6 @@ export interface Folders{
   singleDownload: boolean
   onlyMonthDownload: boolean
   timeFile: number
-  docs:number
   id:string
 }
 

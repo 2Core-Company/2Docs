@@ -87,7 +87,7 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
 
   return (
     <>
-     {rename ? <Rename user={user} index={1} setUser={setUser} setRename={setRename}/> : <></>}
+     {rename ? <Rename user={user} index={index} setUser={setUser} setRename={setRename}/> : <></>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild className='flex justify-center items-center ml-[10px]'>
