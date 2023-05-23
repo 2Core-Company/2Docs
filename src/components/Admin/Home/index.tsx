@@ -5,7 +5,7 @@ import { useContext} from 'react'
 import styles from './home.module.css'
 import { toast } from 'react-toastify';
 import { QuestionMarkCircledIcon, PlusIcon } from '@radix-ui/react-icons';
-import { userContext }  from '../../../app/Context/contextUser'
+import { adminContext }  from '../../../app/Context/contextAdmin';
 import { companyContext } from '../../../app/Context/contextCompany';
 import { PhoneMask } from '../../../Utils/Other/Masks';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
@@ -14,7 +14,7 @@ import { Contact, Question } from '../../../types/dataCompany';
 
 
 function ComponentHome () {
-  const { dataUser } = useContext(userContext)
+  const { dataAdmin } = useContext(adminContext)
   const { dataCompany, setDataCompany } = useContext(companyContext)
 
 
@@ -33,7 +33,7 @@ function ComponentHome () {
 
   //Funçaõ que atualiza o banco de dados dos contatos
   async function UpdateBdContact(){
-    await updateDoc(doc(db, 'companies', dataUser.id_company), {
+    await updateDoc(doc(db, 'companies', dataAdmin.id_company), {
       contact: dataCompany.contact
     })
     .then(() => {
@@ -92,7 +92,7 @@ function ComponentHome () {
 
   //Funçaõ que atualiza o banco de dados das perguntas/respostas frequentes
   async function UpdateBdQuestion(){
-    await updateDoc(doc(db, 'companies', dataUser.id_company), {
+    await updateDoc(doc(db, 'companies', dataAdmin.id_company), {
       questions: dataCompany.questions
     })
     .then(() => {

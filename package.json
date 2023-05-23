@@ -10,7 +10,7 @@
         "test": "vitest"
     },
     "dependencies": {
-        "@next/font": "^13.0.5",
+        "@next/font": "^13.4.3",
         "@radix-ui/colors": "^0.1.8",
         "@radix-ui/react-avatar": "^1.0.1",
         "@radix-ui/react-checkbox": "^1.0.1",
@@ -43,7 +43,8 @@
         "react-toastify": "^9.1.2",
         "stripe": "^12.0.0",
         "tinyurl": "^1.1.7",
-        "uuid": "^9.0.0"
+        "uuid": "^9.0.0",
+        "vite": "^4.1.0-beta.0"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^5.16.5",

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { TrashIcon, DownloadIcon, MagnifyingGlassIcon, LockClosedIcon, LockOpen1Icon, PersonIcon, GearIcon} from "@radix-ui/react-icons";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useContext, useState } from "react";
-import { userContext } from '../../../app/Context/contextUser'
+import { adminContext } from "../../../app/Context/contextAdmin";
 import {getDoc, doc, updateDoc} from "firebase/firestore";
 import { db } from "../../../../firebase";
 import CreateFolder from "./createFolder";
@@ -24,12 +24,12 @@ import { useRouter } from "next/navigation";
 function ComponentFolder() {
   const params:any = useSearchParams();
   const id_user: string = params.get("id_user");
-  const { dataUser } = useContext(userContext);
+  const { dataAdmin } = useContext(adminContext);
   const [files, setFiles] = useState<Files[]>([]);
   const [recentsFile, setRecentsFiles] = useState<Files[]>([]);
   const [createFolder, setCreateFolder] = useState<boolean>(false);
   const [folderConfig, setFolderConfig] = useState<FolderCfg>({status: false, name: "", color: "", isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3});
-  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[]});
+  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], admins: []});
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""});
   const [idDeletFolder, setIdDeletFolder] = useState<string>("");
   const [enterprise, setEnterprise] = useState<Enterprise>({ id:"", name:"", folders:[]});
@@ -45,25 +45,26 @@ function ComponentFolder() {
   }, [enterprise]);
 
   useEffect(() => {
-    if (dataUser != undefined) {
+    if (dataAdmin != undefined) {
       GetUser();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataUser]);
+  }, [dataAdmin]);
 
   //Puxando informações dos usuários
   async function GetUser() {
-    const docRef = doc(db, "companies", dataUser.id_company, "clients", id_user);
+    const docRef = doc(db, "companies", dataAdmin.id_company, "clients", id_user);
     const docSnap = await getDoc(docRef);
       setUser({
-        id:docSnap.data()?.id, 
-        email:docSnap.data()?.email,
-        id_company:docSnap.data()?.id_company,
-        name:docSnap.data()?.name,
-        password:docSnap.data()?.password,
-        permission:docSnap.data()?.permission,
-        photo_url:docSnap.data()?.photo_url,
-        enterprises:docSnap.data()?.enterprises
+        id: docSnap.data()?.id, 
+        email: docSnap.data()?.email,
+        id_company: docSnap.data()?.id_company,
+        name: docSnap.data()?.name,
+        password: docSnap.data()?.password,
+        permission: docSnap.data()?.permission,
+        photo_url: docSnap.data()?.photo_url,
+        enterprises: docSnap.data()?.enterprises,
+        admins: docSnap.data()?.admins
       });
     setEnterprise(docSnap.data()?.enterprises[0]);
   }
@@ -81,7 +82,7 @@ function ComponentFolder() {
 
   //Deletando pasta
   async function DeleteFolders() {
-    DeleteFolder({user:user, id_folder:idDeletFolder, setUser:setUser, enterprise:enterprise, id_company:dataUser.id_company})
+    DeleteFolder({user:user, id_folder:idDeletFolder, setUser:setUser, enterprise:enterprise, id_company:dataAdmin.id_company})
   }
 
   async function PrivateFolderChange(privateState: boolean, index: number) {
@@ -91,7 +92,7 @@ function ComponentFolder() {
     try{
       toast.promise(
         updateDoc(
-          doc(db, "companies", dataUser.id_company, "clients", user.id),
+          doc(db, "companies", dataAdmin.id_company, "clients", user.id),
           {
             enterprises: user.enterprises,
           }
@@ -221,12 +222,12 @@ function ComponentFolder() {
         </div>
       </div>
       {createFolder ? (
-        <CreateFolder id_company={dataUser.id_company} enterprise={enterprise} id={id_user} user={user} setCreateFolder={setCreateFolder} setUser={setUser} />
+        <CreateFolder id_company={dataAdmin.id_company} enterprise={enterprise} id={id_user} user={user} setCreateFolder={setCreateFolder} setUser={setUser} />
       ) : (
         <></>
       )}
       {folderConfig.status ? (
-        <FolderConfig  user={user} enterprise={enterprise} id={id_user} id_company={dataUser.id_company} setFolderConfig={setFolderConfig} folderConfig={folderConfig} setUser={setUser} setEnterprise={setEnterprise}/>
+        <FolderConfig  user={user} enterprise={enterprise} id={id_user} id_company={dataAdmin.id_company} setFolderConfig={setFolderConfig} folderConfig={folderConfig} setUser={setUser} setEnterprise={setEnterprise}/>
       ) : (
         <></>
       )}

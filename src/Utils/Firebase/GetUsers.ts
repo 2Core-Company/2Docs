@@ -29,7 +29,8 @@ export async function GetUsers({id_company, setPages, setUsers}:PropsGetUsers) {
       id_company: doc.data()?.id_company,
       cnpj:doc.data()?.cnpj,
       nameImage:doc.data()?.nameImage,
-      phone:doc.data()?.phone
+      phone:doc.data()?.phone,
+      admins: doc.data()?.admins,
     }));
 
     setPages(Math.ceil(getUsers.length / 10));

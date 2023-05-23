@@ -18,7 +18,7 @@ import DisableFiles from './DisableFiles'
 import EnableFiles from './enableFiles'
 import TableFiles from '../../Clients&Admin/Files/tableFiles'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
-import { DataUser } from '../../../types/users'
+import { adminContext } from '../../../app/Context/contextAdmin';
 import { Modal } from '../../../types/others';
 import { Files } from '../../../types/files';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
@@ -27,7 +27,7 @@ import { useRouter } from 'next/navigation';
 
 
 function Files(){
-  const { dataUser } = useContext(userContext)
+  const { dataAdmin } = useContext(adminContext)
   const router = useRouter()
   const { setLoading } = useContext(loadingContext)
   const [files, setFiles] = useState<Files[]>([])
@@ -46,20 +46,20 @@ function Files(){
 
   // <--------------------------------- GetFiles --------------------------------->  
   useEffect(() =>{
-    if(dataUser != undefined){
+    if(dataAdmin != undefined){
       setLoading(true)
       GetFiles()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[dataUser])
+  },[dataAdmin])
   
   async function GetFiles(){
     if(trash){
-      await GetFilesToTrash({id_company:dataUser.id_company, id_user:id_user, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
+      await GetFilesToTrash({id_company:dataAdmin.id_company, id_user:id_user, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
     } else if(folderName === "Favoritos"){
-      await GetFilesToFavorites({id_company:dataUser.id_company, id_user:id_user, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
+      await GetFilesToFavorites({id_company:dataAdmin.id_company, id_user:id_user, id_enterprise:id_enterprise, setFiles:setFiles, setDataPages:setDataPages})
     } else {
-      await GetFilesAdmin({id_company:dataUser.id_company, id_user:id_user, id_enterprise:id_enterprise, id_folder:id_folder, setFiles:setFiles, setDataPages:setDataPages})
+      await GetFilesAdmin({id_company:dataAdmin.id_company, id_user:id_user, id_enterprise:id_enterprise, id_folder:id_folder, setFiles:setFiles, setDataPages:setDataPages})
     }
     setLoading(false)
   }
@@ -182,7 +182,7 @@ function Files(){
               {trash ? 
                 <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles}  selectFiles={selectFiles}/>
               : 
-                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  permission={dataUser?.permission} id={id_user} id_company={dataUser?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
+                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  permission={dataAdmin?.permission} id={id_user} id_company={dataAdmin?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
               }
             </div>
           </div>

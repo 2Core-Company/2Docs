@@ -17,7 +17,8 @@ export const userContext = createContext<{dataUser:DataUser, setDataUser:Functio
   status:false,
   fixed:false,
   enterprises:[],
-  checked:false}, setDataUser:(dataUser) => {}});
+  checked:false,
+  admins:[]}, setDataUser:(dataUser) => {}});
 
 export default function Index({ children }) {
   const [dataUser, setDataUser] = useState<DataUser>({
@@ -35,7 +36,8 @@ export default function Index({ children }) {
     status:false,
     fixed:false,
     enterprises:[],
-    checked:false})
+    checked:false,
+    admins:[]})
   return (
     <userContext.Provider value={{dataUser, setDataUser}}>
       {children}

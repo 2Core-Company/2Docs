@@ -14,11 +14,11 @@ import ModalDelete from '../../../Utils/Other/ModalDelete'
 import DeletFiles from '../../Admin/Files/DeletFiles';
 import { Files } from '../../../types/files'
 import { Modal } from '../../../types/others'
-import { userContext } from '../../../app/Context/contextUser'
+import { adminContext } from '../../../app/Context/contextAdmin';
 import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/GetFiles';
 
 function Files(){
-  const {dataUser} = useContext(userContext)
+  const {dataAdmin} = useContext(adminContext)
   const [files, setFiles] = useState<Files[]>([])
   const [selectFiles, setSelectFiles] = useState<Files[]>([])
   const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:0, maxPages:0})
@@ -35,19 +35,19 @@ function Files(){
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
-    if(dataUser != undefined){
+    if(dataAdmin != undefined){
       verifyFolder();
       if(folderName === "Favoritos"){
-        GetFilesToFavorites({id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise:id_enterprise, setFiles, setDataPages})
+        GetFilesToFavorites({id_company:dataAdmin.id_company, id_user:dataAdmin.id, id_enterprise:id_enterprise, setFiles, setDataPages})
       } else {
-        GetFilesClient({id_user:dataUser.id, id_company:dataUser.id_company, id_enterprise:id_enterprise, id_folder:id_folder, setFiles, setDataPages})
+        GetFilesClient({id_user:dataAdmin.id, id_company:dataAdmin.id_company, id_enterprise:id_enterprise, id_folder:id_folder, setFiles, setDataPages})
       } 
     }    
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[dataUser])
+  },[dataAdmin])
 
   async function verifyFolder() {
-    let enterprise = dataUser.enterprises.find((data) => data.id === id_enterprise)
+    let enterprise = dataAdmin.enterprises!.find((data) => data.id === id_enterprise)
     let mockFolder = enterprise?.folders.find((folder) => folder.name === folderName);
 
     if(mockFolder?.isPrivate === true) {
@@ -124,7 +124,7 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
                 <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
-                <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  id_enterprise={id_enterprise}  permission={dataUser?.permission} id={dataUser?.id} id_company={dataUser?.id_company} menu={menu} from={"user"}/>
+                <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  id_enterprise={id_enterprise}  permission={dataAdmin?.permission} id={dataAdmin?.id} id_company={dataAdmin?.id_company} menu={menu} from={"user"}/>
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
