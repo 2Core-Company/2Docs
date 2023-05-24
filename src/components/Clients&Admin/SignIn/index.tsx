@@ -3,7 +3,7 @@ import { EyeClosedIcon, EyeOpenIcon} from '@radix-ui/react-icons';
 import { useState, useContext, useEffect } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading'
 import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
-import { auth, db } from '../../../../firebase'
+import { auth } from '../../../../firebase'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -12,7 +12,6 @@ import LogoBrancoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.
 import { toast } from 'react-toastify';
 import { signOut} from "firebase/auth";
 import { useTheme } from "../../../hooks/useTheme"
-import { DataUser } from '../../../types/users'
 import { stripe } from '../../../../lib/stripe'
 
 function Signin(){
