@@ -41,7 +41,6 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
           singleDownload: false,
           onlyMonthDownload: false,
           timeFile: 3, //Permanent
-          docs:0,
           id:uuidv4()
         });
         const index = user.enterprises.findIndex((data) => enterprise.id === data.id)

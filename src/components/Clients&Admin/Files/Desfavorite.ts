@@ -12,7 +12,7 @@ interface Props{
 
   async function Desfavorite({desfavoriteFile, files, childToParentDownload, folderName}: Props) {                                                                          
     try{
-        await updateDoc(doc(db, 'files', desfavoriteFile.id_company, desfavoriteFile.id_user, desfavoriteFile.id), {
+        await updateDoc(doc(db, 'files', desfavoriteFile.id_company, desfavoriteFile.id_user, 'user', 'files', desfavoriteFile.id), {
             favorite: false
         })
         const index = files.findIndex(file => file.id == desfavoriteFile.id)

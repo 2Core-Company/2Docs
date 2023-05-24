@@ -9,11 +9,11 @@ import FavoriteIcon from '../../../../public/icons/favorite.svg'
 import DesfavoriteIcon from '../../../../public/icons/desfavorite.svg'
 import Share from '../../../../public/icons/share.svg'
 import { Files } from '../../../types/files'
-import MoveTo from './moveTo'
-import CopyTo from './copyTo'
+import MoveTo from '../../Admin/Files/moveTo'
+import CopyTo from '../../Admin/Files/copyTo'
 import Rename from './rename'
 import { useSearchParams } from 'next/navigation';
-import ShareFile from './shareFile';
+import ShareFile from '../../Admin/Files/shareFile';
 import ViewFile from './viewFile';
 import Favorite from './Favorite';
 import Desfavorite from './Desfavorite';

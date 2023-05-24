@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import calendarBuild from "./Calendarbuild";
 import { TriangleLeftIcon, TriangleRightIcon } from '@radix-ui/react-icons';
-import CreateEvent from "./createEvent";
+import CreateEvent from "../../Admin/Calendar/createEvent";
 import { Enterprise } from '../../../types/others'
 
 
