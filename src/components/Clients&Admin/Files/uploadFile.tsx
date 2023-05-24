@@ -56,7 +56,7 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
   async function OrganizeFilesInArray({files, result}){
     const promises:any = []
     const allDataFiles:any = []
-    const collectionRef = collection(db, "files", id_company, id_user)
+    const collectionRef = collection(db, "files", id_company, id_user, 'user', 'files')
 
     for(var i = 0; i < files.length; i++){
       var type = files[i].type.split('/')

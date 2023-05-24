@@ -20,7 +20,7 @@ import { Files } from '../../../types/files'
     async function UploadMessage(){
         if(message != undefined){
             try{
-                await updateDoc(doc(db, 'files', files[i].id_company, files[i].id_user, files[i].id), {
+                await updateDoc(doc(db, 'files', files[i].id_company, files[i].id_user, 'user', 'files', files[i].id), {
                     message: message.trim()
                 })
                 const index = files.findIndex(file => file.id == files[i].id)

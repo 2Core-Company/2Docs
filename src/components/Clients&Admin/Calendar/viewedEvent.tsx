@@ -12,7 +12,7 @@ import Image from 'next/image';
 import style from './calendar.module.css'
 import styles from '../../Admin/Home/home.module.css'
 import DownloadsFile from '../Files/dowloadFiles';
-import DeletEvents from './deletEvents';
+import DeletEvents from '../../Admin/Calendar/deletEvents';
 import { Files } from '../../../types/files';
 import { GetFilesEvent } from '../../../Utils/Firebase/GetFiles'
 
@@ -167,7 +167,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     message:'',
                     downloaded:false
                 }
-                const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, newFiles[i].id)
+                const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, 'user', 'files', newFiles[i].id)
                 promises.push(setDoc(docRef, data))
             } 
         }
@@ -214,7 +214,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             try{
                 const desertRef = ref(storage, `${file.path}`);
                 await Promise.all([
-                    deleteDoc(doc(db, 'files', file.id_company, file.id_user, file.id)),
+                    deleteDoc(doc(db, 'files', file.id_company, file.id_user,  'user', 'files', file.id)),
                     deleteObject(desertRef)
                 ])
             } catch(e){

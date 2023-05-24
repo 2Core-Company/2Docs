@@ -11,7 +11,7 @@ interface Props{
 
 async function Favorite({favoriteFile, files, childToParentDownload}:Props) {                                                                      
     try{
-        await updateDoc(doc(db, 'files', favoriteFile.id_company, favoriteFile.id_user, favoriteFile.id), {
+        await updateDoc(doc(db, 'files', favoriteFile.id_company, favoriteFile.id_user, 'user', 'files', favoriteFile.id), {
             favorite: true
         })
         const index = files.findIndex(file => file.id == favoriteFile.id)

@@ -10,18 +10,19 @@ import { Files } from '../../../types/files'
 import { Enterprise } from '../../../types/others'; 
 import Enterprises from '../../Clients&Admin/Enterprise';
 import { useSearchParams } from 'next/navigation';
+import { GetRecentFiles } from '../../../Utils/Firebase/GetFiles';
 
   function ComponentFolder(){
     const {dataUser, setDataUser} = useContext(userContext)
-    const [recentFiles, setRecentsFiles] = useState<Files[]>([])
+    const [recentFiles, setRecentFiles] = useState<Files[]>([])
     const params:any = useSearchParams();
     const id_enterprise: string = params.get("id_enterprise");
     const [enterprise, setEnterprise] = useState<Enterprise>({name:"", id:"", folders:[]})
-    const [files, setFiles] = useState<Files[]>([])
     const [textSearch, setTextSearch] = useState<string>('')
     
     useEffect(() =>{
       if(dataUser != undefined){
+        GetRecentFiles({id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise, from:'admin', setRecentFiles})
         if(id_enterprise){
           const enterprise= dataUser.enterprises.find((enterprise) => enterprise.id === id_enterprise)
           if(enterprise){
@@ -54,7 +55,7 @@ import { useSearchParams } from 'next/navigation';
                 if(file?.id_enterprise === enterprise.id && enterprise.folders[index]?.isPrivate === false){
                   return (
                     <div key={file.id} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                      <button onClick={() => DownloadsFile({selectFiles:[file], files:files, from:"user", id_folder: file.id_folder})}>
+                      <button onClick={() => DownloadsFile({selectFiles:[file], from:"user", id_folder: file.id_folder})}>
                         <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                       </button>
                       <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>

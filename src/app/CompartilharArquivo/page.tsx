@@ -53,7 +53,7 @@ function ShareFile() {
   
         element.parentNode.removeChild(element);
         
-        await updateDoc(doc(db, 'files', file.id_company, file.id_user, file.id), {
+        await updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
           viewed: true,
           viewedDate:viewedDate
         })
