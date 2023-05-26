@@ -5,8 +5,8 @@ export default async function deleteCollection(req, res) {
   const collectionRef = db.collection(req.body.path);
   const query = collectionRef.orderBy('__name__')
 
-  return new Promise((resolve, reject) => {
-    deleteQueryBatch(db, query, resolve)
+  return new Promise(async (resolve, reject) => {
+    await deleteQueryBatch(db, query, resolve)
     .then(res.status(200).json('Arquivos excluidos com sucesso!!!'))
     .catch(reject);
   });
@@ -32,7 +32,7 @@ async function deleteQueryBatch(db, query, resolve) {
 
   // Recurse on the next process tick, to avoid
   // exploding the stack.
-  process.nextTick(() => {
-    deleteQueryBatch(db, query, resolve);
+  process.nextTick(async () => {
+    await deleteQueryBatch(db, query, resolve);
   });
 }
