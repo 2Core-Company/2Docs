@@ -1,11 +1,9 @@
+'use client'
 import { useContext } from 'react';
 import { loadingContext } from '../../app/Context/contextLoading'
 
 export default function Loading() {
-    const contextLoading = useContext(loadingContext)
-    setTimeout(() => {
-      contextLoading.setLoading(false)
-    }, 20000)
+  const contextLoading = useContext(loadingContext)
     
   return (
     <div>

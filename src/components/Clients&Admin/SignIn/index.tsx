@@ -1,23 +1,23 @@
+'use client'
 import * as Tabs from '@radix-ui/react-tabs';
 import { EyeClosedIcon, EyeOpenIcon} from '@radix-ui/react-icons';
 import { useState, useContext, useEffect } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading'
 import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
-import { auth, db } from '../../../../firebase'
+import { auth } from '../../../../firebase'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LogoPretoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.png'
 import LogoBrancoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.png'
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { signOut} from "firebase/auth";
 import { useTheme } from "../../../hooks/useTheme"
-import { DataUser } from '../../../types/users'
 import { stripe } from '../../../../lib/stripe'
 
 function Signin(){
   const contextLoading = useContext(loadingContext)
-  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[]})
+  const [dataUser, setDataUser] = useState({ email:"", password:""})
   const [loading , setLoading] = useState<boolean>(true)
   const [eye, setEye] = useState<boolean>(false)
   const router = useRouter()
@@ -75,7 +75,6 @@ function Signin(){
         router.replace("/Dashboard/Clientes")    
       }
 
-
     } catch(e){
       contextLoading.setLoading(false)
       ErrorFirebase(e)
@@ -103,6 +102,7 @@ function Signin(){
   if(loading){return <></>}
     return(
       <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
+        <ToastContainer autoClose={3000} />
         {theme == "light" ? (
           <Image src={LogoPretoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='max-md:h-[250px] max-md:w-[250px] rounded-full'/>
         ) : (
@@ -117,14 +117,14 @@ function Signin(){
                 <label className="text-[18px] dark:text-white" htmlFor="Email">
                   Email
                 </label>
-                <input required type="email" autoComplete='username' value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
+                <input required type="email" autoComplete='email' value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
                 <label className="text-[18px] dark:text-white" htmlFor="username">
                   Senha
                 </label>
                 <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center dark:border-white'>
-                  <input required minLength={8} type={eye ? "text" : "password"} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
+                  <input required minLength={8} autoComplete='current-password' type={eye ? "text" : "password"} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
                   {eye ? (
                   <EyeOpenIcon onClick={() => setEye(false)} width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
                   ) : (

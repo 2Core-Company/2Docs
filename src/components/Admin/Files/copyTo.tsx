@@ -34,7 +34,7 @@ function  CopyTo({file, setCopyTo}: Props) {
       setFolders(foldersHere)
     } else {
       setCopyTo(false)
-      throw toast.error("Você precisa ter criado no minimo 2 pastas para conseguir mover um arquivo.")
+      throw toast.error("Você precisa ter criado no minimo 2 pastas para conseguir copiar um arquivo.")
     }
   }
 
