@@ -127,7 +127,7 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
       ) : 
 
         permission === 0 && folderName === 'Cliente' ? (
-          <label className={`${path === "Dashboard/Clientes/Cliente" &&  permission === 0  ? "hidden" : <></>} bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`} >
+          <label className={`bg-black dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`} >
             <p>+ Upload</p>
             <input onChange={(e) => toast.promise(UploadFile(e.target), toastUpload)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
           </label>
