@@ -42,7 +42,6 @@ function Signin(){
 
   function OnToastLogin(e: { preventDefault: () => void; }){
     e.preventDefault()
-    contextLoading.setLoading(true)
     toast.promise(SignIn(),{pending:'Entrando...', success:'Você esta logado.'})
   }
 
