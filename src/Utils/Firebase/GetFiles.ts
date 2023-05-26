@@ -183,8 +183,7 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
           break;
         case 2:
           if(timeDiff > 2592000000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -193,8 +192,7 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
           break;
         case 1:
           if(timeDiff > 604800000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -203,8 +201,7 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
           break;
         case 0:
           if(timeDiff > 86400000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -354,8 +351,7 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
           break;
         case 2:
           if(timeDiff > 2592000000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -364,8 +360,7 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
           break;
         case 1:
           if(timeDiff > 604800000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -374,8 +369,7 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
           break;
         case 0:
           if(timeDiff > 86400000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
