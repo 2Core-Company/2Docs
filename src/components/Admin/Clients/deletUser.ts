@@ -60,8 +60,8 @@ async function DeletUser({user, users, ResetConfig}:Props) {
   async function DeletFiles(){
     try{
       const domain:string = new URL(window.location.href).origin
-      const response = axios.post(`${domain}/api/files/deletCollection`, {path: `files/${user.id_company}/${user.id}/user/files`})
-      const response2 = axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/`})
+      const response = await axios.post(`${domain}/api/files/deletCollection`, {path: `files/${user.id_company}/${user.id}/user/files`})
+      const response2 = await axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/`})
     } catch(e) {
       console.log(e)
     }
