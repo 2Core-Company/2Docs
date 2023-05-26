@@ -11,7 +11,7 @@ export default async function CreateUser(req, res) {
         displayName:req.body.data.id_company,
         emailVerified:true
       })
-      getAuth().setCustomUserClaims(response.uid, {permission:0})
+      const result = await getAuth().setCustomUserClaims(response.uid, {permission:0})
       return res.json(response)
     } catch (e) {
       return res.json(e)
