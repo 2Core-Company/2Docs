@@ -9,13 +9,12 @@ import { userContext } from '../Context/contextUser'
 import { companyContext } from '../Context/contextCompany';
 import { stripe } from '../../../lib/stripe'
 import {  DataUserContext } from '../../types/users';
-import { loadingContext } from '../Context/contextLoading';
+import { ToastContainer } from 'react-toastify';
 
 
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
   const {dataUser, setDataUser} = useContext(userContext)
-  const {setLoading} = useContext(loadingContext)
   const {setDataCompany} = useContext(companyContext)
   const [onLoad, setOnLoad] = useState(false)
   const router = useRouter()
@@ -30,13 +29,16 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       }
       const page = window.location.pathname
       const idTokenResult = await auth.currentUser?.getIdTokenResult()
-      await GetUser(user, idTokenResult?.claims.permission)
-      const plan = await SearchCostumer({id_company:user.displayName})
-      await GetDataCompanyUser({id_company:user.displayName, plan:plan})
+      await Promise.all([
+        GetUser(user, idTokenResult?.claims.permission),
+        SearchCostumer({id_company:user.displayName}),
+        GetDataCompanyUser({id_company:user.displayName})
+      ])
 
-      setOnLoad(true)
-      setLoading(false)
-      
+      if(!onLoad){
+        setOnLoad(true)
+      }
+
       if(idTokenResult?.claims.permission > 0 && page.includes('/Dashboard/Clientes')){
         return router.replace("/Dashboard/Admin")
       }
@@ -73,7 +75,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
     }
   }
 
-  async function GetDataCompanyUser({id_company, plan}){
+  async function GetDataCompanyUser({id_company}){
     const docRef = doc(db, "companies", id_company);
     const docSnap = await getDoc(docRef);
 
@@ -113,6 +115,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
   if(onLoad)
     return (
       <section>
+        <ToastContainer autoClose={3000} />
         <NavBar image={urlImageProfile} permission={dataUser?.permission}/>
         <main className='w-full'>{children}</main>
       </section>

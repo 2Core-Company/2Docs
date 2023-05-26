@@ -1,4 +1,5 @@
-import { db, storage } from '../../../../firebase'
+'use client'
+import { db } from '../../../../firebase'
 import { doc, updateDoc} from "firebase/firestore";
 import Image from 'next/image';
 import { useContext} from 'react'
@@ -121,7 +122,7 @@ function ComponentHome () {
                   return (
                     <div key={index} className="flex items-center gap-[10px] mt-[10px]">
                       <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                      <input  maxLength={15} type="text" value={PhoneMask(contact)} onChange={(text) => ChangeContact({index:index, text:text.target.value})} className='border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
+                      <input  maxLength={15} type="text" value={PhoneMask(contact)} onChange={(text) => ChangeContact({index:index, text:text.target.value})} className='w-full  border-black border-[2px] outline-none rounded-[8px] bg-transparent text-[20px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px] dark:text-white dark:border-white'/>
                     </div>
                   )
                 })}

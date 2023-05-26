@@ -1,3 +1,4 @@
+'use client'
 import './switchStyle.css'
 import * as Switch from '@radix-ui/react-switch';
 import { useTheme } from "../../../hooks/useTheme"
