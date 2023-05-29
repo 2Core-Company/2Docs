@@ -68,7 +68,7 @@ function ViewFile({id_folder, file, files, from, setViwedFile, childToParentDown
         <div className='bg-primary dark:bg-dprimary flex flex-col min-h-[90%] h-full w-[60%] max-sm:w-full px-[5px]'>
           <div onClick={() => setViwedFile(false)} className={`self-end cursor-pointer mt-[20px] w-[30px] h-[2px] bg-black dark:bg-white rotate-45 
           after:w-[30px] after:h-[2px] after:absolute after:bg-black dark:after:bg-white after:rotate-90`}/>
-          <object className='w-full h-[90%] mt-[20px]' data={url}>
+          <object className='w-full h-[90%] mt-[20px]' data={`${url}#toolbar=0`} type="application/pdf">
             <p className='text-[20px] text-center text-black dark:text-white z-50 fixed'>Não foi possível exibir este arquivo.</p>  
           </object>
         </div>  
