@@ -20,7 +20,7 @@ function TableEvents({eventsThatDay, events, admin, setEventsThatDay}:Props) {
           eventSelected ? <ViwedEvent elementFather='table' eventSelected={eventSelected} admin={admin} setEventSelected={setEventSelected} setEventsThatDay={setEventsThatDay} eventsThatDay={eventsThatDay} events={events}/>
         :
           <div id={styles.boxFiles} className='overflow-auto h-full px-[3px]'>
-            <div onClick={() => setEventsThatDay()} className="cursor-pointer w-[2px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[2px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:cursor-pointer after:rotate-90 absolute right-[20px] top-[5px]"></div>
+            <div onClick={() => setEventsThatDay()} className="cursor-pointer w-[2px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[2px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:cursor-pointer after:rotate-90 absolute right-[20px] top-[5px]" />
             <p className='text-[23px] text-center'>Eventos do dia</p>
             <p className='text-[23px] text-center'>{FormatDate(eventsThatDay[0].dateSelected)}</p>
             <div className='border-[2px] border-neutral-300 mt-[15px] rounded-[8px]'>
