@@ -18,7 +18,7 @@ function ComponentHome () {
   const { dataCompany, setDataCompany } = useContext(companyContext)
 
 
-  //Funçaõ que edita o useState dos contatos
+  //Função que edita o useState dos contatos
   function ChangeContact(content:{index:number, text:string}){
     var contacts:Contact[] = []
     if(dataCompany.contact){
@@ -31,7 +31,7 @@ function ComponentHome () {
     setDataCompany({...dataCompany, contact:contacts})
   }
 
-  //Funçaõ que atualiza o banco de dados dos contatos
+  //Função que atualiza o banco de dados dos contatos
   async function UpdateBdContact(){
     await updateDoc(doc(db, 'companies', dataAdmin.id_company), {
       contact: dataCompany.contact
@@ -41,11 +41,11 @@ function ComponentHome () {
     })
     .catch((e) => {
       console.log(e)
-      toast.error("Não foi possivel alterar as informações.")
+      toast.error("Não foi possível alterar as informações.")
     }) 
   }
 
-  //Funçaõ de adicionar contato
+  //Função de adicionar contato
   function AddContact(){
     if(dataCompany.contact === undefined  || dataCompany.contact.length < 3){
       var contacts:Contact[] = []
@@ -59,7 +59,7 @@ function ComponentHome () {
     }
   }
 
-  //Funçaõ que edita o useState das questões
+  //Função que edita o useState das questões
   function ChangeQuestion(content:{index: number, text:string}){
     var questions:Question[] = []
 
@@ -74,7 +74,7 @@ function ComponentHome () {
     setDataCompany({...dataCompany, questions:questions})
   }
 
-  //Funçaõ que edita o useState das respostas
+  //Função que edita o useState das respostas
   function ChangeResponse(content:{index: number, text:string}){
     var questions:Question[] = []
 
@@ -90,7 +90,7 @@ function ComponentHome () {
     setDataCompany({...dataCompany, questions:questions})
   }
 
-  //Funçaõ que atualiza o banco de dados das perguntas/respostas frequentes
+  //Função que atualiza o banco de dados das perguntas/respostas frequentes
   async function UpdateBdQuestion(){
     await updateDoc(doc(db, 'companies', dataAdmin.id_company), {
       questions: dataCompany.questions
