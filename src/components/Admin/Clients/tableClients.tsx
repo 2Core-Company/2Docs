@@ -29,6 +29,7 @@ function TableClients() {
   const [menu, setMenu] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("")
   const toastDisable = {pending: "Trocando status do usuário.", success: "Status trocado com sucesso."};
+  const domain = window.location.origin
 
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() => {
@@ -184,6 +185,7 @@ function TableClients() {
 
                       <div className="w-full flex justify-center items-center">
                         <Options
+                          domain={domain}
                           idUser={user.id}
                           windowsAction={windowsAction}
                           user={user}
