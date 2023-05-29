@@ -14,6 +14,7 @@ import DeletUser from './deletUser';
 import ModalDelete from '../../../Utils/Other/ModalDelete'
 
 interface Props{
+  domain:string
   idUser:string
   user:DataUser,
   users:DataUser[],
@@ -25,12 +26,11 @@ interface Props{
   ResetConfig:Function
 }
 
-function Options({idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed, setUsers, ResetConfig}: Props){
+function Options({domain, idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed, setUsers, ResetConfig}: Props){
   const messageFix = {pending:"Fixando usuário...", success:"Usuário fixado com sucesso."}
   const messageUnFix = {pending:"Desfixando usuário...", success:"Usuário fixado com sucesso."}
   const [modalEvent, setModalEvent] = useState<boolean>(false)
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
-  
 
     //Confirmação de deletar usuário
     function ConfirmationDeleteUser(){
@@ -39,7 +39,7 @@ function Options({idUser, user, users, windowsAction, setWindowsAction, setUserE
   
     //Resposta da confirmação
     const childModal = () => {
-      toast.promise(DeletUser({user:user, users:users, ResetConfig:ResetConfig}), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
+      toast.promise(DeletUser({user:user, users:users, domain, ResetConfig:ResetConfig}), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
       setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
     }
 

@@ -8,22 +8,22 @@ import { DataUser } from '../../../types/users'
   interface Props{
     user:DataUser
     users:DataUser[]
+    domain:string
     ResetConfig:Function
   }
 
-async function DeletUser({user, users, ResetConfig}:Props) {
+async function deletUser({user, users, domain, ResetConfig}:Props) {
   await DeleteAuth()
 
   //Deletando o auth do usuário
   async function DeleteAuth(){
     try{
-      const domain:string = window.location.origin
       const result = await axios.post(`${domain}/api/users/deleteUser`, {users: user, uid: auth.currentUser?.uid})
       if(result.status === 200){
         await Promise.all([DeletePhoto(), DeletFile(), DeletFiles(),  DeletEvents()])
         .then((values) => {
           const allUsers = [...users]
-          const index = allUsers.findIndex(user => user.id === user.id)
+          const index = allUsers.findIndex((data) => data.id === user.id)
           allUsers.splice(index, 1);
           ResetConfig(allUsers)
         });
@@ -81,4 +81,4 @@ async function DeletUser({user, users, ResetConfig}:Props) {
   }
 }
 
-export default DeletUser
+export default deletUser
