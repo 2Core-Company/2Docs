@@ -8,7 +8,9 @@ export default async function DeleteCollection(req, res) {
   return new Promise(async (resolve, reject) => {
     await deleteQueryBatch(db, query, resolve)
     .then(res.status(200).json('Arquivos excluidos com sucesso!!!'))
-    .catch(reject);
+    .catch((reject) => {
+      console.log(reject)
+    });
   });
   
 }

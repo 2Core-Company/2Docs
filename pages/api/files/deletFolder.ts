@@ -21,7 +21,7 @@ export default function deletFolder(req, res) {
         console.error('Erro ao excluir arquivos:', err);
         return;
       }
-      console.log('Arquivos excluídos:');
+      console.log(deletedFiles);
     });
     res.status(200).json('Arquivos excluidos com sucesso!!!')
 }
