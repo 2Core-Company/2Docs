@@ -168,6 +168,8 @@ function DayCard(props) {
   useEffect(() => {
     const DateNow = new Date()
     const AllDates = new Date(day)
+    AllDates.setHours(23);
+    AllDates.setMinutes(59);
     const result = (DateNow.getTime() - AllDates.getTime())
     const currentMonth = new Date(props.month + ",01," + props.year);
 

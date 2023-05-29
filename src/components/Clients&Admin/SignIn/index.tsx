@@ -27,7 +27,7 @@ function Signin(){
     onAuthStateChanged(auth, (user) => {
       if (user?.emailVerified && auth.currentUser) {
         auth.currentUser.getIdTokenResult().then((idTokenResult) => {
-          if(idTokenResult.claims.admin){
+          if(idTokenResult.claims.permission){
             return router.replace("/Dashboard/Admin")
           } else {
             return router.replace("/Dashboard/Clientes")

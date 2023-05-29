@@ -212,9 +212,9 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
         <div className='w-full h-full flex justify-center items-center flex-col'>
           <Image src={files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="Imagem de 2 arquivos" priority className='w-[170px] h-[170px]'/>
           {trash ? 
-            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length  <= 0 ? "Nenhum arquivo deletado encontrado." : "Nenhum resultado foi encontrado."} </p>
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>{textSearch.length <= 0 ? 'Nenhum arquivo deletado encontrado.' : 'Nenhum resultado foi encontrado.'}</p>
           :
-            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>Nada por aqui... <br/> {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length <= 0 ? messageEmpty : "Nenhum resultado foi encontrado."}</p>
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>{textSearch.length <= 0 ? 'Nenhum arquivo foi encontrado.' : 'Nenhum resultado foi encontrado.'}</p>
           }
         </div>
       }

@@ -15,7 +15,7 @@ interface Props{
 async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Props) {
     const folders = enterprise.folders
     const q = query(collection(db, "files", id_company, user.id, 'user', 'files'), where("id_enterprise", "==", enterprise.id), where("id_folder", "==", id_folder));
-    const domain:string = new URL(window.location.href).origin
+    const domain:string = window.location.origin
     const batch = writeBatch(db);
     const querySnapshot = await getDocs(q);
 

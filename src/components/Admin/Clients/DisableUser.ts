@@ -16,7 +16,7 @@ interface PropsDisableUser{
 
 export async function DisableUser({users, selectUsers, id_company, setMenu, setSelectUsers, setUsers}:PropsDisableUser) {
     const usersHere = [...users];
-    const domain: string = new URL(window.location.href).origin;
+    const domain: string = window.location.origin
     const batch = writeBatch(db);
     if (selectUsers.length > 0) {
       try{

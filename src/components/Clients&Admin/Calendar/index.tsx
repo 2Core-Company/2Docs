@@ -194,6 +194,8 @@ function DayCard({dataDay, month, year, dateSelected, events, setEventsThatDay})
     const currentMonth = new Date(month + ",01," + year);
     const dateNow = new Date()
     const AllDates = new Date(day)
+    AllDates.setHours(23);
+    AllDates.setMinutes(59);
     const result = (AllDates.getTime() - dateNow.getTime())
 
     if (day.getMonth() !== currentMonth.getMonth()) {
@@ -201,7 +203,7 @@ function DayCard({dataDay, month, year, dateSelected, events, setEventsThatDay})
       return;
     }
     
-    if(result < -86399000){
+    if(result < 0){
       setState("alreadyPassed");
       return;
     }

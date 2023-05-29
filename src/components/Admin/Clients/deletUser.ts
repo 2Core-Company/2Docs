@@ -17,7 +17,7 @@ async function DeletUser({user, users, ResetConfig}:Props) {
   //Deletando o auth do usuário
   async function DeleteAuth(){
     try{
-      const domain:string = new URL(window.location.href).origin
+      const domain:string = window.location.origin
       const result = await axios.post(`${domain}/api/users/deleteUser`, {users: user, uid: auth.currentUser?.uid})
       if(result.status === 200){
         await Promise.all([DeletePhoto(), DeletFile(), DeletFiles(),  DeletEvents()])
