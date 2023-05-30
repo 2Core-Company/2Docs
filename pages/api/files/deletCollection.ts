@@ -1,7 +1,6 @@
 import { db } from "../sdkFirebase";
 
 export default async function DeleteCollection(req, res) {
-  console.log(req.body.path)
   const collectionRef = db.collection(req.body.path);
   const query = collectionRef.orderBy('__name__')
 

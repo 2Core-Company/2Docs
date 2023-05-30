@@ -14,7 +14,7 @@ interface Props {
 function TableEvents({eventsThatDay, events, admin, setEventsThatDay}:Props) {
   const [eventSelected, setEventSelected] = useState<Event>()
   return (
-    <div className='bg-black/20 backdrop-blur-sm absolute z-50 w-screen h-screen flex flex-col justify-center items-center text-left'>
+    <div className='bg-black/20 backdrop-blur-sm fixed z-50 w-screen h-screen flex flex-col justify-center items-center text-left'>
       <div className='max-w-[800px] w-[90%] max-h-[95%] border-b-[2px] border-[2px] border-terciary rounded-[8px] bg-primary px-[4px] pt-[5px] pb-[10px] relative'>
         {
           eventSelected ? <ViwedEvent elementFather='table' eventSelected={eventSelected} admin={admin} setEventSelected={setEventSelected} setEventsThatDay={setEventsThatDay} eventsThatDay={eventsThatDay} events={events}/>
