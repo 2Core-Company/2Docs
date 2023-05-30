@@ -43,8 +43,8 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
 
     try{
         await Promise.all([
-            batch.commit(),
-            axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}/${id_folder}`})
+            await batch.commit(),
+            await axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}/${id_folder}`})
         ])
     } catch(e){
         console.log(e)

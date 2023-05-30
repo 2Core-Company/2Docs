@@ -1,15 +1,14 @@
 import { db } from "../sdkFirebase";
 
 export default async function DeleteCollection(req, res) {
-  console.log(req.body.path)
   const collectionRef = db.collection(req.body.path);
   const query = collectionRef.orderBy('__name__')
 
   return new Promise(async (resolve, reject) => {
     await deleteQueryBatch(db, query, resolve)
     .then(res.status(200).json('Arquivos excluidos com sucesso!!!'))
-    .catch((reject) => {
-      console.log(reject)
+    .catch((error) => {
+      res.status(400).json(error)
     });
   });
   
