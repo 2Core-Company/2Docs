@@ -16,12 +16,11 @@ export default function deletFolder(req, res) {
       force: true,
     };
       
-    bucket.deleteFiles(options, (err, deletedFiles) => {
+    return bucket.deleteFiles(options, (err, deletedFiles) => {
       if (err) {
-        console.error('Erro ao excluir arquivos:', err);
-        return;
+        res.status(400).json('Erro ao deletar!!!')
+      } else {
+        res.status(200).json('Arquivos excluidos com sucesso!!!')
       }
-      console.log(deletedFiles);
     });
-    res.status(200).json('Arquivos excluidos com sucesso!!!')
 }
