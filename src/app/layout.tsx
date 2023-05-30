@@ -11,14 +11,14 @@ import ContextCompany from './Context/contextCompany'
 import ContextAdmin from './Context/contextAdmin'
 
 const poiretOne = Poiret_One({
-  display: 'swap',
+  display: 'auto',
   weight: ['400'],
   variable: '--font-poiretOne',
   subsets: ['latin'],
 })
 
 const poppins = Poppins({
-  display: "swap",
+  display: "auto",
   weight: ["400"],
   variable: "--font-poppins",
   subsets: ["latin"],

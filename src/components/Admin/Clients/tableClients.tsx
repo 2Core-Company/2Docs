@@ -3,7 +3,7 @@ import ArrowFilter from "../../../../public/icons/arrowFilter.svg";
 import Image from "next/image";
 import iconNullClient from "../../../../public/icons/nullClient.svg";
 import iconSearchUser from "../../../../public/icons/searchUser.svg";
-import { DataUser } from "../../../types/users";
+import { DataUser, DataUserContext } from "../../../types/users";
 import Options from "./options";
 import { FilterFixed, FilterAlphabetical, FilterStatus, FilterDate } from "../../../Utils/Other/Filters";
 import { FormatDate, FormatDateSmall } from "../../../Utils/Other/FormatDate";
@@ -12,17 +12,18 @@ import { WindowsAction } from "../../../types/others";
 
 interface Props {
   users: DataUser[];
-  searchText:string
+  searchText:string;
   pages: number;
   windowsAction: WindowsAction;
   SelectUsers: Function;
   setUserEdit: Function;
-  setUsers:Function
+  setUsers:Function;
   setWindowsAction: Function;
-  ResetConfig:Function
+  ResetConfig:Function;
+  dataAdmin: DataUserContext;
 }
 
-function TableClients({users, searchText, pages, windowsAction, setUsers, SelectUsers, setUserEdit, setWindowsAction, ResetConfig}: Props) {
+function TableClients({users, searchText, pages, windowsAction, setUsers, SelectUsers, setUserEdit, setWindowsAction, ResetConfig, dataAdmin}: Props) {
   const [showItens, setShowItens] = useState<{ min: number; max: number }>({min: -1,max: 10,});
   const [filter, setFilter] = useState<{name: boolean;date: boolean;status: boolean;}>({ name: false, date: false, status: false });
 
@@ -106,6 +107,7 @@ function TableClients({users, searchText, pages, windowsAction, setUsers, Select
                         setWindowsAction={setWindowsAction}
                         setUsers={setUsers}
                         ResetConfig={ResetConfig}
+                        dataAdmin={dataAdmin}
                       />
                     </div>
                   </div>

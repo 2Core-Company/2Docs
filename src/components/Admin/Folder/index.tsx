@@ -25,7 +25,6 @@ function ComponentFolder() {
   const params:any = useSearchParams();
   const id_user: string = params.get("id_user");
   const { dataAdmin } = useContext(adminContext);
-  const [files, setFiles] = useState<Files[]>([]);
   const [recentsFile, setRecentsFiles] = useState<Files[]>([]);
   const [createFolder, setCreateFolder] = useState<boolean>(false);
   const [folderConfig, setFolderConfig] = useState<FolderCfg>({status: false, name: "", color: "", isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3});
@@ -67,6 +66,10 @@ function ComponentFolder() {
         admins: docSnap.data()?.admins
       });
     setEnterprise(docSnap.data()?.enterprises[0]);
+
+    if(docSnap.data()?.admins.length !== 0 && docSnap.data()?.admins.findIndex((id) => id === dataAdmin.id) === -1 && dataAdmin.permission < 3) {
+      router.replace('/Dashboard/Admin/')
+    }
   }
 
   //Confirmação de deletar pasta
@@ -107,7 +110,6 @@ function ComponentFolder() {
     }
     setUser({...user, enterprises: user.enterprises})
   }
-
 
   return (
     <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">

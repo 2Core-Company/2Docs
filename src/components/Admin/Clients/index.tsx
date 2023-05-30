@@ -26,7 +26,7 @@ function ComponentClients() {
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() => {
     if (dataAdmin) {
-      GetUsers({id_company: dataAdmin.id_company, setPages: setPages, setUsers: setUsers, });
+      GetUsers({id_company: dataAdmin.id_company, setPages, setUsers, dataAdmin: dataAdmin});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataAdmin]);
@@ -120,6 +120,7 @@ function ComponentClients() {
             setWindowsAction={setWindowsAction}
             setUsers={setUsers}
             ResetConfig={ResetConfig}
+            dataAdmin={dataAdmin}
           />
         </div>
       </div>
