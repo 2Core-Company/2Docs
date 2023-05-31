@@ -64,9 +64,6 @@ function Files(){
     setLoading(false)
   }
 
-
-
-
   // <--------------------------------- Select Files --------------------------------->
   async function SelectFile(index:number){
     if (files.filter((file) => file.checked === true).length > 9 && files[index].checked === false) {
@@ -148,23 +145,23 @@ function Files(){
           </div>
 
           <Image src={folder} alt="Imagem de uma pasta"/> 
-            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id_user:id_user}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
+            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id_user:id_user, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
           <FileIcon className="dark:text-dsecondary text-secondary" height={21} width={21}/>
           <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{trash ? "Lixeira" : folderName}</p> 
         </div>
         
-        <div className=' w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
+        <div className='min-h-[400px] w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
           <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
             <div className='flex items-center bg-transparent'>
             <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px] dark:text-white'>{files.length} <span className='text-black dark:text-white'>Documentos</span></p>
               <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px] dark:text-white"/>
               <input type="text" placeholder='Buscar'  onChange={(Text) => setTextSearch(Text.target.value)}  className='w-[300px] text-black dark:text-white max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px] dark:placeholder:text-gray-500'/>
             </div>
-            <div className={`flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${menu ? "" : "max-lg:bg-white/30 dark:max-lg:bg-black/30 backdrop-blur"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
+            <div className={`cursor-pointer flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${menu ? "" : "max-lg:bg-white/30 dark:max-lg:bg-black/30 backdrop-blur"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
               <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`flex-col self-center hidden max-lg:flex ${menu ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
-                <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
-                <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
-                <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+                <div className={`rounded-[10px] w-[30px] max-sm:w-[25px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
+                <div className={`rounded-[10px] w-[30px] max-sm:w-[25px]  h-[3px] bg-black dark:bg-white my-[5px] ${menu ? "" : "hidden"}`}/>
+                <div className={`rounded-[10px] w-[30px] max-sm:w-[25px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
               </button>
 
               {
@@ -182,11 +179,11 @@ function Files(){
               {trash ? 
                 <EnableFiles files={files} menu={menu} setMenu={setMenu} setFiles={setFiles}  selectFiles={selectFiles}/>
               : 
-                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  permission={dataAdmin?.permission} id={id_user} id_company={dataAdmin?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
+                folderName != 'Favoritos' && folderName != 'Cliente' ? <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  permission={dataAdmin?.permission} id_user={id_user} id_company={dataAdmin?.id_company} menu={menu} from={"admin"} id_enterprise={id_enterprise}/> : <></>
               }
             </div>
           </div>
-          {/*<-------------- Table of Files --------------> */}
+            {/*<-------------- Table of Files --------------> */}
           <TableFiles id_folder={id_folder}  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
         </div>
       </div>

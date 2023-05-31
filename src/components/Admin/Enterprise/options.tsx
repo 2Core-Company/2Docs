@@ -26,6 +26,7 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
   const {setLoading} = useContext(loadingContext)
   const batch = writeBatch(db);
+  const domain = window.location.origin
 
 
   //Confirmação de deletar empresa
@@ -59,12 +60,11 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
 
   //Puxando arquivos para deletar daquela empresa
   async function DeletFiles(entrepisesUpdated){
-    const domain:string = new URL(window.location.href).origin
-    var q = query(collection(db, "files", user.id_company, user.id), where("id_enterprise", "==", enterprise.id))
+    var q = query(collection(db, "files", user.id_company, user.id, 'user', 'files'), where("id_enterprise", "==", enterprise.id))
     try{
       const querySnapshot = await getDocs(q);
       const a = querySnapshot.forEach((file) => {
-        const laRef = doc(db, "files", user.id_company, user.id, file.data().id);
+        const laRef = doc(db, "files", user.id_company, user.id, 'user', 'files', file.data().id);
         batch.delete(laRef)
       }); 
       
@@ -87,7 +87,7 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
 
   return (
     <>
-     {rename ? <Rename user={user} index={1} setUser={setUser} setRename={setRename}/> : <></>}
+     {rename ? <Rename user={user} index={index} setUser={setUser} setRename={setRename}/> : <></>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild className='flex justify-center items-center ml-[10px]'>

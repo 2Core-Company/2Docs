@@ -5,7 +5,7 @@ import { TrashIcon, DownloadIcon, MagnifyingGlassIcon, LockClosedIcon, LockOpen1
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useContext, useState } from "react";
 import { adminContext } from "../../../app/Context/contextAdmin";
-import {getDoc, doc, updateDoc} from "firebase/firestore";
+import {getDoc, doc, updateDoc, query, collection, where, orderBy, getDocs, limit} from "firebase/firestore";
 import { db } from "../../../../firebase";
 import CreateFolder from "./createFolder";
 import DeleteFolder from "./DeletFolder";
@@ -20,12 +20,14 @@ import { FolderCfg } from "../../../types/folders";
 import { Modal, Enterprise } from "../../../types/others";
 import Enterprises from "../../Clients&Admin/Enterprise";
 import { useRouter } from "next/navigation";
+import { GetRecentFiles } from "../../../Utils/Firebase/GetFiles";
 
 function ComponentFolder() {
   const params:any = useSearchParams();
   const id_user: string = params.get("id_user");
+  const id_enterprise: string = params.get("id_enterprise");
   const { dataAdmin } = useContext(adminContext);
-  const [recentsFile, setRecentsFiles] = useState<Files[]>([]);
+  const [recentFiles, setRecentFiles] = useState<Files[]>([]);
   const [createFolder, setCreateFolder] = useState<boolean>(false);
   const [folderConfig, setFolderConfig] = useState<FolderCfg>({status: false, name: "", color: "", isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3});
   const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], admins: []});
@@ -38,7 +40,7 @@ function ComponentFolder() {
 
   useEffect(() => {
     if (enterprise.id != "") {
-      // GetFilesOrderByDate({id_company:dataUser.id_company,  id_user:id_user, id_enterprise:enterprise.id, from:'user', setRecentsFiles:setRecentsFiles});
+      GetRecentFiles({id_company:dataUser.id_company, id_user, id_enterprise, from:'user', setRecentFiles})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enterprise]);
@@ -65,11 +67,16 @@ function ComponentFolder() {
         enterprises: docSnap.data()?.enterprises,
         admins: docSnap.data()?.admins
       });
-    setEnterprise(docSnap.data()?.enterprises[0]);
+      const enterprise = docSnap.data()?.enterprises.find((enterprise) => enterprise.id === id_enterprise)
+      if(enterprise){
+        setEnterprise(enterprise);
+      } else {
+        setEnterprise(docSnap.data()?.enterprises[0]);
+      }
 
-    if(docSnap.data()?.admins.length !== 0 && docSnap.data()?.admins.findIndex((id) => id === dataAdmin.id) === -1 && dataAdmin.permission < 3) {
-      router.replace('/Dashboard/Admin/')
-    }
+      if(docSnap.data()?.admins.length !== 0 && docSnap.data()?.admins.findIndex((id) => id === dataAdmin.id) === -1 && dataAdmin.permission < 3) {
+        router.replace('/Dashboard/Admin/')
+      }
   }
 
   //Confirmação de deletar pasta
@@ -135,13 +142,13 @@ function ComponentFolder() {
             </p>
           </div>
         </div>
-        {recentsFile.length > 0 ? (
+        {recentFiles.length > 0 ? (
           <>
             <p className=" font-poiretOne text-[40px] max-sm:text-[35px]">
               Uploads recentes
             </p>
             <div className="flex flex-wrap mt-[30px]">
-              {recentsFile.map((file) => {
+              {recentFiles.map((file) => {
                 return (
                   <div key={file.id}className="group  w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] dark:hover:shadow-[#414141] relative">
                     <button onClick={() => DownloadsFile({selectFiles: [file], from: "admin", id_folder: file.id_folder})}>

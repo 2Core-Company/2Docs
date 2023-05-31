@@ -85,14 +85,14 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
       selectFiles[i].checked = false
 
       if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].downloaded === false) {
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id);
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {downloaded: true})
         if(files && childToParentDownload){
           const index = files.findIndex(file => file.id== selectFiles[i].id)
           files[index].downloaded = true;
         }
       } else if (from === "admin" && selectFiles[i].id_folder === folderCliente.id && selectFiles[i].downloaded === false) {
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id);
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {downloaded: true})
         if(files && childToParentDownload){
           const index = files.findIndex(file => file.id == selectFiles[i].id)
@@ -107,7 +107,7 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
       let viewedDate = new Date().toString();
       
       if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].viewed === false){
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id);
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {viewed: true, viewedDate:viewedDate})
 
         if(files && childToParentDownload){
@@ -117,7 +117,7 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
         }
 
       }else if(from === "admin" && selectFiles[i].id_folder == folderCliente.id && selectFiles[i].viewed === false){
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, selectFiles[i].id);
+        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {viewed: true, viewedDate: viewedDate})
 
         if(files && childToParentDownload){
@@ -128,7 +128,6 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
       }
     }
   }
-
 }
 
   export default DownloadsFile

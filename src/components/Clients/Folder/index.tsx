@@ -9,17 +9,28 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { Files } from '../../../types/files'
 import { Enterprise } from '../../../types/others'; 
 import Enterprises from '../../Clients&Admin/Enterprise';
+import { useSearchParams } from 'next/navigation';
+import { GetRecentFiles } from '../../../Utils/Firebase/GetFiles';
 
   function ComponentFolder(){
     const {dataUser, setDataUser} = useContext(userContext)
-    const [recentFiles, setRecentsFiles] = useState<Files[]>([])
+    const [recentFiles, setRecentFiles] = useState<Files[]>([])
+    const params:any = useSearchParams();
+    const id_enterprise: string = params.get("id_enterprise");
     const [enterprise, setEnterprise] = useState<Enterprise>({name:"", id:"", folders:[]})
-    const [files, setFiles] = useState<Files[]>([])
     const [textSearch, setTextSearch] = useState<string>('')
     
     useEffect(() =>{
       if(dataUser != undefined){
-        setEnterprise(dataUser.enterprises[0])
+        GetRecentFiles({id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise, from:'admin', setRecentFiles})
+        if(id_enterprise){
+          const enterprise= dataUser.enterprises.find((enterprise) => enterprise.id === id_enterprise)
+          if(enterprise){
+            setEnterprise(enterprise)
+          }
+        } else {
+          setEnterprise(dataUser.enterprises[0])
+        }
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[dataUser])
@@ -44,7 +55,7 @@ import Enterprises from '../../Clients&Admin/Enterprise';
                 if(file?.id_enterprise === enterprise.id && enterprise.folders[index]?.isPrivate === false){
                   return (
                     <div key={file.id} className='group w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)] relative'>
-                      <button onClick={() => DownloadsFile({selectFiles:[file], files:files, from:"user", id_folder: file.id_folder})}>
+                      <button onClick={() => DownloadsFile({selectFiles:[file], from:"user", id_folder: file.id_folder})}>
                         <DownloadIcon height={25} width={25} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
                       </button>
                       <Image src={`/icons/${file.type}.svg`} width={90} height={90}  className="max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]" alt="Imagem de um arquivo"/>
@@ -69,21 +80,19 @@ import Enterprises from '../../Clients&Admin/Enterprise';
                 enterprise?.folders
                 .filter((folder) => textSearch != "" ?  folder.name === 'Cliente' ? 'meus'.toUpperCase().includes(textSearch.toUpperCase()) : folder.name?.toUpperCase().includes(textSearch.toUpperCase())  : true)
                 .map((folder) =>{
-                  
-                if(folder.name === 'Lixeira'){return}
-                if(folder.isPrivate === false){
-                  const qtdFiles = folder.name === "Favoritos" ? files.filter(file => file.favorite === true && file.trash === false && file.id_enterprise === enterprise.id) : files.filter(file => file.id_folder === folder.id && file.trash === false && file.id_enterprise === enterprise.id)
-                return (
-                  <Link href={{pathname: "Dashboard/Clientes/Arquivos", query:{folder:folder.name, id_folder:folder.id, id_enterprise:enterprise.id}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
-                    <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>
-                      <p className='font-500 text-[18px] w-[25px] h-[25px] bg-secondary dark:bg-dsecondary rounded-full absolute text-center text-[#fff] right-[-10px]'>{qtdFiles.length}</p>
-                      <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path  d="M77.537 15.361H34.4308L29.0135 7.23427C28.7414 6.82757 28.2849 6.58325 27.7963 6.58325H1.46296C0.655407 6.58325 0 7.2372 0 8.04621V16.824V22.6758V65.1062C0 69.1381 3.27704 72.4166 7.30604 72.4166H71.694C75.723 72.4166 79 69.1381 79 65.1062V22.6758V16.824C79 16.015 78.3446 15.361 77.537 15.361ZM76.0741 21.2129H2.92593V18.287H33.6481H76.0741V21.2129ZM2.92593 9.50918H27.0136L30.9153 15.361H2.92593V9.50918ZM76.0741 65.1062C76.0741 67.523 74.1093 69.4907 71.694 69.4907H7.30604C4.89069 69.4907 2.92593 67.523 2.92593 65.1062V24.1388H76.0741V65.1062Z" fill={folder.color}/>
-                      </svg>
-                    </div>
-                    <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>{folder.name === "Cliente" ? "Meus" : folder.name}</p>
-                  </Link>
-                )}})
+                
+                if(folder.isPrivate === false && folder.name != 'Lixeira'){
+                  return (
+                    <Link href={{pathname: "Dashboard/Clientes/Arquivos", query:{folder:folder.name, id_folder:folder.id, id_enterprise:enterprise.id}}} key={folder.name} className='cursor-pointer group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]'>
+                      <div className='relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]'>
+                        <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path  d="M77.537 15.361H34.4308L29.0135 7.23427C28.7414 6.82757 28.2849 6.58325 27.7963 6.58325H1.46296C0.655407 6.58325 0 7.2372 0 8.04621V16.824V22.6758V65.1062C0 69.1381 3.27704 72.4166 7.30604 72.4166H71.694C75.723 72.4166 79 69.1381 79 65.1062V22.6758V16.824C79 16.015 78.3446 15.361 77.537 15.361ZM76.0741 21.2129H2.92593V18.287H33.6481H76.0741V21.2129ZM2.92593 9.50918H27.0136L30.9153 15.361H2.92593V9.50918ZM76.0741 65.1062C76.0741 67.523 74.1093 69.4907 71.694 69.4907H7.30604C4.89069 69.4907 2.92593 67.523 2.92593 65.1062V24.1388H76.0741V65.1062Z" fill={folder.color}/>
+                        </svg>
+                      </div>
+                      <p className='font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis'>{folder.name === "Cliente" ? "Meus" : folder.name}</p>
+                    </Link>
+                  )
+                }})
               : <></>}
             </div>
           </div>

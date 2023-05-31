@@ -28,6 +28,9 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
 
   //Função de criar pasta
   async function CreateFolder() {
+    if(dataFolder.name.toLocaleUpperCase() === 'MEUS'){
+      throw toast.error('Você não pode criar uma pasta com o nome "Meus"')
+    }
     const result = folders.findIndex((folder) => folder.name === dataFolder.name);
     if (result === -1) {
       if (dataFolder.color != undefined && dataFolder.name.length > 0) {
@@ -38,7 +41,6 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
           singleDownload: false,
           onlyMonthDownload: false,
           timeFile: 3, //Permanent
-          docs:0,
           id:uuidv4()
         });
         const index = user.enterprises.findIndex((data) => enterprise.id === data.id)

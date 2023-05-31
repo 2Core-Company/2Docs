@@ -55,8 +55,6 @@ function Files(){
     }
   }
 
-
-
   // <--------------------------------- Select File --------------------------------->
   async function SelectFile(index:number){
     if (files.filter((file) => file.checked === true).length > 9 && files[index].checked === false) {
@@ -94,7 +92,7 @@ function Files(){
     setSelectFiles([])
   }
 
-  function DowloadFiles(){    
+  function DowloadFiles(){
     if(selectFiles.length === 0) throw toast.error("Selecione um arquivo para baixar.")
     toast.promise(DownloadsFile({selectFiles:selectFiles, files:files, from:"user", childToParentDownload:childToParentDownload, id_folder: id_folder}),{pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso", error:"Não foi possível fazer o download."})
   }
@@ -124,7 +122,7 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
                 <button onClick={() => DowloadFiles()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
-                <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  id_enterprise={id_enterprise}  permission={dataUser?.permission} id={dataUser?.id} id_company={dataUser?.id_company} menu={menu} from={"user"}/>
+                <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload}  id_enterprise={id_enterprise}  permission={dataUser?.permission} id_user={dataUser?.id} id_company={dataUser?.id_company} menu={menu} from={"user"}/>
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}

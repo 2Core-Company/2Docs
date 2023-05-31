@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { DownloadIcon, EyeOpenIcon, TrashIcon} from '@radix-ui/react-icons';
 import Image from 'next/image'
@@ -9,11 +9,11 @@ import FavoriteIcon from '../../../../public/icons/favorite.svg'
 import DesfavoriteIcon from '../../../../public/icons/desfavorite.svg'
 import Share from '../../../../public/icons/share.svg'
 import { Files } from '../../../types/files'
-import MoveTo from './moveTo'
-import CopyTo from './copyTo'
+import MoveTo from '../../Admin/Files/moveTo'
+import CopyTo from '../../Admin/Files/copyTo'
 import Rename from './rename'
-import { usePathname, useSearchParams } from 'next/navigation';
-import ShareFile from './shareFile';
+import { useSearchParams } from 'next/navigation';
+import ShareFile from '../../Admin/Files/shareFile';
 import ViewFile from './viewFile';
 import Favorite from './Favorite';
 import Desfavorite from './Desfavorite';
@@ -29,7 +29,8 @@ interface Props{
   from:string
   DownloadFile:Function, 
   ConfirmationDeleteFile:Function
-  childToParentDownload:Function}
+  childToParentDownload:Function
+}
 
 function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile, ConfirmationDeleteFile, childToParentDownload}: Props){
   const [moveTo, setMoveTo] = useState(false)
@@ -40,6 +41,7 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
   const toastDesfavorite = {pending:'Desfavoritando arquivo...', success:'Arquivo Desfavoritado com sucesso.', error:'Não foi possivel desfavoritar este arquivo.'}
   const params:any = useSearchParams()
   const folderName:string = params.get("folder")
+
 
 
   return (
@@ -105,12 +107,12 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
           
           <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
             {file?.favorite ? 
-              <div onClick={() => toast.promise(Desfavorite({desfavoriteFile:file, files:files, childToParentDownload:childToParentDownload, folderName:folderName}),toastDesfavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => toast.promise(Desfavorite({desfavoriteFile:file, files, childToParentDownload, folderName}),toastDesfavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={DesfavoriteIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Desfavoritar
               </div>
             :
-              <div onClick={() => toast.promise(Favorite({favoriteFile:file, files:files, childToParentDownload:childToParentDownload}), toastFavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => toast.promise(Favorite({favoriteFile:file, files, childToParentDownload}), toastFavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={FavoriteIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Favoritar
               </div>

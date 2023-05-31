@@ -1,8 +1,6 @@
-'use client'
 import {Poiret_One, Poppins } from '@next/font/google'
 import "../../styles/globals.css";
 import Loading from '../components/Clients&Admin/Loading'
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'
 import ThemeContextProvider from '../hooks/useTheme'
 import ContextUser from './Context/contextUser'
@@ -41,7 +39,6 @@ export default function RootLayout({children,}: {children: React.ReactNode}) {
               </ContextLoading>
             </ContextUser>
           </ContextAdmin>
-          <ToastContainer autoClose={3000}/>
         </body>
       </html>
     </ThemeContextProvider>

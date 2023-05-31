@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import calendarBuild from "./Calendarbuild";
 import { TriangleLeftIcon, TriangleRightIcon } from '@radix-ui/react-icons';
-import CreateEvent from "./createEvent";
+import CreateEvent from "../../Admin/Calendar/createEvent";
 import { Enterprise } from '../../../types/others'
 
 
@@ -170,6 +170,8 @@ function DayCard(props) {
   useEffect(() => {
     const DateNow = new Date()
     const AllDates = new Date(day)
+    AllDates.setHours(23);
+    AllDates.setMinutes(59);
     const result = (DateNow.getTime() - AllDates.getTime())
     const currentMonth = new Date(props.month + ",01," + props.year);
 

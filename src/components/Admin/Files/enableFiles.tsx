@@ -27,7 +27,7 @@ function EnableFiles({selectFiles, menu, files, setMenu, setFiles}:Props) {
     const batch = writeBatch(db);
     try{
       for await (const file of selectFiles){
-        const laRef1 = doc(db, "files", file.id_company, file.id_user, file.id);
+        const laRef1 = doc(db, "files", file.id_company, file.id_user, 'user', 'files', file.id);
         batch.update(laRef1, {trash: false})
         const index = files.findIndex(file => file.id === file.id)
         files.splice(index,1)

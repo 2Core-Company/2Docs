@@ -14,8 +14,8 @@ interface Props{
 
 async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Props) {
     const folders = enterprise.folders
-    const q = query(collection(db, "files", id_company, user.id), where("id_enterprise", "==", enterprise.id), where("id_folder", "==", id_folder));
-    const domain:string = new URL(window.location.href).origin
+    const q = query(collection(db, "files", id_company, user.id, 'user', 'files'), where("id_enterprise", "==", enterprise.id), where("id_folder", "==", id_folder));
+    const domain:string = window.location.origin
     const batch = writeBatch(db);
     const querySnapshot = await getDocs(q);
 
@@ -29,7 +29,7 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
     try{
         await Promise.all([
             querySnapshot.forEach((file) => {
-                const laRef = doc(db, "files", id_company, user.id, file.data().id);
+                const laRef = doc(db, "files", id_company, user.id, 'user', 'files', file.data().id);
                 batch.delete(laRef)
             }),
             updateDoc(doc(db, 'companies', id_company, "clients", user.id), {
@@ -43,8 +43,8 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
 
     try{
         await Promise.all([
-            batch.commit(),
-            axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}/${id_folder}`})
+            await batch.commit(),
+            await axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}/${id_folder}`})
         ])
     } catch(e){
         console.log(e)

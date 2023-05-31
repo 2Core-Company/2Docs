@@ -1,9 +1,50 @@
-import { collection, getDocs, query, where, doc, updateDoc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, updateDoc, getDoc, orderBy, limit } from "firebase/firestore";
 import { Files } from '../../types/files';
 import { db } from "../../../firebase";
 import { toast } from 'react-toastify';
 import { Event } from '../../types/event'
 import { GetFolder } from "../folders/getFolders";
+
+
+interface interfaceGetRecentFiles{
+  id_company:string
+  id_user:string
+  id_enterprise:string
+  from,
+  setRecentFiles:Function
+}
+
+export async function GetRecentFiles({id_company,  id_user, id_enterprise, from, setRecentFiles}:interfaceGetRecentFiles){
+  const files:Files[] = []
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where('from', '==', from), where("trash", "==", false), where("id_enterprise", "==", id_enterprise), orderBy('created_date'), limit(3));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((document) => {
+    var file:Files = {
+      id:document.data()?.id,
+      id_company:document.data()?.id_company,
+      id_user:document.data()?.id_user,
+      id_enterprise:document.data()?.id_enterprise,
+      id_folder:document.data()?.id_folder,
+      id_event: document.data()?.id_event,
+      name:document.data()?.name,
+      trash:document.data()?.trash,
+      size:document.data()?.size,
+      favorite:document.data()?.favorite,
+      path:document.data()?.path,
+      viewedDate:document.data()?.viewedDate,
+      type:document.data()?.type,
+      created_date:Date.parse(document.data()?.created_date),
+      viewed:document.data()?.viewed,
+      from:document.data()?.from,
+      message:document.data()?.message,
+      downloaded:document.data()?.downloaded,
+      checked:false
+    }
+    file.checked = false
+    files.push(file)
+  });
+  setRecentFiles(files)
+}
 
 
 
@@ -17,7 +58,7 @@ interface interfaceGetFilesToTrash{
 
 export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setFiles, setDataPages}:interfaceGetFilesToTrash){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, id_user), where("trash", "==", true), where("id_enterprise", "==", id_enterprise));
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("trash", "==", true), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((document) => {
     var file:Files = {
@@ -60,7 +101,7 @@ interface interfaceGetFilesToFavorites{
 
 export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, setFiles, setDataPages}:interfaceGetFilesToFavorites){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, id_user), where("favorite", "==", true), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("favorite", "==", true), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((document) => {
     var file:Files = {
@@ -103,7 +144,7 @@ interface interfaceGetFilesAdmin{
 
 export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_folder, setFiles, setDataPages}:interfaceGetFilesAdmin){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, id_user),  where("id_folder", "==", id_folder), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'),  where("id_folder", "==", id_folder), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
   const folder = await GetFolder({id_company,  id_user, id_enterprise, id_folder})
 
@@ -142,8 +183,7 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
           break;
         case 2:
           if(timeDiff > 2592000000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -152,8 +192,7 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
           break;
         case 1:
           if(timeDiff > 604800000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -162,8 +201,7 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
           break;
         case 0:
           if(timeDiff > 86400000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -184,6 +222,7 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
 
 
 
+
 interface interfaceGetFilesEvent{
   id_company:string
   eventSelected:Event,
@@ -192,7 +231,7 @@ interface interfaceGetFilesEvent{
 
 export async function GetFilesEvent({id_company, eventSelected, setFiles}: interfaceGetFilesEvent){
   const getFiles:Files[] = []
-  var q = query(collection(db, "files", id_company, eventSelected.id_user), where("id_event", "==",  eventSelected.id));
+  var q = query(collection(db, "files", id_company, eventSelected.id_user, 'user', 'files'), where("id_event", "==",  eventSelected.id));
 
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((document) => {
@@ -223,6 +262,7 @@ export async function GetFilesEvent({id_company, eventSelected, setFiles}: inter
 
 
 
+
 interface interfaceGetSpecificFile{
   id_company:string
   id_user:string
@@ -231,7 +271,7 @@ interface interfaceGetSpecificFile{
 }
 
 export async function GetSpecificFile({id_company, id_user, id_file, setFile}:interfaceGetSpecificFile){
-  const docRefFile = doc(db, "files", id_company, id_user, id_file);
+  const docRefFile = doc(db, "files", id_company, id_user, 'user', 'files', id_file);
   const document = await getDoc(docRefFile)
   console.log(document.data())
   const data:Files = {      
@@ -259,6 +299,7 @@ export async function GetSpecificFile({id_company, id_user, id_file, setFile}:in
 
 
 
+
 interface interfaceGetFilesClient{
   id_company:string
   id_user:string
@@ -271,7 +312,7 @@ interface interfaceGetFilesClient{
 export async function GetFilesClient({id_company,  id_user, id_enterprise, id_folder, setFiles, setDataPages}:interfaceGetFilesClient){
 
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, id_user), where("trash", "==", false), where("id_enterprise", "==", id_enterprise), where("id_folder", "==", id_folder));
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("trash", "==", false), where("id_enterprise", "==", id_enterprise), where("id_folder", "==", id_folder));
   const querySnapshot = await getDocs(q);
   const folder = await GetFolder({id_company,  id_user, id_enterprise, id_folder})
 
@@ -310,8 +351,7 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
           break;
         case 2:
           if(timeDiff > 2592000000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -320,8 +360,7 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
           break;
         case 1:
           if(timeDiff > 604800000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {
@@ -330,8 +369,7 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
           break;
         case 0:
           if(timeDiff > 86400000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, file.id), {
-              ...file,
+            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
               trash: true
             })
           } else {

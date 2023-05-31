@@ -14,13 +14,13 @@ interface Props {
 function TableEvents({eventsThatDay, events, admin, setEventsThatDay}:Props) {
   const [eventSelected, setEventSelected] = useState<Event>()
   return (
-    <div className='bg-black/20 backdrop-blur-sm absolute z-50 w-screen h-screen flex flex-col justify-center items-center text-left'>
-      <div className='max-w-[800px] w-[90%] max-h-[95%] border-b-[2px] border-[2px] border-terciary rounded-[8px] bg-primary px-[4px] py-[5px] relative'>
+    <div className='bg-black/20 backdrop-blur-sm fixed z-50 w-screen h-screen flex flex-col justify-center items-center text-left'>
+      <div className='max-w-[800px] w-[90%] max-h-[95%] border-b-[2px] border-[2px] border-terciary rounded-[8px] bg-primary px-[4px] pt-[5px] pb-[10px] relative'>
         {
           eventSelected ? <ViwedEvent elementFather='table' eventSelected={eventSelected} admin={admin} setEventSelected={setEventSelected} setEventsThatDay={setEventsThatDay} eventsThatDay={eventsThatDay} events={events}/>
         :
           <div id={styles.boxFiles} className='overflow-auto h-full px-[3px]'>
-            <div onClick={() => setEventsThatDay()} className="cursor-pointer w-[4px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[4px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:cursor-pointer after:rotate-90 absolute right-[35px] top-[15px]"></div>
+            <div onClick={() => setEventsThatDay()} className="cursor-pointer w-[2px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[2px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:cursor-pointer after:rotate-90 absolute right-[20px] top-[5px]" />
             <p className='text-[23px] text-center'>Eventos do dia</p>
             <p className='text-[23px] text-center'>{FormatDate(eventsThatDay[0].dateSelected)}</p>
             <div className='border-[2px] border-neutral-300 mt-[15px] rounded-[8px]'>
@@ -50,7 +50,7 @@ function TableEvents({eventsThatDay, events, admin, setEventsThatDay}:Props) {
                 }
 
                 return (
-                  <div key={index} onClick={() => setEventSelected(event)} className='whitespace-nowrap cursor-pointer grid grid-cols-4 max-sm:grid-cols-3 gap-4 px-[10px] py-[8px] border-b-[2px] border-y-neutral-300'>
+                  <div key={index} onClick={() => setEventSelected(event)} className='whitespace-nowrap cursor-pointer grid grid-cols-4 max-sm:grid-cols-3 gap-4 px-[10px] py-[8px] border-t-[2px] border-y-neutral-300'>
                     <p className='overflow-hidden text-ellipsis'>{event.userName}</p>
                     <p className='overflow-hidden text-ellipsis'>{event.enterprise.name}</p>
                     <p className='overflow-hidden text-ellipsis'>{event.title}</p>

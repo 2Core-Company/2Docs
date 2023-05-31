@@ -12,7 +12,7 @@ import Image from 'next/image';
 import style from './calendar.module.css'
 import styles from '../../Admin/Home/home.module.css'
 import DownloadsFile from '../Files/dowloadFiles';
-import DeletEvents from './deletEvents';
+import DeletEvents from '../../Admin/Calendar/deletEvents';
 import { Files } from '../../../types/files';
 import { GetFilesEvent } from '../../../Utils/Firebase/GetFiles'
 
@@ -36,18 +36,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     const messageToastDelet = {pending:'Deletando arquivo...', success:'Arquivo deletado com sucesso.'}
 
     useEffect(() =>{
-        const diffInMs   = new Date().getTime() - new Date(eventSelected.dateSelected).getTime()
-        const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24)) 
-        if(eventSelected.complete){
-            setDataEvent({style:'border-greenV bg-greenV/20', text:'Completo', upload:true})
-        } else if(diffInDays <= 1){
-            setDataEvent({style:'bg-[#d4d0d0] border-[#a9a6a6]', text:'Em aberto', upload:true})
-        } else if( 5 >= diffInDays ) {
-            setDataEvent({style:'bg-[#efd1478e] border-[#f4c703]', text:'Atrasado', upload:true})
-        } else if(5 < diffInDays){
-            setDataEvent({style:'border-red bg-red/20', text:'Incompleto', upload:false})
-        }
-
+        GetStatus(eventSelected.complete)
         if(dataUser != undefined){
             const id_company = dataUser.id_company
             GetFilesEvent({id_company, eventSelected, setFiles})
@@ -56,15 +45,31 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
       // eslint-disable-next-line react-hooks/exhaustive-deps
       },[dataUser])
 
+    function GetStatus(complete:Boolean){
+        const diffInMs   = new Date().getTime() - new Date(eventSelected.dateSelected).getTime()
+        const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24)) 
+        if(complete){
+            setDataEvent({style:'border-greenV bg-greenV/20', text:'Completo', upload:true})
+        } else if(diffInDays <= 1){
+            setDataEvent({style:'bg-[#d4d0d0] border-[#a9a6a6]', text:'Em aberto', upload:true})
+        } else if( 5 >= diffInDays ) {
+            setDataEvent({style:'bg-[#efd1478e] border-[#f4c703]', text:'Atrasado', upload:true})
+        } else if(5 < diffInDays){
+            setDataEvent({style:'border-red bg-red/20', text:'Incompleto', upload:false})
+        }
+    }
+
     //setando evento visualizado
     async function UpdatedEventViwed(){
-        await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
-            viwed:true
-        })
-
-        if(elementFather === 'home'){
-            const index1 = events.findIndex(event => event.id == eventSelected.id)
-            events.splice(index1, 1)
+        if(!eventSelected.viewed){
+            await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
+                viewed:true
+            })
+    
+            if(elementFather === 'home'){
+                const index1 = events.findIndex(event => event.id == eventSelected.id)
+                events.splice(index1, 1)
+            }
         }
     }
     
@@ -75,13 +80,13 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         const filesHere = [...files]
         for await (const file of e.files) {
             if(file.size > 30000000){
-                e.value = null
-                return toast.error("Os arquivos só podem ter no maximo 30mb.")
+                toast.error(`O arquivo ${file.name} excede o limite de 30mb.`)
+            } else {
+                file.id = Math.floor(1000 + Math.random() * 9000) + file.name;
+                file.type2 = FindTypeFile(file)
+                filesHere.push(file)
+                newFilesHere.push(file)
             }
-            file.id = Math.floor(1000 + Math.random() * 9000) + file.name;
-            file.type2 = FindTypeFile(file)
-            filesHere.push(file)
-            newFilesHere.push(file)
         }
         setFiles(filesHere)
         setNewFiles(newFilesHere)
@@ -114,8 +119,10 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         if(files.length < 0){
             return toast.error("Faça o armazenamento de algum arquivo para salvar.")
         } 
-
-        toast.promise(UploadFileStorage(),{pending:'Armazenando os arquivos...', success:'Arquivos aramazenados com sucesso.', error:'Não foi possivel armazerar estes arquivos.'})
+        
+        if(newFiles.length > 0){
+            toast.promise(UploadFileStorage(),{pending:'Armazenando os arquivos...', success:'Arquivos aramazenados com sucesso.', error:'Não foi possivel armazerar estes arquivos.'})
+        }
     }
 
     async function  UploadFileStorage() {
@@ -126,10 +133,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         }
         try{
             const result = await Promise.all(promises)
-
             await Promise.all([UploadFilestore(result), UpdatedEventComplete()])
-
-
         } catch(e){
             console.log(e)
         }
@@ -167,7 +171,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     message:'',
                     downloaded:false
                 }
-                const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, newFiles[i].id)
+                const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, 'user', 'files', newFiles[i].id)
                 promises.push(setDoc(docRef, data))
             } 
         }
@@ -182,20 +186,17 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     //setando evento completo
     async function UpdatedEventComplete(){
-        await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
-            complete:true
-        })
-
-        if(events.length > 0){
-            const index = events.findIndex(event => event.id == eventSelected.id)
-            events[index].complete = true
-        } 
-        
-        if (elementFather === 'table' && eventsThatDay && setEventsThatDay){
-            const index =  eventsThatDay.findIndex(event => event.id == eventSelected.id)
-            eventsThatDay[index].complete = true
+        if(!eventSelected.complete){
+            console.log('a')
+            await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
+                complete:true
+            })
             
-            setEventsThatDay([...eventsThatDay])
+            if (elementFather === 'table' && eventsThatDay && setEventsThatDay){
+                const index =  eventsThatDay.findIndex(event => event.id == eventSelected.id)
+                eventsThatDay[index].complete = true
+                setEventsThatDay([...eventsThatDay])
+            }
         }
     }
 
@@ -214,7 +215,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             try{
                 const desertRef = ref(storage, `${file.path}`);
                 await Promise.all([
-                    deleteDoc(doc(db, 'files', file.id_company, file.id_user, file.id)),
+                    deleteDoc(doc(db, 'files', file.id_company, file.id_user,  'user', 'files', file.id)),
                     deleteObject(desertRef)
                 ])
             } catch(e){
@@ -230,12 +231,28 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
         setFiles(filesFunction)
         setNewFiles(newFilesFunction)
+        UpdatedEventIncomplete(newFilesFunction)
+    }
+
+    async function UpdatedEventIncomplete(files){
+        if(eventSelected.complete && files.length === 0){
+            await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
+                complete:false
+            })
+            
+            if (elementFather === 'table' && eventsThatDay && setEventsThatDay && setEventSelected){
+                const index =  eventsThatDay.findIndex(event => event.id == eventSelected.id)
+                eventsThatDay[index].complete = false
+                GetStatus(false)
+                setEventsThatDay([...eventsThatDay])
+            }
+        }
     }
 
   return (
     <div className="flex justify-center items-center w-screen h-screen fixed z-50 left-0 top-0 bg-black/20 backdrop-blur-sm">
-        <div className='max-w-[800px] w-[90%] max-h-[95%] border-b-[2px] border-[2px] border-terciary rounded-[8px] bg-primary px-[4px] py-[5px] relative flex flex-col'>
-            <div onClick={() =>  {setEventsThatDay && elementFather  === 'table' ?  setEventsThatDay() : setEventSelected ? setEventSelected() : ''}} className="cursor-pointer w-[4px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[4px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:cursor-pointer after:rotate-90 absolute right-[18px] top-[5px]"></div>
+        <div className='max-w-[800px] w-[90%] max-h-[95%] border-b-[2px] border-[2px] border-terciary rounded-[8px] bg-primary px-[4px] pt-[5px] pb-[10px] relative flex flex-col'>
+            <div onClick={() =>  {setEventsThatDay && elementFather  === 'table' ?  setEventsThatDay() : setEventSelected ? setEventSelected() : ''}} className="cursor-pointer w-[2px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[2px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:cursor-pointer after:rotate-90 absolute right-[20px] top-[5px]"></div>
             {elementFather === 'table' && setEventSelected ?
                 <button onClick={() => setEventSelected()} className="cursor-pointer absolute left-[0px] top-[5px]">
                     <ArrowLeftIcon className="w-[50px] h-[35px] text-neutral-400" />
@@ -298,9 +315,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     }
                 </>
             : 
-                <>
-                    <p className='text-[18px] text-red max-sm:text-[16px] max-sm:text-center'>Este evento ja venceu e você não consegue mais fazer o armazenamento de arquivos.</p>  
-                </>
+                
+                <p className='text-[18px] text-red max-sm:text-[16px] max-sm:text-center'>Este evento ja venceu e você não consegue mais fazer o armazenamento de arquivos.</p>  
+                
             }
           </div>
     </div>

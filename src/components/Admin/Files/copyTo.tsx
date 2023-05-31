@@ -34,7 +34,7 @@ function  CopyTo({file, setCopyTo}: Props) {
       setFolders(foldersHere)
     } else {
       setCopyTo(false)
-      throw toast.error("Você precisa ter criado no minimo 2 pastas para conseguir mover um arquivo.")
+      throw toast.error("Você precisa ter criado no minimo 2 pastas para conseguir copiar um arquivo.")
     }
   }
 
@@ -88,7 +88,7 @@ function  CopyTo({file, setCopyTo}: Props) {
       downloaded:false
     }
     try {
-      const docRef = await setDoc(doc(db, "files", file.id_company, file.id_user, id), data);
+      const docRef = await setDoc(doc(db, "files", file.id_company, file.id_user, 'user', 'files', id), data);
     } catch (e) {
       console.log(e)
       throw toast.error("Não foi possivel copiar o arquivo")
