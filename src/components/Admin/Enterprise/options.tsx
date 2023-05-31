@@ -54,7 +54,7 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
     } catch(e) {
       console.log(e)
       setLoading(false)
-      throw toast.error("Não foi possivél deletar esta empresa.", {position: "bottom-right"})
+      throw toast.error("Não foi possível deletar esta empresa.", {position: "bottom-right"})
     }
   }
 
@@ -80,7 +80,7 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
     } catch(e){
       setLoading(false)
       console.log(e)
-      throw toast.error("Não foi possivél deletar esta empresa.")
+      throw toast.error("Não foi possível deletar esta empresa.")
     }
   }
 

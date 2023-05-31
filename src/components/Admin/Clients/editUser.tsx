@@ -10,19 +10,19 @@ import { doc, updateDoc } from "firebase/firestore";
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import {DataUser} from '../../../types/users'
+import { DataUser, DataUserContext } from '../../../types/users'
 import { PhoneMask, CNPJMask } from '../../../Utils/Other/Masks';
 
   interface Props{
-    contextUser:DataUser
+    contextAdmin:DataUserContext
     user:DataUser
     closedWindow:Function
     childToParentEdit:Function
   }
 
-function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
+function EditUser({closedWindow, childToParentEdit, user, contextAdmin}:Props){
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState<DataUser>({id:user.id, id_company:user.id_company, permission:0, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, nameImage: user.nameImage, photo_url: user.photo_url, enterprises: user.enterprises})
+  const [dataUser, setDataUser] = useState<DataUser>({id:user.id, id_company:user.id_company, permission:0, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, nameImage: user.nameImage, photo_url: user.photo_url, enterprises: user.enterprises, admins: []})
   const [file, setFile] : Array<{name:string}> | any  = useState({name: "padraoCliente.png"})
   const [fileDataURL, setFileDataURL] = useState<string>(user.photo_url);
   const [eye , setEye] = useState(false)
@@ -59,7 +59,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
       try{
         if(file.name != "padraoCliente.png"){
           await DeletePhoto()
-          const storageRef = ref(storage, contextUser.id_company +  "/images/" + referencesFile);
+          const storageRef = ref(storage, contextAdmin.id_company +  "/images/" + referencesFile);
           const result = await uploadBytes(storageRef, file)
         }
       }catch(e){
@@ -77,7 +77,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
   async function GetUrlPhoto(referencesFile:string) {
     var url = ""
     try{
-      url  = await getDownloadURL(ref(storage, `${contextUser.id_company }/images/` + referencesFile))
+      url  = await getDownloadURL(ref(storage, `${contextAdmin.id_company }/images/` + referencesFile))
     }catch(e){
       ErrorFirebase(e)
       console.log(e)
@@ -89,7 +89,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
   async function DeletePhoto(){
     if(user.nameImage != "padraoCliente.png"){
       try{
-        const desertRef = ref(storage, contextUser.id_company + '/images/' + user.nameImage);
+        const desertRef = ref(storage, contextAdmin.id_company + '/images/' + user.nameImage);
         await deleteObject(desertRef).then((result) => {
         }).catch((error) => {
           console.log(error);
@@ -101,7 +101,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
   }
 
   async function UpdateBdUser(data){
-    const userAfterEdit = {
+    const userAfterEdit: DataUser = {
       id: user.id,
       id_company:user.id_company,
       permission:0,
@@ -114,10 +114,11 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
       photo_url: data.photo_url,
       nameImage: data.nameImage,
       status: user.status,
-      created_date: user.created_date
+      created_date: user.created_date,
+      admins: user.admins
     }
 
-    await (updateDoc(doc(db, 'companies', contextUser.id_company, "clients", user.id), userAfterEdit))
+    await updateDoc(doc(db, 'companies', contextAdmin.id_company, "clients", user.id), {...userAfterEdit})
 
     childToParentEdit({...userAfterEdit, checked: false})
   }
@@ -125,17 +126,17 @@ function EditUser({closedWindow, childToParentEdit, user, contextUser}:Props){
   //Trocar foto de perfil
   async function ChangePhoto(photos){
     for await (const photo of photos.files) {
-      if(photo.size < 9000){
+      if(photo.size < 9216){
         photo.value = null
         return toast.error("Está imagem é muito pequena")
       }
 
-      if(photo.size > 10000000){
+      if(photo.size > 10485760){
         photo.value = null
         return toast.error("Está imagem é grande, só é permitido imagens de até 10mb")
       }
 
-      if(photo.size < 9000){
+      if(photo.size < 9216){
         photo.value = null
         return toast.error("Está imagem é muito pequena")
       }

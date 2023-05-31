@@ -6,7 +6,7 @@ import styles from '../../Admin/Home/home.module.css'
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import { useContext, useState } from 'react'
-import { userContext } from '../../../app/Context/contextUser';
+import { adminContext } from '../../../app/Context/contextAdmin';
 import { toast } from 'react-toastify';
 import { Enterprise } from '../../../types/others'
 import Arrow from '../../../../public/icons/arrow.svg'
@@ -26,15 +26,15 @@ interface Props{
 }
 
 function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, userName, setModalEvent}:Props) {
-    const contextUser = useContext(userContext)
-    const [changeEnterprise, setChangeEnterprise] = useState(false)
-    const [dataEvent, setDataEvent] = useState<Event>({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, enterprise: enterprises[0], userName:userName, viewed: false})
-    const messageToast = {pending: 'Criando evento...', success:'Evento criado com sucesso.', error:'Não foi possivel criar este evento.'}
+    const { dataAdmin } = useContext(adminContext);
+    const [changeEnterprise, setChangeEnterprise] = useState(false);
+    const [dataEvent, setDataEvent] = useState<Event>({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, enterprise: enterprises[0], userName:userName, viewed: false});
+    const messageToast = {pending: 'Criando evento...', success:'Evento criado com sucesso.', error:'Não foi possivel criar este evento.'};
 
     async function CreatedEvent(){
         try{            
             await Promise.all([
-                setDoc(doc(db, "companies", contextUser.dataUser.id_company, "events", dataEvent.id), dataEvent), 
+                setDoc(doc(db, "companies", dataAdmin.id_company, "events", dataEvent.id), dataEvent), 
                 SendEmail()])
             .then((values) => {
                 setModalEvent(false)

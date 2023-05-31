@@ -6,16 +6,17 @@ import ThemeContextProvider from '../hooks/useTheme'
 import ContextUser from './Context/contextUser'
 import ContextLoading from './Context/contextLoading'
 import ContextCompany from './Context/contextCompany'
+import ContextAdmin from './Context/contextAdmin'
 
 const poiretOne = Poiret_One({
-  display: 'swap',
+  display: 'auto',
   weight: ['400'],
   variable: '--font-poiretOne',
   subsets: ['latin'],
 })
 
 const poppins = Poppins({
-  display: "swap",
+  display: "auto",
   weight: ["400"],
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -28,14 +29,16 @@ export default function RootLayout({children,}: {children: React.ReactNode}) {
         <title>Software para auxiliar o gerenciamento dos arquivos.</title>
         <head />
         <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins max-w-screen`}>
-          <ContextUser>
-            <ContextLoading>
-              <ContextCompany>
-                <Loading />
-                {children}
-              </ContextCompany>
-            </ContextLoading>
-          </ContextUser>
+          <ContextAdmin>
+            <ContextUser>
+              <ContextLoading>
+                <ContextCompany>
+                  <Loading />
+                  {children}
+                </ContextCompany>
+              </ContextLoading>
+            </ContextUser>
+          </ContextAdmin>
         </body>
       </html>
     </ThemeContextProvider>

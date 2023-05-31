@@ -14,21 +14,22 @@ export default async function getUser(req, res) {
     try{
         const querySnapshot = await getDocs(q);
         const result = querySnapshot.forEach((doc) => getUsers.push({
-        id:doc.data()?.id, 
+        id: doc.data()?.id, 
         name: doc.data()?.name,
-        email:doc.data()?.email,
-        password:doc.data()?.password,
-        permission:doc.data()?.permission,
+        email: doc.data()?.email,
+        password: doc.data()?.password,
+        permission: doc.data()?.permission,
         enterprises: doc.data()?.enterprises,
-        photo_url:doc.data()?.photo_url,
-        status:doc.data()?.status, 
-        checked:false,
-        created_date:doc.data()?.created_date,
+        photo_url: doc.data()?.photo_url,
+        status: doc.data()?.status, 
+        checked: false,
+        created_date: doc.data()?.created_date,
         fixed: doc.data()?.fixed,
         id_company: doc.data()?.id_company,
-        cnpj:doc.data()?.cnpj,
-        nameImage:doc.data()?.nameImage,
-        phone:doc.data()?.phone
+        cnpj: doc.data()?.cnpj,
+        nameImage: doc.data()?.nameImage,
+        phone: doc.data()?.phone,
+        admins: doc.data()?.admins
     }));
     } catch (e){
         console.log(e)

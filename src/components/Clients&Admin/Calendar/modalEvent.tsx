@@ -54,7 +54,9 @@ export default function ModalEvent({email, id, enterprises, userName, setModalEv
   return (
     <div className="fixed bg-black/30 backdrop-blur-sm w-screen h-screen bottom-0 z-50  text-black flex flex-col items-center justify-center left-0">
       <div className="max-w-[600px] flex flex-col items-center bg-primary pb-[10px] rounded-[8px] relative">
-        <div onClick={() => setModalEvent(false)} className="cursor-pointer w-[4px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[4px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:cursor-pointer after:rotate-90 absolute right-[15px] top-[5px]"></div>
+        <div onClick={() => setModalEvent(false)} className="w-[30px] h-[30px] absolute top-[5px] right-[20px] cursor-pointer flex justify-center">
+          <div className="w-[2px] h-[30px] rounded-[4px] bg-neutral-400 rotate-45 after:w-[2px] after:h-[30px] after:block after:bg-neutral-400 after:rounded-[4px] after:rotate-90"></div>
+        </div>
         {dateSelected ? 
           <CreateEvent email={email} setDateSelected={setDateSelected} dateSelected={dateSelected} id={id} enterprises={enterprises} userName={userName} setModalEvent={setModalEvent} />
         : 
