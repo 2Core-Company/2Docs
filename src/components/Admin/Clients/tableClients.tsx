@@ -12,7 +12,7 @@ import { GetUsers } from "../../../Utils/Firebase/GetUsers";
 import { DisableUser } from "./DisableUser";
 import { WindowsAction } from "../../../types/others";
 import { toast } from "react-toastify";
-import { userContext } from '../../../app/Context/contextUser';
+import { adminContext } from '../../../app/Context/contextAdmin';
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import EditUser from "./editUser";
 import CreateUser from "./createUser";
@@ -33,15 +33,15 @@ function TableClients() {
 
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() => {
-    if (dataUser) {
-      GetUsers({id_company:dataUser.id_company, setPages:setPages, setUsers:setUsers});
+    if (dataAdmin) {
+      GetUsers({setPages:setPages, setUsers:setUsers, dataAdmin});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataUser]);
+  }, [dataAdmin]);
 
   // <--------------------------------- Disable User --------------------------------->
   async function GetFunctionDisableUser() {
-    await DisableUser({users, selectUsers, id_company:dataUser.id_company, setMenu, setSelectUsers, setUsers})
+    await DisableUser({users, selectUsers, id_company:dataAdmin.id_company, setMenu, setSelectUsers, setUsers})
   }
 
   // <--------------------------------- Select User --------------------------------->
@@ -95,8 +95,8 @@ function TableClients() {
 
   return (
     <>
-      {windowsAction.createUser ? <CreateUser contextUser={dataUser} childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}
-      {windowsAction.updateUser ? <EditUser contextUser={dataUser} user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow}/> : <></>}
+      {windowsAction.createUser ? <CreateUser contextAdmin={dataAdmin} childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}
+      {windowsAction.updateUser ? <EditUser contextAdmin={dataAdmin} user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow}/> : <></>}
       <div className="relative min-h-[400px] w-full flex flex-col  border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
         <div className="mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]">
           <div className="flex items-center bg-transparent">

@@ -40,7 +40,7 @@ function ComponentFolder() {
 
   useEffect(() => {
     if (enterprise.id != "") {
-      GetRecentFiles({id_company:dataUser.id_company, id_user, id_enterprise, from:'user', setRecentFiles})
+      GetRecentFiles({id_company:dataAdmin.id_company, id_user, id_enterprise, from:'user', setRecentFiles})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enterprise]);

@@ -16,13 +16,12 @@ import { ToastContainer } from 'react-toastify';
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
   const {dataUser, setDataUser} = useContext(userContext);
-  const {dataAdmin, setDataAdmin} = useContext(adminContext);
-  const {setLoading} = useContext(loadingContext)
-  const {setDataCompany} = useContext(companyContext)
-  const [onLoad, setOnLoad] = useState(false)
-  const router = useRouter()
-  const [propsNavBar, setPropsNavBar] = useState({urlImage: '', permission: 0})
-  const url = usePathname()
+  const {dataAdmin, setDataAdmin} = useContext(adminContext);  
+  const {setDataCompany} = useContext(companyContext);
+  const [onLoad, setOnLoad] = useState(false);
+  const router = useRouter();
+  const [propsNavBar, setPropsNavBar] = useState({urlImage: '', permission: 0});
+  const url = usePathname();
   
   //Verificação se o usuário esta logado e se é um admin ou um cliente
   useEffect(() => {

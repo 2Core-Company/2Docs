@@ -3,17 +3,16 @@ import { db } from "../../../firebase";
 import { FilterFixed } from "../Other/Filters";
 import { DataUser, DataUserContext } from "../../types/users";
 
-interface PropsGetUsers{
-  id_company: string
+interface PropsGetUsers{  
   setPages: Function
   setUsers: Function
   dataAdmin: DataUserContext
 }
 
-export async function GetUsers({id_company, setPages, setUsers, dataAdmin}:PropsGetUsers) {
+export async function GetUsers({setPages, setUsers, dataAdmin}:PropsGetUsers) {
   try{
     const getUsers: DataUser[] = [];
-    const q = query(collection(db, "companies", id_company, "clients"), where("permission", "==", 0), orderBy('name'));
+    const q = query(collection(db, "companies", dataAdmin.id_company, "clients"), where("permission", "==", 0), orderBy('name'));
     const querySnapshot = await getDocs(q);
 
     const result = querySnapshot.forEach((doc) => 
