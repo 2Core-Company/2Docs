@@ -10,6 +10,7 @@
         "test": "vitest"
     },
     "dependencies": {
+        "@google-cloud/monitoring": "^3.0.4",
         "@next/font": "^13.0.5",
         "@radix-ui/colors": "^0.1.8",
         "@radix-ui/react-avatar": "^1.0.1",

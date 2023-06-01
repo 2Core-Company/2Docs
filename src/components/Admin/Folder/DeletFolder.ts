@@ -3,6 +3,9 @@ import { collection, doc, getDocs, query, updateDoc, where, writeBatch } from "f
 import { DataUser } from '../../../types/users' 
 import axios from 'axios';
 import { Enterprise } from '../../../types/others';
+import AlterSizeCompany from '../../Clients&Admin/Files/alterSizeCompany';
+import { DataCompanyContext } from '../../../types/dataCompany';
+import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
 
 interface Props{
     user:DataUser,
@@ -25,13 +28,16 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
     const index2 = user.enterprises.findIndex((data) => enterprise.id === data.id)
     user.enterprises[index2] = enterprise
 
+    var size = 0
+
+    querySnapshot.forEach((file:any) => {
+        size = size + file.data().size
+        const laRef = doc(db, "files", id_company, user.id, 'user', 'files', file.data().id);
+        batch.delete(laRef)
+    })
 
     try{
         await Promise.all([
-            querySnapshot.forEach((file) => {
-                const laRef = doc(db, "files", id_company, user.id, 'user', 'files', file.data().id);
-                batch.delete(laRef)
-            }),
             updateDoc(doc(db, 'companies', id_company, "clients", user.id), {
                 enterprises: user.enterprises
             })
@@ -50,7 +56,11 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
         console.log(e)
     }
 
+    const sizeCompany = await GetSizeCompany({id_company:id_company})
 
+    size =  sizeCompany - size
+
+    await AlterSizeCompany({size, id_company})
     setUser({...user, enterprises:user.enterprises})
 }
 

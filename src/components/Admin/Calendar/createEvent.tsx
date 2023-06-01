@@ -33,12 +33,9 @@ function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, use
 
     async function CreatedEvent(){
         try{            
-            await Promise.all([
-                setDoc(doc(db, "companies", contextUser.dataUser.id_company, "events", dataEvent.id), dataEvent), 
-                SendEmail()])
-            .then((values) => {
-                setModalEvent(false)
-            }); 
+            await setDoc(doc(db, "companies", contextUser.dataUser.id_company, "events", dataEvent.id), dataEvent),
+            setModalEvent(false)
+            SendEmail()
         } catch(e){
             console.log(e)
             throw Error

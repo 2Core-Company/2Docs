@@ -75,7 +75,7 @@ export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setF
       path:document.data()?.path,
       viewedDate:document.data()?.viewedDate,
       type:document.data()?.type,
-      created_date:Date.parse(document.data()?.created_date),
+      created_date:document.data()?.created_date,
       viewed:document.data()?.viewed,
       from:document.data()?.from,
       message:document.data()?.message,

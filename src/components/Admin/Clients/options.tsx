@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Link from 'next/link'
 import { Pencil1Icon, FileTextIcon, DrawingPinIcon, DrawingPinFilledIcon, TrashIcon } from '@radix-ui/react-icons';
@@ -12,6 +12,7 @@ import Calendar from '../../../../public/icons/calendar.svg'
 import Image from 'next/image';
 import DeletUser from './deletUser';
 import ModalDelete from '../../../Utils/Other/ModalDelete'
+import { companyContext } from '../../../app/Context/contextCompany';
 
 interface Props{
   domain:string
@@ -27,6 +28,7 @@ interface Props{
 }
 
 function Options({domain, idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed, setUsers, ResetConfig}: Props){
+  const {dataCompany, setDataCompany} = useContext(companyContext)
   const messageFix = {pending:"Fixando usuário...", success:"Usuário fixado com sucesso."}
   const messageUnFix = {pending:"Desfixando usuário...", success:"Usuário fixado com sucesso."}
   const [modalEvent, setModalEvent] = useState<boolean>(false)
@@ -39,7 +41,7 @@ function Options({domain, idUser, user, users, windowsAction, setWindowsAction, 
   
     //Resposta da confirmação
     const childModal = () => {
-      toast.promise(DeletUser({user:user, users:users, domain, ResetConfig:ResetConfig}), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
+      toast.promise(DeletUser({dataCompany, user, users, domain, ResetConfig, setDataCompany}), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
       setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
     }
 

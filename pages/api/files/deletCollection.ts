@@ -6,7 +6,7 @@ export default async function DeleteCollection(req, res) {
 
   return new Promise(async (resolve, reject) => {
     await deleteQueryBatch(db, query, resolve)
-    .then(res.status(200).json('Arquivos excluidos com sucesso!!!'))
+    .then(res.status(200).json({messagem:'Arquivos excluidos com sucesso!!!'}))
     .catch((error) => {
       res.status(400).json(error)
     });
@@ -16,6 +16,7 @@ export default async function DeleteCollection(req, res) {
 
 async function deleteQueryBatch(db, query, resolve) {
   const snapshot = await query.get();
+  var size = 0
 
   const batchSize = snapshot.size;
   if (batchSize === 0) {
@@ -27,10 +28,10 @@ async function deleteQueryBatch(db, query, resolve) {
   // Delete documents in a batch
   const batch = db.batch();
   snapshot.docs.forEach((doc) => {
+    size = doc.data().size + size
     batch.delete(doc.ref);
   });
   await batch.commit();
-
   // Recurse on the next process tick, to avoid
   // exploding the stack.
   process.nextTick(async () => {

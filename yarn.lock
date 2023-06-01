@@ -761,6 +761,13 @@
     google-gax "^3.5.7"
     protobufjs "^7.0.0"
 
+"@google-cloud/monitoring@^3.0.4":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@google-cloud/monitoring/-/monitoring-3.0.4.tgz#9f806ffcac85477bb51ba4f1e93925ac574d7328"
+  integrity sha512-TvJs7CgxvTPqPfIY1avzdavhUhFmf4MRS+tzs/nomyfwqLtTGfoahyDSUal161HtbBbTS7DUrDPoAO3Sr9Hlag==
+  dependencies:
+    google-gax "^3.5.8"
+
 "@google-cloud/paginator@^3.0.7":
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/@google-cloud/paginator/-/paginator-3.0.7.tgz#fb6f8e24ec841f99defaebf62c75c2e744dd419b"
@@ -3485,7 +3492,7 @@ google-auth-library@^8.0.1, google-auth-library@^8.0.2:
     jws "^4.0.0"
     lru-cache "^6.0.0"
 
-google-gax@^3.5.7:
+google-gax@^3.5.7, google-gax@^3.5.8:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-3.6.0.tgz#0f4ae350159737fe0aa289815c0d92838b19f6af"
   integrity sha512-2fyb61vWxUonHiArRNJQmE4tx5oY1ni8VPo08fzII409vDSCWG7apDX4qNOQ2GXXT82gLBn3d3P1Dydh7pWjyw==

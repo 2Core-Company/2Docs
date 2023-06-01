@@ -12,6 +12,9 @@ import { db } from '../../../../firebase'
 import { doc, updateDoc, query, collection, getDocs, where, writeBatch} from "firebase/firestore";
 import { loadingContext } from '../../../app/Context/contextLoading';
 import axios from 'axios';
+import AlterSizeCompany from '../../Clients&Admin/Files/alterSizeCompany';
+import { companyContext } from '../../../app/Context/contextCompany';
+import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
  
 interface Props{
   index:number
@@ -61,9 +64,11 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
   //Puxando arquivos para deletar daquela empresa
   async function DeletFiles(entrepisesUpdated){
     var q = query(collection(db, "files", user.id_company, user.id, 'user', 'files'), where("id_enterprise", "==", enterprise.id))
+    var size = 0
     try{
       const querySnapshot = await getDocs(q);
       const a = querySnapshot.forEach((file) => {
+        size = size + file.data().size
         const laRef = doc(db, "files", user.id_company, user.id, 'user', 'files', file.data().id);
         batch.delete(laRef)
       }); 
@@ -73,9 +78,13 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
         axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}`})
       ])
 
+      const sizeCompany = await  GetSizeCompany({id_company:user.id_company})
+      size = sizeCompany - size
+
+      await AlterSizeCompany({size, id_company:user.id_company})
+
       setEnterprise(entrepisesUpdated[0])
       setUser({...user, enterprises:entrepisesUpdated})
-
       setLoading(false)
     } catch(e){
       setLoading(false)

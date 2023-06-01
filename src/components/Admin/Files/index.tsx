@@ -18,15 +18,16 @@ import DisableFiles from './DisableFiles'
 import EnableFiles from './enableFiles'
 import TableFiles from '../../Clients&Admin/Files/tableFiles'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
-import { DataUser } from '../../../types/users'
 import { Modal } from '../../../types/others';
 import { Files } from '../../../types/files';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import { GetFilesToTrash, GetFilesToFavorites, GetFilesAdmin } from '../../../Utils/Firebase/GetFiles';
 import { useRouter } from 'next/navigation';
+import { companyContext } from '../../../app/Context/contextCompany';
 
 
 function Files(){
+  const {dataCompany, setDataCompany} = useContext(companyContext)
   const { dataUser } = useContext(userContext)
   const router = useRouter()
   const { setLoading } = useContext(loadingContext)
@@ -93,7 +94,7 @@ function Files(){
   const childModal = () => {
     setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
       if(trash){
-        toast.promise(DeletFiles({files:files, selectFiles:selectFiles, childToParentDelet:childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
+        toast.promise(DeletFiles({files, selectFiles, dataCompany, childToParentDelet, setDataCompany}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
       } else {
         toast.promise(DisableFiles({files, selectFiles, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
