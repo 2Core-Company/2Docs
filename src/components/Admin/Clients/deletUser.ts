@@ -5,7 +5,6 @@ import axios from 'axios'
 import ErrorFirebase from "../../../Utils/Firebase/ErrorFirebase";
 import { DataUser } from '../../../types/users'
 import AlterSizeCompany from "../../Clients&Admin/Files/alterSizeCompany";
-import { DataCompanyContext } from "../../../types/dataCompany";
 import { GetSizeCompany } from "../../../Utils/files/GetSizeCompany";
 
   interface Props{
@@ -44,7 +43,7 @@ async function deletUser({user, users, domain, ResetConfig}:Props) {
   //Deletando a photo de perfil do usuário
   async function DeletePhoto(){
     try{
-      if(user.nameImage != "padraoCliente.png"){
+      if(user.nameImage != ""){
         const result = await deleteObject(ref(storage, user.id_company + '/images/' + user.nameImage))
       }
     } catch(e){
@@ -61,8 +60,6 @@ async function deletUser({user, users, domain, ResetConfig}:Props) {
     }
   }
 
-
-  //Deletando arquivos do usuario
   async function DeletFilesStorage(){
     try{
       const response = await axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}`})
@@ -72,25 +69,27 @@ async function deletUser({user, users, domain, ResetConfig}:Props) {
   }
 
   async function DeletFilesFireStore(){
-    var size = 0
-    const q = query(collection(db, "files", user.id_company, user.id, 'user', 'files'));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((file) => {
-      size = size + file.data().size
-      const laRef = doc(db, "files", user.id_company, user.id, 'user', 'files', file.data().id);
-      batch.delete(laRef)
-    })
-
-    const sizeCompany = await GetSizeCompany({id_company:user.id_company})
-
-    size = sizeCompany - size
-
-    await AlterSizeCompany({size, id_company:user.id_company})
+    try{
+      var size = 0
+      const q = query(collection(db, "files", user.id_company, user.id, 'user', 'files'));
+      const querySnapshot = await getDocs(q);
+  
+      querySnapshot.forEach((file) => {
+        size = size + file.data().size
+        const laRef = doc(db, "files", user.id_company, user.id, 'user', 'files', file.data().id);
+        batch.delete(laRef)
+      })
+  
+      const sizeCompany = await GetSizeCompany({id_company:user.id_company})
+  
+      size = sizeCompany - size
+  
+      await AlterSizeCompany({size, id_company:user.id_company})
+    }catch(e){
+      console.log(e)
+    }
   }
 
-
-  //Puxando eventos dos usuários
   async function DeletEvents() {
     var q = query(collection(db, "companies", user.id_company, "events"), where("id_user", "==", user.id))
     const querySnapshot = await getDocs(q);

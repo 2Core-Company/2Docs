@@ -1,6 +1,6 @@
 'use client'
 import NavBar from '../../components/Clients&Admin/NavBar'
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import React, {useState, useEffect, useContext} from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { auth, db } from '../../../firebase'
@@ -10,13 +10,13 @@ import { adminContext } from '../Context/contextAdmin'
 import { companyContext } from '../Context/contextCompany';
 import { stripe } from '../../../lib/stripe'
 import {  DataUserContext } from '../../types/users';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 
 
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
   const {dataUser, setDataUser} = useContext(userContext);
-  const {dataAdmin, setDataAdmin} = useContext(adminContext);  
+  const { setDataAdmin } = useContext(adminContext);  
   const {setDataCompany} = useContext(companyContext);
   const [onLoad, setOnLoad] = useState(false);
   const router = useRouter();
@@ -29,28 +29,54 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       if (!user) {
         return router.push("/")
       }
-      const page = window.location.pathname
+      
       const idTokenResult = await auth.currentUser?.getIdTokenResult()
+
+      const {data} = await stripe.customers.search({
+        query: 'metadata[\'id_company\']:\'' +user.displayName+ '\'',
+        limit: 1,
+        expand: ['data.subscriptions']
+      })
+      .catch(err => err)
+
+      const status = data[0]?.subscriptions.data[0]?.status
+
+      if(status != 'active'){
+        signOut(auth)
+        router.replace('/')
+        throw  toast.error("Você não tem um plano do 2Docs ativo.")
+      }
+
       await Promise.all([
         GetUser(user, idTokenResult?.claims.permission),
-        SearchCostumer({id_company:user.displayName}),
-        GetDataCompanyUser({id_company:user.displayName})
+        GetDataCompanyUser({id_company:user.displayName, data})
       ])
+
+      VerifyPermision(idTokenResult?.claims.permission)
 
       if(!onLoad){
         setOnLoad(true)
       }
-
-      if(idTokenResult?.claims.permission > 0 && page.includes('/Dashboard/Clientes')){
-        return router.replace("/Dashboard/Admin")
-      }
-
-      if(idTokenResult?.claims.permission === 0 && page.includes('/Dashboard/Admin')){
-        router.replace("/Dashboard/Clientes")
-      }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[url])
+  }, [])
+
+  useEffect(() => {
+    if(dataUser.id.length > 0){
+      VerifyPermision(dataUser.permission)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url])
+
+  async function VerifyPermision(permission){
+    if(permission > 0 && url?.includes('/Dashboard/Clientes')){
+      return router.replace("/Dashboard/Admin")
+    }
+
+    if(permission === 0 && url?.includes('/Dashboard/Admin')){
+      router.replace("/Dashboard/Clientes")
+    }
+  }
 
   //Pegando credenciais dos usuários
   async function GetUser(user, permission){
@@ -82,41 +108,37 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
     }
   }
 
-  async function GetDataCompanyUser({id_company}){
+  async function GetDataCompanyUser({id_company, data}){
+    const maxSize = await SearchCostumer({data})
     const docRef = doc(db, "companies", id_company);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       setDataCompany({
-        id:docSnap.data().id, 
-        contact:docSnap.data().contact, 
-        questions:docSnap.data().questions,
-        size:docSnap.data().size
+        id:docSnap?.data()?.id, 
+        name:docSnap.data()?.name,
+        contact:docSnap.data()?.contact, 
+        questions:docSnap.data()?.questions,
+        maxSize:maxSize
       })
     }
   }
 
-  async function SearchCostumer({id_company}) {
-    const {data} = await stripe.customers.search({
-        query: 'metadata[\'id_company\']:\'' +id_company+ '\'',
-        limit: 1,
-        expand: ['data.subscriptions']
-    })
-    .catch(err => err)
+  async function SearchCostumer({data}) {
     const id = data[0]?.subscriptions.data[0]?.plan.id
 
     if(id == 'price_1MX5uXBC8E6EzctJ1TMCPSoE') {
-      return 'Empresarial'
+      return 20000000000
     } else if (id == 'price_1MX5uXBC8E6EzctJ1qaXp8ho') {
-      return 'Empresarial'
+      return 20000000000
     } else if (id == 'price_1MX5u3BC8E6EzctJlS8NCOJF') {
-      return 'Profissional - Mensal'
+      return 10000000000
     } else if (id == 'price_1MX5u3BC8E6EzctJLblqdVuF') {
-      return 'Profissional'
+      return 10000000000
     } else if (id == 'price_1MX5tXBC8E6EzctJCEiUGV4h') {
-      return 'Inicial'
+      return 5000000000
     } else {
-      return 'Inicial'
+      return 5000000000
     }
   }
 

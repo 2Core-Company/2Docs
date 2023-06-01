@@ -1,16 +1,20 @@
 'use client'
-import { createContext, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useState } from 'react';
 import { DataCompanyContext } from '../../types/dataCompany';
 
-export const companyContext = createContext<{dataCompany:DataCompanyContext, setDataCompany:Function}>({dataCompany:{
+export const companyContext = createContext<{
+  dataCompany:DataCompanyContext, 
+  setDataCompany:Dispatch<SetStateAction<DataCompanyContext>>
+}>
+({dataCompany:{
   id:'',
+  name:'',
   contact:[], 
   questions:[], 
-  size:0,
-  plan:{maxSize:0}}, setDataCompany:(dataCompany) => {}});
+  maxSize:0}, setDataCompany:(dataCompany) => {}});
 
 export default function Index({ children }) {
-    const [dataCompany, setDataCompany] = useState<DataCompanyContext>({id:'', contact:[], questions:[], size:0, plan:{maxSize:0}})
+    const [dataCompany, setDataCompany] = useState<DataCompanyContext>({id:'', name:'', contact:[], questions:[], maxSize:0})
   return (
     <companyContext.Provider value={{dataCompany, setDataCompany}}>
       {children}

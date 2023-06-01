@@ -1,9 +1,9 @@
 export interface DataCompanyContext{
     id:string,
+    name:string
     contact:Contact[],
     questions:Question[],
-    size:number
-    plan:Plan
+    maxSize:number
   }
 
 export interface Contact {
@@ -19,8 +19,4 @@ export interface gbFiles {
   type:string, 
   size:number, 
   porcentage:number
-}
-
-export interface Plan {
-  maxSize:number
 }
