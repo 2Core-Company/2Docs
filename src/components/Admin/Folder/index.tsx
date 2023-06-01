@@ -21,8 +21,10 @@ import { Modal, Enterprise } from "../../../types/others";
 import Enterprises from "../../Clients&Admin/Enterprise";
 import { useRouter } from "next/navigation";
 import { GetRecentFiles } from "../../../Utils/Firebase/GetFiles";
+import { companyContext } from "../../../app/Context/contextCompany";
 
 function ComponentFolder() {
+  const {dataCompany, setDataCompany} = useContext(companyContext)
   const params:any = useSearchParams();
   const id_user: string = params.get("id_user");
   const id_enterprise: string = params.get("id_enterprise");
@@ -32,7 +34,7 @@ function ComponentFolder() {
   const [folderConfig, setFolderConfig] = useState<FolderCfg>({status: false, name: "", color: "", isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3});
   const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], admins: []});
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""});
-  const [idDeletFolder, setIdDeletFolder] = useState<string>("");
+  const [id_feletFolder, setId_deletFolder] = useState<string>("");
   const [enterprise, setEnterprise] = useState<Enterprise>({ id:"", name:"", folders:[]});
   const [textSearch, setTextSearch] = useState<string>("")
   const toastDeletFolder = {pending: "Deletando pasta.",success: "Pasta deletada.",error: "Não foi possível deletar esta pasta."}
@@ -81,18 +83,18 @@ function ComponentFolder() {
 
   //Confirmação de deletar pasta
   function ConfirmationDeleteFolder({name, id_folder}: {name:string, id_folder:string}) {
-    setIdDeletFolder(id_folder);
+    setId_deletFolder(id_folder);
     setModal({status: true,message: `Tem certeza que deseja excluir a pasta: ${name}?`,subMessage1: "Todos os arquivos desta pasta serão apagados.", subMessage2:'Não será possivel recuperar estes arquivos.'});
   }
 
-  const childModal = () => {
+  const childModal = async () => {
     setModal({ status: false, message: "", subMessage1: "", subMessage2: "" });
     toast.promise(DeleteFolders(), toastDeletFolder)
   };
 
   //Deletando pasta
   async function DeleteFolders() {
-    DeleteFolder({user:user, id_folder:idDeletFolder, setUser:setUser, enterprise:enterprise, id_company:dataAdmin.id_company})
+    await DeleteFolder({user, id_folder:id_feletFolder, setUser, enterprise, id_company:dataAdmin.id_company})
   }
 
   async function PrivateFolderChange(privateState: boolean, index: number) {

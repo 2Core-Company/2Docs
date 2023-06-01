@@ -1,12 +1,15 @@
 import { deleteDoc, doc, writeBatch } from 'firebase/firestore'
 import { deleteObject, ref } from 'firebase/storage'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { toast } from 'react-toastify'
 import { db, storage } from '../../../../firebase'
 import {  Files } from '../../../types/files'
 import { Event } from '../../../types/event'
 import { Modal } from '../../../types/others'
 import ModalDelete from '../../../Utils/Other/ModalDelete'
+import { companyContext } from '../../../app/Context/contextCompany'
+import AlterSizeCompany from '../../Clients&Admin/Files/alterSizeCompany'
+import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany'
 
 
 interface Props{
@@ -23,7 +26,7 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
     const messageToast = {pending:'Deletando evento....', success:'Evento deletado com sucesso.', error:'Não foi possivel deletar este evento.'}
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2:""})
     const messageModal = {status: true, message: "Tem certeza que deseja excluir este evento?", subMessage1: "Todos os arquivos vinculados a este evento serão apagados.", subMessage2: "Não sera possivel recupera-los."}
-
+    
     const childModal = () => {
         setModal({status: false, message: "", subMessage1: ""})
         toast.promise(DeletEvent, messageToast)
@@ -63,10 +66,17 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
 
     async function DeletFilesFireStore() {
         const batch = writeBatch(db);
+        var size = 0
         try{
             for await(const file of files){
                 batch.delete(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id))
+                size = size + file.size
             }
+            const sizeCompany = await GetSizeCompany({id_company})
+
+            size = sizeCompany - size
+
+            await AlterSizeCompany({size, id_company})
             await batch.commit()
         }catch(e){
             console.log(e)
