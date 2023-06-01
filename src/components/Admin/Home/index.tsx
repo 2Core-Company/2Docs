@@ -6,7 +6,7 @@ import { useContext} from 'react'
 import styles from './home.module.css'
 import { toast } from 'react-toastify';
 import { QuestionMarkCircledIcon, PlusIcon } from '@radix-ui/react-icons';
-import { userContext }  from '../../../app/Context/contextUser'
+import { adminContext }  from '../../../app/Context/contextAdmin';
 import { companyContext } from '../../../app/Context/contextCompany';
 import { PhoneMask } from '../../../Utils/Other/Masks';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
@@ -16,12 +16,12 @@ import axios from 'axios';
 
 
 function ComponentHome () {
-  const { dataUser } = useContext(userContext)
+  const { dataAdmin } = useContext(adminContext)
   const { dataCompany, setDataCompany } = useContext(companyContext)
   const domain = window.location.origin
 
 
-  //Funçaõ que edita o useState dos contatos
+  //Função que edita o useState dos contatos
   function ChangeContact(content:{index:number, text:string}){
     var contacts:Contact[] = []
     if(dataCompany.contact){
@@ -34,9 +34,9 @@ function ComponentHome () {
     setDataCompany({...dataCompany, contact:contacts})
   }
 
-  //Funçaõ que atualiza o banco de dados dos contatos
+  //Função que atualiza o banco de dados dos contatos
   async function UpdateBdContact(){
-    await updateDoc(doc(db, 'companies', dataUser.id_company), {
+    await updateDoc(doc(db, 'companies', dataAdmin.id_company), {
       contact: dataCompany.contact
     })
     .then(() => {
@@ -44,11 +44,11 @@ function ComponentHome () {
     })
     .catch((e) => {
       console.log(e)
-      toast.error("Não foi possivel alterar as informações.")
+      toast.error("Não foi possível alterar as informações.")
     }) 
   }
 
-  //Funçaõ de adicionar contato
+  //Função de adicionar contato
   function AddContact(){
     if(dataCompany.contact === undefined  || dataCompany.contact.length < 3){
       var contacts:Contact[] = []
@@ -62,7 +62,7 @@ function ComponentHome () {
     }
   }
 
-  //Funçaõ que edita o useState das questões
+  //Função que edita o useState das questões
   function ChangeQuestion(content:{index: number, text:string}){
     var questions:Question[] = []
 
@@ -77,7 +77,7 @@ function ComponentHome () {
     setDataCompany({...dataCompany, questions:questions})
   }
 
-  //Funçaõ que edita o useState das respostas
+  //Função que edita o useState das respostas
   function ChangeResponse(content:{index: number, text:string}){
     var questions:Question[] = []
 
@@ -93,9 +93,9 @@ function ComponentHome () {
     setDataCompany({...dataCompany, questions:questions})
   }
 
-  //Funçaõ que atualiza o banco de dados das perguntas/respostas frequentes
+  //Função que atualiza o banco de dados das perguntas/respostas frequentes
   async function UpdateBdQuestion(){
-    await updateDoc(doc(db, 'companies', dataUser.id_company), {
+    await updateDoc(doc(db, 'companies', dataAdmin.id_company), {
       questions: dataCompany.questions
     })
     .then(() => {

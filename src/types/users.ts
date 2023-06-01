@@ -35,4 +35,5 @@ export interface DataUserContext{
     fixed?:boolean
     enterprises:Enterprise[]
     checked?:boolean
+    admins:string[]
   }

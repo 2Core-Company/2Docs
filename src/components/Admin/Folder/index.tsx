@@ -4,7 +4,7 @@ import Image from "next/image";
 import { TrashIcon, DownloadIcon, MagnifyingGlassIcon, LockClosedIcon, LockOpen1Icon, PersonIcon, GearIcon} from "@radix-ui/react-icons";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useContext, useState } from "react";
-import { userContext } from '../../../app/Context/contextUser'
+import { adminContext } from "../../../app/Context/contextAdmin";
 import {getDoc, doc, updateDoc, query, collection, where, orderBy, getDocs, limit} from "firebase/firestore";
 import { db } from "../../../../firebase";
 import CreateFolder from "./createFolder";
@@ -28,11 +28,11 @@ function ComponentFolder() {
   const params:any = useSearchParams();
   const id_user: string = params.get("id_user");
   const id_enterprise: string = params.get("id_enterprise");
-  const { dataUser } = useContext(userContext);
+  const { dataAdmin } = useContext(adminContext);
   const [recentFiles, setRecentFiles] = useState<Files[]>([]);
   const [createFolder, setCreateFolder] = useState<boolean>(false);
   const [folderConfig, setFolderConfig] = useState<FolderCfg>({status: false, name: "", color: "", isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3});
-  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[]});
+  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], admins: []});
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""});
   const [id_feletFolder, setId_deletFolder] = useState<string>("");
   const [enterprise, setEnterprise] = useState<Enterprise>({ id:"", name:"", folders:[]});
@@ -42,31 +42,32 @@ function ComponentFolder() {
 
   useEffect(() => {
     if (enterprise.id != "") {
-      GetRecentFiles({id_company:dataUser.id_company, id_user, id_enterprise, from:'user', setRecentFiles})
+      GetRecentFiles({id_company:dataAdmin.id_company, id_user, id_enterprise, from:'user', setRecentFiles})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enterprise]);
 
   useEffect(() => {
-    if (dataUser != undefined) {
+    if (dataAdmin != undefined) {
       GetUser();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataUser]);
+  }, [dataAdmin]);
 
   //Puxando informações dos usuários
   async function GetUser() {
-    const docRef = doc(db, "companies", dataUser.id_company, "clients", id_user);
+    const docRef = doc(db, "companies", dataAdmin.id_company, "clients", id_user);
     const docSnap = await getDoc(docRef);
       setUser({
-        id:docSnap.data()?.id, 
-        email:docSnap.data()?.email,
-        id_company:docSnap.data()?.id_company,
-        name:docSnap.data()?.name,
-        password:docSnap.data()?.password,
-        permission:docSnap.data()?.permission,
-        photo_url:docSnap.data()?.photo_url,
-        enterprises:docSnap.data()?.enterprises
+        id: docSnap.data()?.id, 
+        email: docSnap.data()?.email,
+        id_company: docSnap.data()?.id_company,
+        name: docSnap.data()?.name,
+        password: docSnap.data()?.password,
+        permission: docSnap.data()?.permission,
+        photo_url: docSnap.data()?.photo_url,
+        enterprises: docSnap.data()?.enterprises,
+        admins: docSnap.data()?.admins
       });
       const enterprise = docSnap.data()?.enterprises.find((enterprise) => enterprise.id === id_enterprise)
       if(enterprise){
@@ -75,6 +76,9 @@ function ComponentFolder() {
         setEnterprise(docSnap.data()?.enterprises[0]);
       }
 
+      if(docSnap.data()?.admins.length !== 0 && docSnap.data()?.admins.findIndex((id) => id === dataAdmin.id) === -1 && dataAdmin.permission < 3) {
+        router.replace('/Dashboard/Admin/')
+      }
   }
 
   //Confirmação de deletar pasta
@@ -100,7 +104,7 @@ function ComponentFolder() {
     try{
       toast.promise(
         updateDoc(
-          doc(db, "companies", dataUser.id_company, "clients", user.id),
+          doc(db, "companies", dataAdmin.id_company, "clients", user.id),
           {
             enterprises: user.enterprises,
           }
@@ -115,8 +119,6 @@ function ComponentFolder() {
     }
     setUser({...user, enterprises: user.enterprises})
   }
-
-
 
   return (
     <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
@@ -231,12 +233,12 @@ function ComponentFolder() {
         </div>
       </div>
       {createFolder ? (
-        <CreateFolder id_company={dataUser.id_company} enterprise={enterprise} id={id_user} user={user} setCreateFolder={setCreateFolder} setUser={setUser} />
+        <CreateFolder id_company={dataAdmin.id_company} enterprise={enterprise} id={id_user} user={user} setCreateFolder={setCreateFolder} setUser={setUser} />
       ) : (
         <></>
       )}
       {folderConfig.status ? (
-        <FolderConfig  user={user} enterprise={enterprise} id={id_user} id_company={dataUser.id_company} setFolderConfig={setFolderConfig} folderConfig={folderConfig} setUser={setUser} setEnterprise={setEnterprise}/>
+        <FolderConfig  user={user} enterprise={enterprise} id={id_user} id_company={dataAdmin.id_company} setFolderConfig={setFolderConfig} folderConfig={folderConfig} setUser={setUser} setEnterprise={setEnterprise}/>
       ) : (
         <></>
       )}

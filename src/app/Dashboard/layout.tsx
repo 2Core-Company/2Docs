@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { auth, db } from '../../../firebase'
 import { getDoc, doc } from "firebase/firestore";
 import { userContext } from '../Context/contextUser'
+import { adminContext } from '../Context/contextAdmin'
 import { companyContext } from '../Context/contextCompany';
 import { stripe } from '../../../lib/stripe'
 import {  DataUserContext } from '../../types/users';
@@ -14,12 +15,13 @@ import { ToastContainer } from 'react-toastify';
 
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
-  const {dataUser, setDataUser} = useContext(userContext)
-  const {setDataCompany} = useContext(companyContext)
-  const [onLoad, setOnLoad] = useState(false)
-  const router = useRouter()
-  const [urlImageProfile, setUrlImageProfile] = useState('')
-  const url = usePathname()
+  const {dataUser, setDataUser} = useContext(userContext);
+  const {dataAdmin, setDataAdmin} = useContext(adminContext);  
+  const {setDataCompany} = useContext(companyContext);
+  const [onLoad, setOnLoad] = useState(false);
+  const router = useRouter();
+  const [propsNavBar, setPropsNavBar] = useState({urlImage: '', permission: 0});
+  const url = usePathname();
   
   //Verificação se o usuário esta logado e se é um admin ou um cliente
   useEffect(() => {
@@ -56,7 +58,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       if(dataUser.id_company === '' && user.displayName){
         const docRef = doc(db, "companies", user.displayName, "clients", user.uid);
         const docSnap = await getDoc(docRef);
-        setUrlImageProfile(docSnap.data()?.photo_url)
+        setPropsNavBar({urlImage: docSnap.data()?.photo_url, permission: permission})        
         var allDataUser:DataUserContext = {
           cnpj:docSnap.data()?.cnpj, 
           email:docSnap.data()?.email,  
@@ -68,7 +70,12 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
           phone:docSnap.data()?.phone, 
           enterprises:docSnap.data()?.enterprises,
         }
-        setDataUser(allDataUser)
+
+        if(allDataUser.permission === 0) {
+          setDataUser(allDataUser)
+        } else {
+          setDataAdmin(allDataUser)
+        }
       }
     }catch(e){
       console.log(e)
@@ -117,7 +124,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
     return (
       <section>
         <ToastContainer autoClose={3000} />
-        <NavBar image={urlImageProfile} permission={dataUser?.permission}/>
+        <NavBar image={propsNavBar.urlImage} permission={propsNavBar.permission}/>
         <main className='w-full'>{children}</main>
       </section>
     );

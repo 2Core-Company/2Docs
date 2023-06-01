@@ -9,21 +9,21 @@ import { doc, setDoc } from "firebase/firestore";
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { DataUser } from '../../../types/users'
+import { DataUser, DataUserContext } from '../../../types/users'
 import { v4 as uuidv4 } from 'uuid';
 import { CNPJMask } from '../../../Utils/Other/Masks';
 import { PhoneMask } from '../../../Utils/Other/Masks';
 import { Enterprise } from '../../../types/others';
 
 interface Props{
-  contextUser:DataUser
+  contextAdmin:DataUserContext
   childToParentCreate:Function
   closedWindow:Function
 }
 
-function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
+function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[]})
+  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], admins:[]})
   const [file, setFile] = useState<{name: string} | any>({name: "padraoCliente.png"})
   const [fileDataURL, setFileDataURL] = useState<string | undefined>(undefined);
   const [eye , setEye] = useState(true)
@@ -49,7 +49,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
     const data ={
       email: dataUser.email,
       password: dataUser.password,
-      id_company:contextUser.id_company
+      id_company:contextAdmin.id_company
     }
     try{
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser?.uid})
@@ -72,7 +72,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
     try{
       if(file.name != "padraoCliente.png"){
         referencesFile = Math.floor(Math.random() * 65536) + file.name;
-        const storageRef = ref(storage, `${contextUser.id_company }/images/` + referencesFile);
+        const storageRef = ref(storage, `${contextAdmin.id_company }/images/` + referencesFile);
         const result = await uploadBytes(storageRef, file)
       } else {
         referencesFile = "padraoCliente.png"
@@ -95,7 +95,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   async function GetUrlPhoto(referencesFile:string, id:string) {
     var url = ""
     try{
-      url  = await getDownloadURL(ref(storage, `${contextUser.id_company }/images/` + referencesFile))
+      url  = await getDownloadURL(ref(storage, `${contextAdmin.id_company }/images/` + referencesFile))
     }catch(e){
       ErrorFirebase(e)
       console.log(e)
@@ -118,7 +118,7 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
       cnpj: dataUser.cnpj,
       password: dataUser.password,
       phone: dataUser.phone,
-      id_company: contextUser.id_company,
+      id_company: contextAdmin.id_company,
       photo_url: user.url,
       nameImage: user.referencesFile,
       created_date: date,
@@ -127,13 +127,14 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
       fixed:false,
       enterprises:[
         enterprise
-      ]
+      ],
+      admins: []
     }
 
     childToParentCreate({...data, checked: false})
 
     try {
-      const docRef = await setDoc(doc(db, "companies", contextUser.id_company, "clients", user.id), data);
+      const docRef = await setDoc(doc(db, "companies", contextAdmin.id_company, "clients", user.id), data);
     } catch (e) {
       console.log(e)
       toast.error("Não foi possível criar o usuário.")
@@ -143,12 +144,12 @@ function CreateUser({childToParentCreate, closedWindow, contextUser}:Props){
   //Trocar foto de perfil
   async function ChangePhoto(photos){
     for await (const photo of photos.files) {
-      if(photo.size < 9000){
+      if(photo.size < 9216){
         photo.value = null
         return toast.error("Está imagem é muito pequena")
       }
 
-      if(photo.size > 10000000){
+      if(photo.size > 10485760){
         photo.value = null
         return toast.error("Está imagem é grande, só é permitido imagens de até 10mb")
       }

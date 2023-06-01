@@ -14,13 +14,12 @@ import ModalDelete from '../../../Utils/Other/ModalDelete'
 import DeletFiles from '../../Admin/Files/DeletFiles';
 import { Files } from '../../../types/files'
 import { Modal } from '../../../types/others'
-import { userContext } from '../../../app/Context/contextUser'
+import { userContext } from '../../../app/Context/contextUser';
 import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/GetFiles';
 import { companyContext } from '../../../app/Context/contextCompany';
 
 function Files(){
-  const {dataCompany, setDataCompany} = useContext(companyContext)
-  const {dataUser} = useContext(userContext)
+  const { dataUser } = useContext(userContext)
   const [files, setFiles] = useState<Files[]>([])
   const [selectFiles, setSelectFiles] = useState<Files[]>([])
   const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:0, maxPages:0})

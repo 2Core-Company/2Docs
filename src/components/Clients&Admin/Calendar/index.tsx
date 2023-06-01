@@ -5,7 +5,7 @@ import calendarBuild from "./Calendarbuild";
 import { TriangleLeftIcon, TriangleRightIcon } from '@radix-ui/react-icons';
 import { collection, getDocs, query, where} from "firebase/firestore";
 import { db } from "../../../../firebase";
-import { userContext } from "../../../app/Context/contextUser";
+import { adminContext } from "../../../app/Context/contextAdmin";
 import Exclamation from '../../../../public/icons/exclamation.svg'
 import Image from "next/image";
 import TableEvents from "./tableEvents";
@@ -13,7 +13,7 @@ import { usePathname } from "next/navigation";
 import { Event } from "../../../types/event";
 
 export default function Calendar() {
-  const {dataUser} = useContext(userContext)
+  const { dataAdmin } = useContext(adminContext)
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [dateSelected, setDateSelected] = useState([]);
   const [indexMonth, setIndexMonth] = useState(new Date().getMonth())
@@ -37,20 +37,20 @@ export default function Calendar() {
   ];
 
   useEffect(() =>{
-    if(dataUser != undefined){
+    if(dataAdmin != undefined){
       GetEvents()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[dataUser])
+  },[dataAdmin])
 
   //Pegando eventos
   async function GetEvents(){
     const events:Event[] = []
     var q 
-    if(dataUser?.permission > 0){
-      q = query(collection(db, "companies", dataUser.id_company, "events"));
+    if(dataAdmin.permission > 0){
+      q = query(collection(db, "companies", dataAdmin.id_company, "events"));
     } else {
-      q = query(collection(db, "companies", dataUser.id_company, "events"), where('id_user', '==', dataUser.id));
+      q = query(collection(db, "companies", dataAdmin.id_company, "events"), where('id_user', '==', dataAdmin.id));
     }
 
     const querySnapshot:any = await getDocs(q);
