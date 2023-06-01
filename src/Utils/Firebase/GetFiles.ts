@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, updateDoc, getDoc, orderBy, limit, writeBatch } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc, orderBy, limit, writeBatch } from "firebase/firestore";
 import { Files } from '../../types/files';
 import { db } from "../../../firebase";
 import { toast } from 'react-toastify';
