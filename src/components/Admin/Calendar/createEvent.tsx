@@ -33,7 +33,7 @@ function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, use
 
     async function CreatedEvent(){
         try{            
-            await setDoc(doc(db, "companies", contextUser.dataUser.id_company, "events", dataEvent.id), dataEvent),
+            await setDoc(doc(db, "companies", dataAdmin.id_company, "events", dataEvent.id), dataEvent),
             setModalEvent(false)
             SendEmail()
         } catch(e){

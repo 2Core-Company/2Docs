@@ -94,7 +94,7 @@ function ComponentFolder() {
 
   //Deletando pasta
   async function DeleteFolders() {
-    await DeleteFolder({user, id_folder:id_feletFolder, setUser, enterprise, id_company:dataUser.id_company})
+    await DeleteFolder({user, id_folder:id_feletFolder, setUser, enterprise, id_company:dataAdmin.id_company})
   }
 
   async function PrivateFolderChange(privateState: boolean, index: number) {
