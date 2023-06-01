@@ -30,7 +30,7 @@ import { companyContext } from '../../../app/Context/contextCompany';
 
 function Files(){
   const { dataAdmin } = useContext(adminContext)
-  const {dataCompany} = useContext(companyContext )
+  const {dataCompany} = useContext(companyContext)
   const router = useRouter()
   const { setLoading } = useContext(loadingContext)
   const [files, setFiles] = useState<Files[]>([])

@@ -20,6 +20,7 @@ import { companyContext } from '../../../app/Context/contextCompany';
 
 function Files(){
   const { dataUser } = useContext(userContext)
+  const {dataCompany} = useContext(companyContext)
   const [files, setFiles] = useState<Files[]>([])
   const [selectFiles, setSelectFiles] = useState<Files[]>([])
   const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:0, maxPages:0})
@@ -77,7 +78,7 @@ function Files(){
   
   const childModal = async () => {
     setModal({...modal, status:false})
-    toast.promise(DeletFiles({files:files, selectFiles:[files[indexFile]], childToParentDelet, dataCompany, setDataCompany}),{pending:"Deletando arquivo.", success:"Arquivo deletado com sucesso.", error:"Não foi possivel deletar os arquivos."})
+    toast.promise(DeletFiles({files:files, selectFiles:[files[indexFile]], childToParentDelet, dataCompany}),{pending:"Deletando arquivo.", success:"Arquivo deletado com sucesso.", error:"Não foi possivel deletar os arquivos."})
   }
 
   function childToParentDelet(files){
