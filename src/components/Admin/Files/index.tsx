@@ -30,6 +30,7 @@ import { companyContext } from '../../../app/Context/contextCompany';
 
 function Files(){
   const { dataAdmin } = useContext(adminContext)
+  const {dataCompany} = useContext(companyContext )
   const router = useRouter()
   const { setLoading } = useContext(loadingContext)
   const [files, setFiles] = useState<Files[]>([])
@@ -95,7 +96,7 @@ function Files(){
   const childModal = () => {
     setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
       if(trash){
-        toast.promise(DeletFiles({files, selectFiles, dataCompany, childToParentDelet, setDataCompany}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
+        toast.promise(DeletFiles({files, selectFiles, dataCompany, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
       } else {
         toast.promise(DisableFiles({files, selectFiles, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
