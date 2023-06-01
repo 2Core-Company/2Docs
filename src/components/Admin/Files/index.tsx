@@ -139,18 +139,18 @@ function Files(){
       <LightModeSwitch />
       <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
         <p  className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>{trash ? "Deletados" : "Documentos"}</p>
-        <div className='flex items-top'>
-          <div onClick={() => router.push('/Dashboard/Admin/Clientes')} className="flex cursor-pointer">
+        <div className='flex items-center overflow-hidden'>
+          <div onClick={() => router.push('/Dashboard/Admin/Clientes')} className="flex cursor-pointer items-center">
             <PersonIcon height={25} width={25} className='text-secondary'/>
-            <p className="cursor-pointer text-[18px] flex mr-[15px] text-secondary dark:text-dsecondary">
-              {"Usuários    >"} 
+            <p className="cursor-pointer text-[18px] flex mr-[15px] max-sm:mr-[0px] max-sm:text-[16px] whitespace-nowrap text-secondary dark:text-dsecondary">
+              {"Usuários  >"} 
             </p>
           </div>
 
-          <Image src={folder} alt="Imagem de uma pasta"/> 
-            <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id_user:id_user, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{"Pastas    >"}</Link> 
+          <Image className='min-w-[19px] min-h-[19px] ml-[5px]' src={folder} alt="Imagem de uma pasta"/> 
+          <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id_user:id_user, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{"Pastas  >"}</Link> 
           <FileIcon className="dark:text-dsecondary text-secondary" height={21} width={21}/>
-          <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary'>{trash ? "Lixeira" : folderName}</p> 
+          <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folderName}</p> 
         </div>
         
         <div className='min-h-[400px] w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>

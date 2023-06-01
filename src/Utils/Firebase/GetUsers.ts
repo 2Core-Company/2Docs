@@ -14,7 +14,6 @@ export async function GetUsers({setPages, setUsers, dataAdmin}:PropsGetUsers) {
     const getUsers: DataUser[] = [];
     const q = query(collection(db, "companies", dataAdmin.id_company, "clients"), where("permission", "==", 0), orderBy('name'));
     const querySnapshot = await getDocs(q);
-
     const result = querySnapshot.forEach((doc) => 
     {if(doc.data()?.admins.length === 0 || doc.data()?.admins.findIndex((id) => id === dataAdmin.id) !== -1 || dataAdmin.permission === 3) {
       getUsers.push({

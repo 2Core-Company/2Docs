@@ -1,7 +1,7 @@
 'use client'
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext, DetailedHTMLProps} from 'react'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CNPJMask } from '../../../Utils/Other/Masks';
 import { PhoneMask } from '../../../Utils/Other/Masks';
 import { Enterprise } from '../../../types/others';
+import { companyContext } from '../../../app/Context/contextCompany';
 
 interface Props{
   contextAdmin:DataUserContext
@@ -23,11 +24,14 @@ interface Props{
 
 function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:"", id_company:"", permission:0, photo_url:'', enterprises:[], admins:[]})
-  const [file, setFile] = useState<{name: string} | any>({name: "padraoCliente.png"})
-  const [fileDataURL, setFileDataURL] = useState<string | undefined>(undefined);
+  const {dataCompany} = useContext(companyContext)
+  const [dataUser, setDataUser] = useState<DataUser>({id:"", name: "", email:"", cnpj: "", phone:"", password:dataCompany.name.substr(0, 5).replace(/\s+/g, '') + Math.floor(Math.random() * 100000), id_company:"", permission:0, photo_url:'', enterprises:[], admins:[]})
+  const [file, setFile] = useState<any>()
   const [eye , setEye] = useState(true)
   const domain:string = window.location.origin
+  const genericUrl = `https://ui-avatars.com/api/?name=${dataUser.name}&background=10b981&color=262626&format=svg`
+
+
   const [enterprise, setEnterprise] = useState<Enterprise>({
     name:"", 
     id:uuidv4(), 
@@ -41,7 +45,7 @@ function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
   //Acionar o toast
   async function OnToast(e: { preventDefault: () => void; }){
     e.preventDefault()
-    toast.promise(SignUp(),{pending: "Criando usuário...", success:"Usuário criado com sucesso", error:"Não foi possível criar este usuário"})
+    toast.promise(SignUp(),{pending: "Criando usuário...", success:"Usuário criado com sucesso"})
   }
 
   //Cria o usuário no auth
@@ -55,7 +59,12 @@ function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser?.uid})
       if(result.data.uid){
         const id = result.data.uid
-        await UploadPhoto(id)
+        if(file){
+          await UploadPhoto(id)
+        } else {
+          const url = `https://ui-avatars.com/api/?name=${dataUser.name}&background=10b981&color=262626&format=svg`
+          SignUpDb({url: url, referencesFile:'', id: id})
+        }
       } else {
         ErrorFirebase(result.data)
         throw Error
@@ -68,44 +77,23 @@ function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
 
   //Armazena a foto de perfil do usuário
   async function UploadPhoto(id:string) {
-    var referencesFile 
+    var referencesFile = ''
+    referencesFile = Math.floor(Math.random() * 65536) + file.name;
+    const storageRef = ref(storage, `${contextAdmin.id_company }/images/` + referencesFile);
     try{
-      if(file.name != "padraoCliente.png"){
-        referencesFile = Math.floor(Math.random() * 65536) + file.name;
-        const storageRef = ref(storage, `${contextAdmin.id_company }/images/` + referencesFile);
-        const result = await uploadBytes(storageRef, file)
-      } else {
-        referencesFile = "padraoCliente.png"
-        const url = 'https://firebasestorage.googleapis.com/v0/b/docs-dc26e.appspot.com/o/padraoCliente.png?alt=media&token=ccd2b303-b4f2-49a0-a1b3-e78ed0921b8f'
-        SignUpDb({url: url, referencesFile: "padraoCliente.png", id: id})
-      }
-    }catch(e){
-      ErrorFirebase(e)
-      console.log(e)
-      throw e
-    } finally {
-      if(file.name != "padraoCliente.png"){
-        await GetUrlPhoto(referencesFile, id)
-      }
-    }
-
-  }
-
-  //Pega url da foto de perfil
-  async function GetUrlPhoto(referencesFile:string, id:string) {
-    var url = ""
-    try{
-      url  = await getDownloadURL(ref(storage, `${contextAdmin.id_company }/images/` + referencesFile))
-    }catch(e){
-      ErrorFirebase(e)
-      console.log(e)
-      url = 'https://firebasestorage.googleapis.com/v0/b/docs-dc26e.appspot.com/o/padraoCliente.png?alt=media&token=ccd2b303-b4f2-49a0-a1b3-e78ed0921b8f'
-      throw e
-    } finally {
+      const result = await uploadBytes(storageRef, file)
+      const url  = await getDownloadURL(ref(storage, result.metadata.fullPath))
       SignUpDb({url: url, referencesFile: referencesFile, id: id})
+    }catch(e){
+      referencesFile = ''
+      const url = `https://ui-avatars.com/api/?name=${dataUser.name}&background=10b981&color=262626&format=svg`
+      SignUpDb({url: url, referencesFile:'', id: id})
+      ErrorFirebase(e)
+      console.log(e)
     }
   }
   
+
   //Armazena o arquivo no firestore
   async function SignUpDb(user:{id:string, url:string, referencesFile:string}){
     var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
@@ -165,14 +153,14 @@ function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
 
   //Trocar foto de perfil
   useEffect(() => {
-    if(file.name != "padraoCliente.png"){
+    if(file){
       let fileReader, isCancel = false;
       if (file) {
         fileReader = new FileReader();
         fileReader.onload = (e) => {
           const { result } = e.target;
           if (result && !isCancel) {
-            setFileDataURL(result)
+            setDataUser({...dataUser, photo_url:result})
           }
         }
         fileReader.readAsDataURL(file);
@@ -184,26 +172,23 @@ function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
-  //gerar senha aleatório
-  useEffect(() => {
-    const password = dataUser.name.substr(0, 5).replace(/\s+/g, '') + Math.floor(Math.random() * 100000)
-    setDataUser({...dataUser, password: password})
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[dataUser.name])
 
   return (
-    <div className={`w-[600px] z-10 top-0 max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] right-0 flex flex-col items-center`}>
-      <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full max-sm:z-50'>
+    <div className={`w-[600px] z-10 max-sm:z-50 top-0 max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] right-0 flex flex-col items-center`}>
+      <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full'>
         <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]'/>
         <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Cadastrar</p>
       </div>
       <form  onSubmit={OnToast} className='w-full px-[10%] flex flex-col gap-y-[5px] max-sm:gap-y-[5px] text-[20px] max-sm:text-[18px]'>
-        {fileDataURL != undefined ?
+        {dataUser.photo_url.length > 0 ?
           <div className='self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[10px] max-sm:mt-[10px] relative'>
-            <Image src={fileDataURL} width={180} height={180} alt="preview" className='border-[2px] w-full h-full rounded-full'/> 
-            <div onClick={()=> (setFileDataURL(undefined), setFile({name:"padraoCliente.png"}))} className='cursor-pointer absolute right-[-10px] top-[5px] w-[30px] h-[4px] bg-strong rotate-45 after:w-[30px] after:h-[4px] after:bg-strong after:block after:rotate-90 '></div>
+            <Image src={dataUser.photo_url} width={180} height={180} alt="preview" className='border-[2px] w-full h-full rounded-full'/> 
+            <div onClick={()=> (setFile(undefined), setDataUser({...dataUser, photo_url:''}))} className='absolute right-[-10px] top-[1px] w-[30px] h-[30px] flex items-center justify-center'>
+              <div className='z-10 cursor-pointer  w-[30px] h-[2px] bg-strong rotate-45 after:w-[30px] after:h-[2px] after:bg-strong after:block after:rotate-90 '/>
+              </div>
           </div>
         : 
           <label  className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] bg-gradient-to-b from-[#D2D2D2] to-[#9E9E9E] border-secondary dark:border-dsecondary rounded-full mt-[10px] max-sm:mt-[10px]'>
@@ -213,36 +198,36 @@ function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
 
         <label  className='flex flex-col dark:text-white'>
           Nome
-          <input type="text" maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o nome da empresa'/>
+          <input type="text" autoComplete="off"  maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o nome da empresa'/>
         </label>
 
         <label className='flex flex-col dark:text-white'>
           Email
-          <input required  maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o email'/>
+          <input required autoComplete="off"   maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o email'/>
         </label>
 
         <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
           <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
             CNPJ
-            <input maxLength={18} minLength={18} required  value={dataUser.cnpj} onChange={Text => CNPJMask({value:Text.target.value, setDataUser})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o CNPJ'/>
+            <input maxLength={18} autoComplete="off"  minLength={18} required  value={dataUser.cnpj} onChange={Text => CNPJMask({value:Text.target.value, setDataUser})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o CNPJ'/>
           </label>
 
           <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
             Telefone
-            <input maxLength={15} minLength={15} required  value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone'/>
+            <input maxLength={15} autoComplete="off"  minLength={15} required  value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone'/>
           </label>
         </div>
 
         <div className='flex max-sm:flex-col justify-between gap-[5px] w-full'>
           <label className='flex flex-col w-[50%] max-sm:w-full dark:text-white'>
             Empresa
-            <input maxLength={30} required onChange={(Text) => setEnterprise({...enterprise, name:Text.target.value})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Nome da empresa'/>
+            <input maxLength={30} autoComplete="off"  required onChange={(Text) => setEnterprise({...enterprise, name:Text.target.value})} type="text"   className=' outline-none w-full  p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Nome da empresa'/>
           </label>
 
           <label className='flex flex-col w-[50%] dark:text-white'>
             Senha
             <div className='border-2 border-black dark:border-white rounded-[8px] flex items-center'>
-              <input required type={eye ? "text" : "password"} value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full p-[5px] bg-transparent dark:placeholder:text-gray-500' placeholder='Senha'/>
+              <input required autoComplete="off"  type={eye ? "text" : "password"} value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full p-[5px] bg-transparent dark:placeholder:text-gray-500' placeholder='Senha'/>
               {eye ?
                 <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
               : 
