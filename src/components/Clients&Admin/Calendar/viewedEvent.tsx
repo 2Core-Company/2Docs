@@ -15,6 +15,8 @@ import DownloadsFile from '../Files/dowloadFiles';
 import DeletEvents from '../../Admin/Calendar/deletEvents';
 import { Files } from '../../../types/files';
 import { GetFilesEvent } from '../../../Utils/Firebase/GetFiles'
+import AlterSizeCompany from '../Files/alterSizeCompany';
+import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
 
 
 interface Props{
@@ -28,6 +30,7 @@ interface Props{
 }
 
 function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay}:Props) {
+    const { dataCompany } = useContext(companyContext)
     const {dataUser} = useContext(userContext)
     const [files, setFiles]= useState<Files[]>([])
     const [newFiles, setNewFiles]= useState<any>([])
@@ -149,6 +152,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         const folder = enterprise?.folders.find((data) => data.name === 'Cliente')
         const date = new Date() + ""
         const promises:any = []
+        var size = 0
         if(folder){
             for(var i = 0; i < newFiles.length; i++){
                 const data:Files= {
@@ -159,7 +163,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     id_enterprise: eventSelected.enterprise.id,
                     id_event:eventSelected.id,
                     name: newFiles[i].name,
-                    size: Math.ceil(files[i].size / 1000),
+                    size: files[i].size,
                     created_date: date,
                     type:newFiles[i].type2, 
                     trash: false,
@@ -173,7 +177,12 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                 }
                 const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, 'user', 'files', newFiles[i].id)
                 promises.push(setDoc(docRef, data))
-            } 
+                size = newFiles[i].size + size
+            }
+
+            const sizeCompany = await GetSizeCompany({id_company:dataCompany.id})
+            size = sizeCompany + size
+            await AlterSizeCompany({size, id_company:dataCompany.id}) 
         }
 
         try {
@@ -187,7 +196,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     //setando evento completo
     async function UpdatedEventComplete(){
         if(!eventSelected.complete){
-            console.log('a')
             await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
                 complete:true
             })
@@ -212,12 +220,18 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         const newFilesFunction = [...newFiles]
 
         if(file.id_folder){
+            var size = file.size
             try{
                 const desertRef = ref(storage, `${file.path}`);
                 await Promise.all([
                     deleteDoc(doc(db, 'files', file.id_company, file.id_user,  'user', 'files', file.id)),
                     deleteObject(desertRef)
                 ])
+                
+                const sizeCompany = await GetSizeCompany({id_company:dataCompany.id})
+                size = sizeCompany - size
+                
+                await AlterSizeCompany({size, id_company:dataCompany.id})
             } catch(e){
                 console.log(e)
                 throw Error
@@ -231,7 +245,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
         setFiles(filesFunction)
         setNewFiles(newFilesFunction)
-        UpdatedEventIncomplete(newFilesFunction)
+        UpdatedEventIncomplete(filesFunction.filter((data) => data.id_folder))
     }
 
     async function UpdatedEventIncomplete(files){

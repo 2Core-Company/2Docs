@@ -1,8 +1,8 @@
 export interface DataCompanyContext{
-    id?:string,
+    id:string,
     contact:Contact[],
     questions:Question[],
-    gbFiles:gbFiles
+    size:number
     plan:Plan
   }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import iconAddFile from '../../../../public/icons/addFile.svg'
 import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
 import iconSearchFile from '../../../../public/icons/searchFile.svg' 
@@ -33,18 +33,8 @@ interface Props{
 
 export default function TableFiles({id_folder, dataPages, trash, textSearch, files, folderName, from, SelectFile, ConfirmationDeleteFile, childToParentDownload, setFiles, setDataPages}:Props) {
   const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
-  const [messageEmpty, setMessageEmpty] = useState<string>()
   const [modalMessage, setModalMessage] = useState<{status:boolean, permission:string, index:number}>({status:false, permission:'', index:0})
   const pathName = usePathname()
-
-  useEffect(() => {
-    if(pathName?.includes("Clientes") === true  && folderName === "Cliente" ){
-      setMessageEmpty("Envie seu primeiro arquivo!")
-    } else if(pathName?.includes("Admin") === true  && folderName != "Cliente") {
-      setMessageEmpty("Envie seu primeiro arquivo!")
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
 
    // <--------------------------------- Select Files --------------------------------->
   function SelectAllFiles(){
@@ -132,9 +122,9 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
                   </div>
 
                   <p className="overflow-hidden whitespace-nowrap text-ellipsis dark:text-white ml-[20px] max-md:hidden">
-                    {file.size < 1000
-                      ? file.size + " KB"
-                      : Math.ceil(file.size / 1000) + " MB"}{" "}
+                    {file.size < 1000000
+                      ? Math.round(file.size / 1000) + " KB"
+                      : Math.ceil(file.size / 1000000) + " MB"}
                   </p>
 
                   <p className="font-[400] max-lg:hidden text-left dark:text-white">

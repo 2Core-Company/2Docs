@@ -12,11 +12,13 @@ import { PhoneMask } from '../../../Utils/Other/Masks';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import AddContactImage from '../../../../public/icons/addContact.png'
 import { Contact, Question } from '../../../types/dataCompany';
+import axios from 'axios';
 
 
 function ComponentHome () {
   const { dataAdmin } = useContext(adminContext)
   const { dataCompany, setDataCompany } = useContext(companyContext)
+  const domain = window.location.origin
 
 
   //Função que edita o useState dos contatos
@@ -104,7 +106,6 @@ function ComponentHome () {
       toast.error("Não foi possivel alterar as informações.")
     }) 
   }
-
 
   return (
     <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">

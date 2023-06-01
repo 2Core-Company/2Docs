@@ -1,10 +1,12 @@
 import { storage, db } from '../../../../firebase'
 import { ref,  uploadBytes } from "firebase/storage";
-import { collection, doc, setDoc, updateDoc } from "firebase/firestore";  
+import { collection, doc, getDoc, writeBatch } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files';
-import { usePathname } from 'next/navigation';
-import { GetEnterprises } from '../../../Utils/enterprises/getEnterprises';
+import alterSizeCompany from './alterSizeCompany';
+import { companyContext } from '../../../app/Context/contextCompany';
+import { useContext } from 'react';
+import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
 
 
   interface Props{
@@ -21,7 +23,7 @@ import { GetEnterprises } from '../../../Utils/enterprises/getEnterprises';
   }
 
 function UploadFiles({folderName, files, id_folder, menu, permission, id_user, id_company,  from, id_enterprise, childToParentDownload}: Props) {
-  const path = usePathname()
+  const batch = writeBatch(db);
   const toastUpload = {pending:"Armazenando arquivos...", success:"Arquivos armazenados."}
 
 
@@ -30,37 +32,47 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
     const allFiles:any = await Promise.all(files.files)
     const allFilesFilter:any = []
     var promises:any = []
+    var size = 0
 
     allFiles.map((file) => {
       if (file.size > 30000000) {
         files.value = null;
         toast.error(`Erro ao upar o arquivo: ${file.name}, ele excede o limite de 30mb`);
       } else {
+        size = file.size + size
         const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
         const docRef = ref(docsRef, referencesFile);
         promises.push(uploadBytes(docRef , file));
         allFilesFilter.push(file)
       }
     });
+
     if(promises.length === 0){
       throw Error
     }
+
+    const sizeCompany = await GetSizeCompany({id_company})
+
+    size = sizeCompany + size
+
+    alterSizeCompany({size, id_company})
+
     await Promise.all(promises)
     .then((result) => {
-      OrganizeFilesInArray({files:allFilesFilter, result:result.filter((file) => file != undefined)})
+      OrganizeFilesInArray({filesUpload:allFilesFilter, result:result.filter((file) => file != undefined)})
     }).catch((error) => {
       console.error('Erro ao fazer upload dos arquivos:', error);
     });
   }
 
-  async function OrganizeFilesInArray({files, result}){
-    const promises:any = []
+
+  async function OrganizeFilesInArray({filesUpload, result}){
     const allDataFiles:any = []
     const collectionRef = collection(db, "files", id_company, id_user, 'user', 'files')
 
-    for(var i = 0; i < files.length; i++){
-      var type = files[i].type.split('/')
-      var type2 = files[i].name.split('.')
+    for(var i = 0; i < filesUpload.length; i++){
+      var type = filesUpload[i].type.split('/')
+      var type2 = filesUpload[i].name.split('.')
   
       if (type.at(0) === 'image'){
         type = "images"
@@ -83,8 +95,8 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
         id_company: id_company,
         id_enterprise: id_enterprise,
         path: result[i].metadata.fullPath,
-        name: files[i].name,
-        size: Math.ceil(files[i].size / 1000),
+        name: filesUpload[i].name,
+        size: filesUpload[i].size,
         created_date: date,
         type:type,
         trash: false,
@@ -97,25 +109,20 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
         id_event:'',
         message:''
       }
+
       const docRef  = doc(collectionRef, result[i].metadata.name);
-      promises.push(setDoc(docRef, data))
+      batch.set(docRef, data)
       data.checked = false
       allDataFiles.push(data)
     }
 
-    UploadFilestore({promises, allDataFiles})
-  }
-
-  async function UploadFilestore({promises, allDataFiles}){
-    await Promise.all(promises)
-    .then(() => {
+    try{  
+      await batch.commit()
       childToParentDownload(allDataFiles.concat(files))
-    })
-    .catch(error => {
-      console.error('Erro ao fazer upload dos dados:', error);
-    });
+    }catch(e){
+      console.log(e)
+    }
   }
-
 
   return(
     <>

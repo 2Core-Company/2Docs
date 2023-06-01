@@ -4,6 +4,9 @@ import { doc, deleteDoc, query,  where, collection, getDocs, writeBatch} from "f
 import axios from 'axios'
 import ErrorFirebase from "../../../Utils/Firebase/ErrorFirebase";
 import { DataUser } from '../../../types/users'
+import AlterSizeCompany from "../../Clients&Admin/Files/alterSizeCompany";
+import { DataCompanyContext } from "../../../types/dataCompany";
+import { GetSizeCompany } from "../../../Utils/files/GetSizeCompany";
 
   interface Props{
     user:DataUser
@@ -13,6 +16,7 @@ import { DataUser } from '../../../types/users'
   }
 
 async function deletUser({user, users, domain, ResetConfig}:Props) {
+  const batch = writeBatch(db);
   await DeleteAuth()
 
   //Deletando o auth do usuário
@@ -20,13 +24,15 @@ async function deletUser({user, users, domain, ResetConfig}:Props) {
     try{
       const result = await axios.post(`${domain}/api/users/deleteUser`, {users: user, uid: auth.currentUser?.uid})
       if(result.status === 200){
-        await Promise.all([DeletePhoto(), DeletFile(), DeletFiles(),  DeletEvents()])
+        await Promise.all([DeletePhoto(), DeletFile(), DeletFilesStorage(), DeletFilesFireStore(),  DeletEvents()])
         .then((values) => {
           const allUsers = [...users]
           const index = allUsers.findIndex((data) => data.id === user.id)
           allUsers.splice(index, 1);
           ResetConfig(allUsers)
         });
+
+        await batch.commit();
       } else {
         ErrorFirebase(result.data)
       }
@@ -57,26 +63,41 @@ async function deletUser({user, users, domain, ResetConfig}:Props) {
 
 
   //Deletando arquivos do usuario
-  async function DeletFiles(){
+  async function DeletFilesStorage(){
     try{
-      const response = await axios.post(`${domain}/api/files/deletCollection`, {path: `/files/${user.id_company}/${user.id}/user/files/`})
-      const response2 = await axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}`})
+      const response = await axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}`})
     } catch(e) {
       console.log(e)
     }
   }
 
+  async function DeletFilesFireStore(){
+    var size = 0
+    const q = query(collection(db, "files", user.id_company, user.id, 'user', 'files'));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((file) => {
+      size = size + file.data().size
+      const laRef = doc(db, "files", user.id_company, user.id, 'user', 'files', file.data().id);
+      batch.delete(laRef)
+    })
+
+    const sizeCompany = await GetSizeCompany({id_company:user.id_company})
+
+    size = sizeCompany - size
+
+    await AlterSizeCompany({size, id_company:user.id_company})
+  }
+
 
   //Puxando eventos dos usuários
   async function DeletEvents() {
-    const batch = writeBatch(db);
     var q = query(collection(db, "companies", user.id_company, "events"), where("id_user", "==", user.id))
     const querySnapshot = await getDocs(q);
     const a = querySnapshot.forEach((event) => {
       const laRef = doc(db, "companies", user.id_company, "events", event.data().id);
       batch.delete(laRef)
     }); 
-    await batch.commit();
   }
 }
 

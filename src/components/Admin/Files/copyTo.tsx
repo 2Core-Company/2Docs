@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { db, storage } from '../../../../firebase'
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
@@ -6,6 +6,9 @@ import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { Files } from '../../../types/files' 
 import { Folders } from '../../../types/folders';
 import { GetFolders } from '../../../Utils/folders/getFolders';
+import AlterSizeCompany from '../../Clients&Admin/Files/alterSizeCompany';
+import { companyContext } from '../../../app/Context/contextCompany';
+import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
 
 interface Props{
   file:Files
@@ -13,6 +16,7 @@ interface Props{
 }
 
 function  CopyTo({file, setCopyTo}: Props) {
+  const {dataCompany, setDataCompany} = useContext(companyContext)
   const [folders, setFolders] = useState([])
   const [dataFolder, setDataFolder] = useState({name:'', id:''})
   const [fileCopy, setFileCopy] = useState<any >()
@@ -65,7 +69,6 @@ function  CopyTo({file, setCopyTo}: Props) {
   }
 
   async function UploadFilestore({path, id, name}){
-    const size = file.size
     const date = new Date() + ""
     const data:Files = {
       id_user: file.id_user,
@@ -74,7 +77,7 @@ function  CopyTo({file, setCopyTo}: Props) {
       id_enterprise: file.id_enterprise,
       path: path,
       name: name,
-      size: size,
+      size: file.size,
       created_date: date,
       type:file.type, 
       trash: false,
@@ -87,6 +90,12 @@ function  CopyTo({file, setCopyTo}: Props) {
       message:'',
       downloaded:false
     }
+    const sizeCompany = await GetSizeCompany({id_company:dataCompany.id})
+
+    const size = sizeCompany  + file.size
+
+    await AlterSizeCompany({size:size, id_company:dataCompany.id})
+
     try {
       const docRef = await setDoc(doc(db, "files", file.id_company, file.id_user, 'user', 'files', id), data);
     } catch (e) {
@@ -94,6 +103,7 @@ function  CopyTo({file, setCopyTo}: Props) {
       throw toast.error("Não foi possivel copiar o arquivo")
     } 
   }
+
 
     return (
       folders.length > 3 ?

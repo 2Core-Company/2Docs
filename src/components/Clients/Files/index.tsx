@@ -16,6 +16,7 @@ import { Files } from '../../../types/files'
 import { Modal } from '../../../types/others'
 import { userContext } from '../../../app/Context/contextUser';
 import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/GetFiles';
+import { companyContext } from '../../../app/Context/contextCompany';
 
 function Files(){
   const { dataUser } = useContext(userContext)
@@ -76,7 +77,7 @@ function Files(){
   
   const childModal = async () => {
     setModal({...modal, status:false})
-    toast.promise(DeletFiles({files:files, selectFiles:[files[indexFile]], childToParentDelet}),{pending:"Deletando arquivo.", success:"Arquivo deletado com sucesso.", error:"Não foi possivel deletar os arquivos."})
+    toast.promise(DeletFiles({files:files, selectFiles:[files[indexFile]], childToParentDelet, dataCompany, setDataCompany}),{pending:"Deletando arquivo.", success:"Arquivo deletado com sucesso.", error:"Não foi possivel deletar os arquivos."})
   }
 
   function childToParentDelet(files){
