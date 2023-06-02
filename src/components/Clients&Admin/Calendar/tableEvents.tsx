@@ -52,7 +52,7 @@ function TableEvents({eventsThatDay, events, admin, setEventsThatDay}:Props) {
                 return (
                   <div key={index} onClick={() => setEventSelected(event)} className='whitespace-nowrap cursor-pointer grid grid-cols-4 max-sm:grid-cols-3 gap-4 px-[10px] py-[8px] border-t-[2px] border-y-neutral-300'>
                     <p className='overflow-hidden text-ellipsis'>{event.userName}</p>
-                    <p className='overflow-hidden text-ellipsis'>{event.enterprise.name}</p>
+                    <p className='overflow-hidden text-ellipsis'>{event.name_enterprise}</p>
                     <p className='overflow-hidden text-ellipsis'>{event.title}</p>
                     <div className='flex max-sm:hidden'>
                       <p className={`px-[5px] border-[1px] rounded-[4px] text-center text-[15px]  font-[600] ${style}`} >{text}</p>
