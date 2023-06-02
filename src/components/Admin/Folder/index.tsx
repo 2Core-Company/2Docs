@@ -182,25 +182,25 @@ function ComponentFolder() {
           </button>
         </div>
 
-        <div className="flex flex-wrap mt-[10px]">
+        <div className="flex flex-wrap mt-[10px]  max-lg:gap-x-[15px]">
           {enterprise?.folders?.filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ? (
             enterprise.folders
             .filter((folder) => textSearch != "" ?  folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
             .map((folder, index) => {
               if(folder.name === 'Lixeira'){return}
               return (
-                <div key={folder.name} className="group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]">
+                <div key={folder.name} className="group mt-[30px] w-[250px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] p-[10px] rounded-[8px] hover:scale-105  hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.1)] max-lg:shadow-[0_5px_10px_5px_rgba(0,0,0,0.1)] relative">
                   {folder.name === "Cliente" || folder.name === "Favoritos" || folder.name === 'Lixeira' ? (
                     <></>
                   ) : (
                     <div>
                       {folder.isPrivate === true ? (
-                        <LockClosedIcon height={24} width={24} onClick={() => {PrivateFolderChange(folder.isPrivate, index);}} className="absolute top-[5px] right-[40px] group-hover:block cursor-pointer hidden"/>
+                        <LockClosedIcon height={24} width={24} onClick={() => {PrivateFolderChange(folder.isPrivate, index);}} className="max-lg:w-[16px] max-lg:h-[16px] absolute top-[5px] right-[40px] max-lg:right-[20px] lg:group-hover:block cursor-pointer hidden max-lg:block"/>
                       ) : (
-                        <LockOpen1Icon height={24} width={24} onClick={() => {PrivateFolderChange(folder.isPrivate, index);}} className="absolute top-[5px] right-[40px] group-hover:block cursor-pointer hidden"/>
+                        <LockOpen1Icon height={24} width={24} onClick={() => {PrivateFolderChange(folder.isPrivate, index);}} className="max-lg:w-[16px] max-lg:h-[16px] absolute top-[5px] right-[40px] max-lg:right-[20px] lg:group-hover:block cursor-pointer hidden max-lg:block"/>
                       )}
-                      <TrashIcon height={25} width={25} onClick={() => ConfirmationDeleteFolder({name:folder.name, id_folder:folder.id})} className="absolute top-[5px] right-[10px] group-hover:block cursor-pointer hidden"/>
-                      <GearIcon height={25} width={25} onClick={() => setFolderConfig({status: true, name: folder.name, color: folder.color, isPrivate: folder.isPrivate, singleDownload: folder.singleDownload, onlyMonthDownload: folder.onlyMonthDownload, timeFile: folder.timeFile})} className="absolute bottom-[5px] right-[10px] group-hover:block cursor-pointer hidden" />
+                      <TrashIcon height={25} width={25} onClick={() => ConfirmationDeleteFolder({name:folder.name, id_folder:folder.id})} className="max-lg:w-[16px] max-lg:h-[16px] absolute top-[5px] right-[10px] max-lg:right-[3px] lg:group-hover:block cursor-pointer hidden max-lg:block"/>
+                      <GearIcon height={25} width={25} onClick={() => setFolderConfig({status: true, name: folder.name, color: folder.color, isPrivate: folder.isPrivate, singleDownload: folder.singleDownload, onlyMonthDownload: folder.onlyMonthDownload, timeFile: folder.timeFile})} className="max-lg:w-[16px] max-lg:h-[16px] absolute bottom-[5px] max-lg:bottom-[3px] right-[10px] max-lg:right-[3px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
                     </div>
                   )}
                   
@@ -208,7 +208,7 @@ function ComponentFolder() {
                     <div className="relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]">
                       <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none"xmlns="http://www.w3.org/2000/svg"> <path d="M77.537 15.361H34.4308L29.0135 7.23427C28.7414 6.82757 28.2849 6.58325 27.7963 6.58325H1.46296C0.655407 6.58325 0 7.2372 0 8.04621V16.824V22.6758V65.1062C0 69.1381 3.27704 72.4166 7.30604 72.4166H71.694C75.723 72.4166 79 69.1381 79 65.1062V22.6758V16.824C79 16.015 78.3446 15.361 77.537 15.361ZM76.0741 21.2129H2.92593V18.287H33.6481H76.0741V21.2129ZM2.92593 9.50918H27.0136L30.9153 15.361H2.92593V9.50918ZM76.0741 65.1062C76.0741 67.523 74.1093 69.4907 71.694 69.4907H7.30604C4.89069 69.4907 2.92593 67.523 2.92593 65.1062V24.1388H76.0741V65.1062Z" fill={folder.color}/></svg>
                     </div>
-                    <p className="font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[90%] overflow-hidden whitespace-nowrap text-ellipsis">
+                    <p className="font-500 text-[18px] max-md:text-[14px] max-sm:text-[12px] w-[80%]  overflow-hidden whitespace-nowrap text-ellipsis">
                       {folder.name}
                     </p>
                   </Link>
@@ -221,7 +221,7 @@ function ComponentFolder() {
         </div>
 
         <p className=" font-poiretOne text-[40px] mt-[20px]">Lixeira</p>
-        <div className="w-[250px] p-[10px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] rounded-[8px] hover:scale-105 hover:shadow-[#dadada] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.9)]">
+        <div className="w-[250px] p-[10px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] rounded-[8px] hover:scale-105 dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.1)] max-lg:shadow-[0_5px_10px_5px_rgba(0,0,0,0.1)]">
           <Link href={{ pathname: "Dashboard/Admin/Arquivos", query: { trash: true, id_user: id_user, id_enterprise: enterprise?.id },}}>
             <div className="relative w-[90px] h-[90px] max-lg:h-[70px] max-lg:w-[70px] max-sm:h-[60px] max-sm:w-[60px] max-lsm:h-[50px] max-lsm:w-[50px]">
               <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none"xmlns="http://www.w3.org/2000/svg"> <path d="M77.537 15.361H34.4308L29.0135 7.23427C28.7414 6.82757 28.2849 6.58325 27.7963 6.58325H1.46296C0.655407 6.58325 0 7.2372 0 8.04621V16.824V22.6758V65.1062C0 69.1381 3.27704 72.4166 7.30604 72.4166H71.694C75.723 72.4166 79 69.1381 79 65.1062V22.6758V16.824C79 16.015 78.3446 15.361 77.537 15.361ZM76.0741 21.2129H2.92593V18.287H33.6481H76.0741V21.2129ZM2.92593 9.50918H27.0136L30.9153 15.361H2.92593V9.50918ZM76.0741 65.1062C76.0741 67.523 74.1093 69.4907 71.694 69.4907H7.30604C4.89069 69.4907 2.92593 67.523 2.92593 65.1062V24.1388H76.0741V65.1062Z" fill="#9E9E9E"/></svg>

@@ -104,11 +104,11 @@ return (
       <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black dark:text-white">
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Documentos</p>
-          <div className='flex items-top'>
-            <Image src={folder} alt="Imagem de uma pasta" width={21} height={21}/> 
-              <Link href={{pathname:"Dashboard/Clientes/Pastas", query:{id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary'>{"Pastas    >"}</Link> 
-            <FileIcon height={21} width={21} className={'text-secondary'}/>
-            <p  className='text-[18px] flex mx-[5px] text-secondary'>{folderName}</p> 
+          <div className='flex items-top overflow-hidden items-center'>
+            <Image src={folder} alt="Imagem de uma pasta" className='min-w-[19px] min-h-[19px]'/> 
+            <Link href={{pathname:"Dashboard/Clientes/Pastas", query:{id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary whitespace-nowrap'>{"Pastas  >"}</Link> 
+            <FileIcon className={'min-w-[19px] min-h-[19px] text-secondary'}/>
+            <p  className='text-[18px] flex mx-[5px] text-secondary whitespace-nowrap'>{folderName}</p> 
           </div>
           <div className=' w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>

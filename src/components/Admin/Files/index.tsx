@@ -149,7 +149,7 @@ function Files(){
 
           <Image className='min-w-[19px] min-h-[19px] ml-[5px]' src={folder} alt="Imagem de uma pasta"/> 
           <Link href={{pathname:"/Dashboard/Admin/Pastas", query:{id_user:id_user, id_enterprise:id_enterprise}}}  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{"Pastas  >"}</Link> 
-          <FileIcon className="dark:text-dsecondary text-secondary" height={21} width={21}/>
+          <FileIcon className={'min-w-[19px] min-h-[19px] text-secondary'}/>
           <p  className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folderName}</p> 
         </div>
         

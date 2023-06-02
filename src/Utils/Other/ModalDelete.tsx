@@ -30,7 +30,7 @@ interface Props {
           <div className='bg-primary dark:bg-dprimary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
             <div  className='bg-red w-full h-[15px] rounded-t-[4px]'/>
             <div className=' px-[10px] text-left'>
-              <p className='text-[26px] mt-[10px]'>{message}</p>
+              <p className='text-[26px] mt-[10px] text-ellipsis overflow-hidden'>{message}</p>
 
               {subMessage1 != undefined ? 
                 <div className='flex items-start mt-[20px]'>
