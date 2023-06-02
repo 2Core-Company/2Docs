@@ -1,10 +1,9 @@
-import { collection, getDocs, query, where, doc, updateDoc, getDoc, orderBy, limit } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc, orderBy, limit, writeBatch } from "firebase/firestore";
 import { Files } from '../../types/files';
 import { db } from "../../../firebase";
 import { toast } from 'react-toastify';
 import { Event } from '../../types/event'
 import { GetFolder } from "../folders/getFolders";
-
 
 interface interfaceGetRecentFiles{
   id_company:string
@@ -45,8 +44,6 @@ export async function GetRecentFiles({id_company,  id_user, id_enterprise, from,
   });
   setRecentFiles(files)
 }
-
-
 
 interface interfaceGetFilesToTrash{
   id_company:string
@@ -89,8 +86,6 @@ export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setF
   setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
 }
 
-
-
 interface interfaceGetFilesToFavorites{
   id_company:string
   id_user:string
@@ -131,8 +126,6 @@ export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, 
   setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
 }
 
-
-
 interface interfaceGetFilesAdmin{
   id_company:string
   id_user:string
@@ -153,6 +146,8 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
   }
 
   try {
+    const batch = writeBatch(db);    
+
     querySnapshot.forEach((document) => {
       let file: Files = {
         id:document.data()?.id,
@@ -183,27 +178,21 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
           break;
         case 2:
           if(timeDiff > 2592000000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
-              trash: true
-            })
+            batch.update(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {trash: true});
           } else {
             files.push(file);
           }
           break;
         case 1:
           if(timeDiff > 604800000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
-              trash: true
-            })
+            batch.update(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {trash: true});
           } else {
             files.push(file);
           }
           break;
         case 0:
           if(timeDiff > 86400000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
-              trash: true
-            })
+            batch.update(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {trash: true});
           } else {
             files.push(file);
           }
@@ -212,6 +201,8 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
           throw "A configuração de algum arquivo foi corrompida! Reinicie a página."
       }
     });
+
+    await batch.commit();
   }catch (e) {
     toast.error("Erro: " + e)
   }
@@ -219,9 +210,6 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
   setFiles(files)
   setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
 }
-
-
-
 
 interface interfaceGetFilesEvent{
   id_company:string
@@ -260,9 +248,6 @@ export async function GetFilesEvent({id_company, eventSelected, setFiles}: inter
   setFiles(getFiles)
 }
 
-
-
-
 interface interfaceGetSpecificFile{
   id_company:string
   id_user:string
@@ -297,9 +282,6 @@ export async function GetSpecificFile({id_company, id_user, id_file, setFile}:in
   setFile(data)
 } 
 
-
-
-
 interface interfaceGetFilesClient{
   id_company:string
   id_user:string
@@ -321,6 +303,8 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
   }
 
   try {
+    const batch = writeBatch(db);
+
     querySnapshot.forEach((document) => {
       let file: Files = {
         id:document.data()?.id,
@@ -351,27 +335,21 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
           break;
         case 2:
           if(timeDiff > 2592000000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
-              trash: true
-            })
+            batch.update(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {trash: true});
           } else {
             files.push(file);
           }
           break;
         case 1:
           if(timeDiff > 604800000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
-              trash: true
-            })
+            batch.update(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {trash: true});
           } else {
             files.push(file);
           }
           break;
         case 0:
           if(timeDiff > 86400000) {
-            updateDoc(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {
-              trash: true
-            })
+            batch.update(doc(db, 'files', id_company, file.id_user, "user", "files", file.id), {trash: true});
           } else {
             files.push(file);
           }
@@ -380,6 +358,8 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
           throw "A configuração de algum arquivo foi corrompida! Reinicie a página."
       }
     });
+
+    await batch.commit();
   }catch (e) {
     toast.error("Erro: " + e)
   }
