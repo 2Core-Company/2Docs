@@ -53,7 +53,7 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
         enterprises: entrepisesUpdated,
       })
       setRename(false)
-      await DeletFiles(entrepisesUpdated)
+      await Promise.all([DeletEvents(), DeletFiles(entrepisesUpdated)])
     } catch(e) {
       console.log(e)
       setLoading(false)
@@ -93,6 +93,14 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
     }
   }
 
+  async function DeletEvents() {
+    var q = query(collection(db, "companies", user.id_company, "events"), where("id_enterprise", "==", enterprise.id))
+    const querySnapshot = await getDocs(q);
+    const a = querySnapshot.forEach((event) => {
+      const laRef = doc(db, "companies", user.id_company, "events", event.data().id);
+      batch.delete(laRef)
+    }); 
+  }
 
   return (
     <>
