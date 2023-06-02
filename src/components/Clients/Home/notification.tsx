@@ -33,15 +33,17 @@ function Notification({dataUser}:Props) {
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             allEvents.push({
-                id:doc.data()?.id, 
-                id_user:doc.data().id_user, 
-                userName:doc.data().userName,
-                enterprise:doc.data().enterprise,
-                title:doc.data().title,
-                observation:doc.data().observation,
-                complete:doc.data().complete,
-                dateSelected:doc.data().dateSelected,
-                viewed:doc.data().viewed
+                id:doc.data()?.id,
+                id_user:doc.data()?.id_user,
+                id_folder:doc.data()?.id_folder,
+                id_enterprise:doc.data()?.id_enterprise,
+                userName:doc.data()?.userName,
+                name_enterprise:doc.data()?.name_enterprise,
+                title:doc.data()?.title,
+                observation:doc.data()?.observation,
+                complete:doc.data()?.complete,
+                dateSelected:doc.data()?.dateSelected,
+                viewed:doc.data()?.viewed
             })
         });
         VerifyNotificationEvent(allEvents)
