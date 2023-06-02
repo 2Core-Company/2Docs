@@ -74,7 +74,7 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
           <p className="text-[20px] mt-[10px] font-[500] dark:text-white">
             Nome da Pasta:
           </p>
-          <input placeholder="Digite o nome da pasta" onChange={(text) => setDataFolder({...dataFolder, name: text.target.value})} maxLength={30} className="w-[80%] bg-transparent border-black dark:border-white border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] px-[5px] py-[3px] outline-none"/>
+          <input placeholder="Digite o nome da pasta" onChange={(text) => setDataFolder({...dataFolder, name: text.target.value})} maxLength={20} className="w-[80%] bg-transparent border-black dark:border-white border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] px-[5px] py-[3px] outline-none"/>
           <p className="text-[20px] mt-[15px] font-[500] dark:text-white">
             Cor da pasta:
           </p>

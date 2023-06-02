@@ -123,7 +123,7 @@ function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfi
             <input
               placeholder="Digite o nome da pasta"
               onChange={(text) => text.target.value !== "" ? setNameFolder(text.target.value) : setNameFolder(folderConfig.name)}
-              maxLength={30}
+              maxLength={20}
               className="w-[80%] bg-transparent border-black dark:border-white border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] px-[5px] py-[3px] mt-1 outline-none"
             />
           </div>

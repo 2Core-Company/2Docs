@@ -94,7 +94,7 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
               </DropdownMenu.Item>
             </>
           }
-          {folderName === "Clientes" && file.from === "user" ||  from === 'admin' && file.from === "admin" ? 
+          {from === 'user' && file.from === "user" ||  from === 'admin' && file.from === "admin" ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
               <div onClick={() => setRename(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image className="dark:invert-0" src={RenameIcon} width={22} height={22} alt={"Copiar documentos"}/>
