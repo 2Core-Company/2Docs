@@ -2,7 +2,7 @@ import React, {useContext, useState, useEffect} from 'react'
 import { ArrowLeftIcon, UploadIcon, DownloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Event } from '../../../types/event'
 import { FormatDate } from '../../../Utils/Other/FormatDate';
-import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where, writeBatch } from 'firebase/firestore';
 import { db, storage } from '../../../../firebase';
 import { userContext } from "../../../app/Context/contextUser";
 import { companyContext } from '../../../app/Context/contextCompany';
@@ -30,6 +30,7 @@ interface Props{
 }
 
 function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay}:Props) {
+    const batch = writeBatch(db);
     const { dataCompany } = useContext(companyContext)
     const {dataUser} = useContext(userContext)
     const [files, setFiles]= useState<Files[]>([])
@@ -149,9 +150,10 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     //Guardando arquivos no firestore 
     async function UploadFilestore(result){
         const enterprise = dataUser.enterprises.find((data) => data.id === eventSelected.enterprise.id)
+        console.log(dataUser.enterprises)
+        console.log(eventSelected.enterprise.id)
         const folder = enterprise?.folders.find((data) => data.name === 'Cliente')
         const date = new Date() + ""
-        const promises:any = []
         var size = 0
         if(folder){
             for(var i = 0; i < newFiles.length; i++){
@@ -175,8 +177,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     message:'',
                     downloaded:false
                 }
+                console.log(data)
                 const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, 'user', 'files', newFiles[i].id)
-                promises.push(setDoc(docRef, data))
+                batch.set(docRef, data)
                 size = newFiles[i].size + size
             }
 
@@ -186,7 +189,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         }
 
         try {
-            await Promise.all(promises)
+            await batch.commit()
         } catch (e) {
             toast.error("Não foi possivel armazenar o " + name)
             console.log(e)
