@@ -11,9 +11,11 @@ import Image from "next/image";
 import TableEvents from "./tableEvents";
 import { usePathname } from "next/navigation";
 import { Event } from "../../../types/event";
+import { userContext } from "../../../app/Context/contextUser";
 
 export default function Calendar() {
   const { dataAdmin } = useContext(adminContext)
+  const { dataUser } = useContext(userContext)
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [dateSelected, setDateSelected] = useState([]);
   const [indexMonth, setIndexMonth] = useState(new Date().getMonth())
@@ -37,20 +39,22 @@ export default function Calendar() {
   ];
 
   useEffect(() =>{
-    if(dataAdmin != undefined){
-      GetEvents()
+    if(dataAdmin.id != ''){
+      GetEvents(dataAdmin)
+    } else if (dataUser.id != ''){
+      GetEvents(dataUser)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[dataAdmin])
+  },[dataAdmin, dataUser])
 
   //Pegando eventos
-  async function GetEvents(){
+  async function GetEvents(data){
     const events:Event[] = []
     var q 
-    if(dataAdmin.permission > 0){
-      q = query(collection(db, "companies", dataAdmin.id_company, "events"));
+    if(data.permission > 0){
+      q = query(collection(db, "companies", data.id_company, "events"));
     } else {
-      q = query(collection(db, "companies", dataAdmin.id_company, "events"), where('id_user', '==', dataAdmin.id));
+      q = query(collection(db, "companies", data.id_company, "events"), where('id_user', '==', data.id));
     }
 
     const querySnapshot:any = await getDocs(q);
@@ -58,8 +62,10 @@ export default function Calendar() {
       events.push({
         id:doc.data()?.id,
         id_user:doc.data()?.id_user,
+        id_folder:doc.data()?.id_folder,
+        id_enterprise:doc.data()?.id_enterprise,
         userName:doc.data()?.userName,
-        enterprise:doc.data()?.enterprise,
+        name_enterprise:doc.data()?.name_enterprise,
         title:doc.data()?.title,
         observation:doc.data()?.observation,
         complete:doc.data()?.complete,

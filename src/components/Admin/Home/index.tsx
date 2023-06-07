@@ -141,7 +141,7 @@ function ComponentHome () {
         </div>
 
         <p  className='font-poiretOne mt-[20px] text-[40px] max-lg:hidden dark:text-white'>Dúvidas Frequentes</p>
-        <div className='max-lg:hidden border-[2px] border-secondary dark:border-dsecondary w-[850px] h-[400px] p-[10px] rounded-[12px]'>
+        <div className='border-[2px] border-secondary dark:border-dsecondary max-w-[850px] w-full h-[400px] p-[10px] rounded-[12px] mt-[20px]'>
           <div id={styles.boxFiles} className='overflow-y-scroll h-full px-[5px] flex flex-col'>
             <div className="flex items-center gap-[5px] mt-[10px]">
               <QuestionMarkCircledIcon className="w-[40px] h-[40px] dark:text-white"/>

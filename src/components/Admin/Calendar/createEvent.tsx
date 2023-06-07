@@ -28,7 +28,7 @@ interface Props{
 function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, userName, setModalEvent}:Props) {
     const { dataAdmin } = useContext(adminContext);
     const [changeEnterprise, setChangeEnterprise] = useState(false);
-    const [dataEvent, setDataEvent] = useState<Event>({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, enterprise: enterprises[0], userName:userName, viewed: false});
+    const [dataEvent, setDataEvent] = useState<Event>({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, name_enterprise:enterprises[0].name, id_enterprise: enterprises[0].id, id_folder:enterprises[0].folders[0].id, userName:userName, viewed: false});
     const messageToast = {pending: 'Criando evento...', success:'Evento criado com sucesso.', error:'Não foi possivel criar este evento.'};
 
     async function CreatedEvent(){
@@ -52,7 +52,7 @@ function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, use
             email: email,
             title: dataEvent.title,
             observation: dataEvent.observation,
-            enterprise: dataEvent.enterprise.name,
+            enterprise: dataEvent.name_enterprise,
             dateSelected: dataEvent.dateSelected
         }
         const domain:string = new URL(window.location.href).origin
@@ -65,6 +65,11 @@ function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, use
             console.log(e)
             throw Error
         }
+    }
+
+    async function SelectEnterprise(data:Enterprise){
+        const folderCliente = data.folders.find((data) => data.name === 'Cliente' )
+        setDataEvent({...dataEvent,  id_enterprise:data.id, name_enterprise:data.name, id_folder:folderCliente!.id })
     }
 
     return (
@@ -85,7 +90,7 @@ function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, use
             </label>
             <div className='bg-neutral-200 w-[200px] dark:bg-neutral-200/20 border-[2px] border-neutral-400 dark:border-white rounded-[4px] pt-[3px] mt-[15px]'>
                 <div className='flex items-center px-[7px] justify-between' onClick={() => setChangeEnterprise(!changeEnterprise)}>
-                    <p className='max-w-[150px] overflow-hidden text-ellipsis' >{dataEvent.enterprise.name}</p>
+                    <p className='max-w-[150px] overflow-hidden text-ellipsis' >{dataEvent.name_enterprise}</p>
                     <div className='flex ml-[10px] '>
                         <div className='w-[20px] h-[20px] rounded-full border-neutral-400 dark:border-white p-[2px] border-[2px]'>
                             <div className='bg-neutral-400 dark:bg-white w-full h-full rounded-full'></div>
@@ -96,12 +101,12 @@ function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, use
 
                 <div className={`${changeEnterprise ? "" : "hidden"} duration-500`}>
                     {enterprises.map((data, index) =>{
-                        if(data.id == dataEvent.enterprise.id) return ""
+                        if(data.id == dataEvent.id_enterprise) return ""
                         return (
-                            <div key={data.id} className="text-left flex mt-[5px] justify-between px-[7px]">
-                                <p onClick={() => (setDataEvent({...dataEvent,  enterprise:enterprises[index]}), setChangeEnterprise(false))} className="cursor-pointer w-[100%] max-w-[150px] overflow-hidden text-ellipsis">{data.name}</p>
-                                <div onClick={() => (setDataEvent({...dataEvent,  enterprise:enterprises[index]}), setChangeEnterprise(false))} className='cursor-pointer min-w-[20px] h-[20px] rounded-full border-black dark:border-white p-[2px] border-[2px]' />
-                            </div>
+                            <button type='button' onClick={() => (SelectEnterprise(data), setChangeEnterprise(false))} key={data.id} className="text-left flex mt-[5px] justify-between px-[7px]">
+                                <p  className="cursor-pointer w-[100%] max-w-[150px] overflow-hidden text-ellipsis">{data.name}</p>
+                                <div className='cursor-pointer min-w-[20px] h-[20px] rounded-full border-black dark:border-white p-[2px] border-[2px]' />
+                            </button>
                         )
                     })}
                 </div>

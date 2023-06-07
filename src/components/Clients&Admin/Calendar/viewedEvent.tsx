@@ -2,7 +2,7 @@ import React, {useContext, useState, useEffect} from 'react'
 import { ArrowLeftIcon, UploadIcon, DownloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Event } from '../../../types/event'
 import { FormatDate } from '../../../Utils/Other/FormatDate';
-import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where, writeBatch } from 'firebase/firestore';
 import { db, storage } from '../../../../firebase';
 import { userContext } from "../../../app/Context/contextUser";
 import { companyContext } from '../../../app/Context/contextCompany';
@@ -30,6 +30,7 @@ interface Props{
 }
 
 function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay}:Props) {
+    const batch = writeBatch(db);
     const { dataCompany } = useContext(companyContext)
     const {dataUser} = useContext(userContext)
     const [files, setFiles]= useState<Files[]>([])
@@ -131,7 +132,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     async function  UploadFileStorage() {
         const promises:any = []
         for await (const file of newFiles) {
-            const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id}/${eventSelected.enterprise.id}/Cliente/${file.id}`);
+            const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id}/${eventSelected.id_enterprise}/Cliente/${file.id}`);
             promises.push(uploadBytes(docsRef, file))
         }
         try{
@@ -148,10 +149,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     //Guardando arquivos no firestore 
     async function UploadFilestore(result){
-        const enterprise = dataUser.enterprises.find((data) => data.id === eventSelected.enterprise.id)
+        const enterprise = dataUser.enterprises.find((data) => data.id === eventSelected.id_enterprise)
         const folder = enterprise?.folders.find((data) => data.name === 'Cliente')
         const date = new Date() + ""
-        const promises:any = []
         var size = 0
         if(folder){
             for(var i = 0; i < newFiles.length; i++){
@@ -160,7 +160,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     id: newFiles[i].id,
                     path:result[i].metadata.fullPath,
                     id_company: dataUser.id_company,
-                    id_enterprise: eventSelected.enterprise.id,
+                    id_enterprise: eventSelected.id_enterprise,
                     id_event:eventSelected.id,
                     name: newFiles[i].name,
                     size: files[i].size,
@@ -175,8 +175,9 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     message:'',
                     downloaded:false
                 }
+                console.log(data)
                 const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, 'user', 'files', newFiles[i].id)
-                promises.push(setDoc(docRef, data))
+                batch.set(docRef, data)
                 size = newFiles[i].size + size
             }
 
@@ -186,7 +187,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         }
 
         try {
-            await Promise.all(promises)
+            await batch.commit()
         } catch (e) {
             toast.error("Não foi possivel armazenar o " + name)
             console.log(e)
@@ -276,7 +277,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             <div>
                 <p className="text-[20px] text-left max-lsm:text-[18px] mt-[10px] overflow-hidden text-ellipsis"><span className="font-[600]">Titúlo:</span> {eventSelected.title}</p>
                 <p className="text-[20px] text-left max-lsm:text-[18px] mt-[10px] overflow-hidden text-ellipsis"><span className="font-[600]">Observação:</span> {eventSelected.observation}</p>
-                <p className="text-[20px] text-left max-lsm:text-[18px] mt-[10px] overflow-hidden text-ellipsis"><span className="font-[600]">Empresa:</span> {eventSelected.enterprise.name}</p>
+                <p className="text-[20px] text-left max-lsm:text-[18px] mt-[10px] overflow-hidden text-ellipsis"><span className="font-[600]">Empresa:</span> {eventSelected.name_enterprise}</p>
                 <p className="text-[20px] text-left max-lsm:text-[18px] mt-[10px] overflow-hidden text-ellipsis"><span className="font-[600]">Nome:</span> {eventSelected.userName}</p>
                 <p className="text-[20px] text-left max-lsm:text-[18px] mt-[10px] overflow-hidden text-ellipsis"><span className="font-[600]">Data Selecionada:</span> {FormatDate(eventSelected.dateSelected)}</p>
             </div>
