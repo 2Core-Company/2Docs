@@ -6,9 +6,9 @@ import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { Files } from '../../../types/files' 
 import { Folders } from '../../../types/folders';
 import { GetFolders } from '../../../Utils/folders/getFolders';
-import AlterSizeCompany from '../../Clients&Admin/Files/alterSizeCompany';
 import { companyContext } from '../../../app/Context/contextCompany';
-import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
+import { GetSizeCompany } from '../../../Utils/Other/getSizeCompany';
+import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
 
 interface Props{
   file:Files
@@ -59,7 +59,7 @@ function  CopyTo({file, setCopyTo}: Props) {
   async function CopyngFileStorage(){
     setCopyTo(false)
     try{
-      const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
+      const referencesFile = `${file.id_company}|${Math.floor(1000 + Math.random() * 9000) + file.name}`;
       const docsRef = ref(storage, `${file.id_company}/files/${file.id_user}/${file.id_enterprise}/${dataFolder.id}/${referencesFile}`);
       const upload = await uploadBytes(docsRef, fileCopy)
       await UploadFilestore({path:upload.metadata.fullPath, id:referencesFile, name:file.name})
@@ -90,11 +90,13 @@ function  CopyTo({file, setCopyTo}: Props) {
       message:'',
       downloaded:false
     }
-    const sizeCompany = await GetSizeCompany({id_company:dataCompany.id})
+    const companySize = await GetSizeCompany({id_company:file.id_company})
 
-    const size = sizeCompany  + file.size
+    if((companySize + file.size) > dataCompany.maxSize){
+      throw toast.error('Limite de armazenamento foi excedido.')
+    }
 
-    await AlterSizeCompany({size:size, id_company:dataCompany.id})
+    await updateSizeCompany({id_company:file.id_company, size:file.size, action:'sum'})
 
     try {
       const docRef = await setDoc(doc(db, "files", file.id_company, file.id_user, 'user', 'files', id), data);

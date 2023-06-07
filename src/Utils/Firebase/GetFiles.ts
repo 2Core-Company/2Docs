@@ -219,6 +219,7 @@ interface interfaceGetFilesEvent{
 
 export async function GetFilesEvent({id_company, eventSelected, setFiles}: interfaceGetFilesEvent){
   const getFiles:Files[] = []
+  console.log(id_company)
   var q = query(collection(db, "files", id_company, eventSelected.id_user, 'user', 'files'), where("id_event", "==",  eventSelected.id));
 
   const querySnapshot = await getDocs(q);
