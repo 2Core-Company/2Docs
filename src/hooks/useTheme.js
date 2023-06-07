@@ -5,8 +5,10 @@ const ThemeContext = createContext();
 
 export default function ThemeContextProvider({children}) {
     const [theme, setTheme] = useState(
-        typeof window !== "undefined" ? localStorage.theme : "light"
+        localStorage.theme != undefined ? localStorage.theme : "light"
     );
+
+    console.log(theme);
 
     useEffect(() => {
         const root = window.document.documentElement;
