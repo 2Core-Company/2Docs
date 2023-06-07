@@ -10,11 +10,8 @@ import ModalDelete from '../../../Utils/Other/ModalDelete';
 import { toast } from 'react-toastify';
 import { db } from '../../../../firebase'
 import { doc, updateDoc, query, collection, getDocs, where, writeBatch} from "firebase/firestore";
-import { loadingContext } from '../../../app/Context/contextLoading';
 import axios from 'axios';
-import AlterSizeCompany from '../../Clients&Admin/Files/alterSizeCompany';
-import { companyContext } from '../../../app/Context/contextCompany';
-import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
+import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
  
 interface Props{
   index:number
@@ -27,7 +24,6 @@ interface Props{
 function Options({index, user, enterprise, setUser, setEnterprise}: Props){
   const [rename, setRename] = useState(false)
   const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
-  const {setLoading} = useContext(loadingContext)
   const batch = writeBatch(db);
   const domain = window.location.origin
 
@@ -39,7 +35,6 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
 
   //Resposta do modal
   const childModal = () => {
-    setLoading(true)
     setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
     toast.promise(DeletEnterprise(),{pending:"Deletando empresa...", success:"Empresa deletada com sucesso."}, {position: "bottom-right"})
   }
@@ -56,7 +51,6 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
       await Promise.all([DeletEvents(), DeletFiles(entrepisesUpdated)])
     } catch(e) {
       console.log(e)
-      setLoading(false)
       throw toast.error("Não foi possível deletar esta empresa.", {position: "bottom-right"})
     }
   }
@@ -67,8 +61,8 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
     var size = 0
     try{
       const querySnapshot = await getDocs(q);
-      const a = querySnapshot.forEach((file) => {
-        size = size + file.data().size
+      querySnapshot.forEach((file) => {
+        size += file.data().size
         const laRef = doc(db, "files", user.id_company, user.id, 'user', 'files', file.data().id);
         batch.delete(laRef)
       }); 
@@ -78,16 +72,11 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
         axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}`})
       ])
 
-      const sizeCompany = await  GetSizeCompany({id_company:user.id_company})
-      size = sizeCompany - size
-
-      await AlterSizeCompany({size, id_company:user.id_company})
+      await updateSizeCompany({id_company:user.id_company, size, action:'subtraction'})
 
       setEnterprise(entrepisesUpdated[0])
       setUser({...user, enterprises:entrepisesUpdated})
-      setLoading(false)
     } catch(e){
-      setLoading(false)
       console.log(e)
       throw toast.error("Não foi possível deletar esta empresa.")
     }

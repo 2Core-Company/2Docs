@@ -15,8 +15,9 @@ import DownloadsFile from '../Files/dowloadFiles';
 import DeletEvents from '../../Admin/Calendar/deletEvents';
 import { Files } from '../../../types/files';
 import { GetFilesEvent } from '../../../Utils/Firebase/GetFiles'
-import AlterSizeCompany from '../Files/alterSizeCompany';
-import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
+import { GetSizeCompany } from '../../../Utils/Other/getSizeCompany';
+import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
+import { adminContext } from '../../../app/Context/contextAdmin';
 
 
 interface Props{
@@ -32,6 +33,7 @@ interface Props{
 function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin, setEventSelected,  setEventsThatDay}:Props) {
     const batch = writeBatch(db);
     const { dataCompany } = useContext(companyContext)
+    const { dataAdmin } = useContext(adminContext)
     const {dataUser} = useContext(userContext)
     const [files, setFiles]= useState<Files[]>([])
     const [newFiles, setNewFiles]= useState<any>([])
@@ -41,13 +43,14 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     useEffect(() =>{
         GetStatus(eventSelected.complete)
-        if(dataUser != undefined){
-            const id_company = dataUser.id_company
+        if(dataUser != undefined || dataAdmin != undefined){
+            console.log(eventSelected)
+            const id_company = dataUser.id_company ? dataUser.id_company : dataAdmin.id_company
             GetFilesEvent({id_company, eventSelected, setFiles})
             UpdatedEventViwed()
         }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      },[dataUser])
+      },[dataUser, dataAdmin])
 
     function GetStatus(complete:Boolean){
         const diffInMs   = new Date().getTime() - new Date(eventSelected.dateSelected).getTime()
@@ -79,10 +82,14 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     
 
     //Pegando arquivos do input file
-    async function SelectFiles(e){
+    async function SelectFiles(dataFiles){
+        if(dataFiles.length > 10){
+            throw toast.error('Você não pode armazenar mais de 10 arquivos de uma vez.')
+        }
+
         const newFilesHere:Files[] = [...newFiles]
         const filesHere = [...files]
-        for await (const file of e.files) {
+        for await (const file of dataFiles) {
             if(file.size > 30000000){
                 toast.error(`O arquivo ${file.name} excede o limite de 30mb.`)
             } else {
@@ -94,7 +101,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         }
         setFiles(filesHere)
         setNewFiles(newFilesHere)
-        e.value = null
+        dataFiles.value = null
     }
 
     //Buscando o tipo
@@ -125,16 +132,27 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         } 
         
         if(newFiles.length > 0){
-            toast.promise(UploadFileStorage(),{pending:'Armazenando os arquivos...', success:'Arquivos aramazenados com sucesso.', error:'Não foi possivel armazerar estes arquivos.'})
+            toast.promise(UploadFileStorage(),{pending:'Armazenando os arquivos...', success:'Arquivos aramazenados com sucesso.'})
         }
     }
 
     async function  UploadFileStorage() {
         const promises:any = []
+        var size = 0
         for await (const file of newFiles) {
             const docsRef = ref(storage, `${dataUser.id_company}/files/${dataUser.id}/${eventSelected.id_enterprise}/Cliente/${file.id}`);
             promises.push(uploadBytes(docsRef, file))
+            size += file.size
         }
+
+        const companySize = await GetSizeCompany({id_company:dataUser.id_company})
+
+        if((companySize + size) > dataCompany.maxSize){
+        throw toast.error('Limite de armazenamento foi excedido.')
+        }
+
+        await updateSizeCompany({id_company:dataUser.id_company, size, action:'sum'})
+
         try{
             const result = await Promise.all(promises)
             await Promise.all([UploadFilestore(result), UpdatedEventComplete()])
@@ -152,7 +170,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         const enterprise = dataUser.enterprises.find((data) => data.id === eventSelected.id_enterprise)
         const folder = enterprise?.folders.find((data) => data.name === 'Cliente')
         const date = new Date() + ""
-        var size = 0
         if(folder){
             for(var i = 0; i < newFiles.length; i++){
                 const data:Files= {
@@ -178,12 +195,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                 console.log(data)
                 const docRef = doc(db, "files", dataUser.id_company, eventSelected.id_user, 'user', 'files', newFiles[i].id)
                 batch.set(docRef, data)
-                size = newFiles[i].size + size
-            }
-
-            const sizeCompany = await GetSizeCompany({id_company:dataCompany.id})
-            size = sizeCompany + size
-            await AlterSizeCompany({size, id_company:dataCompany.id}) 
+            }   
         }
 
         try {
@@ -229,10 +241,8 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     deleteObject(desertRef)
                 ])
                 
-                const sizeCompany = await GetSizeCompany({id_company:dataCompany.id})
-                size = sizeCompany - size
+                await updateSizeCompany({id_company:file.id_company, size, action:'subtraction'})
                 
-                await AlterSizeCompany({size, id_company:dataCompany.id})
             } catch(e){
                 console.log(e)
                 throw Error
@@ -244,14 +254,16 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         newFilesFunction.splice(index2, 1)
         filesFunction.splice(index, 1)
 
+        const id_company = file.id_company
+
         setFiles(filesFunction)
         setNewFiles(newFilesFunction)
-        UpdatedEventIncomplete(filesFunction.filter((data) => data.id_folder))
+        UpdatedEventIncomplete({files:filesFunction.filter((data) => data.id_folder), id_company})
     }
 
-    async function UpdatedEventIncomplete(files){
+    async function UpdatedEventIncomplete({files, id_company}){
         if(eventSelected.complete && files.length === 0){
-            await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
+            await updateDoc(doc(db, 'companies', id_company, "events", eventSelected.id), {
                 complete:false
             })
             
@@ -296,7 +308,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                             <p>Armazene seus arquivos</p>
                             <label className={` bg-neutral-400/20 border-[2px] border-neutral-400 w-[250px] h-[80px] dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px]`}>
                                 <UploadIcon className="w-[50px] h-[35px] text-neutral-400" />
-                                <input onChange={ (e) => SelectFiles(e.target)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
+                                <input onChange={ (e) => SelectFiles(e.target.files)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
                             </label>
                         </div>
                     }
@@ -322,7 +334,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
 
                     {admin && eventsThatDay && setEventsThatDay ? 
-                        <DeletEvents files={files} eventSelected={eventSelected} eventsThatDay={eventsThatDay} events={events} id_company={dataUser.id_company} setEventSelected={setEventSelected} setEventsThatDay={ setEventsThatDay} />
+                        <DeletEvents files={files} eventSelected={eventSelected} eventsThatDay={eventsThatDay} events={events} id_company={dataAdmin.id_company} setEventSelected={setEventSelected} setEventsThatDay={ setEventsThatDay} />
                     : 
                         <div className={`${files.length > 0 ? 'border-greenV ' : 'border-neutral-400'} border-[2px] self-center rounded-[4px] mt-[15px] hover:scale-105`}>
                             <button onClick={() => UploadFiles() } className={`${files.length > 0 ? 'text-greenV bg-greenV/20' : 'text-neutral-[500] bg-neutral-300'} cursor-pointer   self-center text-[20px] max-lsm:text-[18px] px-[8px] py-[2]`}>Salvar</button>

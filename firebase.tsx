@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore"
+import { getDatabase } from "firebase/database";
 
 
 const firebaseConfig = {
@@ -12,7 +13,8 @@ const firebaseConfig = {
   storageBucket: "docs-dc26e.appspot.com",
   messagingSenderId: "330282108027",
   appId: "1:330282108027:web:77bb9ce4d4dc14d0270ede",
-  measurementId: "G-8LPJJP0644"
+  measurementId: "G-8LPJJP0644",
+  databaseURL:"https://docs-dc26e-default-rtdb.firebaseio.com"
 };
 
 
@@ -20,3 +22,4 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const db = getFirestore(app);
+export const database = getDatabase(app);

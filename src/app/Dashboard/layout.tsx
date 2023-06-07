@@ -115,10 +115,10 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
 
     if (docSnap.exists()) {
       setDataCompany({
-        id:docSnap?.data()?.id, 
-        name:docSnap.data()?.name,
-        contact:docSnap.data()?.contact, 
-        questions:docSnap.data()?.questions,
+        id:docSnap?.data().id, 
+        name:docSnap.data().name,
+        contact:docSnap.data().contact, 
+        questions:docSnap.data().questions,
         maxSize:maxSize
       })
     }

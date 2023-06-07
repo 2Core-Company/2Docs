@@ -3,16 +3,14 @@ import { collection, doc, getDocs, query, updateDoc, where, writeBatch } from "f
 import { DataUser } from '../../../types/users' 
 import axios from 'axios';
 import { Enterprise } from '../../../types/others';
-import AlterSizeCompany from '../../Clients&Admin/Files/alterSizeCompany';
-import { DataCompanyContext } from '../../../types/dataCompany';
-import { GetSizeCompany } from '../../../Utils/files/GetSizeCompany';
+import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
 
 interface Props{
     user:DataUser,
     id_folder:string
     id_company:string
     enterprise:Enterprise
-    setUser:Function, 
+    setUser:Function
 }
 
 async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Props) {
@@ -21,6 +19,7 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
     const domain:string = window.location.origin
     const batch = writeBatch(db);
     const querySnapshot = await getDocs(q);
+    var size = 0
 
     const index = folders.findIndex(folder => folder.id === id_folder)
     enterprise.folders.splice(index, 1)
@@ -28,13 +27,15 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
     const index2 = user.enterprises.findIndex((data) => enterprise.id === data.id)
     user.enterprises[index2] = enterprise
 
-    var size = 0
 
     querySnapshot.forEach((file:any) => {
-        size = size + file.data().size
         const laRef = doc(db, "files", id_company, user.id, 'user', 'files', file.data().id);
         batch.delete(laRef)
+        console.log(file)
+        size += file.data().size
     })
+
+    await updateSizeCompany({id_company, size, action:'subtraction'})
 
     try{
         await Promise.all([
@@ -46,7 +47,6 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
         console.log(err)
     }
 
-
     try{
         await Promise.all([
             await batch.commit(),
@@ -56,11 +56,6 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
         console.log(e)
     }
 
-    const sizeCompany = await GetSizeCompany({id_company:id_company})
-
-    size =  sizeCompany - size
-
-    await AlterSizeCompany({size, id_company})
     setUser({...user, enterprises:user.enterprises})
 }
 

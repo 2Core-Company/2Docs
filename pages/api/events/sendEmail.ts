@@ -22,7 +22,7 @@ export default async function SendEmail(req, res) {
         console.log(error);
         reject(error);
       } else {
-        resolve();
+        resolve('Email enviado');
       }
     });
   }); 

@@ -31,6 +31,7 @@ interface Props{
 }
 
 function Options({dataAdmin, domain, idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed, setUsers, ResetConfig}: Props){
+  const { setDataCompany } = useContext(companyContext)
   const messageFix = {pending:"Fixando usuário...", success:"Usuário fixado com sucesso."}
   const messageUnFix = {pending:"Desfixando usuário...", success:"Usuário fixado com sucesso."}
   const [ modalEvent, setModalEvent ] = useState<boolean>(false)

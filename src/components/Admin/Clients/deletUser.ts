@@ -4,8 +4,7 @@ import { doc, deleteDoc, query,  where, collection, getDocs, writeBatch} from "f
 import axios from 'axios'
 import ErrorFirebase from "../../../Utils/Firebase/ErrorFirebase";
 import { DataUser } from '../../../types/users'
-import AlterSizeCompany from "../../Clients&Admin/Files/alterSizeCompany";
-import { GetSizeCompany } from "../../../Utils/files/GetSizeCompany";
+import updateSizeCompany from "../../../Utils/Other/updateSizeCompany";
 
   interface Props{
     user:DataUser
@@ -75,16 +74,13 @@ async function deletUser({user, users, domain, ResetConfig}:Props) {
       const querySnapshot = await getDocs(q);
   
       querySnapshot.forEach((file) => {
-        size = size + file.data().size
+        size += file.data().size
         const laRef = doc(db, "files", user.id_company, user.id, 'user', 'files', file.data().id);
         batch.delete(laRef)
       })
   
-      const sizeCompany = await GetSizeCompany({id_company:user.id_company})
+      await updateSizeCompany({id_company:user.id_company, size, action:'subtraction'})
   
-      size = sizeCompany - size
-  
-      await AlterSizeCompany({size, id_company:user.id_company})
     }catch(e){
       console.log(e)
     }
@@ -101,3 +97,4 @@ async function deletUser({user, users, domain, ResetConfig}:Props) {
 }
 
 export default deletUser
+

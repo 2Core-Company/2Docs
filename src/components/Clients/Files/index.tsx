@@ -11,7 +11,7 @@ import Link from 'next/link'
 import TableFiles from '../../Clients&Admin/Files/tableFiles'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import ModalDelete from '../../../Utils/Other/ModalDelete'
-import DeletFiles from '../../Admin/Files/DeletFiles';
+import DeletFiles from '../../Clients&Admin/Files/DeletFiles';
 import { Files } from '../../../types/files'
 import { Modal } from '../../../types/others'
 import { userContext } from '../../../app/Context/contextUser';
