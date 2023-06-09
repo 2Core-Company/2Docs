@@ -3,9 +3,12 @@ import { useContext, createContext, useState, useEffect} from "react";
 
 const ThemeContext = createContext();
 
-export default function ThemeContextProvider({children}) {
-    const [theme, setTheme] = useState(
-        localStorage.theme != undefined ? localStorage.theme : "light"
+export default function ThemeContextProvider({children}) {    
+    const [theme, setTheme] = useState(        
+        typeof window != "undefined" ?
+        localStorage.theme != undefined ? localStorage.theme :
+        "light" :
+        "light"
     );
 
     console.log(theme);
