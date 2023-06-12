@@ -11,8 +11,6 @@ export default function ThemeContextProvider({children}) {
         "light"
     );
 
-    console.log(theme);
-
     useEffect(() => {
         const root = window.document.documentElement;
         const removeOldTheme = theme === "dark" ? "light" : "dark";
