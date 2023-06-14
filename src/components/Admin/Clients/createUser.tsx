@@ -57,17 +57,12 @@ function CreateUser({childToParentCreate, closedWindow, contextAdmin}:Props){
     }
     try{
       const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser?.uid})
-      if(result.data.uid){
-        const id = result.data.uid
-        if(file){
-          await UploadPhoto(id)
-        } else {
-          const url = `https://ui-avatars.com/api/?name=${dataUser.name}&background=10b981&color=262626&format=svg`
-          SignUpDb({url: url, referencesFile:'', id: id})
-        }
+      const id = result.data.uid
+      if(file){
+        await UploadPhoto(id)
       } else {
-        ErrorFirebase(result.data)
-        throw Error
+        const url = `https://ui-avatars.com/api/?name=${dataUser.name}&background=10b981&color=262626&format=svg`
+        SignUpDb({url: url, referencesFile:'', id: id})
       }
     } catch (e){
       console.log(e)
