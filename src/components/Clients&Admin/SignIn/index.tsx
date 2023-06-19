@@ -106,20 +106,14 @@ function Signin(){
   }
   
   const contextTheme = useContext(themeContext);
-  console.log("🚀 ~ file: index.tsx:99 ~ Signin ~ contextTheme:", contextTheme)
   
 
   if(loading){return <></>}
     return(
       <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
         <ToastContainer autoClose={3000} />
-<<<<<<< HEAD
         {contextTheme.theme == "light" ? (
           <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='max-md:h-[250px] max-md:w-[250px]'/>
-=======
-        {theme == "light" || theme == undefined ? (
-          <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='w-[200px]'/>
->>>>>>> lucastkp
         ) : (
           <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority  className='w-[200px]'/>
         )}
