@@ -1,11 +1,10 @@
 'use client'
 import { useContext, createContext, useState, useEffect} from "react";
 
-const ThemeContext = createContext("light");
+const ThemeContext = createContext<string>("light");
 
 export default function ThemeContextProvider({children}) { 
-    console.log(localStorage.theme )   
-    const [theme, setTheme] = useState(        
+    const [theme, setTheme] = useState<string>(
         typeof window != "undefined" ?
             localStorage.theme != undefined ? localStorage.theme :
             "light" 
@@ -23,6 +22,7 @@ export default function ThemeContextProvider({children}) {
     }, [theme]);
 
     return (
+        // @ts-ignore (value on provider can be any value)
         <ThemeContext.Provider value={{theme, setTheme}}>
             {children}
         </ThemeContext.Provider>

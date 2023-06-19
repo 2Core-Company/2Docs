@@ -95,13 +95,14 @@ function Signin(){
     }
   }
 
-  const { theme } = useTheme();
+  // @ts-ignore
+  const {theme}: string = useTheme();
 
   if(loading){return <></>}
     return(
       <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
         <ToastContainer autoClose={3000} />
-        {theme == "light" || theme == undefined ? (
+        {theme == "light" ? (
           <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='max-md:h-[250px] max-md:w-[250px]'/>
         ) : (
           <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority  className='w-[300px]'/>
