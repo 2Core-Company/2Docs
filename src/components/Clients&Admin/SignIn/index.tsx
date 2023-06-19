@@ -8,12 +8,11 @@ import { auth } from '../../../../firebase'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import LogoPretoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.png'
-import LogoBrancoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.png'
-import { toast, ToastContainer } from 'react-toastify';
-import { signOut} from "firebase/auth";
+import { toast, ToastContainer } from 'react-toastify';import { signOut} from "firebase/auth";
 import { useTheme } from "../../../hooks/useTheme"
 import { stripe } from '../../../../lib/stripe'
+import Logo2CorePretoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.svg'
+import Logo2CoreBrancoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.svg'
 
 function Signin(){
   const contextLoading = useContext(loadingContext)
@@ -102,10 +101,10 @@ function Signin(){
     return(
       <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
         <ToastContainer autoClose={3000} />
-        {theme == "light" ? (
-          <Image src={LogoPretoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='max-md:h-[250px] max-md:w-[250px] rounded-full'/>
+        {theme == "light" || theme == undefined ? (
+          <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='max-md:h-[250px] max-md:w-[250px]'/>
         ) : (
-          <Image src={LogoBrancoSemFundo} alt="Logo da empresa" priority height={300} width={300} className='rounded-full'/>
+          <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority  className='w-[300px]'/>
         )}
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px] pb-[15px]" defaultValue="tab1">
           <p className="text-[40px] font-poiretOne dark:text-white">Login</p>
