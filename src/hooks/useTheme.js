@@ -1,13 +1,13 @@
 'use client'
 import { useContext, createContext, useState, useEffect} from "react";
 
-const ThemeContext = createContext("light");
+const ThemeContext = createContext();
 
 export default function ThemeContextProvider({children}) { 
     console.log(localStorage.theme )   
     const [theme, setTheme] = useState(        
         typeof window != "undefined" ?
-            localStorage.theme != undefined ? localStorage.theme :
+            localStorage.theme != undefined || localStorage.theme != "undefined" ? localStorage.theme :
             "light" 
         :
         "light"

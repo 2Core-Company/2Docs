@@ -3,7 +3,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { EyeClosedIcon, EyeOpenIcon} from '@radix-ui/react-icons';
 import { useState, useContext, useEffect } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading'
-import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, browserSessionPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth } from '../../../../firebase'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,7 @@ import { useTheme } from "../../../hooks/useTheme"
 import { stripe } from '../../../../lib/stripe'
 import Logo2CorePretoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.svg'
 import Logo2CoreBrancoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.svg'
+import { async } from '@firebase/util';
 
 function Signin(){
   const contextLoading = useContext(loadingContext)
@@ -34,10 +35,19 @@ function Signin(){
         })
       } else {
         setLoading(false)
+        auth.setPersistence(browserSessionPersistence)
       }
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function OnChangePersistenceLogin(e){
+    if(e.target.checked){
+      auth.setPersistence(browserLocalPersistence)
+    } else {
+      auth.setPersistence(browserSessionPersistence)
+    }
+  }
 
   function OnToastLogin(e: { preventDefault: () => void; }){
     e.preventDefault()
@@ -102,9 +112,9 @@ function Signin(){
       <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
         <ToastContainer autoClose={3000} />
         {theme == "light" || theme == undefined ? (
-          <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='max-md:h-[250px] max-md:w-[250px]'/>
+          <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='w-[200px]'/>
         ) : (
-          <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority  className='w-[300px]'/>
+          <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority  className='w-[200px]'/>
         )}
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px] pb-[15px]" defaultValue="tab1">
           <p className="text-[40px] font-poiretOne dark:text-white">Login</p>
@@ -130,7 +140,16 @@ function Signin(){
                   )}
                 </div>
               </fieldset>
-              <button type="button" onClick={() => AlterPassword(loginUser.email)} className='w-full flex justify-end underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
+              <div className='flex justify-between'>
+                <div className='flex items-center'>
+                  <input onChange={(e) => OnChangePersistenceLogin(e)} type="checkbox" className="w-[15px] h-[15px] border-[1px] border-[#686868] rounded-[3px]" />
+                  <p className='ml-[5px] text-[#686868]'>Lembrar de mim</p>
+                </div>
+                <button type="button" onClick={() => AlterPassword(loginUser.email)} className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>
+                  Esqueci a senha
+                </button>
+              </div>
+              
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
               </button>
