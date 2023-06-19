@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../firebase";
 import { toast } from "react-toastify";
 import { DataUser } from "../../../types/users";
 import * as Switch from "@radix-ui/react-switch";
-import { useTheme } from "../../../hooks/useTheme";
+import { themeContext } from "../../../hooks/useTheme";
 import { Enterprise} from "../../../types/others";
 import { Folders } from "../../../types/folders";
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +24,7 @@ function CreateFolder({user, enterprise, id, id_company, setUser, setCreateFolde
   const [dataFolder, setDataFolder] = useState({color:'#005694', name:''})
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const toastCreateFolder = {pending: "Criando pasta.", success: "Pasta criada.",error: "Não foi possível criar esta pasta."}
-  const { theme } = useTheme();
+  const { theme } = useContext(themeContext);
 
   //Função de criar pasta
   async function CreateFolder() {
