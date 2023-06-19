@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { HomeIcon, FileTextIcon, PersonIcon } from '@radix-ui/react-icons';
 import * as Avatar from '@radix-ui/react-avatar';
@@ -10,7 +10,7 @@ import { signOut} from "firebase/auth";
 import { auth } from '../../../../firebase'
 import { useRouter } from 'next/navigation';
 import { Modal } from '../../../types/others'
-import { useTheme } from "../../../hooks/useTheme"
+import { themeContext } from "../../../hooks/useTheme"
 import Calendar from '../../../../public/icons/calendar.svg';
 
 interface Props{
@@ -33,7 +33,7 @@ function NavBar({permission, image}:Props) {
         });
     }
 
-    const { theme, setTheme } = useTheme();
+    const { theme } = useContext(themeContext);
 
     return (
         <div className='top-0 fixed z-50'>

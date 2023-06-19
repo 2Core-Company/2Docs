@@ -9,7 +9,7 @@ import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toast, ToastContainer } from 'react-toastify';import { signOut} from "firebase/auth";
-import { useTheme } from "../../../hooks/useTheme"
+import { themeContext } from "../../../hooks/useTheme"
 import { stripe } from '../../../../lib/stripe'
 import Logo2CorePretoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.svg'
 import Logo2CoreBrancoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.svg'
@@ -88,20 +88,22 @@ function Signin(){
     try{
       const result = await sendPasswordResetEmail(auth, email)
       contextLoading.setLoading(false)
-      toast.success(`Enviamos um link para o email: ${email}, Verifique a caixa de SPAN.`)
+      toast.success(`Enviamos um link para o email: ${email}, Verifique a caixa de spam.`)
     }catch(e){
       contextLoading.setLoading(false)
       ErrorFirebase(e)
     }
   }
   
-  const {...theme}: String = useTheme();
+  const contextTheme = useContext(themeContext);
+  console.log("🚀 ~ file: index.tsx:99 ~ Signin ~ contextTheme:", contextTheme)
+  
 
   if(loading){return <></>}
     return(
       <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
         <ToastContainer autoClose={3000} />
-        {theme == "light" ? (
+        {contextTheme.theme == "light" ? (
           <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='max-md:h-[250px] max-md:w-[250px]'/>
         ) : (
           <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority  className='w-[300px]'/>

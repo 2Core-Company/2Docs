@@ -1,10 +1,11 @@
 'use client'
+import React, { useContext } from 'react';
 import './switchStyle.css'
 import * as Switch from '@radix-ui/react-switch';
-import { useTheme } from "../../../hooks/useTheme"
+import { themeContext } from "../../../hooks/useTheme"
 
 function LightModeSwitch() {
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme } = useContext(themeContext);
 
     return(
         <form>            
