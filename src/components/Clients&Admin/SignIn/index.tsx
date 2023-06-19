@@ -94,9 +94,8 @@ function Signin(){
       ErrorFirebase(e)
     }
   }
-
-  // @ts-ignore
-  const {theme}: string = useTheme();
+  
+  const {...theme}: String = useTheme();
 
   if(loading){return <></>}
     return(
