@@ -103,10 +103,10 @@ function Signin(){
     return(
       <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
         <ToastContainer autoClose={3000} />
-        {contextTheme.theme == "light" ? (
-          <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='max-md:h-[250px] max-md:w-[250px]'/>
+        {contextTheme.theme == "dark" ? (
+          <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority className='w-[300px]'/>
         ) : (
-          <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority  className='w-[300px]'/>
+          <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='max-md:h-[250px] max-md:w-[250px]'/>
         )}
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px] pb-[15px]" defaultValue="tab1">
           <p className="text-[40px] font-poiretOne dark:text-white">Login</p>
