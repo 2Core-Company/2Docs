@@ -2,7 +2,7 @@ import ComponentHome from '../../../components/Admin/Home'
 
 function Home(){
   return (
-      <ComponentHome />
-    );
+    <ComponentHome />
+  );
 };
 export default Home;

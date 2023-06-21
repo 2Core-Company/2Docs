@@ -1,29 +1,49 @@
-import React, { useContext, useState } from 'react';
-import * as Tooltip from '@radix-ui/react-tooltip';
-import { HomeIcon, FileTextIcon, PersonIcon } from '@radix-ui/react-icons';
-import * as Avatar from '@radix-ui/react-avatar';
-import iconExit from '../../../../public/icons/exit.svg'
+import React, { useContext, useRef, useState } from 'react';
+import { DashboardIcon, FileTextIcon, PersonIcon, CalendarIcon, ChevronUpIcon, ExternalLinkIcon, MoonIcon, SunIcon, TriangleDownIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
 import ModalExit from './ModalExit'
 import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
 import { auth } from '../../../../firebase'
 import { useRouter } from 'next/navigation';
-import { Modal } from '../../../types/others'
 import { themeContext } from "../../../hooks/useTheme"
-import Calendar from '../../../../public/icons/calendar.svg';
+import logo2Docs from '../../../../public/icons/logo2Docs.svg'
+import style from './navBar.module.css'
+import * as Popover from '@radix-ui/react-popover';
+import Link from 'next/link';
 
 interface Props{
     permission:number
     image:string
+    name:string
 }
 
-function NavBar({permission, image}:Props) {
+function NavBar({permission, image, name}:Props) {
     const path = usePathname()
     const [menu, setMenu] = useState(true)
-    const [modal, setModal] = useState<Modal>({status: false, message: ""})
+    const [modal, setModal] = useState<boolean>(false)
     const router = useRouter()
-    const admin = permission > 0 ? true : false
+    const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[20px] max-lg:px-[15px] lg:group-hover:justify-start item-center cursor-pointer"
+    const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px]"
+    const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px]"
+    const styleSubLineIcon = "h-full w-[4px] bg-hilight duration-300 rounded-fulll left-0 top-0 absolute"
+    const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px]"
+    const popoverRef = useRef<any>();
+    const arrowIconRef = useRef<any>();
+    const { theme, setTheme } = useContext(themeContext);
+
+    const leaveHover = () => {
+        popoverRef.current?.click();
+    };
+
+    const actionPopOver = (action) => {
+        if(action){
+            arrowIconRef?.current?.classList.add('rotate-180')
+        } else {
+            arrowIconRef?.current?.classList.remove('rotate-180')
+        }
+    }
+
  
     const childModal = () => {
         signOut(auth).then(() => {
@@ -33,141 +53,112 @@ function NavBar({permission, image}:Props) {
         });
     }
 
-    const { theme } = useContext(themeContext);
-
     return (
-        <div className='top-0 fixed z-50'>
-            <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
-                <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
-                        <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`outline-none w-[30px] h-[25px] cursor-pointer z-10  absolute top-[20px] left-[23px] max-sm:left-[17px] flex flex-col items-center justify-center`}>
-                            <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
-                            <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary my-[5px] transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "hidden"} `}/>
-                            <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
-                        </button>
-                    </Tooltip.Trigger>
-                    <Tooltip.Portal>
-                        <Tooltip.Content  side="right" sideOffset={10}>
-                            <p className='ml-[5px] text-[20px] font-[500] text-black'>{menu ? "Menu" : "Fechar Menu"}</p>
-                            <Tooltip.Arrow width={15} height={10}/>
-                        </Tooltip.Content>
-                    </Tooltip.Portal>
-                </Tooltip.Root>
-            </Tooltip.Provider>
+        <div className='lg:min-w-[130px] text-black'>
+            <div onClick={() => setMenu(true)} className={`z-10 fixed w-screen h-screen top-0 left-0 ${menu ? 'hidden' : ''}`}/>
+            <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`z-20 lg:hidden outline-none w-[30px] h-[25px] cursor-pointer  fixed top-[10px] left-[10px] flex flex-col items-center justify-center`}>
+                <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
+                <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary my-[5px] transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "hidden"} `}/>
+                <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+            </button>
 
-            <div className={`w-[80px] relative max-sm:max-w-[70px] h-screen overflow-hidden  ${menu ? "max-lg:left-[-150px] max-lg:w-0" : "flex"} left-0 duration-300 bg-primary dark:bg-dprimary flex flex-col items-center border-r-2 border-terciary dark:border-dterciary`}> 
-                <Tooltip.Provider delayDuration={1000} skipDelayDuration={500}>
-                    <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`max-lg:mt-[60px] max-sm:mt-[50px] mt-[10px] w-full h-[70px] flex justify-center items-center`}>
-                            <Avatar.Root className="flex flex-col items-center justify-center">
-                                <Avatar.Image src={image} alt="Imagem de perfil" width={60} height={60} className="border-[2px] border-secondary dark:border-dsecondary h-[60px] w-[60px] max-sm:h-[50px] max-sm:w-[50px] rounded-full"/>
-                            </Avatar.Root>
-                        </Tooltip.Trigger>
-                        <Tooltip.Portal>
-                            <Tooltip.Content  side="right" sideOffset={10}>
-                                <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[4px] rounded-[5px] bg-gray-700 dark:bg-gray-200'>Foto de Perfil</p>
-                                {theme == "light" ? (
-                                    <Tooltip.Arrow width={15} height={10} className='fill-gray-700'/>
-                                ) : (
-                                    <Tooltip.Arrow width={15} height={10} className='fill-gray-200'/>
-                                )}  
-                            </Tooltip.Content>
-                        </Tooltip.Portal>
-                    </Tooltip.Root>
+            
+            <div onMouseLeave={leaveHover} className={`max-lg:${menu ? 'hidden' : ''} group lg:w-[130px] lg:hover:w-[200px] max-lg:w-[180px] h-screen overflow-hidden left-0 flex flex-col 
+            items-center border-r-[1px] border-terciary lg:hover:items-start fixed max-lg:items-start z-10 bg-primary`}> 
+                
+                <div className='flex justify-between mt-[50px] items-center lg:group-hover:px-[20px] max-lg:px-[10px]'>
+                    <Image src={logo2Docs} quality={100} priority alt='Logo App' className='w-[48px] h-[56px]'/>
+                    <div className='min-w-[2px] h-[35px] bg-black mx-[10px] hidden lg:group-hover:block max-lg:block'/>
+                    <p className='text-[25px] hidden lg:group-hover:block max-lg:block'>2Docs</p>
+                </div>
 
-                    <div className='w-[80%] h-[2px] bg-terciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center'/>
 
-                    <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[10px] w-full h-[70px] flex justify-center items-center ${path === "/Dashboard/Admin" || path === "/Dashboard/Clientes" ? "bg-gray-300 dark:bg-gray-300/20" : ""}`}>
-                            <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="outline-none cursor-pointer" onClick={()=>  (setMenu(!menu) ,router.push(admin ? "/Dashboard/Admin" : "/Dashboard/Clientes"))}>
-                                <HomeIcon className={'w-[40px] h-[40px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
-                            </button>
-                        </Tooltip.Trigger>
-                        <Tooltip.Portal>
-                            <Tooltip.Content  side="right" sideOffset={10}>
-                                <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[4px] rounded-[5px] bg-gray-700 dark:bg-gray-200'>Inicial</p>
-                                {theme == "light" ? (
-                                    <Tooltip.Arrow width={15} height={10} className='fill-gray-700'/>
-                                ) : (
-                                    <Tooltip.Arrow width={15} height={10} className='fill-gray-200'/>
-                                )}  
-                            </Tooltip.Content>
-                        </Tooltip.Portal>
-                    </Tooltip.Root>
+                <button onClick={() => (setMenu(true), permission > 0 ? router.push('/Dashboard/Admin')  :  router.push('/Dashboard/Clientes'))} className={`${styleDivIconNavBar} mt-[60px]`}>
+                    <div className={`${path === '/Dashboard/Admin' || path === '/Dashboard/Clientes' ? 'text-hilight' : 'text-black'} flex items-center`}>
+                        <DashboardIcon className={styleIconNavBar}/>
+                        <p className={styleTextIcons}>Dashboard</p>
+                    </div>
+                    {path === '/Dashboard/Admin' || path === '/Dashboard/Clientes' ?
+                        <div className={styleSubLineIcon}/> 
+                    : <></>}
+                </button>
+                    
+                {permission > 0 && 
+                    <button onClick={() => (setMenu(true), router.push('/Dashboard/Admin/Clientes'))} className={`${styleDivIconNavBar}`}>
+                        <div className={`${permission > 0 && path === '/Dashboard/Admin/Clientes' || path === '/Dashboard/Admin/Pastas' || path === '/Dashboard/Admin/Arquivos' ? 'text-hilight' : 'text-black'} flex items-center`}>
+                            <PersonIcon  className={`${permission === 0 ? 'hidden' : ''} ${styleIcon2NavBar}`}/>
+                            <p className={`${styleTextIcons} whitespace-nowrap`}>Seus Clientes</p>
+                        </div>
+                        {permission > 0 && path === '/Dashboard/Admin/Clientes' || path === '/Dashboard/Admin/Pastas' || path === '/Dashboard/Admin/Arquivos' ?
+                            <div className={styleSubLineIcon}/>
+                        : <></>}
+                    </button>  
+                }  
 
-                    {!admin ? 
-                        <Tooltip.Root>
-                            <Tooltip.Trigger asChild className={`mt-[10px] ${path === "/Dashboard/Clientes/Arquivos" || path === "/Dashboard/Clientes/Pastas" ? "bg-gray-300" : ""} w-full h-[70px] flex justify-center items-center`}>
-                                <button className="outline-none cursor-pointer" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Dashboard/Clientes/Pastas"))}>
-                                    <FileTextIcon className={'w-[40px] h-[40px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
-                                </button>
-                            </Tooltip.Trigger>
-                            <Tooltip.Portal>
-                                <Tooltip.Content  side="right" sideOffset={10}>
-                                    <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[4px] rounded-[5px] bg-gray-700 dark:bg-gray-200'>Arquivos</p>
-                                    {theme == "light" ? (
-                                        <Tooltip.Arrow width={15} height={10} className='fill-gray-700'/>
-                                    ) : (
-                                        <Tooltip.Arrow width={15} height={10} className='fill-gray-200'/>
-                                    )}  
-                                </Tooltip.Content>
-                            </Tooltip.Portal>
-                        </Tooltip.Root>
-                    :
-                        <Tooltip.Root>
-                            <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Dashboard/Admin/Clientes" || path === "/Dashboard/Admin/Pastas" || path === "/Dashboard/Admin/Arquivos" ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[70px] flex justify-center items-center`}>
-                                <button className="outline-none cursor-pointer" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push("/Dashboard/Admin/Clientes"))}>
-                                    <PersonIcon className={'w-[40px] h-[40px] max-sm:w-[35px] max-sm:h-[35px] text-black dark:text-white'}/>
-                                </button>
-                            </Tooltip.Trigger>
-                            <Tooltip.Portal>
-                                <Tooltip.Content  side="right" sideOffset={10}>
-                                    <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[4px] rounded-[5px] bg-gray-700 dark:bg-gray-200'>Clientes</p>
-                                    {theme == "light" ? (
-                                        <Tooltip.Arrow width={15} height={10} className='fill-gray-700' />
-                                    ) : (
-                                        <Tooltip.Arrow width={15} height={10} className='fill-gray-200' />
-                                    )}                                    
-                                </Tooltip.Content>
-                            </Tooltip.Portal>
-                        </Tooltip.Root>
-                    }
+                {permission === 0 && 
+                    <button onClick={() => (setMenu(true), router.push('/Dashboard/Clientes/Pastas'))} className={`${styleDivIconNavBar}`}>
+                        {path === '/Dashboard/Clientes/Pastas' || path === '/Dashboard/Clientes/Arquivos' ? 
+                            <div className={styleSubLineIcon}/>
+                        : <></>}
 
-                    <Tooltip.Root>
-                        <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Dashboard/Admin/Calendario" || path === "/Dashboard/Clientes/Calendario"  ? "bg-gray-300 dark:bg-gray-300/20" : ""} w-full h-[70px] flex justify-center items-center`}>
-                            <button className="outline-none cursor-pointer" id="alb" title="Pagina De Calendário" aria-labelledby="labeldiv"  onClick={()=> (setMenu(!menu), router.push(window.location.href.includes('Admin') ? '/Dashboard/Admin/Calendario'  : '/Dashboard/Clientes/Calendario'))}>
-                                <Image src={Calendar} alt="Calendário" className={`w-[40px] h-[40px] max-sm:w-[35px] max-sm:h-[35px] dark:fill-[#fff]`}/>
-                            </button>
-                        </Tooltip.Trigger>
-                        <Tooltip.Portal>
-                            <Tooltip.Content  side="right" sideOffset={10}>
-                                <p className='ml-[2px] text-[18px] font-[500] text-white dark:text-black px-[4px] rounded-[5px] bg-gray-700 dark:bg-gray-200'>Calendário</p>
-                                {theme == "light" ? (
-                                    <Tooltip.Arrow width={15} height={10} className='fill-gray-700' />
-                                ) : (
-                                    <Tooltip.Arrow width={15} height={10} className='fill-gray-200' />
-                                )}                                    
-                            </Tooltip.Content>
-                        </Tooltip.Portal>
-                    </Tooltip.Root>
+                        <div className={`${path === '/Dashboard/Clientes/Pastas' || path === '/Dashboard/Clientes/Arquivos' ? 'text-hilight' : 'text-black'} flex items-center`}>
+                            <FileTextIcon className={styleIcon2NavBar}/>
+                            <p className={styleTextIcons}>Documentos</p>
+                        </div>
+                    </button>
+                }
+                
 
-                    <Tooltip.Root>
-                        <div className='w-[80%] h-[2px] bg-terciary dark:bg-dterciary mt-[10px] max-sm:mt-[10px] rounded-full self-center justify-self-center absolute bottom-[70px] max-sm:bottom-[60px]'/>
-                        <Tooltip.Trigger asChild className={`absolute bottom-[20px] max-sm:bottom-[15px] w-full flex justify-center`}>
-                            <button className="outline-none cursor-pointer" onClick={() => setModal({status:true,  message:"Tem certeza que deseja sair da sua conta?"})} >
-                                <Image priority src={iconExit} alt="Ícone de sair" className='w-[35px] max-sm:w-[30px]'/> 
-                            </button>
-                        </Tooltip.Trigger>
-                        <Tooltip.Portal>
-                        <Tooltip.Content  side="right" sideOffset={10}>
-                            <p className='ml-[2px] text-[18px] font-[500] px-[4px] rounded-[5px] bg-red text-white'>Sair</p>
-                            <Tooltip.Arrow width={15} height={10} className="fill-red"/>
-                        </Tooltip.Content>
-                        </Tooltip.Portal>
-                    </Tooltip.Root>
-                </Tooltip.Provider>
+
+                <button onClick={() => (setMenu(true), permission > 0 ? router.push('/Dashboard/Admin/Calendario') :  router.push('/Dashboard/Clientes/Calendario'))}  className={`${styleDivIconNavBar}`}>
+                    {path === '/Dashboard/Admin/Calendario' || path === '/Dashboard/Clientes/Calendario' ? 
+                        <div className={styleSubLineIcon}/>
+                    : <></>}
+
+                    <div className={`${path === '/Dashboard/Admin/Calendario' || path === '/Dashboard/Clientes/Calendario' ? 'text-hilight' : 'text-black'} flex items-center`}>
+                        <CalendarIcon  className={styleIconNavBar}/>
+                        <p className={styleTextIcons}>Calendário</p>
+                    </div>
+                </button>
+
+                <Popover.Root onOpenChange={actionPopOver}>
+                    <Popover.Trigger className='mt-auto  lg:group-hover:px-[20px] max-lg:px-[10px] cursor-pointer'>
+                        <div className='flex items-center mb-[40px] max-lg:mb-[20px] relative'>
+                            <ChevronUpIcon ref={arrowIconRef} className='w-[18px] h-[18px] absolute bottom-[-2px] left-[-4px] bg-[#D9D9D9] rounded-full duration-300'/>
+                            <Image src={image} alt='Perfil' quality={100} width={55} height={55} className='w-[45px] h-[45px] max-lg:w-[40px] max-lg:h-[40px] rounded-full'/>
+                            <p className={`${styleTextIcons} text-ellipsis whitespace-nowrap max-w-[120px] overflow-hidden`}>{name}</p>
+                        </div>
+                    </Popover.Trigger>
+
+                    <Popover.Content id={style.PopoverContent} className='z-10 bg-[#D9D9D9] ml-[30px] max-lg:ml-[15px] px-[15px] text-[#686868] py-[10px] text-[14px] rounded-[5px] flex flex-col relative mb-[15px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.30)] outline-none'> 
+                        <div className='flex items-center justify-between'>
+                            <p>Tema:</p>
+                            <div onClick={() => setTheme(theme => theme === 'light' ? 'dark' : 'light')} className='ml-[10px] cursor-pointer w-[56px] h-[26px] bg-[#000000] rounded-full relative flex items-center justify-between px-[3px]'>
+                                <div className={`w-[22px] h-[22px] bg-white rounded-full absolute duration-0 ${theme === 'light' ? 'left-[3px]' : 'right-[3px]'}`}/>
+                                <SunIcon className='text-[#FFC700] w-[20px] h-[20px]'/>
+                                <MoonIcon className='text-[#FFC700] w-[20px] h-[20px]'/>
+                            </div>
+                        </div>
+
+                        {permission > 0 && 
+                            <Link href={'https://2dash.vercel.app/dashboard'} className='mt-[10px] flex items-center cursor-pointer hover:brightness-[.85]'>
+                                <p className='underline'>Ir para o painel de Admin </p>
+                                <ExternalLinkIcon className='text-hilight ml-[5px] w-[20px] h-[20px]'/>
+                            </Link>
+                        }
+
+
+                        <div onClick={() => setModal(true)} className='mt-[10px] cursor-pointer bg-[rgba(255,0,0,0.16)] border-[1px] border-[#FF0000] rounded-[5px] px-[15px] py-[2px] hover:brightness-[.85] self-end'>
+                            <p className='text-[#BE0000]'>Sair</p>
+                        </div>
+
+                        <TriangleDownIcon className='w-[40px] h-[40px] text-[#D9D9D9] absolute bottom-[-23px] left-[-3px]'/>
+                    </Popover.Content>
+                    <Popover.Close ref={popoverRef} />
+                </Popover.Root>
+
             </div>
-                {modal.status ? <ModalExit setModal={setModal} message={modal.message} childModal={childModal}/> : <></>}
+                {modal && <ModalExit setModal={setModal} childModal={childModal}/> }
         </div>
     )
 }

@@ -20,7 +20,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
   const {setDataCompany} = useContext(companyContext);
   const [onLoad, setOnLoad] = useState(false);
   const router = useRouter();
-  const [propsNavBar, setPropsNavBar] = useState({urlImage: '', permission: 0});
+  const [propsNavBar, setPropsNavBar] = useState({urlImage: '', permission: 0, name:''});
   const url = usePathname();
   
   //Verificação se o usuário esta logado e se é um admin ou um cliente
@@ -84,7 +84,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       if(dataUser.id_company === '' && user.displayName){
         const docRef = doc(db, "companies", user.displayName, "clients", user.uid);
         const docSnap = await getDoc(docRef);
-        setPropsNavBar({urlImage: docSnap.data()?.photo_url, permission: permission})        
+        setPropsNavBar({urlImage: docSnap.data()?.photo_url, permission: permission, name:docSnap.data()?.name})        
         var allDataUser:DataUserContext = {
           cnpj:docSnap.data()?.cnpj, 
           email:docSnap.data()?.email,  
@@ -144,9 +144,9 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
 
   if(onLoad)
     return (
-      <section>
+      <section className='flex'>
         <ToastContainer autoClose={3000} />
-        <NavBar image={propsNavBar.urlImage} permission={propsNavBar.permission}/>
+        <NavBar image={propsNavBar.urlImage} permission={propsNavBar.permission} name={propsNavBar.name}/>
         <main className='w-full'>{children}</main>
       </section>
     );

@@ -1,7 +1,6 @@
 'use client'
-import * as Tabs from '@radix-ui/react-tabs';
 import { EyeClosedIcon, EyeOpenIcon} from '@radix-ui/react-icons';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading'
 import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, browserSessionPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth } from '../../../../firebase'
@@ -13,13 +12,13 @@ import { themeContext } from "../../../hooks/useTheme"
 import { stripe } from '../../../../lib/stripe'
 import Logo2CorePretoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.svg'
 import Logo2CoreBrancoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.svg'
-import { async } from '@firebase/util';
 
 function Signin(){
   const contextLoading = useContext(loadingContext)
   const [loginUser, setLoginUser] = useState({email: '', password: ''});
   const [loading , setLoading] = useState<boolean>(true)
   const [eye, setEye] = useState<boolean>(false)
+  const checkbox = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   //Verifica se o usuário ja esta logado
@@ -42,9 +41,12 @@ function Signin(){
   }, [])
 
   async function OnChangePersistenceLogin(e){
+
     if(e.target.checked){
+      checkbox?.current?.classList?.remove('appearance-none')
       auth.setPersistence(browserLocalPersistence)
     } else {
+      checkbox?.current?.classList?.add('appearance-none')
       auth.setPersistence(browserSessionPersistence)
     }
   }
@@ -106,57 +108,55 @@ function Signin(){
   }
   
   const contextTheme = useContext(themeContext);
-  
 
   if(loading){return <></>}
     return(
-      <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center text-black">
+      <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center justify-center text-black">
         <ToastContainer autoClose={3000} />
-        {contextTheme.theme == "dark" ? (
-          <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority className='w-[300px]'/>
+
+        {contextTheme.theme == "light" ? (
+          <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority quality={100} className='w-[200px] h-[200px] max-lg:w-[175px] max-lg:h-[175px] max-md:w-[150px] max-md:h-[150px]'/>
         ) : (
-          <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority height={3000} width={3000} className='max-md:h-[250px] max-md:w-[250px]'/>
+          <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority quality={100} className='w-[200px] h-[200px] max-lg:w-[175px] max-lg:h-[175px] max-md:w-[150px] max-md:h-[150px]'/>
         )}
-        <Tabs.Root  className="w-[400px] max-lsm:w-[320px] pb-[15px]" defaultValue="tab1">
+        <div className="w-[400px] max-lsm:w-[330px] mt-[30px]" defaultValue="tab1">
           <p className="text-[40px] font-poiretOne dark:text-white">Login</p>
-          <p className="text-[25px]  font-poiretOne dark:text-white">Entre com os dados enviados</p>
-          <Tabs.Content className="mt-[20px]" value="tab1">
-            <form onSubmit={OnToastLogin} className="outline-none">
+          <p className="text-[25px]  font-poiretOne dark:text-white mt-[5px]">Entre com os dados enviados</p>
+            <form onSubmit={OnToastLogin} className="outline-none mt-[20px]">
               <fieldset className="flex flex-col">
-                <label className="text-[18px] dark:text-white" htmlFor="Email">
+                <label className="text-[18px] dark:text-white" htmlFor='divEmail'>
                   Email
                 </label>
-                <input required type="email" autoComplete='email' value={loginUser.email} name="Email" onChange={(Text) => setLoginUser({...loginUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
+                <input id='divEmail' required type="email" autoComplete={"off"} value={loginUser.email} name="Email" onChange={(Text) => setLoginUser({...loginUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] max-sm:py-[6px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px] mt-[6px]" placeholder='Digite seu email' />
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
-                <label className="text-[18px] dark:text-white" htmlFor="username">
+                <label className="text-[18px] dark:text-white" htmlFor='divPassword'>
                   Senha
                 </label>
-                <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center dark:border-white'>
-                  <input required minLength={8} autoComplete='current-password' type={eye ? "text" : "password"} onChange={(Text) => setLoginUser({...loginUser, password:Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
+                <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center dark:border-white mt-[6px]'>
+                  <input id='divPassword' required minLength={8} autoComplete='current-password' type={eye ? "text" : "password"} onChange={(Text) => setLoginUser({...loginUser, password:Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] max-sm:py-[6px]" placeholder='Digite sua senha' />
                   {eye ? (
-                  <EyeOpenIcon onClick={() => setEye(false)} width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
+                    <EyeOpenIcon onClick={() => setEye(false)} width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
                   ) : (
-                  <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
+                    <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
                   )}
                 </div>
               </fieldset>
-              <div className='flex justify-between'>
+              <div className='flex justify-between mt-[25px]'>
                 <div className='flex items-center'>
-                  <input onChange={(e) => OnChangePersistenceLogin(e)} type="checkbox" className="w-[15px] h-[15px] border-[1px] border-[#686868] rounded-[3px]" />
-                  <p className='ml-[5px] text-[#686868]'>Lembrar de mim</p>
+                  <input id='checkBoxLogin' ref={checkbox} onChange={(e) => OnChangePersistenceLogin(e)} type="checkbox" className="appearance-none accent-gray-600 dark:accent-dhilight w-[20px] h-[20px] border-[1px] border-[#686868] dark:border-dhilight rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]" />
+                  <p className='ml-[5px] text-[#686868] text-[18px] max-lsm:text-[16px] dark:text-dhilight '>Lembrar de mim</p>
                 </div>
-                <button type="button" onClick={() => AlterPassword(loginUser.email)} className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>
+                <button type="button" onClick={() => AlterPassword(loginUser.email)} className='hover:brightness-[.85] underline text-[18px] max-lsm:text-[16px]  text-dblue cursor-pointer'>
                   Esqueci a senha
                 </button>
               </div>
               
-              <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
+              <button type="submit" className='hover:brightness-[.85] text-[#fff] cursor-pointer text-[22px] max-sm:text-[20px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
               </button>
             </form>
-          </Tabs.Content>
-        </Tabs.Root>
+        </div>
       </section>
     ) 
 }

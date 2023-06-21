@@ -44,7 +44,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
     useEffect(() =>{
         GetStatus(eventSelected.complete)
         if(dataUser != undefined || dataAdmin != undefined){
-            console.log(eventSelected)
             const id_company = dataUser.id_company ? dataUser.id_company : dataAdmin.id_company
             GetFilesEvent({id_company, eventSelected, setFiles})
             UpdatedEventViwed()
@@ -68,7 +67,7 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
 
     //setando evento visualizado
     async function UpdatedEventViwed(){
-        if(!eventSelected.viewed){
+        if(!eventSelected.viewed && !admin){
             await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
                 viewed:true
             })
