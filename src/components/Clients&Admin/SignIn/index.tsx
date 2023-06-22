@@ -113,6 +113,7 @@ function Signin(){
     return(
       <section className="bg-primary dark:bg-dprimary w-full min-h-screen h-full flex flex-col  items-center justify-center text-black">
         <ToastContainer autoClose={3000} />
+
         {contextTheme.theme == "light" ? (
           <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority quality={100} className='w-[200px] h-[200px] max-lg:w-[175px] max-lg:h-[175px] max-md:w-[150px] max-md:h-[150px]'/>
         ) : (
