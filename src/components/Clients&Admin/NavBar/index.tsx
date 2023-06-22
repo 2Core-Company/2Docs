@@ -54,7 +54,7 @@ function NavBar({permission, image, name}:Props) {
     }
 
     return (
-        <div className='lg:min-w-[130px] text-black'>
+        <div className='lg:min-w-[100px] text-black'>
             <div onClick={() => setMenu(true)} className={`z-10 fixed w-screen h-screen top-0 left-0 backdrop-blur-[2px] ${menu ? 'hidden' : ''}`}/>
             <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`z-20 lg:hidden outline-none w-[30px] h-[25px] cursor-pointer  fixed top-[10px] left-[10px] flex flex-col items-center justify-center`}>
                 <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-45"}`}/>
