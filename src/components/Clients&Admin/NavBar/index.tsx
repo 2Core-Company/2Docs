@@ -26,7 +26,7 @@ function NavBar({permission, image, name}:Props) {
     const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[20px] max-lg:px-[20px] lg:group-hover:justify-start item-center cursor-pointer"
     const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px]"
     const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px]"
-    const styleSubLineIcon = "h-full w-[4px] bg-hilight duration-300 rounded-fulll left-0 top-0 absolute"
+    const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-fulll left-0 top-0 absolute"
     const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px]"
     const popoverRef = useRef<any>();
     const arrowIconRef = useRef<any>();
@@ -130,7 +130,7 @@ function NavBar({permission, image, name}:Props) {
                         </div>
                     </Popover.Trigger>
 
-                    <Popover.Content id={style.PopoverContent} className='z-10 bg-[#D9D9D9] ml-[30px] max-lg:ml-[15px] px-[15px] text-[#686868] py-[10px] text-[14px] rounded-[5px] flex flex-col relative mb-[15px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.30)] outline-none'> 
+                    <Popover.Content id={style.PopoverContent} className='z-10 bg-primary ml-[30px] max-lg:ml-[15px] px-[20px] text-[#686868] py-[10px] text-[14px] rounded-[5px] flex flex-col relative mb-[15px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.30)] outline-none'> 
                         <div className='flex items-center justify-between'>
                             <p>Tema:</p>
                             <div onClick={() => setTheme(theme => theme === 'light' ? 'dark' : 'light')} className='ml-[10px] cursor-pointer w-[56px] h-[26px] bg-[#000000] rounded-full relative flex items-center justify-between px-[3px]'>
@@ -152,7 +152,7 @@ function NavBar({permission, image, name}:Props) {
                             <p className='text-[#BE0000]'>Sair</p>
                         </div>
 
-                        <TriangleDownIcon className='w-[40px] h-[40px] text-[#D9D9D9] absolute bottom-[-23px] left-[-3px]'/>
+                        <TriangleDownIcon className='w-[40px] h-[40px] text-primary absolute bottom-[-23px] left-[-3px]'/>
                     </Popover.Content>
                     <Popover.Close ref={popoverRef} />
                 </Popover.Root>
