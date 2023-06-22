@@ -23,7 +23,7 @@ function NavBar({permission, image, name}:Props) {
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState<boolean>(false)
     const router = useRouter()
-    const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[20px] max-lg:px-[15px] lg:group-hover:justify-start item-center cursor-pointer"
+    const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[20px] max-lg:px-[20px] lg:group-hover:justify-start item-center cursor-pointer"
     const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px]"
     const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px]"
     const styleSubLineIcon = "h-full w-[4px] bg-hilight duration-300 rounded-fulll left-0 top-0 absolute"
@@ -55,18 +55,18 @@ function NavBar({permission, image, name}:Props) {
 
     return (
         <div className='lg:min-w-[130px] text-black'>
-            <div onClick={() => setMenu(true)} className={`z-10 fixed w-screen h-screen top-0 left-0 ${menu ? 'hidden' : ''}`}/>
+            <div onClick={() => setMenu(true)} className={`z-10 fixed w-screen h-screen top-0 left-0 backdrop-blur-[6px] ${menu ? 'hidden' : ''}`}/>
             <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`z-20 lg:hidden outline-none w-[30px] h-[25px] cursor-pointer  fixed top-[10px] left-[10px] flex flex-col items-center justify-center`}>
-                <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
-                <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary my-[5px] transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "hidden"} `}/>
-                <div className={`rounded-[30px] w-[33px] max-sm:w-[30px] h-[3px] bg-terciary dark:bg-dterciary transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+                <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-45"}`}/>
+                <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary my-[5px] ${menu ? "" : "hidden"} `}/>
+                <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
             </button>
 
-            
-            <div onMouseLeave={leaveHover} className={`max-lg:${menu ? 'hidden' : ''} group lg:w-[130px] lg:hover:w-[200px] max-lg:w-[180px] h-screen overflow-hidden left-0 flex flex-col 
-            items-center border-r-[1px] border-terciary lg:hover:items-start fixed max-lg:items-start z-10 bg-primary`}> 
+            {/*  '}  */}
+            <div onMouseLeave={leaveHover} className={`${menu ? 'max-lg:left-[-250px]' : 'max-lg:left-[0px]'} group lg:w-[130px] lg:hover:w-[250px] max-lg:w-[220px] h-screen overflow-hidden 
+            left-0 flex flex-col items-center border-r-[1px] border-terciary lg:hover:items-start fixed max-lg:items-start z-10 bg-primary duration-300`}> 
                 
-                <div className='flex justify-between mt-[50px] items-center lg:group-hover:px-[20px] max-lg:px-[10px]'>
+                <div className='flex justify-between mt-[50px] items-center lg:group-hover:px-[20px] max-lg:px-[20px]'>
                     <Image src={logo2Docs} quality={100} priority alt='Logo App' className='w-[48px] h-[56px]'/>
                     <div className='min-w-[2px] h-[35px] bg-black mx-[10px] hidden lg:group-hover:block max-lg:block'/>
                     <p className='text-[25px] hidden lg:group-hover:block max-lg:block'>2Docs</p>
@@ -122,11 +122,11 @@ function NavBar({permission, image, name}:Props) {
                 </button>
 
                 <Popover.Root onOpenChange={actionPopOver}>
-                    <Popover.Trigger className='mt-auto  lg:group-hover:px-[20px] max-lg:px-[10px] cursor-pointer'>
+                    <Popover.Trigger className='mt-auto  lg:group-hover:px-[20px] max-lg:px-[20px] cursor-pointer'>
                         <div className='flex items-center mb-[40px] max-lg:mb-[20px] relative'>
                             <ChevronUpIcon ref={arrowIconRef} className='w-[18px] h-[18px] absolute bottom-[-2px] left-[-4px] bg-[#D9D9D9] rounded-full duration-300'/>
                             <Image src={image} alt='Perfil' quality={100} width={55} height={55} className='w-[45px] h-[45px] max-lg:w-[40px] max-lg:h-[40px] rounded-full'/>
-                            <p className={`${styleTextIcons} text-ellipsis whitespace-nowrap max-w-[120px] overflow-hidden`}>{name}</p>
+                            <p className={`${styleTextIcons} text-ellipsis whitespace-nowrap max-w-[200px] max-lg:max-w-[170px] overflow-hidden`}>{name}</p>
                         </div>
                     </Popover.Trigger>
 
