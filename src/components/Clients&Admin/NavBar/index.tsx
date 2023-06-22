@@ -23,11 +23,11 @@ function NavBar({permission, image, name}:Props) {
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState<boolean>(false)
     const router = useRouter()
-    const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[30px] max-lg:px-[20px] lg:group-hover:justify-start item-center cursor-pointer"
-    const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px]"
-    const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px]"
+    const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[30px] max-lg:px-[20px] lg:group-hover:justify-start item-center cursor-pointer group/button"
+    const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px] group-hover/button:opacity-[.50]"
+    const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px] group-hover/button:opacity-[.50]"
     const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-fulll left-0 top-0 absolute"
-    const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px]"
+    const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.50]"
     const popoverRef = useRef<any>();
     const arrowIconRef = useRef<any>();
     const { theme, setTheme } = useContext(themeContext);
@@ -141,14 +141,14 @@ function NavBar({permission, image, name}:Props) {
                         </div>
 
                         {permission > 0 && 
-                            <Link href={'https://2dash.vercel.app/dashboard'} className='mt-[10px] flex items-center cursor-pointer hover:brightness-[.85]'>
+                            <Link href={'https://2dash.vercel.app/dashboard'} className='mt-[10px] flex items-center cursor-pointer hover:brightness-[.65] duration-100'>
                                 <p className='underline'>Ir para o painel de Admin </p>
                                 <ExternalLinkIcon className='text-hilight ml-[5px] w-[20px] h-[20px]'/>
                             </Link>
                         }
 
 
-                        <div onClick={() => setModal(true)} className='mt-[10px] cursor-pointer bg-[rgba(255,0,0,0.16)] border-[1px] border-[#FF0000] rounded-[5px] px-[15px] py-[2px] hover:brightness-[.85] self-end'>
+                        <div onClick={() => setModal(true)} className='mt-[10px] cursor-pointer bg-[rgba(255,0,0,0.16)] border-[1px] border-[#FF0000] rounded-[5px] px-[15px] py-[2px] hover:brightness-[.65] duration-100 self-end'>
                             <p className='text-[#BE0000]'>Sair</p>
                         </div>
 
