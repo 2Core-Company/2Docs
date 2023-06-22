@@ -27,7 +27,7 @@ function NavBar({permission, image, name}:Props) {
     const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px] group-hover/button:opacity-[.50]"
     const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px] group-hover/button:opacity-[.50]"
     const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-fulll left-0 top-0 absolute"
-    const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.50]"
+    const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.70]"
     const popoverRef = useRef<any>();
     const arrowIconRef = useRef<any>();
     const { theme, setTheme } = useContext(themeContext);
