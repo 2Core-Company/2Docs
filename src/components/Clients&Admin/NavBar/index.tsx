@@ -27,7 +27,7 @@ function NavBar({permission, image, name}:Props) {
     const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px] group-hover/button:opacity-[.50]"
     const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px] group-hover/button:opacity-[.50]"
     const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-fulll left-0 top-0 absolute"
-    const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.50]"
+    const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.70]"
     const popoverRef = useRef<any>();
     const arrowIconRef = useRef<any>();
     const { theme, setTheme } = useContext(themeContext);
@@ -54,7 +54,7 @@ function NavBar({permission, image, name}:Props) {
     }
 
     return (
-        <div className='lg:min-w-[130px] text-black'>
+        <div className='lg:min-w-[100px] text-black'>
             <div onClick={() => setMenu(true)} className={`z-10 fixed w-screen h-screen top-0 left-0 backdrop-blur-[2px] ${menu ? 'hidden' : ''}`}/>
             <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`z-20 lg:hidden outline-none w-[30px] h-[25px] cursor-pointer  fixed top-[10px] left-[10px] flex flex-col items-center justify-center`}>
                 <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-45"}`}/>
