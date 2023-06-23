@@ -4,7 +4,7 @@ import ArrowFilter from "../../../../public/icons/arrowFilter.svg";
 import Image from "next/image";
 import iconNullClient from "../../../../public/icons/nullClient.svg";
 import iconSearchUser from "../../../../public/icons/searchUser.svg";
-import { DataUser, DataUserContext } from "../../../types/users";
+import { DataUser } from "../../../types/users";
 import Options from "./options";
 import { FilterFixed, FilterAlphabetical, FilterStatus, FilterDate } from "../../../Utils/Other/Filters";
 import { FormatDate, FormatDateSmall } from "../../../Utils/Other/FormatDate";
@@ -13,39 +13,44 @@ import { DisableUser } from "./DisableUser";
 import { WindowsAction } from "../../../types/others";
 import { toast } from "react-toastify";
 import { adminContext } from '../../../app/Context/contextAdmin';
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon, DrawingPinFilledIcon } from "@radix-ui/react-icons";
 import EditUser from "./editUser";
 import CreateUser from "./createUser";
+import * as HoverCard from '@radix-ui/react-hover-card';
 
 function TableClients() {
-  const [showItens, setShowItens] = useState<{ min: number; max: number }>({min: -1,max: 10,});
-  const [filter, setFilter] = useState<{name: boolean;date: boolean;status: boolean;}>({ name: false, date: false, status: false });
+  const [showItens, setShowItens] = useState<{ min: number; max: number }>({ min: -1, max: 10, });
+  const [filter, setFilter] = useState<{ name: boolean; date: boolean; status: boolean; }>({ name: false, date: false, status: false });
   const { dataAdmin } = useContext(adminContext);
   const [users, setUsers] = useState<DataUser[]>([]);
   const [userEdit, setUserEdit] = useState<any>();
   const [selectUsers, setSelectUsers] = useState<DataUser[]>([]);
-  const [windowsAction, setWindowsAction] = useState<WindowsAction>({createUser: false, updateUser: false});
+  const [windowsAction, setWindowsAction] = useState<WindowsAction>({ createUser: false, updateUser: false });
   const [pages, setPages] = useState<number>(0);
   const [menu, setMenu] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("")
-  const toastDisable = {pending: "Trocando status do usuário.", success: "Status trocado com sucesso."};
+  const toastDisable = { pending: "Trocando status do usuário.", success: "Status trocado com sucesso." };
   const domain = window.location.origin
 
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() => {
     if (dataAdmin) {
-      GetUsers({setPages:setPages, setUsers:setUsers, dataAdmin});
+      GetUsers({ setPages: setPages, setUsers: setUsers, dataAdmin });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataAdmin]);
 
   // <--------------------------------- Disable User --------------------------------->
   async function GetFunctionDisableUser() {
-    await DisableUser({users, selectUsers, id_company:dataAdmin.id_company, setMenu, setSelectUsers, setUsers})
+    await DisableUser({ users, selectUsers, id_company: dataAdmin.id_company, setMenu, setSelectUsers, setUsers })
   }
 
   // <--------------------------------- Select User --------------------------------->
   async function SelectUsers(index: number) {
+    if(!users[index].verifiedEmail){
+      return toast.error('Não é possivel selecionar um usúario pendente.')
+    }
+
     if (users.filter((user) => user.checked === true).length <= 9) {
       const allUsers = [...users];
       allUsers[index].checked = !allUsers[index].checked;
@@ -65,7 +70,7 @@ function TableClients() {
   };
 
   const closedWindow = () => {
-    setWindowsAction({createUser: false,updateUser: false});
+    setWindowsAction({ createUser: false, updateUser: false });
   };
 
   // <--------------------------------- Edit User --------------------------------->
@@ -86,7 +91,7 @@ function TableClients() {
   }
 
   function formatDate(date: string) {
-    if (window.screen.width > 1250) {
+    if (window.innerWidth > 1280) {
       return FormatDate(date)
     } else {
       return FormatDateSmall(date);
@@ -96,91 +101,138 @@ function TableClients() {
   return (
     <>
       {windowsAction.createUser ? <CreateUser contextAdmin={dataAdmin} childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}
-      {windowsAction.updateUser ? <EditUser contextAdmin={dataAdmin} user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow}/> : <></>}
-      <div className="relative min-h-[400px] w-full flex flex-col  border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
-        <div className="mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]">
-          <div className="flex items-center bg-transparent">
-            <p className="mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px] dark:text-white">
+      {windowsAction.updateUser ? <EditUser contextAdmin={dataAdmin} user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow} /> : <></>}
+      <div className="relative min-h-[400px] w-full flex flex-col text-[17px] max-sm:text-[16px]  border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
+        <div className="my-[15px] flex justify-between mx-[30px] max-sm:mx-[20px] max-lsm:mx-[10px] ">
+          <div className="text-[20px] max-lg:text-[18px] max-sm:text-[17px] flex items-center bg-transparent">
+            <p className="mr-[30px] max-sm:mr-[20px] font-[500] dark:text-white">
               {users.length}
-              <span className="text-black dark:text-white"> Clientes</span>
+              <span className="text-[#AAA] dark:text-white"> Clientes</span>
             </p>
-            <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px] dark:text-white"/>
-            <input type="text" onChange={(text) => setSearchText(text.target.value)}  placeholder="Buscar"className="w-[300px] dark:text-white text-black max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px] dark:placeholder:text-gray-500" />
+            <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px] dark:text-white" />
+            <input type="text" onChange={(text) => setSearchText(text.target.value)} placeholder="Buscar" className="w-[330px] outline-[#646464] dark:text-white text-black max-sm:w-[200px] max-lsm:w-[150px] bg-transparent dark:placeholder:text-gray-500" />
           </div>
-          
-          <div className={`text-center flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:px-[5px] max-lg:pb-[5px] ${menu ? "max-lg:right-[10px] max-lg:top-[5px]" : "max-lg:right-[0px] max-lg:top-[0px] max-lg:bg-[#b1b0b0] dark:max-lg:bg-[#2b2b2b]"}`}>
-            <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`cursor-pointer flex-col self-center hidden max-lg:flex mb-[10px] ${menu ? "mt-[10px]" : "mt-[20px]"}`}>
-              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
-              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-black dark:bg-white my-[4px] transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "hidden"}`}/>
-              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+
+          <div className={`text-center flex gap-[20px] max-lg:absolute max-lg:flex-col max-lg:px-[5px] max-lg:pb-[5px] max-lg:right-[0px] max-lg:top-[0px] ${menu ? 'max-lg:bg-trasparent' : 'max-lg:bg-[#d1d1d1]'} dark:max-lg:bg-[#2b2b2b] rounded-[8px]`}>
+            <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`cursor-pointer flex-col hidden max-lg:flex absolute right-[10px] ${menu ? 'mt-[20px]' : 'mt-[27px]'} `}>
+              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-[#6B6B6B] dark:bg-white ${menu ? "" : "rotate-45"}`} />
+              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-[#6B6B6B] dark:bg-white my-[4px] ${menu ? "" : "hidden"}`} />
+              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
             </button>
 
-            <button onClick={() => toast.promise( GetFunctionDisableUser(), toastDisable)} className={`cursor-pointer border-[2px] p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white": "bg-hilight border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
+            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} className={`max-lg:mt-[50px] hover:brightness-[.85] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "bg-[#D9D9D9] border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
               Trocar Status
             </button>
-            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
+            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} className={`hover:brightness-[.85] duration-100 bg-[#00B268] boder-[1px] border-[#119E70] text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
               + Cadastrar
             </button>
           </div>
         </div>
-            
-        {users.filter((user) =>  searchText != "" ?  user.name?.toUpperCase().includes(searchText.toUpperCase()) : true).length > 0 ? (
+
+        {users.filter((user) => searchText != "" ? user.name?.toUpperCase().includes(searchText.toUpperCase()) : true).length > 0 ? (
           <div>
             {/* <--------------------------------- HeadTable ---------------------------------> */}
-            <div className="w-full mt-[10px] grid grid-cols-[20px__repeat(2,1fr)_200px_65px_60px] max-lg:grid-cols-[20px__repeat(2,1fr)_65px_60px] max-md:grid-cols-[20px__1fr_65px_60px] px-[5px] gap-x-[15px] text-[18px] font-[500] border-y-[1px] border-y-neutral-400  bg-neutral-300  items-center py-[5px]">
-              <input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className="w-[20px] h-[20px]"/>
+            <div className="w-full grid grid-cols-[45px__repeat(2,1fr)_250px_130px_100px]
+              max-2xl:grid-cols-[45px__repeat(2,1fr)_200px_100px_80px]
+              max-xl:grid-cols-[45px__repeat(2,1fr)_100px_100px_60px]
+              max-lg:grid-cols-[45px__repeat(2,1fr)_100px_90px_50px]
+              max-md:grid-cols-[45px__repeat(2,1fr)_90px_50px]
+              max-sm:grid-cols-[36px__repeat(1,1fr)_90px_50px]
+              max-lsm:grid-cols-[36px__repeat(1,1fr)_65px_50px]
+              gap-x-[30px] max-lg:gap-x-[10px] font-[500] border-y-[1px] border-y-neutral-400  bg-[#DDDDDD] items-center px-[15px] max-md:px-[10px] max-sm:px-[5px]">
 
-              <button onClick={() => (setFilter({...filter, name: !filter.name, status: false, date: false}), FilterAlphabetical({dataFilter:users, filter:filter, setReturn:setUsers}))} className="text-left flex items-center cursor-pointer">
-                <p className="dark:text-white">Nome</p>
-                <Image alt="Imagem de uma flecha" className={`ml-[2px] ${filter.name ? "rotate-180" : ""}`}  src={ArrowFilter} />
-              </button>
+              <div className="flex items-center h-full justify-between">
+                <input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className="w-[20px] h-[20px] appearance-none border-[#afafaf] border-[2px] rounded-[4px]" />
+                <div className="w-[1px] h-full bg-[#B1B1B1] mr-[5px]" />
+              </div>
 
-              <p className="text-left max-md:hidden dark:text-white "> Email </p>
+              <div>
+                <button onClick={() => (setFilter({ ...filter, name: !filter.name, status: false, date: false }), FilterAlphabetical({ dataFilter: users, filter: filter, setReturn: setUsers }))} className="hover:opacity-[.65] text-left flex items-center cursor-pointer  py-[15px] ">
+                  <p className="dark:text-white">Nome</p>
+                  <Image alt="Imagem de uma flecha" className={`ml-[2px] ${filter.name ? "rotate-180" : ""}`} src={ArrowFilter} />
+                </button>
+              </div>
 
-              <button onClick={() => (setFilter({...filter, date: !filter.date, status: false, name: false}), FilterDate({dataFilter:users, filter:filter, setReturn:setUsers}))} className="max-lg:hidden flex items-center cursor-pointer">
-                <p className="text-left dark:text-white">Data de cadastro</p>
-                <Image alt="Imagem de uma flecha" className={`ml-[2px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
-              </button>
 
-              <button onClick={() => ( setFilter({...filter, status: !filter.status, name: false, date: false}), FilterStatus({dataFilter:users, filter:filter, setReturn:setUsers}))} className="flex items-center cursor-pointer">
-                <p className="dark:text-white">Status</p>
-                <Image alt="Imagem de uma flecha" className={`ml-[2px]  ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter}/>
-              </button>
+              <p className="text-left dark:text-white max-sm:hidden"> Email </p>
 
-              <p className="dark:text-white">Ações</p>
+              <div className="max-md:hidden">
+                <button onClick={() => (setFilter({ ...filter, date: !filter.date, status: false, name: false }), FilterDate({ dataFilter: users, filter: filter, setReturn: setUsers }))} className="hover:opacity-[.65] flex items-center cursor-pointer  py-[15px] ">
+                  <p className="text-left dark:text-white hidden xl:block">Data de cadastro</p>
+                  <p className="text-left dark:text-white hidden max-xl:block">Data</p>
+                  <Image alt="Imagem de uma flecha" className={`ml-[2px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter} />
+                </button>
+              </div>
+
+              <div>
+                <button onClick={() => (setFilter({ ...filter, status: !filter.status, name: false, date: false }), FilterStatus({ dataFilter: users, filter: filter, setReturn: setUsers }))} className="hover:opacity-[.65] flex items-center cursor-pointer  py-[15px] ">
+                  <p className="dark:text-white">Status</p>
+                  <Image alt="Imagem de uma flecha" className={`ml-[2px]  ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter} />
+                </button>
+              </div>
+
+              <p className="dark:text-white py-[15px] text-center">Ações</p>
             </div>
 
 
-              {/* <--------------------------------- BodyTable ---------------------------------> */}
-              {users
-              .filter((user) =>  searchText != "" ?  user.name?.toUpperCase().includes(searchText.toUpperCase()) : true)
-              .map((user: any, index:number) => {
+            {/* <--------------------------------- BodyTable ---------------------------------> */}
+            {users
+              .filter((user) => searchText != "" ? user.name?.toUpperCase().includes(searchText.toUpperCase()) : true)
+              .map((user: DataUser, index: number) => {
                 var checked = user.checked;
                 if (showItens.min < index && index < showItens.max) {
                   return (
-                    <div key={index} className={`w-full gap-y-[5px] grid grid-cols-[20px__repeat(2,1fr)_200px_70px_60px] max-lg:grid-cols-[20px__repeat(2,1fr)_70px_60px] max-md:grid-cols-[20px__1fr_65px_60px] border-b-[1px] border-b-neutral-400 px-[5px] gap-x-[15px] text-[18px] font-[500] items-center py-[5px] ${user.fixed ? 'bg-neutral-300' : ''}`}>
-                      <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)} onClick={() => SelectUsers(index)} className="cursor-pointer  w-full h-[20px]"/>
+                    <div key={index} className={`w-full py-[10px] grid grid-cols-[45px__repeat(2,1fr)_250px_130px_100px]
+                      max-2xl:grid-cols-[45px__repeat(2,1fr)_200px_100px_80px]
+                      max-xl:grid-cols-[45px__repeat(2,1fr)_100px_100px_60px]
+                      max-lg:grid-cols-[45px__repeat(2,1fr)_100px_90px_50px]
+                      max-md:grid-cols-[45px__repeat(2,1fr)_90px_50px]
+                      max-sm:grid-cols-[35px__repeat(1,1fr)_90px_50px]
+                      max-lsm:grid-cols-[36px__repeat(1,1fr)_65px_50px]
+                      border-b-[1px] border-b-neutral-400 px-[15px] max-md:px-[10px] max-sm:px-[5px] gap-x-[30px] max-lg:gap-x-[10px] max-sm:gap-x-[5px] font-[500] items-center max-xl:text-[16px]`}>
+                      <div className="flex justify-between w-full items-center">
+                        <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)} onClick={() => SelectUsers(index)} className={`${user.checked ? '' : 'appearance-none'} accent-gray-600 cursor-pointer  w-[20px] h-[20px] border-[1px] border-[#666666] rounded-[4px]`} />
+                        {user.fixed && <DrawingPinFilledIcon className="w-[16px] h-[16px] text-[#666666]" />}
+                      </div>
 
-                      <div className="max-w-[350px] max-2xl:max-w-[250px] max-md:max-w-[380px] max-sm:max-w-[200px] max-lsm:max-w-[130px] flex items-center">
-                        <Image src={user.photo_url} width={35} height={35} alt="Perfil" className="rounded-full w-[35px] h-[35px] mr-[5px] max-md:w-[30px] max-md:h-[30px]"/>
+                      <div className="min-w-full flex items-center">
+                        <Image src={user.photo_url} width={35} height={35} alt="Perfil" className="rounded-full w-[35px] h-[35px] mr-[10px] max-md:w-[30px] max-md:h-[30px]" />
                         <p className="overflow-hidden whitespace-nowrap text-ellipsis dark:text-white">
                           {user.name}
                         </p>
                       </div>
 
-                      <p className="text-left max-md:hidden overflow-hidden whitespace-nowrap text-ellipsis dark:text-white">
+                      <p className="text-left overflow-hidden whitespace-nowrap text-ellipsis dark:text-white max-sm:hidden">
                         {user.email}
                       </p>
 
-                      <p className="w-full max-lg:hidden text-left dark:text-white">
-                        {formatDate(user.created_date)}
+                      <p className="w-full max-md:hidden text-left dark:text-white">
+                        {formatDate(user.created_date!)}
                       </p>
 
-                      {
-                        user.status ? 
-                        (<p className="w-full bg-red/20 border-red text-[#c50000] border-[1px] max-sm:text-[16px] rounded-[5px] text-center">Inativo</p>) 
-                      : 
-                        (<p className="w-full bg-greenV/20 border-greenV text-[#00920f] border-[1px] max-sm:text-[16px] rounded-[5px] text-center"> Ativo </p>)
+                      {user.verifiedEmail ?
+                        user.status ?
+                          <div className="w-full max-w-[90px] bg-red/20 border-red text-[#c50000] border-[1px] text-[17px] max-lg:text-[16px] rounded-[5px] text-center max-lsm:w-[20px] max-lsm:h-[20px] max-lsm:justify-self-center max-lsm:rounded-full max-lsm:bg-red">
+                            <p className="max-lsm:hidden">Inativo</p>
+                          </div>
+
+                          :
+
+                          <div className="w-full max-w-[90px] bg-greenV/20 border-greenV text-[#00920f] border-[1px] text-[17px]  max-lg:text-[16px] rounded-[5px] text-center max-lsm:w-[20px] max-lsm:h-[20px] max-lsm:justify-self-center max-lsm:rounded-full max-lsm:bg-greenV">
+                            <p className="max-lsm:hidden">Ativo</p>
+                          </div>
+                        :
+                          <HoverCard.Root>
+                            <HoverCard.Trigger className="w-full max-w-[90px] bg-[rgba(224,187,0,0.2)] border-[#E0BC00] text-[#9A8200] border-[1px] text-[17px]  max-lg:text-[16px] rounded-[5px] text-center max-lsm:w-[20px] max-lsm:h-[20px] max-lsm:justify-self-center max-lsm:rounded-full max-lsm:bg-[#E0BC00]">
+                              <p className="max-lsm:hidden">Pendente</p>
+                            </HoverCard.Trigger>
+                            <HoverCard.Portal>
+                              <HoverCard.Content className="bg-primary drop-shadow-[0_5px_5px_rgba(0,0,0,0.40)] rounded-[5px] px-[15px] py-[10px]">
+                                <p className="text-black">Este usúario não verificou o email.</p>
+                                <HoverCard.Arrow className="fill-primary" />
+                              </HoverCard.Content>
+                            </HoverCard.Portal>
+                          </HoverCard.Root>
                       }
 
                       <div className="w-full flex justify-center items-center">
@@ -201,31 +253,32 @@ function TableClients() {
                     </div>
                   );
                 }
-              })}
-          </div> 
+              })
+            }
+          </div>
         ) : (
           <div className="w-full h-full flex justify-center items-center flex-col">
-            <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="Foto de uma mulher, clique para cadastrar um cliente" className="cursor-pointer w-[170px] h-[170px]"/>
+            <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="Foto de uma mulher, clique para cadastrar um cliente" className="cursor-pointer w-[170px] h-[170px]" />
             <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white">
               Nada por aqui... <br />{" "}
               {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}
             </p>
           </div>
         )}
-        
+
 
         {/* <--------------------------------- NavBar table ---------------------------------> */}
-        {users.filter((user) =>  searchText != "" ?  user.name?.toUpperCase().includes(searchText.toUpperCase()) : true).length > 0 ? (
-          <div className="flex items-center justify-between w-full px-[5px] my-[5px] mt-auto">
-            <button onClick={() => { showItens.max / 10 != 1 ?  setShowItens({min: showItens.min - 10, max: showItens.max - 10}): toast.error('Não existe paginas inferiores.')}}
-              className={`rounded-[4px] px-[5px] py-[2px] text-[18px] max-sm:text-[16px] max-lsm:text-[14px] cursor-pointer ${showItens.max / 10 == 1 ? "bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black" }`}>
+        {users.filter((user) => searchText != "" ? user.name?.toUpperCase().includes(searchText.toUpperCase()) : true).length > 0 ? (
+          <div className="flex items-center justify-between w-full px-[15px] max-md:px-[10px] max-sm:px-[5px] py-[10px] mt-auto">
+            <button onClick={() => { showItens.max / 10 != 1 ? setShowItens({ min: showItens.min - 10, max: showItens.max - 10 }) : toast.error('Não existe paginas inferiores.') }}
+              className={`hover:brightness-[.85] border-[1px] rounded-[8px] px-[10px] py-[3px] cursor-pointer ${showItens.max / 10 == 1 ? "bg-[#D9D9D9] dark:bg-dhilight border-[#9E9E9E] dark:border-dterciary text-[#AAAAAA] dark:text-dterciary" : "bg-hilight dark:bg-white text-white dark:text-black"}`}>
               Anterior
             </button>
 
-            <p className="dark:text-white flex items-center">{`Página ${showItens.max / 10} de ${pages}`}</p>
+            <p className="text-[#686868] dark:text-white flex items-center">{`Página ${showItens.max / 10} de ${pages}`}</p>
 
-            <button onClick={() => {showItens.max / 10 != pages ? setShowItens({min: showItens.min + 10, max: showItens.max + 10}) : toast.error('Não existe paginas superiores.')}}
-              className={`rounded-[4px] px-[5px] py-[2px] text-[18px] max-sm:text-[16px] max-lsm:text-[14px] cursor-pointer ${showItens.max / 10 == pages ? " bg-hilight dark:bg-dhilight border-terciary dark:border-dterciary text-terciary dark:text-dterciary" : "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"}`}>
+            <button onClick={() => { showItens.max / 10 != pages ? setShowItens({ min: showItens.min + 10, max: showItens.max + 10 }) : toast.error('Não existe paginas superiores.') }}
+              className={`hover:brightness-[.85] border-[1px] rounded-[8px] px-[10px] py-[3px] cursor-pointer ${showItens.max / 10 == pages ? " bg-[#D9D9D9] dark:bg-dhilight border-[#9E9E9E] dark:border-dterciary text-[#AAAAAA] dark:text-dterciary" : "bg-hilight dark:bg-white text-white dark:text-black"}`}>
               Proximo
             </button>
           </div>

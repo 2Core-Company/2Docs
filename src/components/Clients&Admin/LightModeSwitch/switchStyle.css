@@ -1,10 +1,4 @@
 @import '@radix-ui/colors/blackA.css';
-
-/* reset */
-button {
-    all: unset;
-}
-
 .SwitchRoot {
     width: 42px;
     height: 25px;

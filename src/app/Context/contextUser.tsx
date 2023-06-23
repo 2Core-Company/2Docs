@@ -4,13 +4,12 @@ import { DataUser } from '../../types/users'
 
 export const userContext = createContext<{dataUser:DataUser, setDataUser:Function}>({dataUser:{
   id:'', 
-  cnpj:'',
   created_date:'',
   email:'',
   id_company:'',
   name:'',
-  nameImage:'',
-  password:'',    
+  nameImage:'', 
+  verifiedEmail:true,     
   permission:0,
   phone:'',
   photo_url:'',
@@ -23,13 +22,12 @@ export const userContext = createContext<{dataUser:DataUser, setDataUser:Functio
 export default function Index({ children }) {
   const [dataUser, setDataUser] = useState<DataUser>({
     id:'', 
-    cnpj:'',
     created_date:'',
     email:'',
     id_company:'',
     name:'',
     nameImage:'',
-    password:'',    
+    verifiedEmail:true,   
     permission:0,
     phone:'',
     photo_url:'',

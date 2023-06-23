@@ -72,9 +72,6 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
     files.value = null;
   }
 
-  
-
-
   async function OrganizeFilesInArray({filesUpload, result}){
     const allDataFiles:any = []
     const collectionRef = collection(db, "files", id_company, id_user, 'user', 'files')

@@ -11,5 +11,6 @@ export function FormatDate(date:string){
 
 export function FormatDateSmall(date:string){
   var newDate = new Date(date)
+  console.log(newDate.toLocaleDateString())
   return newDate.toLocaleDateString()
 }
