@@ -86,12 +86,14 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
         const docSnap = await getDoc(docRef);
         setPropsNavBar({urlImage: docSnap.data()?.photo_url, permission: permission, name:docSnap.data()?.name})        
         var allDataUser:DataUserContext = {
-          cnpj:docSnap.data()?.cnpj, 
           email:docSnap.data()?.email,  
           id:docSnap.data()?.id, 
           id_company:docSnap.data()?.id_company, 
-          name:docSnap.data()?.name, 
-          password:docSnap.data()?.password,     
+          verifiedEmail:docSnap.data()?.verifiedEmail,
+          photo_url:docSnap.data()?.photo_url,
+          status:docSnap.data()?.status,
+          fixed:docSnap.data()?.fixed,
+          name:docSnap.data()?.name,     
           permission:permission, 
           phone:docSnap.data()?.phone, 
           enterprises:docSnap.data()?.enterprises,

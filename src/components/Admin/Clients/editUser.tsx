@@ -22,20 +22,22 @@ import { PhoneMask, CNPJMask } from '../../../Utils/Other/Masks';
 
 function EditUser({closedWindow, childToParentEdit, user, contextAdmin}:Props){
   const imageMimeType : RegExp = /image\/(png|jpg|jpeg)/i;
-  const [dataUser, setDataUser] = useState<DataUser>({id:user.id, id_company:user.id_company, permission:0, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, nameImage: user.nameImage, photo_url: user.photo_url, enterprises: user.enterprises, admins: []})
+  const [dataUser, setDataUser] = useState<DataUser>({id:user.id, id_company:user.id_company, permission:0, name: user.name, email:user.email, phone:user.phone, nameImage: user.nameImage, photo_url: user.photo_url, enterprises: user.enterprises, admins: [], verifiedEmail:user.verifiedEmail})
   const [file, setFile] = useState<any>()
-  const [eye , setEye] = useState(false)
   const domain = new URL(window.location.href).origin
   const genericUrl = `https://ui-avatars.com/api/?name=${dataUser.name}&background=10b981&color=262626&format=svg`
 
   async function OnToast(e: { preventDefault: () => void; }){
     e.preventDefault()
-    toast.promise(UpdateDataUserAuth(), {pending:"Editando usuário...", success:"Usuário editado com sucesso", error:"Não foi possivel editar o usuário"})
+    toast.promise(UpdateDataUserAuth(), {pending:"Editando usuário...", success:"Usuário editado com sucesso"})
   }
-
 
   async function UpdateDataUserAuth() {
     if(dataUser.email != user.email){
+      if(!user.verifiedEmail){
+        throw toast.error('Não é possivel editar o email de um usuário pendente.')
+      }
+
       try{  
         const result = await axios.post(`${domain}/api/users/updateUser`, {userId: user.id, data:{email: dataUser.email}, uid: auth.currentUser?.uid})
         if(result.data.uid){
@@ -109,8 +111,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextAdmin}:Props){
       enterprises:user.enterprises,
       name: dataUser.name,
       email: dataUser.email,
-      cnpj: dataUser.cnpj,
-      password: dataUser.password,
+      verifiedEmail:user.verifiedEmail,
       phone: dataUser.phone,
       photo_url: data.photo_url,
       nameImage: data.nameImage,
@@ -164,6 +165,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextAdmin}:Props){
         }
         fileReader.readAsDataURL(file);
       }
+
       return () => {
         isCancel = true;
         if (fileReader && fileReader.readyState === 1) {
@@ -176,7 +178,7 @@ function EditUser({closedWindow, childToParentEdit, user, contextAdmin}:Props){
 
 
   return (
-    <div className={`w-[600px] z-10 max-sm:z-50 max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] right-0 duration-300 flex flex-col items-center top-0`}>
+    <div className={`w-[600px] z-10 max-sm:z-50 max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] right-0 duration-300 flex flex-col items-center top-0 drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
         <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full'>
           <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px]  max-sm:h-[35px] absolute left-[5px]'/>
           <p  className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Editar</p>
@@ -204,27 +206,10 @@ function EditUser({closedWindow, childToParentEdit, user, contextAdmin}:Props){
           </label>
 
           <label className='flex flex-col dark:text-white'>
-            Senha provisória
-            <div className='border-2 border-black dark:border-white rounded-[8px] flex items-center'>
-              <input autoComplete="off" required type={eye ? "text" : "password"} value={dataUser.password} disabled={true} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>
-              {eye ? 
-              <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer" />
-              :
-              <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer" />
-              } 
-            </div>
+            Telefone
+            <input autoComplete="off" required  maxLength={15} minLength={15} value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o telefone'/>
           </label>
-          <div className='flex max-sm:flex-col justify-between gap-[5px] '>
-            <label className='flex flex-col dark:text-white'>
-              Cnpj
-              <input autoComplete="off"maxLength={18} minLength={18} required  value={dataUser.cnpj} onChange={(Text) => CNPJMask({value:Text.target.value, setDataUser})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o CNPJ'/>
-            </label>
 
-            <label className='flex flex-col dark:text-white'>
-              Telefone
-              <input autoComplete="off" required  maxLength={15} minLength={15} value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black dark:border-white rounded-[8px]' placeholder='Digite o telefone'/>
-            </label>
-          </div>
           <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full max-sm:w-[80%] self-center h-[55px] max-sm:h-[50px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
               Salvar
           </button>

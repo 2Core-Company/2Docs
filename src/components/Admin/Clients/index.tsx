@@ -7,8 +7,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 function ComponentClients() {
   return (
     <section className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
-      <LightModeSwitch />
-      <div className="w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]">
+      <div className="w-full h-full mt-[50px] px-[50px] max-lg:px-[15px] max-md:px-[10px]">
         <p  className="font-poiretOne text-[40px] dark:text-white">Clientes</p>
         <Suspense fallback={<SkeletonTableClients />}>
           <TableClients/>
