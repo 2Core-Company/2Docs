@@ -1,6 +1,5 @@
 import {Poiret_One, Poppins } from '@next/font/google'
 import "../../styles/globals.css";
-import Loading from '../components/Clients&Admin/Loading'
 import 'react-toastify/dist/ReactToastify.min.css'
 import ThemeContextProvider from '../hooks/useTheme'
 import ContextUser from './Context/contextUser'
@@ -33,7 +32,6 @@ export default function RootLayout({children,}: {children: React.ReactNode}) {
             <ContextUser>
               <ContextLoading>
                 <ContextCompany>
-                  <Loading />
                   {children}
                 </ContextCompany>
               </ContextLoading>

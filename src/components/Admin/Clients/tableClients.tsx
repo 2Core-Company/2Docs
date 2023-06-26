@@ -17,10 +17,12 @@ import { MagnifyingGlassIcon, DrawingPinFilledIcon } from "@radix-ui/react-icons
 import EditUser from "./editUser";
 import CreateUser from "./createUser";
 import * as HoverCard from '@radix-ui/react-hover-card';
+import { loadingContext } from "../../../app/Context/contextLoading";
 
 function TableClients() {
   const [showItens, setShowItens] = useState<{ min: number; max: number }>({ min: -1, max: 10, });
   const [filter, setFilter] = useState<{ name: boolean; date: boolean; status: boolean; }>({ name: false, date: false, status: false });
+  const {loading, setLoading} = useContext(loadingContext)
   const { dataAdmin } = useContext(adminContext);
   const [users, setUsers] = useState<DataUser[]>([]);
   const [userEdit, setUserEdit] = useState<any>();
@@ -42,7 +44,9 @@ function TableClients() {
 
   // <--------------------------------- Disable User --------------------------------->
   async function GetFunctionDisableUser() {
+    setLoading(true)
     await DisableUser({ users, selectUsers, id_company: dataAdmin.id_company, setMenu, setSelectUsers, setUsers })
+    setLoading(false)
   }
 
   // <--------------------------------- Select User --------------------------------->
@@ -120,10 +124,10 @@ function TableClients() {
               <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
             </button>
 
-            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} className={`max-lg:mt-[50px] hover:brightness-[.85] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "bg-[#D9D9D9] border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
+            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`max-lg:mt-[50px] hover:brightness-[.85] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "bg-[#D9D9D9] border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
               Trocar Status
             </button>
-            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} className={`hover:brightness-[.85] duration-100 bg-[#00B268] boder-[1px] border-[#119E70] text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
+            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:brightness-[.85] duration-100 bg-[#00B268] boder-[1px] border-[#119E70] text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
               + Cadastrar
             </button>
           </div>
@@ -191,7 +195,7 @@ function TableClients() {
                       max-lsm:grid-cols-[36px__repeat(1,1fr)_65px_50px]
                       border-b-[1px] border-b-neutral-400 px-[15px] max-md:px-[10px] max-sm:px-[5px] gap-x-[30px] max-lg:gap-x-[10px] max-sm:gap-x-[5px] font-[500] items-center max-xl:text-[16px]`}>
                       <div className="flex justify-between w-full items-center">
-                        <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)} onClick={() => SelectUsers(index)} className={`${user.checked ? '' : 'appearance-none'} accent-gray-600 cursor-pointer  w-[20px] h-[20px] border-[1px] border-[#666666] rounded-[4px]`} />
+                        <input disabled={loading ? true : false} aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)} onClick={() => SelectUsers(index)} className={`${user.checked ? '' : 'appearance-none'} accent-gray-600 cursor-pointer  w-[20px] h-[20px] border-[1px] border-[#666666] rounded-[4px]`} />
                         {user.fixed && <DrawingPinFilledIcon className="w-[16px] h-[16px] text-[#666666]" />}
                       </div>
 
