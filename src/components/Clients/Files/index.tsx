@@ -28,7 +28,7 @@ function Files(){
   const params:any = useSearchParams()
   const folderName:string = params.get("folder")
   const id_folder: string = params.get("id_folder")
-  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: ""})
+  const [modal, setModal] = useState<Modal>({status: false, message: "", name:"", subMessage1: "", subMessage2:""})
   const [indexFile, setIndexFile] = useState<number>(0)
   const id_enterprise:string  = params.get("id_enterprise")
   const [textSearch, setTextSearch] = useState('')
@@ -73,7 +73,7 @@ function Files(){
   // <--------------------------------- Delet File --------------------------------->
   function ConfirmationDeleteFile(index:number){
     setIndexFile(index)
-    setModal({...modal, status:true, message: "Tem certeza que deseja excluir este arquivo?", subMessage1: "Não será possivel recuperar."})
+    setModal({...modal, status:true, message: "Tem certeza que deseja excluir o arquivo", name:files[indexFile].name, subMessage1: "Não será possivel recuperar.", subMessage2:"Está ação será permanente."})
   }
   
   const childModal = async () => {
@@ -131,7 +131,7 @@ return (
             <TableFiles id_folder={id_folder} dataPages={dataPages} files={files} ConfirmationDeleteFile={ConfirmationDeleteFile} childToParentDownload={childToParentDownload} SelectFile={SelectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch} setDataPages={setDataPages}/>
           </div>
         </div>
-        {modal.status ? <ModalDelete confirmation={false} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} childModal={childModal}/> : <></>}
+        {modal.status ? <ModalDelete setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} name={modal.name} childModal={childModal}/> : <></>}
       </div>
   )
   }

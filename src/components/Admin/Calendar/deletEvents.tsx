@@ -22,13 +22,12 @@ interface Props{
 }
 
 function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, setEventSelected,  setEventsThatDay}:Props) {
-    const {dataCompany, setDataCompany} = useContext(companyContext)
     const messageToast = {pending:'Deletando evento....', success:'Evento deletado com sucesso.', error:'Não foi possivel deletar este evento.'}
     const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2:""})
     const messageModal = {status: true, message: "Tem certeza que deseja excluir este evento?", subMessage1: "Todos os arquivos vinculados a este evento serão apagados.", subMessage2: "Não sera possivel recupera-los."}
     
     const childModal = () => {
-        setModal({status: false, message: "", subMessage1: ""})
+        setModal({status: false, message: "", subMessage1: "", subMessage2:""})
         toast.promise(DeletEvent, messageToast)
     }
 
@@ -84,7 +83,7 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
     
   return (
     <>
-        {modal.status ? <ModalDelete confirmation={true} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal}/> : <></>}
+        {modal.status ? <ModalDelete setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal}/> : <></>}
         <div className='border-red border-[2px] self-center rounded-[4px] mt-[15px] hover:scale-105'>
             <button onClick={() => setModal(messageModal) } className="cursor-pointer text-red bg-red/20  self-center text-[20px] max-lsm:text-[18px] px-[8px] py-[2]">Deletar</button>
         </div>

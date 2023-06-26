@@ -86,7 +86,7 @@ function Files(){
       if(trash){
         setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivo?", subMessage1: "Será permanente.", subMessage2:"Não será possivel recuperar."})
       } else {
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivos?", subMessage1: "Estes arquivos vão para a lixeira.", subMessage2:undefined})
+        toast.promise(DisableFiles({files, selectFiles, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
     } else {
       throw toast.error("Selecione um arquivo para deletar.")    
@@ -95,11 +95,7 @@ function Files(){
 
   const childModal = () => {
     setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
-    if(trash){
-      toast.promise(DeletFiles({files, selectFiles, dataCompany, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
-    } else {
-      toast.promise(DisableFiles({files, selectFiles, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
-    }
+    toast.promise(DeletFiles({files, selectFiles, dataCompany, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
   }
 
   function childToParentDelet(files){
@@ -190,7 +186,7 @@ function Files(){
           <TableFiles id_folder={id_folder}  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
         </div>
       </div>
-      {modal.status ? <ModalDelete confirmation={false} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}
+      {modal.status ? <ModalDelete setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}
     </div>
   )
 }

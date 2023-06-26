@@ -85,7 +85,7 @@ function FolderConfig({setUser, user, enterprise, id, id_company, setFolderConfi
   }
 
   return (
-    <div className="w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black z-50">
+    <div className="w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black z-50 left-0">
       <div className="relative bg-primary dark:bg-dprimary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col">
         <div className="absolute top-[10px] right-[10px]">
           <Cross1Icon
