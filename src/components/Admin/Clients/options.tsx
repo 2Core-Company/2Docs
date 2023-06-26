@@ -36,23 +36,23 @@ function Options({dataAdmin, domain, idUser, user, users, windowsAction, setWind
   const messageUnFix = {pending:"Desfixando usuário...", success:"Usuário fixado com sucesso."}
   const [ modalEvent, setModalEvent ] = useState<boolean>(false)
   const [ modalAdminOptions, setModalAdminOptions ] = useState<boolean>(false)
-  const [ modal, setModal ] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
+  const [ modal, setModal ] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: "", name:''})
   
 
     //Confirmação de deletar usuário
     function ConfirmationDeleteUser(){
-      setModal({status:true, message: `Tem certeza que deseja excluir o usuário: ${user.name}`, subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também."})
+      setModal({status:true, message: `Tem certeza que deseja excluir o usuário`, name:user.name, subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também."})
     }
   
     //Resposta da confirmação
     const childModal = () => {
       toast.promise(DeletUser({user, users, domain, ResetConfig}), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
-      setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
+      setModal({status: false, message: "", name:'', subMessage1: "", subMessage2: ""})
     }
 
   return (
     <>
-      {modal.status ? <ModalDelete confirmation={true} setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal}/> : <></>}
+      {modal.status ? <ModalDelete setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} name={modal.name} childModal={childModal}/> : <></>}
       {modalEvent ? <ModalEvent id={user.id} email={user.email} enterprises={user.enterprises} userName={user.name} setModalEvent={setModalEvent}/> : <></>}
       {modalAdminOptions ? <ModalSetAdmin setModalAdminOptions={setModalAdminOptions} user={user} dataAdmin={dataAdmin} setUsers={setUsers} users={users} /> : <></>}
 
