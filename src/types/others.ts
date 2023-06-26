@@ -10,7 +10,7 @@ import { Folders } from "./folders"
     message:string,
     subMessage1:string,
     subMessage2:string,
-    name:string
+    name?:string
   }
 
   export interface Enterprise{

@@ -123,7 +123,7 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
-      {modal.status ? <ModalDelete confirmation={true}  message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal} setModal={setModal}/> : <></>}
+      {modal.status ? <ModalDelete message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal} setModal={setModal}/> : <></>}
     </>
   );
 };

@@ -3,9 +3,9 @@ import { toast } from "react-toastify"
 
 interface Props {
   message:string,
-  name:string
-  subMessage1?:string,
-  subMessage2?:string,
+  name?:string
+  subMessage1:string,
+  subMessage2:string,
   setModal:Function
   childModal:Function
 }
@@ -27,7 +27,7 @@ interface Props {
           <div  className='bg-red w-full h-[15px] rounded-t-[4px]'/>
           <div className='px-[25px] py-[5px] text-left'>
             <div className="flex mt-[10px]">
-              <p className='text-[20px] max-sm:text-[18px] text-ellipsis overflow-hidden'>{message} <span className="font-[600]">{`${name}?`}</span></p>
+              <p className='text-[20px] max-sm:text-[18px] text-ellipsis overflow-hidden'>{message} {name ? <span className="font-[600]">{`${name}?`}</span> : <></>}</p>
             </div>
 
 
