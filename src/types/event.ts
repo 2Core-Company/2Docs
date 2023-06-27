@@ -1,5 +1,3 @@
-import { Enterprise } from "./others"
-
 export interface Event{
   id:string
   id_user:string

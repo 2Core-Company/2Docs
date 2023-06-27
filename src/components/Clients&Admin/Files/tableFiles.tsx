@@ -26,12 +26,12 @@ interface Props{
   textSearch:string
   SelectFile:Function
   setFiles:Function
-  ConfirmationDeleteFile:Function
+  DeleteFile?:Function
   childToParentDownload:Function
   setDataPages:Function
 }
 
-export default function TableFiles({id_folder, dataPages, trash, textSearch, files, folderName, from, SelectFile, ConfirmationDeleteFile, childToParentDownload, setFiles, setDataPages}:Props) {
+export default function TableFiles({id_folder, dataPages, trash, textSearch, files, folderName, from, SelectFile, DeleteFile, childToParentDownload, setFiles, setDataPages}:Props) {
   const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
   const [modalMessage, setModalMessage] = useState<{status:boolean, permission:string, index:number}>({status:false, permission:'', index:0})
   const pathName = usePathname()
@@ -188,7 +188,7 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
                       file={file}
                       files={files}
                       DownloadFile={DownloadFile}
-                      ConfirmationDeleteFile={ConfirmationDeleteFile}
+                      DeleteFile={DeleteFile ? DeleteFile() : undefined}
                       trash={Boolean(trash)}
                       childToParentDownload={childToParentDownload}
                     />

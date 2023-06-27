@@ -27,12 +27,12 @@ interface Props{
   index:number
   trash:boolean
   from:string
-  DownloadFile:Function, 
-  ConfirmationDeleteFile:Function
+  DownloadFile:Function
+  DeleteFile:Function
   childToParentDownload:Function
 }
 
-function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile, ConfirmationDeleteFile, childToParentDownload}: Props){
+function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile, DeleteFile, childToParentDownload}: Props){
   const [moveTo, setMoveTo] = useState(false)
   const [copyTo, setCopyTo] = useState(false)
   const [rename, setRename] = useState(false)
@@ -130,7 +130,7 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
 
           {from === 'user' && file.from === "user"  ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none rounded-b-[6px] hover:bg-red/30">
-              <div onClick={() => ConfirmationDeleteFile(index)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => DeleteFile(file)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <TrashIcon width={22} height={22} className='text-[250px]'/>
                 Excluir
               </div>

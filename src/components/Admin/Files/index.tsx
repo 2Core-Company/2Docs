@@ -8,18 +8,15 @@ import {db} from '../../../../firebase'
 import { doc, getDoc} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';
 import UploadFile from '../../Clients&Admin/Files/uploadFile'
-import ModalDelete from '../../../Utils/Other/ModalDelete'
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
-
 import DisableFiles from './DisableFiles'
 import EnableFiles from './enableFiles'
 import TableFiles from '../../Clients&Admin/Files/tableFiles'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { adminContext } from '../../../app/Context/contextAdmin';
-import { Modal } from '../../../types/others';
 import { Files } from '../../../types/files';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import { GetFilesToTrash, GetFilesToFavorites, GetFilesAdmin } from '../../../Utils/Firebase/GetFiles';
@@ -35,7 +32,6 @@ function Files(){
   const { setLoading } = useContext(loadingContext)
   const [files, setFiles] = useState<Files[]>([])
   const [selectFiles, setSelectFiles] = useState<Files[]>([])
-  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
   const [dataPages, setDataPages] = useState<{page:number, maxPages:number}>({page:1, maxPages:1})
   const [menu, setMenu] = useState<boolean>(true)
   const [textSearch, setTextSearch] = useState<string>('')
@@ -80,11 +76,11 @@ function Files(){
     }
   }
 
-  // <--------------------------------- Delet / Disable Files --------------------------------->
-  function ConfirmationDeleteFile(){
+
+  async function DeleteFile(){
     if(selectFiles.length > 0){
       if(trash){
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivo?", subMessage1: "Será permanente.", subMessage2:"Não será possivel recuperar."})
+        toast.promise(DeletFiles({files, selectFiles, dataCompany, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
       } else {
         toast.promise(DisableFiles({files, selectFiles, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram movidos para a lixeira.", error:"Não foi possivel deletar os arquivos."})
       }
@@ -93,10 +89,7 @@ function Files(){
     }
   }
 
-  const childModal = () => {
-    setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
-    toast.promise(DeletFiles({files, selectFiles, dataCompany, childToParentDelet}),{pending:"Deletando arquivos...", success:"Seus arquivos foram deletados.", error:"Não foi possivel deletar os arquivos."})
-  }
+  
 
   function childToParentDelet(files){
     const maxPage = Math.ceil(files.length / 10)
@@ -171,7 +164,7 @@ function Files(){
                 </button>
               }
 
-              <button onClick={() => ConfirmationDeleteFile()} className={`hover:brightness-[.85] text-center border-[2px] p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer  ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary  text-strong dark:text-dstrong"} ${menu ? "max-lg:hidden" : ""}`}>
+              <button onClick={() => DeleteFile()} className={`hover:brightness-[.85] text-center border-[2px] p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer  ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary  text-strong dark:text-dstrong"} ${menu ? "max-lg:hidden" : ""}`}>
                 Deletar
               </button>
 
@@ -183,10 +176,9 @@ function Files(){
             </div>
           </div>
             {/*<-------------- Table of Files --------------> */}
-          <TableFiles id_folder={id_folder}  ConfirmationDeleteFile={ConfirmationDeleteFile} files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
+          <TableFiles id_folder={id_folder}  files={files} dataPages={dataPages} childToParentDownload={childToParentDownload} SelectFile={SelectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages}/>
         </div>
       </div>
-      {modal.status ? <ModalDelete setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}
     </div>
   )
 }

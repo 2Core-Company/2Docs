@@ -7,7 +7,6 @@ import {  Files } from '../../../types/files'
 import { Event } from '../../../types/event'
 import { Modal } from '../../../types/others'
 import ModalDelete from '../../../Utils/Other/ModalDelete'
-import { companyContext } from '../../../app/Context/contextCompany'
 import updateSizeCompany from '../../../Utils/Other/updateSizeCompany'
 
 
@@ -23,11 +22,11 @@ interface Props{
 
 function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, setEventSelected,  setEventsThatDay}:Props) {
     const messageToast = {pending:'Deletando evento....', success:'Evento deletado com sucesso.', error:'Não foi possivel deletar este evento.'}
-    const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2:""})
-    const messageModal = {status: true, message: "Tem certeza que deseja excluir este evento?", subMessage1: "Todos os arquivos vinculados a este evento serão apagados.", subMessage2: "Não sera possivel recupera-los."}
+    const [modal, setModal] = useState<Modal>({status: false, title:'', subject:'', target:''})
+    const messageModal = {status: true, title: "Deletar Evento", subject:'o evento', target:eventSelected.title}
     
     const childModal = () => {
-        setModal({status: false, message: "", subMessage1: "", subMessage2:""})
+        setModal({status: false, title:'', subject:'', target:''})
         toast.promise(DeletEvent, messageToast)
     }
 
@@ -83,7 +82,7 @@ function DeletEvents({eventSelected, eventsThatDay, files, events, id_company, s
     
   return (
     <>
-        {modal.status ? <ModalDelete setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal}/> : <></>}
+        {modal.status ? <ModalDelete modal={modal} setModal={setModal} childModal={childModal}/> : <></>}
         <div className='border-red border-[2px] self-center rounded-[4px] mt-[15px] hover:scale-105'>
             <button onClick={() => setModal(messageModal) } className="cursor-pointer text-red bg-red/20  self-center text-[20px] max-lsm:text-[18px] px-[8px] py-[2]">Deletar</button>
         </div>

@@ -10,10 +10,8 @@ import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
 import TableFiles from '../../Clients&Admin/Files/tableFiles'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
-import ModalDelete from '../../../Utils/Other/ModalDelete'
 import DeletFiles from '../../Clients&Admin/Files/DeletFiles';
 import { Files } from '../../../types/files'
-import { Modal } from '../../../types/others'
 import { userContext } from '../../../app/Context/contextUser';
 import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/GetFiles';
 import { companyContext } from '../../../app/Context/contextCompany';
@@ -28,8 +26,6 @@ function Files(){
   const params:any = useSearchParams()
   const folderName:string = params.get("folder")
   const id_folder: string = params.get("id_folder")
-  const [modal, setModal] = useState<Modal>({status: false, message: "", name:"", subMessage1: "", subMessage2:""})
-  const [indexFile, setIndexFile] = useState<number>(0)
   const id_enterprise:string  = params.get("id_enterprise")
   const [textSearch, setTextSearch] = useState('')
   const router = useRouter();
@@ -70,15 +66,12 @@ function Files(){
     }
   }
 
-  // <--------------------------------- Delet File --------------------------------->
-  function ConfirmationDeleteFile(index:number){
-    setIndexFile(index)
-    setModal({...modal, status:true, message: "Tem certeza que deseja excluir o arquivo", name:files[indexFile].name, subMessage1: "Não será possivel recuperar.", subMessage2:"Está ação será permanente."})
-  }
   
-  const childModal = async () => {
-    setModal({...modal, status:false})
-    toast.promise(DeletFiles({files:files, selectFiles:[files[indexFile]], childToParentDelet, dataCompany}),{pending:"Deletando arquivo.", success:"Arquivo deletado com sucesso.", error:"Não foi possivel deletar os arquivos."})
+  async function DeleteFile(file){
+    if(file){
+      const toastMessage = {pending:"Deletando arquivo.", success:"Arquivo deletado com sucesso.", error:"Não foi possivel deletar os arquivos."}
+      toast.promise(DeletFiles({files:files, selectFiles:[file], childToParentDelet, dataCompany}),toastMessage)
+    }
   }
 
   function childToParentDelet(files){
@@ -128,10 +121,9 @@ return (
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles id_folder={id_folder} dataPages={dataPages} files={files} ConfirmationDeleteFile={ConfirmationDeleteFile} childToParentDownload={childToParentDownload} SelectFile={SelectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch} setDataPages={setDataPages}/>
+            <TableFiles id_folder={id_folder} dataPages={dataPages} files={files} DeleteFile={DeleteFile} childToParentDownload={childToParentDownload} SelectFile={SelectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch} setDataPages={setDataPages}/>
           </div>
         </div>
-        {modal.status ? <ModalDelete setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} name={modal.name} childModal={childModal}/> : <></>}
       </div>
   )
   }
