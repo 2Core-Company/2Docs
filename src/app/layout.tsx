@@ -16,7 +16,7 @@ const poiretOne = Poiret_One({
 
 const poppins = Poppins({
   display: "auto",
-  weight: ["400"],
+  weight: ["400", "500"],
   variable: "--font-poppins",
   subsets: ["latin"],
 });
@@ -27,7 +27,7 @@ export default function RootLayout({children,}: {children: React.ReactNode}) {
       <html lang="pt-br" className='bg-primary dark:bg-dprimary'>
         <title>Software para auxiliar o gerenciamento dos arquivos.</title>
         <head />
-        <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins max-w-screen`}>
+        <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins font-[400] max-w-screen`}>
           <ContextAdmin>
             <ContextUser>
               <ContextLoading>

@@ -6,11 +6,10 @@ import { Folders } from "./folders"
   }
 
   export interface Modal{
-    status:boolean,
-    message:string,
-    subMessage1:string,
-    subMessage2:string,
-    name?:string
+    status:boolean
+    title:string
+    subject:string
+    target:string
   }
 
   export interface Enterprise{

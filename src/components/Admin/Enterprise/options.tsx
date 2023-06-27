@@ -23,19 +23,14 @@ interface Props{
 
 function Options({index, user, enterprise, setUser, setEnterprise}: Props){
   const [rename, setRename] = useState(false)
-  const [modal, setModal] = useState<Modal>({status: false, message: "", subMessage1: "", subMessage2: ""})
+  const [modal, setModal] = useState<Modal>({status: false, title:'', subject:'', target:''})
   const batch = writeBatch(db);
   const domain = window.location.origin
-
-
-  //Confirmação de deletar empresa
-  function ConfirmationDeleteEmpresa(){
-    setModal({...modal, status:true, message: `Tem certeza que deseja excluir a empresa: ${enterprise.name}?`, subMessage1: "Você excluirá todos arquivos dela.", subMessage2:"Será permanente."})
-  }
+  const messageModal = {status: true, title: "Deletar Empresa", subject:'a empresa', target:enterprise.name}
 
   //Resposta do modal
   const childModal = () => {
-    setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
+    setModal({status: false, title:'', subject:'', target:''})
     toast.promise(DeletEnterprise(),{pending:"Deletando empresa...", success:"Empresa deletada com sucesso."}, {position: "bottom-right"})
   }
 
@@ -115,15 +110,15 @@ function Options({index, user, enterprise, setUser, setEnterprise}: Props){
             </DropdownMenu.Item>
 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none rounded-b-[6px] hover:bg-red/30">
-              <div onClick={() => ConfirmationDeleteEmpresa()} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <button onClick={() => setModal(messageModal)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <TrashIcon width={22} height={22} className='text-[250px]'/>
                 Excluir
-              </div>
+              </button>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
-      {modal.status ? <ModalDelete message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} childModal={childModal} setModal={setModal}/> : <></>}
+      {modal.status ? <ModalDelete modal={modal} childModal={childModal} setModal={setModal}/> : <></>}
     </>
   );
 };
