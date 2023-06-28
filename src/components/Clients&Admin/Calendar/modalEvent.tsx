@@ -187,11 +187,13 @@ function DayCard(props) {
   }, [day, props.month, props.year, props.dateSelected]);
 
   const handleClickDate = () => {
-    props.setDateSelected(props.day._d + "")
+    var dateNow = new Date(props.day._d)
+    dateNow.setHours(23, 59, 59)
+    props.setDateSelected(dateNow.getTime())
   };
 
   return (
-    <div onClick={() => state == 'nonPertenceMonth' ? "" : handleClickDate()} className={`w-[50px] max-sm:w-[35px] h-[50px] max-sm:h-[35px] p-[3px] flex justify-center items-center border-neutral-300 border-[1px] mt-[5px] rounded-full  ${state == 'nonPertenceMonth' ?  'text-neutral-400 bg-neutral-200 opacity-50'  : 'cursor-pointer'} `}>
+    <div onClick={() => state == 'nonPertenceMonth' ? '' : handleClickDate()} className={`w-[50px] max-sm:w-[35px] h-[50px] max-sm:h-[35px] p-[3px] flex justify-center items-center border-neutral-300 border-[1px] mt-[5px] rounded-full  ${state == 'nonPertenceMonth' ?  'text-neutral-400 bg-neutral-200 opacity-50'  : 'cursor-pointer'} `}>
       <p className="text-[25px] max-sm:text-[20px]">{props.day.format("DD").toString()}</p>
     </div>
   );

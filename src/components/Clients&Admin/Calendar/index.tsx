@@ -70,8 +70,7 @@ export default function Calendar() {
         title:doc.data()?.title,
         observation:doc.data()?.observation,
         complete:doc.data()?.complete,
-        dateSelected:doc.data()?.dateSelected,
-        viewed:doc.data()?.viewed
+        dateSelected:doc.data()?.dateSelecte
       })
     });
     setEvents(events)
