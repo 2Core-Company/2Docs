@@ -54,7 +54,7 @@ function Events() {
     return (
         <div className='ml-[20px] max-lsm:ml-[0px] mt-[20px] max-sm:mt-[10px]'>
             <p className='font-poiretOne text-[40px] max-sm:text-[30px]'>Eventos</p>
-            <div className='bg-primary border-[1px] border-[#9E9E9E] pb-[15px] rounded-[12px] w-[500px] max-sm:w-[390px] max-lsm:w-[355px] h-[650px] max-sm:h-[600px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.2-0)]'>
+            <div className='bg-primary border-[1px] border-[#9E9E9E] pb-[15px] rounded-[12px] w-[500px] max-sm:w-[390px] max-lsm:w-[355px] h-[650px] max-sm:h-[600px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.20)]'>
                 {events ?
                     <>
                         {events.map((event, index) => {
