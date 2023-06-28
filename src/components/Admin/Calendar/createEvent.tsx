@@ -28,7 +28,7 @@ interface Props{
 function CreateEvent({email, setDateSelected, dateSelected, id, enterprises, userName, setModalEvent}:Props) {
     const { dataAdmin } = useContext(adminContext);
     const [changeEnterprise, setChangeEnterprise] = useState(false);
-    const [dataEvent, setDataEvent] = useState<Event>({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, name_enterprise:enterprises[0].name, id_enterprise: enterprises[0].id, id_folder:enterprises[0].folders[0].id, userName:userName, viewed: false});
+    const [dataEvent, setDataEvent] = useState<Event>({id:uuidv4(), title:"", observation:"", dateSelected:dateSelected, id_user:id, complete:false, name_enterprise:enterprises[0].name, id_enterprise: enterprises[0].id, id_folder:enterprises[0].folders[0].id, userName:userName});
     const messageToast = {pending: 'Criando evento...', success:'Evento criado com sucesso.', error:'Não foi possivel criar este evento.'};
 
     async function CreatedEvent(){

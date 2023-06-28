@@ -13,3 +13,9 @@ export function FormatDateSmall(date:string){
   var newDate = new Date(date)
   return newDate.toLocaleDateString()
 }
+
+export function FormatDateVerySmall(date:string){
+  var newDate:Date | string = new Date(date)
+  newDate = newDate.toLocaleDateString().toString()
+  return newDate.substring(0, 5)
+}

@@ -46,7 +46,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
         if(dataUser != undefined || dataAdmin != undefined){
             const id_company = dataUser.id_company ? dataUser.id_company : dataAdmin.id_company
             GetFilesEvent({id_company, eventSelected, setFiles})
-            UpdatedEventViwed()
         }
       // eslint-disable-next-line react-hooks/exhaustive-deps
       },[dataUser, dataAdmin])
@@ -62,20 +61,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
             setDataEvent({style:'bg-[#efd1478e] border-[#f4c703]', text:'Atrasado', upload:true})
         } else if(5 < diffInDays){
             setDataEvent({style:'border-red bg-red/20', text:'Incompleto', upload:false})
-        }
-    }
-
-    //setando evento visualizado
-    async function UpdatedEventViwed(){
-        if(!eventSelected.viewed && !admin){
-            await updateDoc(doc(db, 'companies', dataUser.id_company, "events", eventSelected.id), {
-                viewed:true
-            })
-    
-            if(elementFather === 'home'){
-                const index1 = events.findIndex(event => event.id == eventSelected.id)
-                events.splice(index1, 1)
-            }
         }
     }
     
