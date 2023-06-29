@@ -54,13 +54,13 @@ function Events() {
     return (
         <div className='ml-[20px] max-lsm:ml-[0px] mt-[20px] max-sm:mt-[10px]'>
             <p className='font-poiretOne text-[40px] max-sm:text-[30px]'>Eventos</p>
-            <div className='bg-primary border-[1px] border-[#9E9E9E] pb-[15px] rounded-[12px] w-[500px] max-sm:w-[390px] max-lsm:w-[355px] h-[650px] max-sm:h-[600px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.20)]'>
+            <div className='bg-primary border-[1px] border-[#9E9E9E] pb-[15px] rounded-[12px] w-[500px] max-sm:w-[390px] max-lsm:w-[355px] h-[660px] max-sm:h-[610px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.20)]'>
                 {events ?
                     <>
                         {events.map((event, index) => {
                             const data = CalculateStatus(event)
                             return (
-                                <div key={event.id} className={`${index === 0 ? 'rounded-t-[12px]' : ''} flex items-center py-[10px] hover:bg-[#dfdfdf] cursor-pointer  px-[30px] max-sm:px-[15px] max-lsm:px-[10px]`}>
+                                <div key={event.id} className={`${index === 0 ? 'mt-[10px] max-sm:mt-[0px] rounded-t-[12px]' : ''} flex items-center py-[10px] hover:bg-[#dfdfdf] cursor-pointer  px-[30px] max-sm:px-[20px] max-lsm:px-[15px]`}>
                                     <div className='flex items-start'>
                                         <div className={`${data.styleCircle} w-[12px] h-[12px] rounded-full mt-[10px]`} />
                                         <div className={`${data.styleDiv} ml-[15px] max-sm:ml-[10px]`}>
