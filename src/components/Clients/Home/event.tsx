@@ -60,7 +60,7 @@ function Events() {
                         {events.map((event, index) => {
                             const data = CalculateStatus(event)
                             return (
-                                <div key={event.id} className={`${index === 0 ? 'rounded-t-[12px]' : ''} flex items-center py-[10px] hover:bg-[#dfdfdf] cursor-pointer  px-[20px] max-sm:px-[15px] max-lsm:px-[10px]`}>
+                                <div key={event.id} className={`${index === 0 ? 'rounded-t-[12px]' : ''} flex items-center py-[10px] hover:bg-[#dfdfdf] cursor-pointer  px-[30px] max-sm:px-[15px] max-lsm:px-[10px]`}>
                                     <div className='flex items-start'>
                                         <div className={`${data.styleCircle} w-[12px] h-[12px] rounded-full mt-[10px]`} />
                                         <div className={`${data.styleDiv} ml-[15px] max-sm:ml-[10px]`}>
@@ -73,7 +73,7 @@ function Events() {
                                                     </p>
                                                 </div>
 
-                                                <p className='ml-[20px] max-sm:text-[14px]'>Vencimento: {FormatDateVerySmall(event.dateSelected)}</p>
+                                                <p className='ml-[20px] max-sm:text-[14px]'>Data Venc.: <span className='text-[14px] max-sm:text-[12px]'>{FormatDateVerySmall(event.dateSelected)}</span></p>
                                             </div>
                                         </div>
                                     </div>
