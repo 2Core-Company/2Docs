@@ -11,7 +11,7 @@ interface Props {
   
   function ModalDelete({modal, childModal, setModal}:Props) {
     const [textConfirmation, setTextConfirmation] = useState('')
-
+''
     function VerifyConfirmation(){
       if(textConfirmation === 'confirmar'){
           childModal()
