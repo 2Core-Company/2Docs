@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { getDownloadURL, ref } from 'firebase/storage';
 import { Folders } from '../../../types/folders';
-import { GetFolders } from '../../../Utils/folders/getFolders';
+import { GetFolders } from '../../../Utils/Firebase/folders/getFolders';
 
   interface Props{
     id_folder:string
@@ -36,23 +36,21 @@ function ViewFile({id_folder, file, files, from, setViwedFile, childToParentDown
     try{
       let viewedDate = new Date().toString();
 
-      if(from === "user" && file.id_folder != folderCliente.id && file.viewed === false){
+      if(from === "user" && file.id_folder != folderCliente.id && file.viewedDate === null){
         updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
           viewed: true,
           viewedDate: viewedDate
         })
         const index = files.findIndex((data) => data.id == file.id)
 
-        files[index].viewed = true
         files[index].viewedDate = viewedDate;
-      } else if(from === "admin" && file.id_folder == folderCliente.id && file.viewed === false){
+      } else if(from === "admin" && file.id_folder == folderCliente.id && file.viewedDate === null){
           updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
           viewed: true,
           viewedDate: viewedDate
         })
 
         const index = files.findIndex((data) => data.id == file.id)
-        files[index].viewed = true
         files[index].viewedDate = viewedDate;
       }
       childToParentDownload(files)

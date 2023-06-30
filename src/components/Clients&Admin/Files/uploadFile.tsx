@@ -3,10 +3,10 @@ import { ref,  uploadBytes } from "firebase/storage";
 import { collection, doc, writeBatch } from "firebase/firestore";  
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files';
-import { GetSizeCompany } from '../../../Utils/Other/getSizeCompany';
+import { GetSizeCompany } from '../../../Utils/Firebase/Company/GetSizeCompany';
 import { useContext } from 'react';
 import { companyContext } from '../../../app/Context/contextCompany';
-import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
+import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 
 
   interface Props{
@@ -93,7 +93,7 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
       } else {
         type = "docs"
       }
-      const date = new Date() 
+      const date = new Date().getTime() + ''
 
       const data:Files = {
         id_user: id_user,
@@ -106,7 +106,6 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
         created_date: date,
         type:type,
         trash: false,
-        viewed: false,
         downloaded: false,
         id_folder: id_folder,
         from: from,

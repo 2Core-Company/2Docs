@@ -6,8 +6,8 @@ import { db, storage } from '../../../../firebase'
 import {  Files } from '../../../types/files'
 import { Event } from '../../../types/event'
 import { Modal } from '../../../types/others'
-import ModalDelete from '../../../Utils/Other/ModalDelete'
-import updateSizeCompany from '../../../Utils/Other/updateSizeCompany'
+import ModalDelete from '../../../Utils/Other/modalDelete'
+import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany'
 
 
 interface Props{

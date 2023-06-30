@@ -4,7 +4,7 @@ import { doc, deleteDoc, query, where, collection, getDocs, writeBatch } from "f
 import axios from 'axios'
 import ErrorFirebase from "../../../Utils/Firebase/ErrorFirebase";
 import { DataUser } from '../../../types/users'
-import updateSizeCompany from "../../../Utils/Other/updateSizeCompany";
+import updateSizeCompany from "../../../Utils/Firebase/Company/UpdateSizeCompany";
 
 interface Props {
   user: DataUser

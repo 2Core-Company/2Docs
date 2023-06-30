@@ -3,7 +3,7 @@ import { collection, doc, getDocs, query, updateDoc, where, writeBatch } from "f
 import { DataUser } from '../../../types/users' 
 import axios from 'axios';
 import { Enterprise } from '../../../types/others';
-import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
+import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 
 interface Props{
     user:DataUser,

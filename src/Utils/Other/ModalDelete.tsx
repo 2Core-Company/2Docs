@@ -13,7 +13,7 @@ interface Props {
     const [textConfirmation, setTextConfirmation] = useState('')
 
     function VerifyConfirmation(){
-      if(textConfirmation === 'Confirmar'){
+      if(textConfirmation === 'confirmar'){
           childModal()
       } else {
           toast.error('Digite confirmar no campo solicitado.')

@@ -8,7 +8,7 @@ import { DataUser } from "../../../types/users";
 import Options from "./options";
 import { FilterFixed, FilterAlphabetical, FilterStatus, FilterDate } from "../../../Utils/Other/Filters";
 import { FormatDate, FormatDateSmall } from "../../../Utils/Other/FormatDate";
-import { GetUsers } from "../../../Utils/Firebase/GetUsers";
+import { GetUsers } from "../../../Utils/Firebase/Users/GetUsers";
 import { DisableUser } from "./DisableUser";
 import { WindowsAction } from "../../../types/others";
 import { toast } from "react-toastify";

@@ -6,12 +6,12 @@ import { DataUser } from '../../../types/users';
 import RenameIcon from '../../../../public/icons/rename.svg'
 import Image from 'next/image'
 import Rename from './rename';
-import ModalDelete from '../../../Utils/Other/ModalDelete';
+import ModalDelete from '../../../Utils/Other/modalDelete';
 import { toast } from 'react-toastify';
 import { db } from '../../../../firebase'
 import { doc, updateDoc, query, collection, getDocs, where, writeBatch} from "firebase/firestore";
 import axios from 'axios';
-import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
+import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
  
 interface Props{
   index:number

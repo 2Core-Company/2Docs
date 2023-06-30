@@ -14,9 +14,9 @@ import styles from '../../Admin/Home/home.module.css'
 import DownloadsFile from '../Files/dowloadFiles';
 import DeletEvents from '../../Admin/Calendar/deletEvents';
 import { Files } from '../../../types/files';
-import { GetFilesEvent } from '../../../Utils/Firebase/GetFiles'
-import { GetSizeCompany } from '../../../Utils/Other/getSizeCompany';
-import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
+import { GetFilesEvent } from '../../../Utils/Firebase/Files/GetFiles'
+import { GetSizeCompany } from '../../../Utils/Firebase/Company/GetSizeCompany';
+import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 import { adminContext } from '../../../app/Context/contextAdmin';
 
 
@@ -168,7 +168,6 @@ function ViwedEvent({elementFather, eventSelected, eventsThatDay, events, admin,
                     created_date: date,
                     type:newFiles[i].type2, 
                     trash: false,
-                    viewed: false,
                     id_folder: folder.id,
                     from: 'user',
                     favorite:false,

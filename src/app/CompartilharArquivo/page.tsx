@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { FormatDate } from '../../Utils/Other/FormatDate'
 import { getDownloadURL, ref } from 'firebase/storage';
 import { Files } from '../../types/files';
-import { GetSpecificFile } from '../../Utils/Firebase/GetFiles'
+import { GetSpecificFile } from '../../Utils/Firebase/Files/GetFiles'
 
 function ShareFile() {
   const params:any = useSearchParams()
@@ -33,7 +33,7 @@ function ShareFile() {
 
   async function DownloadFile(){
     if(file){
-      if(file.viewed){
+      if(file.viewedDate){
         return toast.error('Este arquivo ja foi baixado, por isso não sera possivel iniciar este download.')
       }  
 
@@ -54,10 +54,9 @@ function ShareFile() {
         element.parentNode.removeChild(element);
         
         await updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
-          viewed: true,
           viewedDate:viewedDate
         })
-        setFile({...file, viewed:true})
+        setFile({...file})
       } catch(e) {
         console.log(e)
         toast.error("Não foi possivél baixar os arquivos.")

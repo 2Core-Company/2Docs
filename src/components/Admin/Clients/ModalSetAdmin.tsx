@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { DataUser, DataUserContext } from "../../../types/users";
-import { getAdmins } from "../../../Utils/Firebase/GetUsers";
+import { getAdmins } from "../../../Utils/Firebase/Users/GetUsers";
 import { Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { toast } from "react-toastify";
 import { db } from "../../../../firebase";

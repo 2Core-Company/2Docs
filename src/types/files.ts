@@ -8,13 +8,12 @@ export interface Files{
   size:number
   name:string
   path:string
-  viewedDate:string
+  viewedDate:string | null
   type:string
   from:string
   message:string
-  created_date:string | number | Date
+  created_date:string
   checked?:boolean
-  viewed:boolean
   trash:boolean
   favorite:boolean
   downloaded: boolean

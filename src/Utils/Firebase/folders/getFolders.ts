@@ -1,7 +1,6 @@
 import { doc, getDoc, getDocs } from "firebase/firestore";
-import { q } from "vitest/dist/types-0373403c";
-import { db } from "../../../firebase";
-import { Folders } from "../../types/folders";
+import { db } from "../../../../firebase";
+import { Folders } from "../../../types/folders";
 
 interface GetFolder{
     id_company:string

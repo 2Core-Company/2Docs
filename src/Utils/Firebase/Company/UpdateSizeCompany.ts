@@ -1,5 +1,5 @@
 import { ref, runTransaction } from "firebase/database";
-import { database } from '../../../firebase'
+import { database } from '../../../../firebase'
 
 interface Props{
     id_company:string
@@ -10,7 +10,7 @@ interface Props{
 export default async function updateSizeCompany({id_company, size, action}:Props) {
     const postRef = ref(database, `/usage/ ${id_company}`);
   
-    await runTransaction(postRef, (company) => {
+    const response = await runTransaction(postRef, (company) => {
         if (company) {
             if (company.size || company.size === 0){
                 if(action === 'sum'){
@@ -24,6 +24,9 @@ export default async function updateSizeCompany({id_company, size, action}:Props
         }
         return company;
     });
+    if(response.committed){
+        return {message:'Updade size company done with success', status:200}
+    }
   }
 
   

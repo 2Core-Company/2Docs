@@ -10,7 +10,7 @@ interface Props{
 }
 
 async function ShareFile({file}:Props) {
-  if(file.viewed){
+  if(file.viewedDate){
     return toast.error("Você não pode compartilhar um arquivo que ja foi visualizado.")
   } else {
     const docRef = doc(db, "companies", file.id_company);

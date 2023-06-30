@@ -41,6 +41,17 @@ module.exports = {
         //!Radix
         ...blackA,
       },
+
+      animation: {
+        'bounce-once': 'bounceOnce 0.5s',
+      },
+
+      keyframes: {
+        bounceOnce: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-30%)' },
+        },
+      }
     },
 
   },

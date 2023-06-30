@@ -81,7 +81,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
   //Pegando credenciais dos usuários
   async function GetUser(user, permission){
     try{
-      if(dataUser.id_company === '' && user.displayName){
+      if(user.displayName){
         const docRef = doc(db, "companies", user.displayName, "clients", user.uid);
         const docSnap = await getDoc(docRef);
         setPropsNavBar({urlImage: docSnap.data()?.photo_url, permission: permission, name:docSnap.data()?.name})        

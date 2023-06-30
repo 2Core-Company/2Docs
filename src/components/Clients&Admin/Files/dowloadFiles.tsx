@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { Folders } from '../../../types/folders'
 import { getDownloadURL, ref } from 'firebase/storage';
-import { GetFolders } from '../../../Utils/folders/getFolders';
+import { GetFolders } from '../../../Utils/Firebase/folders/getFolders';
 
 interface Props{
   selectFiles:Files[]
@@ -22,7 +22,7 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
   let folderCliente = folders.find((folder) => folder.name === "Cliente")
   const batch = writeBatch(db);
 
-  await GetUrlDownloadFile()
+  toast.promise(GetUrlDownloadFile(), {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso"})
 
   async function GetUrlDownloadFile(){
     const promises:any = []
@@ -106,23 +106,21 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
     for(let i = 0; i < selectFiles.length; i++) {
       let viewedDate = new Date().toString();
       
-      if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].viewed === false){
+      if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].viewedDate === null){
         const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
-        batch.update(laRef, {viewed: true, viewedDate:viewedDate})
+        batch.update(laRef, {viewedDate:viewedDate})
 
         if(files && childToParentDownload){
           const index = files.findIndex(file => file.id == selectFiles[i].id)
-          files[index].viewed = true
           files[index].viewedDate = viewedDate;
         }
 
-      }else if(from === "admin" && selectFiles[i].id_folder == folderCliente.id && selectFiles[i].viewed === false){
+      }else if(from === "admin" && selectFiles[i].id_folder == folderCliente.id && selectFiles[i].viewedDate === null){
         const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
-        batch.update(laRef, {viewed: true, viewedDate: viewedDate})
+        batch.update(laRef, {viewedDate: viewedDate})
 
         if(files && childToParentDownload){
           const index = files.findIndex(file => file.id == selectFiles[i].id)
-          files[index].viewed = true
           files[index].viewedDate = viewedDate;            
         }
       }

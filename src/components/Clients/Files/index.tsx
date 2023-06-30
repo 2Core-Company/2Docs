@@ -13,7 +13,7 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import DeletFiles from '../../Clients&Admin/Files/DeletFiles';
 import { Files } from '../../../types/files'
 import { userContext } from '../../../app/Context/contextUser';
-import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/GetFiles';
+import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/Files/GetFiles';
 import { companyContext } from '../../../app/Context/contextCompany';
 
 function Files(){

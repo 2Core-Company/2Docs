@@ -11,7 +11,7 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { DataUser, DataUserContext } from '../../../types/users'
-import { PhoneMask, CNPJMask } from '../../../Utils/Other/Masks';
+import { PhoneMask } from '../../../Utils/Other/Masks';
 
   interface Props{
     contextAdmin:DataUserContext

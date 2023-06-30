@@ -1,5 +1,5 @@
 import { ref, onValue, get, child } from "firebase/database";
-import { database } from '../../../firebase'
+import { database } from '../../../../firebase'
 
 interface PropsGetSizeCompanyRealTime{
     id_company:string

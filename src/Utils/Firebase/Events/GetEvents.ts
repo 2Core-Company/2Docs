@@ -1,7 +1,7 @@
 import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { Dispatch } from "react";
-import { db } from "../../../firebase";
-import { Event } from "../../types/event";
+import { db } from "../../../../firebase";
+import { Event } from "../../../types/event";
 
 interface PropsGetEventsUser {
   id_company:string
@@ -9,10 +9,10 @@ interface PropsGetEventsUser {
   setEvents:Dispatch<React.SetStateAction<Event[] | undefined>>
 }
 
-export async function GetEventsUser({id_company, id_user, setEvents}:PropsGetEventsUser){
+export async function GetLimitedEventsUser({id_company, id_user, setEvents}:PropsGetEventsUser){
   const eventsConcluded:Event[] = []
   const events:Event[] = []
-  const q = query(collection(db, "companies", id_company, "events"), where('id_user', '==', id_user), orderBy('dateSelected', 'asc'), orderBy('complete', 'desc'), limit(8));
+  const q = query(collection(db, "companies", id_company, "events"), where('id_user', '==', id_user), orderBy('complete', 'asc'), orderBy('dateSelected', 'asc'),  limit(8));
 
   const querySnapshot:any = await getDocs(q);
   querySnapshot.forEach((doc) => {
@@ -40,6 +40,37 @@ export async function GetEventsUser({id_company, id_user, setEvents}:PropsGetEve
   } 
 }
 
+
+interface PropsGetEventsOpenOfUser{
+  id_company:string
+  id_user:string
+}
+
+export async function GetEventsOpenOfUser({id_company, id_user}:PropsGetEventsOpenOfUser){
+  const events:Event[] = []
+  const q = query(collection(db, "companies", id_company, "events"), where('id_user', '==', id_user), where('complete', '==', false), orderBy('dateSelected', 'asc'));
+
+  const querySnapshot:any = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    const data = {
+      id:doc.data()?.id,
+      id_user:doc.data()?.id_user,
+      id_folder:doc.data()?.id_folder,
+      id_enterprise:doc.data()?.id_enterprise,
+      userName:doc.data()?.userName,
+      name_enterprise:doc.data()?.name_enterprise,
+      title:doc.data()?.title,
+      observation:doc.data()?.observation,
+      complete:doc.data()?.complete,
+      dateSelected:doc.data()?.dateSelected
+    }
+    events.push(data)
+
+  });
+  if(events[0]){
+    return events
+  } 
+}
 
 
 interface PropsGetEventLate {
