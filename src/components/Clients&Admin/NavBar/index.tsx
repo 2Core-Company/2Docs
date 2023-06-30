@@ -26,7 +26,7 @@ function NavBar({permission, image, name}:Props) {
     const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[30px] max-lg:px-[20px] lg:group-hover:justify-start item-center cursor-pointer group/button"
     const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px] group-hover/button:opacity-[.65]"
     const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px] group-hover/button:opacity-[.65]"
-    const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-fulll left-0 top-0 absolute"
+    const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-full left-0 top-0 absolute"
     const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.65]"
     const popoverRef = useRef<any>();
     const arrowIconRef = useRef<any>();
@@ -47,7 +47,7 @@ function NavBar({permission, image, name}:Props) {
  
     const childModal = () => {
         signOut(auth).then(() => {
-            router.push("/")
+            // router.refresh();
         }).catch((error) => {
             console.log(error)
         });
