@@ -12,7 +12,6 @@ import { PhoneMask } from '../../../Utils/Other/Masks';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
 import AddContactImage from '../../../../public/icons/addContact.png'
 import { Contact, Question } from '../../../types/dataCompany';
-import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
 
 
 function ComponentHome () {

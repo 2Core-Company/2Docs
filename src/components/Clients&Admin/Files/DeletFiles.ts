@@ -3,7 +3,7 @@ import { doc, writeBatch} from "firebase/firestore";
 import { ref, deleteObject} from "firebase/storage";
 import { Files } from '../../../types/files'
 import { DataCompanyContext } from '../../../types/dataCompany';
-import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
+import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 
 interface Props{
   files?:Files[]

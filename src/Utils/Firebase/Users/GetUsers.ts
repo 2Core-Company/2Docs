@@ -1,7 +1,7 @@
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import { db } from "../../../firebase";
-import { FilterFixed } from "../Other/Filters";
-import { DataUser, DataUserContext } from "../../types/users";
+import { db } from "../../../../firebase";
+import { FilterFixed } from "../../Other/Filters";
+import { DataUser, DataUserContext } from "../../../types/users";
 
 interface PropsGetUsers{  
   setPages: Function

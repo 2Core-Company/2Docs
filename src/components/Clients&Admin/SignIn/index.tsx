@@ -127,14 +127,14 @@ function Signin(){
                 <label className="text-[18px] dark:text-white" htmlFor='divEmail'>
                   Email
                 </label>
-                <input id='divEmail' required type="email" autoComplete={"off"} value={loginUser.email} name="Email" onChange={(Text) => setLoginUser({...loginUser, email: Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] max-sm:py-[6px] border-[1px] border-black dark:border-white rounded-[8px] pl-[5px] mt-[6px]" placeholder='Digite seu email' />
+                <input id='divEmail' required type="email" autoComplete={"off"} value={loginUser.email} name="Email" onChange={(Text) => setLoginUser({...loginUser, email: Text.target.value})} className="w-full text-[18px] bg-transparent dark:text-white outline-none py-[10px] max-sm:py-[6px] border-[1px] border-black dark:border-white rounded-[8px] px-[15px] mt-[6px] placeholder-[#9E9E9E]" placeholder='Digite seu email' />
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
                 <label className="text-[18px] dark:text-white" htmlFor='divPassword'>
                   Senha
                 </label>
                 <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center dark:border-white mt-[6px]'>
-                  <input id='divPassword' required minLength={8} autoComplete='current-password' type={eye ? "text" : "password"} onChange={(Text) => setLoginUser({...loginUser, password:Text.target.value})} className="w-full text-[18px] dark:text-white bg-[#0000] outline-none py-[10px] max-sm:py-[6px]" placeholder='Digite sua senha' />
+                  <input id='divPassword' required minLength={8} autoComplete='current-password' type={eye ? "text" : "password"} onChange={(Text) => setLoginUser({...loginUser, password:Text.target.value})} className="w-full text-[18px] bg-transparent dark:text-white outline-none py-[10px] max-sm:py-[6px] px-[15px]  placeholder-[#9E9E9E]" placeholder='Digite sua senha' />
                   {eye ? (
                     <EyeOpenIcon onClick={() => setEye(false)} width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
                   ) : (

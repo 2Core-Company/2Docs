@@ -11,9 +11,9 @@ interface Props {
   
   function ModalDelete({modal, childModal, setModal}:Props) {
     const [textConfirmation, setTextConfirmation] = useState('')
-
+''
     function VerifyConfirmation(){
-      if(textConfirmation === 'Confirmar'){
+      if(textConfirmation === 'confirmar'){
           childModal()
       } else {
           toast.error('Digite confirmar no campo solicitado.')

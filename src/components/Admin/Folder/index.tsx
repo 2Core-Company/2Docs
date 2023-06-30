@@ -12,7 +12,7 @@ import DeleteFolder from "./DeletFolder";
 import FolderConfig from "./folderConfig";
 import Link from "next/link";
 import DownloadsFile from "../../Clients&Admin/Files/dowloadFiles";
-import ModalDelete from "../../../Utils/Other/ModalDelete";
+import ModalDelete from "../../../Utils/Other/modalDelete";
 import { toast } from "react-toastify";
 import { DataUser } from "../../../types/users";
 import { Files } from "../../../types/files";
@@ -20,7 +20,7 @@ import { FolderCfg } from "../../../types/folders";
 import { Modal, Enterprise } from "../../../types/others";
 import Enterprises from "../../Clients&Admin/Enterprise";
 import { useRouter } from "next/navigation";
-import { GetRecentFiles } from "../../../Utils/Firebase/GetFiles";
+import { GetRecentFilesOfEnterprise} from "../../../Utils/Firebase/Files/GetFiles";
 
 function ComponentFolder() {
   const params:any = useSearchParams();
@@ -41,7 +41,7 @@ function ComponentFolder() {
 
   useEffect(() => {
     if (enterprise.id != "") {
-      GetRecentFiles({id_company:dataAdmin.id_company, id_user, id_enterprise, from:'user', setRecentFiles})
+      GetRecentFilesOfEnterprise({id_company:dataAdmin.id_company, id_user, id_enterprise, from:'user', setRecentFiles})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enterprise]);

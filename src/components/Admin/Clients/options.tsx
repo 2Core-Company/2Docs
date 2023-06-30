@@ -11,7 +11,7 @@ import ModalEvent from '../../Clients&Admin/Calendar/modalEvent'
 import Calendar from '../../../../public/icons/calendar.svg'
 import Image from 'next/image';
 import DeletUser from './deletUser';
-import ModalDelete from '../../../Utils/Other/ModalDelete'
+import ModalDelete from '../../../Utils/Other/modalDelete'
 import ModalSetAdmin from './ModalSetAdmin';
 
 

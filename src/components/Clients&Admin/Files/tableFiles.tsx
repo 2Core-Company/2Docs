@@ -131,7 +131,7 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
                     {FormatDate(file.created_date.toString())}
                   </p>
 
-                  {file.viewed ? (
+                  {file.viewedDate ? (
                     <HoverCard.Root>
                       <HoverCard.Trigger asChild>
                         <div className="text-[16px] bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-[5px] text-center max-sm:hidden cursor-default">

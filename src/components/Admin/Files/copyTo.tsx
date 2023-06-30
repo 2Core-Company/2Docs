@@ -5,10 +5,10 @@ import { toast } from 'react-toastify';
 import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { Files } from '../../../types/files' 
 import { Folders } from '../../../types/folders';
-import { GetFolders } from '../../../Utils/folders/getFolders';
+import { GetFolders } from '../../../Utils/Firebase/folders/getFolders';
 import { companyContext } from '../../../app/Context/contextCompany';
-import { GetSizeCompany } from '../../../Utils/Other/getSizeCompany';
-import updateSizeCompany from '../../../Utils/Other/updateSizeCompany';
+import { GetSizeCompany } from '../../../Utils/Firebase/Company/GetSizeCompany';
+import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 
 interface Props{
   file:Files
@@ -81,7 +81,6 @@ function  CopyTo({file, setCopyTo}: Props) {
       created_date: date,
       type:file.type, 
       trash: false,
-      viewed: false,
       id_folder: dataFolder.id,
       from: file.from,
       favorite:false,

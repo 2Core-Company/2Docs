@@ -19,7 +19,7 @@ import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
 import { adminContext } from '../../../app/Context/contextAdmin';
 import { Files } from '../../../types/files';
 import LightModeSwitch from "../../Clients&Admin/LightModeSwitch"
-import { GetFilesToTrash, GetFilesToFavorites, GetFilesAdmin } from '../../../Utils/Firebase/GetFiles';
+import { GetFilesToTrash, GetFilesToFavorites, GetFilesAdmin } from '../../../Utils/Firebase/Files/GetFiles';
 import { useRouter } from 'next/navigation';
 import { companyContext } from '../../../app/Context/contextCompany';
 import DeletFiles from '../../Clients&Admin/Files/DeletFiles';

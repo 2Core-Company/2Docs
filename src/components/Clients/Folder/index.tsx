@@ -10,7 +10,7 @@ import { Files } from '../../../types/files'
 import { Enterprise } from '../../../types/others'; 
 import Enterprises from '../../Clients&Admin/Enterprise';
 import { useSearchParams } from 'next/navigation';
-import { GetRecentFiles } from '../../../Utils/Firebase/GetFiles';
+import { GetRecentFilesOfEnterprise } from '../../../Utils/Firebase/Files/GetFiles';
 
   function ComponentFolder(){
     const {dataUser, setDataUser} = useContext(userContext)
@@ -22,13 +22,14 @@ import { GetRecentFiles } from '../../../Utils/Firebase/GetFiles';
     
     useEffect(() =>{
       if(dataUser != undefined){
-        GetRecentFiles({id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise, from:'admin', setRecentFiles})
         if(id_enterprise){
-          const enterprise= dataUser.enterprises.find((enterprise) => enterprise.id === id_enterprise)
+          const enterprise = dataUser.enterprises.find((enterprise) => enterprise.id === id_enterprise)
           if(enterprise){
+            GetRecentFilesOfEnterprise({id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise:enterprise.id, from:'admin', setRecentFiles})
             setEnterprise(enterprise)
           }
         } else {
+          GetRecentFilesOfEnterprise({id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise:dataUser.enterprises[0].id, from:'admin', setRecentFiles})
           setEnterprise(dataUser.enterprises[0])
         }
       }
