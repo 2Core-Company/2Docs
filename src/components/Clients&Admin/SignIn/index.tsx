@@ -133,8 +133,8 @@ function Signin(){
                 <label className="text-[18px] dark:text-white" htmlFor='divPassword'>
                   Senha
                 </label>
-                <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center dark:border-white mt-[6px]'>
-                  <input id='divPassword' required minLength={8} autoComplete='current-password' type={eye ? "text" : "password"} onChange={(Text) => setLoginUser({...loginUser, password:Text.target.value})} className="w-full text-[18px] bg-transparent dark:text-white outline-none py-[10px] max-sm:py-[6px] px-[15px]  placeholder-[#9E9E9E]" placeholder='Digite sua senha' />
+                <div className='flex py-[10px] max-sm:py-[6px] px-[15px] border-[1px] border-black rounded-[8px] items-center dark:border-white mt-[6px]'>
+                  <input id='divPassword' required minLength={8} autoComplete='current-password' type={eye ? "text" : "password"} onChange={(Text) => setLoginUser({...loginUser, password:Text.target.value})} className="w-full text-[18px] bg-transparent dark:text-white outline-none  placeholder-[#9E9E9E]" placeholder='Digite sua senha' />
                   {eye ? (
                     <EyeOpenIcon onClick={() => setEye(false)} width={20} height={20} className="w-[40px] cursor-pointer dark:text-white"/>
                   ) : (
