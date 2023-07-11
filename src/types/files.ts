@@ -12,7 +12,7 @@ export interface Files{
   type:string
   from:string
   message:string
-  created_date:string
+  created_date:number
   checked?:boolean
   trash:boolean
   favorite:boolean

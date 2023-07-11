@@ -15,7 +15,7 @@ import { toast, ToastContainer } from 'react-toastify';
 
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
-  const {dataUser, setDataUser} = useContext(userContext);
+  const { setDataUser } = useContext(userContext);
   const { setDataAdmin } = useContext(adminContext);  
   const {setDataCompany} = useContext(companyContext);
   const [onLoad, setOnLoad] = useState(false);
@@ -52,8 +52,6 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
         GetDataCompanyUser({id_company:user.displayName, data})
       ])
 
-      VerifyPermision(idTokenResult?.claims.permission)
-
       if(!onLoad){
         setOnLoad(true)
       }
@@ -61,22 +59,24 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+
   useEffect(() => {
-    if(dataUser.id.length > 0){
-      VerifyPermision(dataUser.permission)
-    }
+    VerifyPermision()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url])
 
-  async function VerifyPermision(permission){
-    if(permission > 0 && url?.includes('/Dashboard/Clientes')){
+
+  async function VerifyPermision(){
+    const idTokenResult = await auth.currentUser?.getIdTokenResult()
+    if(idTokenResult?.claims.permission > 0 && url?.includes('/Dashboard/Clientes')){
       return router.replace("/Dashboard/Admin")
     }
 
-    if(permission === 0 && url?.includes('/Dashboard/Admin')){
+    if(idTokenResult?.claims.permission === 0 && url?.includes('/Dashboard/Admin')){
       router.replace("/Dashboard/Clientes")
     }
   }
+
 
   //Pegando credenciais dos usuários
   async function GetUser(user, permission){
@@ -94,6 +94,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
           status:docSnap.data()?.status,
           fixed:docSnap.data()?.fixed,
           name:docSnap.data()?.name,     
+          pendencies:docSnap.data()?.pendencies,
           permission:permission, 
           phone:docSnap.data()?.phone, 
           enterprises:docSnap.data()?.enterprises,
@@ -130,17 +131,17 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
     const id = data[0]?.subscriptions.data[0]?.plan.id
 
     if(id == 'price_1MX5uXBC8E6EzctJ1TMCPSoE') {
-      return 20000000000
+      return 21474836480
     } else if (id == 'price_1MX5uXBC8E6EzctJ1qaXp8ho') {
-      return 20000000000
+      return 21474836480
     } else if (id == 'price_1MX5u3BC8E6EzctJlS8NCOJF') {
-      return 10000000000
+      return 10737418240
     } else if (id == 'price_1MX5u3BC8E6EzctJLblqdVuF') {
-      return 10000000000
+      return 10737418240
     } else if (id == 'price_1MX5tXBC8E6EzctJCEiUGV4h') {
-      return 5000000000
+      return 5368709120
     } else {
-      return 5000000000
+      return 5368709120
     }
   }
 
@@ -149,7 +150,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       <section className='flex'>
         <ToastContainer autoClose={3000} />
         <NavBar image={propsNavBar.urlImage} permission={propsNavBar.permission} name={propsNavBar.name}/>
-        <main className='w-full'>{children}</main>
+        <main className='w-full px-[50px] max-md:px-[10px]'>{children}</main>
       </section>
     );
 }

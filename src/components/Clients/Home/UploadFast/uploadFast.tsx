@@ -18,8 +18,8 @@ function UploadFast() {
   };
 
   return (
-    <div className='self-end'>
-      <p className='mt-[20px] font-poiretOne text-[40px] max-sm:text-[30px]'>Upload Rápido</p>
+    <div>
+      <p className='text-zinc-700 font-[200] text-[28px] max-sm:text-[25px]'>Upload Rápido</p>
       <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[1px] border-[#9E9E9E] rounded-[12px] w-[500px] max-sm:w-[390px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.20)] flex flex-col items-center justify-center'>
           <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
           <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>

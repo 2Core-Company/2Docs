@@ -7,12 +7,11 @@ import { CalendarIcon, DownloadIcon } from '@radix-ui/react-icons'
 import { FormatDateVerySmall } from '../../../Utils/Other/FormatDate'
 import FormatSizeFile from '../../../Utils/Other/FormatSizeFile'
 import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles'
+import { Component } from '../../../Utils/Other/componentRoot'
 
 function RecentsFiles() {
     const { dataUser } = useContext(userContext)
     const [recentsFiles, setRecentFiles] = useState<Files[]>()
-
-    
     
     useEffect(() => {
         GetFiles()
@@ -27,9 +26,8 @@ function RecentsFiles() {
     }
 
     return (
-        <div>
-            <p className='max-sm:mt-[10px] font-poiretOne text-[40px] max-sm:text-[30px]'>Arquivos recentes</p>
-            <div className='flex flex-col bg-primary border-[1px] border-[#9E9E9E] p-[30px] max-sm:p-[25px] max-lsm:p-[20px] gap-y-[20px] rounded-[12px] w-[500px] max-sm:w-[390px] max-lsm:w-[340px] h-[310px] max-sm:h-[280px] max-lsm:h-[270px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.20)]'>
+        <Component.root title='Arquivos recentes' className='p-[30px] max-sm:p-[20px]'>
+            <div className='flex flex-col bg-primary gap-y-[20px] rounded-[12px] w-[500px] max-sm:w-[370px] max-lsm:w-[290px] min-h-[200px] max-sm:h-[280px] max-lsm:h-[270px]'>
                 {recentsFiles ?
                     recentsFiles.map((file) => {
                         return(
@@ -56,14 +54,14 @@ function RecentsFiles() {
                             </div>
                         )
                     })
-                :
+            :
                 <div className='w-full h-full items-center justify-center flex flex-col'>
                     <p className='text-[26px] max-sm:text-[23px] max-lsm:text-[21px] text-[#868686] text-center'>Nenhum arquivo recente...</p>
                     <Image alt={''} quality={100} priority={true} width={160} height={156} className='mt-[25px]' src={'/icons/imageFileDashboard.svg'} />
                 </div>
-                }
+            }
             </div>
-        </div>
+        </Component.root>
     )
 }
 

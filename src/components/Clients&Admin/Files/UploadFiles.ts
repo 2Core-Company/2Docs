@@ -84,7 +84,7 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
 
     for(var i = 0; i < filesUpload.length; i++){
       const type =  GetTypeFile(filesUpload[i])
-      const date = new Date().getTime() + ''
+      const date = new Date().getTime()
 
       const data:Files = {
         id_user: id_user,

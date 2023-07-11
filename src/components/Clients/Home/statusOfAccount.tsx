@@ -11,8 +11,7 @@ function StatusOfAccount() {
     },[])
 
     async function VerifyEventLate(){
-        const dateNowInSeconds = new Date().getTime()
-        const result = await GetEventLate({dateNowInSeconds, id_user:dataUser.id, id_company:dataUser.id_company}) 
+        const result = await GetEventLate({id_user:dataUser.id, id_company:dataUser.id_company}) 
         if(result[0]){
             setEventLate({status: true, loading:false})
         } else {

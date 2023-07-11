@@ -7,7 +7,6 @@ import { Modal, WindowsAction } from '../../../types/others';
 import Fix from './FixUser'
 import UnFix from './UnFixUser'
 import { toast } from 'react-toastify';
-import ModalEvent from '../../Clients&Admin/Calendar/modalEvent'
 import Calendar from '../../../../public/icons/calendar.svg'
 import Image from 'next/image';
 import DeletUser from './deletUser';
@@ -50,7 +49,6 @@ function Options({dataAdmin, domain, idUser, user, users, windowsAction, setWind
   return (
     <>
       {modal.status && <ModalDelete modal={modal} childModal={childModal} setModal={setModal}/> }
-      {modalEvent &&  <ModalEvent id={user.id} email={user.email} enterprises={user.enterprises} userName={user.name} setModalEvent={setModalEvent}/>}
       {modalAdminOptions &&  <ModalSetAdmin setModalAdminOptions={setModalAdminOptions} user={user} dataAdmin={dataAdmin} setUsers={setUsers} users={users} />}
 
       <DropdownMenu.Root>

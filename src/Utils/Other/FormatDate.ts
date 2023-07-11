@@ -1,11 +1,10 @@
 
 
-export function FormatDate(date:string){
-  if(date?.length > 12){
-    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-    var newDate = new Date(date)
-    var month = newDate.getMonth()
-    return date.substr(8, 2) + " de " + months[month] + " de " + date.substr(11, 4)
+export function FormatDate(date:number){
+  if(date){
+    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+    var newDate = new Date(Number(date)).toLocaleDateString().split('/')
+    return `${newDate[0]} de ${months[Number(newDate[1]) - 1]} de ${newDate[2]}`
   } 
 }
 
@@ -14,7 +13,7 @@ export function FormatDateSmall(date:string){
   return newDate.toLocaleDateString()
 }
 
-export function FormatDateVerySmall(date:string){
+export function FormatDateVerySmall(date:number | Date){
   var newDate:Date | string = new Date(date)
   newDate = newDate.toLocaleDateString().toString()
   return newDate.substring(0, 5)

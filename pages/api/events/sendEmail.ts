@@ -34,11 +34,11 @@ export default async function SendEmail(req, res) {
       subject: "Evento Criado ✔", // Subject line
       text: `Notificação do evento criado no 2docs`, // plain text body
       html: `
-        <h2>Um evento foi criado, verifique na sua conta do 2Docs</h1>
-        <h2>Titúlo:</h1><h3>${dataEvent.title}</h3>
-        <h2>Observação:</h1> <h3>${dataEvent.observation}</h3>
-        <h2>Empresa:</h1> <h3>${dataEvent.enterprise}</h3>
-        <h2>Data de entrega:</h1> <h3>${FormatDate(dataEvent.dateSelected)}</h3>
+        <h2>Um evento foi atribuido a você, verifique na sua conta do 2Docs a partir da data: ${FormatDate(dataEvent.dateStarted)}</h2>
+        <h2>Título:</h2> <h3>${dataEvent.title}</h3>
+        <h2>Descrição:</h2> <h3>${dataEvent.description}</h3>
+        <h2>Empresa:</h2> <h3>${dataEvent.enterprise}</h3>
+        <h2>Data de início:</h2> <h3>${FormatDate(dataEvent.dateStarted)}</h3>
       `, 
     }, (err, info) => {
       if (err) {
