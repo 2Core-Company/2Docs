@@ -2,8 +2,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import ArrowFilter from "../../../../public/icons/arrowFilter.svg";
 import Image from "next/image";
-import iconNullClient from "../../../../public/icons/nullClient.svg";
-import iconSearchUser from "../../../../public/icons/searchUser.svg";
 import { DataUser } from "../../../types/users";
 import Options from "./options";
 import { FilterFixed, FilterAlphabetical, FilterStatus, FilterDate } from "../../../Utils/Other/Filters";
@@ -37,10 +35,18 @@ function TableClients() {
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() => {
     if (dataAdmin) {
-      GetUsers({ setPages: setPages, setUsers: setUsers, dataAdmin });
+      GetAllUser()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataAdmin]);
+
+  async function GetAllUser(){
+    const result = await GetUsers({id_company:dataAdmin.id_company});
+    if(result){
+      setPages(Math.ceil(result.length / 10));
+      setUsers(FilterFixed(result));
+    }
+  }
 
   // <--------------------------------- Disable User --------------------------------->
   async function GetFunctionDisableUser() {
@@ -94,13 +100,14 @@ function TableClients() {
     setUsers(users);
   }
 
-  function formatDate(date: string) {
+  function formatDate(date) {
     if (window.innerWidth > 1280) {
       return FormatDate(date)
     } else {
       return FormatDateSmall(date);
     }
   }
+  
 
   return (
     <>
@@ -124,7 +131,7 @@ function TableClients() {
               <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
             </button>
 
-            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`max-lg:mt-[50px] hover:brightness-[.85] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "bg-[#D9D9D9] border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
+            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`max-lg:mt-[50px] hover:brightness-[.85] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
               Trocar Status
             </button>
             <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:brightness-[.85] duration-100 bg-[#00B268] boder-[1px] border-[#119E70] text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
@@ -186,7 +193,7 @@ function TableClients() {
                 var checked = user.checked;
                 if (showItens.min < index && index < showItens.max) {
                   return (
-                    <div key={index} className={`w-full py-[10px] grid grid-cols-[45px__repeat(2,1fr)_250px_130px_100px]
+                    <div key={index} className={`text-[#686868] w-full py-[10px] grid grid-cols-[45px__repeat(2,1fr)_250px_130px_100px]
                       max-2xl:grid-cols-[45px__repeat(2,1fr)_200px_100px_80px]
                       max-xl:grid-cols-[45px__repeat(2,1fr)_100px_100px_60px]
                       max-lg:grid-cols-[45px__repeat(2,1fr)_100px_90px_50px]
@@ -201,7 +208,7 @@ function TableClients() {
 
                       <div className="min-w-full flex items-center">
                         <Image src={user.photo_url} width={35} height={35} alt="Perfil" className="rounded-full w-[35px] h-[35px] mr-[10px] max-md:w-[30px] max-md:h-[30px]" />
-                        <p className="overflow-hidden whitespace-nowrap text-ellipsis dark:text-white">
+                        <p className="text-black overflow-hidden whitespace-nowrap text-ellipsis dark:text-white">
                           {user.name}
                         </p>
                       </div>
@@ -210,7 +217,7 @@ function TableClients() {
                         {user.email}
                       </p>
 
-                      <p className="w-full max-md:hidden text-left dark:text-white">
+                      <p className="w-full max-md:hidden text-left dark:text-white text-ellipsis overflow-hidden whitespace-nowrap">
                         {formatDate(user.created_date!)}
                       </p>
 
@@ -262,11 +269,18 @@ function TableClients() {
           </div>
         ) : (
           <div className="w-full h-full flex justify-center items-center flex-col">
-            <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="Foto de uma mulher, clique para cadastrar um cliente" className="cursor-pointer w-[170px] h-[170px]" />
-            <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white">
-              Nada por aqui... <br />{" "}
-              {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}
-            </p>
+            <Image src={users.length <= 0 ? '/icons/nullClient.svg' : '/icons/notFoundSearch.svg'} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="" className="cursor-pointer w-[170px] h-[170px]" />
+
+              {users.length <= 0 ? 
+                <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
+                  Nada por aqui... <br />Cadastre seu primeiro cliente! 
+                </p>
+              : 
+                <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
+                  Nenhum resultado foi encontrado.
+                </p>
+              }
+
           </div>
         )}
 

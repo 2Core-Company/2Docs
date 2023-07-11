@@ -6,13 +6,11 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 function ComponentClients() {
   return (
-    <section className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
-      <div className="w-full h-full mt-[50px] px-[50px] max-lg:px-[15px] max-md:px-[10px]">
-        <p  className="font-poiretOne text-[40px] dark:text-white">Clientes</p>
-        <Suspense fallback={<SkeletonTableClients />}>
-          <TableClients/>
-        </Suspense>
-      </div>
+    <section className="bg-primary dark:bg-dprimary w-full h-full min-h-screen text-black">
+      <p  className="font-poiretOne text-[40px] dark:text-white">Clientes</p>
+      <Suspense fallback={<SkeletonTableClients />}>
+        <TableClients/>
+      </Suspense>
     </section>
   );
 }

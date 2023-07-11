@@ -10,19 +10,37 @@
   }
 
     // <--------------------------------- Filtrar pot alfabeto  --------------------------------->
-  export function FilterAlphabetical({dataFilter, filter, setReturn}) {
-    var dataToFilter =  [...dataFilter];
-    dataToFilter.sort(function (x, y) {
+  interface props{
+    data:any
+    action: 'desc' | 'asc'
+  }
+
+  export function FilterAlphabetical({data, action}:props) {
+    data.sort(function (x, y) {
       let a = x.name.toUpperCase();
       let b = y.name.toUpperCase();
-      if (filter.name) {
+      if (action === 'asc') {
         return a == b ? 0 : a < b ? 1 : -1;
       } else {
         return a == b ? 0 : a > b ? 1 : -1;
       }
     });
-    setReturn(FilterFixed(dataToFilter));
+    return data
   }
+
+  export function FilterNumberPendenciesOfUser({data, action}:props) {
+    data.sort(function (x, y) {
+      let a = x.pendencies
+      let b = y.pendencies
+      if (action === 'asc') {
+        return a - b 
+      } else {
+        return b - a 
+      }
+    });
+    return data
+  }
+
 
   export function FilterStatus({dataFilter, filter, setReturn}) {
     var dataToFilter = [...dataFilter];
@@ -70,3 +88,4 @@
     })
     setReturn(files)
   }
+

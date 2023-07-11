@@ -17,7 +17,6 @@ export function GetSizeCompanyRealTime({id_company, childGetSizeCompany}:PropsGe
 }
 
 
-
 interface PropsGetSizeCompany{
     id_company:string
 }

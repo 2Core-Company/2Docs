@@ -26,7 +26,7 @@ function NavBar({permission, image, name}:Props) {
     const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[30px] max-lg:px-[20px] lg:group-hover:justify-start item-center cursor-pointer group/button"
     const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px] group-hover/button:opacity-[.65]"
     const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px] group-hover/button:opacity-[.65]"
-    const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-full left-0 top-0 absolute"
+    const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-full left-0 top-[-5px] absolute"
     const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.65]"
     const popoverRef = useRef<any>();
     const arrowIconRef = useRef<any>();
@@ -44,19 +44,11 @@ function NavBar({permission, image, name}:Props) {
         }
     }
 
- 
-    const childModal = () => {
-        signOut(auth).then(() => {
-            // router.refresh();
-        }).catch((error) => {
-            console.log(error)
-        });
-    }
 
     return (
         <div className='lg:min-w-[100px] text-black'>
             <div onClick={() => setMenu(true)} className={`z-10 fixed w-screen h-screen top-0 left-0 backdrop-blur-[2px] ${menu ? 'hidden' : ''}`}/>
-            <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`z-20 lg:hidden outline-none w-[30px] h-[25px] cursor-pointer  fixed top-[10px] left-[10px] flex flex-col items-center justify-center`}>
+            <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`lg:hidden outline-none w-[30px] h-[25px] cursor-pointer  fixed top-[10px] left-[10px] flex flex-col items-center justify-center ${menu ? 'z-10 bg-primary' : 'z-20'}`}>
                 <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-45"}`}/>
                 <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary my-[5px] ${menu ? "" : "hidden"} `}/>
                 <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
@@ -158,7 +150,7 @@ function NavBar({permission, image, name}:Props) {
                 </Popover.Root>
 
             </div>
-                {modal && <ModalExit setModal={setModal} childModal={childModal}/> }
+                {modal && <ModalExit setModal={setModal}/> }
         </div>
     )
 }

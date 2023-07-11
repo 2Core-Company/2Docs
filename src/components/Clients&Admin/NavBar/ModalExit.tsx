@@ -1,9 +1,20 @@
+import { signOut } from "firebase/auth";
+import { auth } from "../../../../firebase";
+
 interface Props {
   setModal:Function
-  childModal:Function
 }
 
-function Modal({childModal, setModal}:Props) {
+function Modal({setModal}:Props) {
+
+  function ExitAccount(){
+    signOut(auth).then(() => {
+
+    }).catch((error) => {
+        console.log(error)
+    });
+  }
+
   return (
     <div className='w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black dark:text-white z-50 top-[0px] left-0'>
       <div className='bg-primary dark:bg-dprimary w-[400px] max-lsm:w-[320px] rounded-[4px] flex flex-col text-[18px]'>
@@ -14,7 +25,7 @@ function Modal({childModal, setModal}:Props) {
             Cancelar
           </button>
           
-          <button onClick={() => childModal()} style={{border:'1px solid', borderColor:'rgba(255,0,0,0.30)'}} className='bg-[rgba(255,0,0,0.30)] duration-100 px-[5px] py-[3px] rounded-[8px] text-white cursor-pointer hover:brightness-[.85]'>
+          <button onClick={() => ExitAccount()} style={{border:'1px solid', borderColor:'rgba(255,0,0,0.30)'}} className='bg-[rgba(255,0,0,0.30)] duration-100 px-[5px] py-[3px] rounded-[8px] text-white cursor-pointer hover:brightness-[.85]'>
             Confirmar
           </button>
         </div>

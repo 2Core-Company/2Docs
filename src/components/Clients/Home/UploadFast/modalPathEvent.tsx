@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { companyContext } from '../../../../app/Context/contextCompany'
 import { loadingContext } from '../../../../app/Context/contextLoading'
 import { userContext } from '../../../../app/Context/contextUser'
-import { GetEventsOpenOfUser } from '../../../../Utils/Firebase/Events/GetEvents'
+import { GetEventsOpenToUser } from '../../../../Utils/Firebase/Events/GetEvents'
 import UploadFiles from '../../../Clients&Admin/Files/UploadFiles'
 import { UpdateStatusEvent } from '../../../../Utils/Firebase/Events/UpdateStatusEvent'
 
@@ -40,7 +40,7 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
     },[])
 
     async function GetEvents(){
-        const result = await GetEventsOpenOfUser({id_company: dataCompany.id, id_user:dataUser.id})
+        const result = await GetEventsOpenToUser({id_company: dataCompany.id, id_user:dataUser.id})
         const optionsHere:options[] = []
 
         if(result){
@@ -60,8 +60,6 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
         }
 
     }
-
-
 
 
     async function UploadFilesSelecteds(){
@@ -91,6 +89,11 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
     }
 
 
+    const NoOptionsMessage = () => {
+        return <p className='text-center py-[10px]'>Não encontrado.</p>;
+    };
+
+
     return(
         <>  
 
@@ -109,6 +112,8 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
             <div className='px-[60px] max-sm:px-[30px]'>
                 <p className='mt-[20px] text-[20px] max-sm:text-[18px]'>Selecione a empresa</p>
                 <Select
+                placeholder='Selecionar...'
+                components={{ NoOptionsMessage }}
                 isDisabled={loading}
                 options={options} 
                 isClearable={true}

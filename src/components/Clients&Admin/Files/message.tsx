@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import styles from '../../Admin/Home/home.module.css'
 import { doc, updateDoc } from "firebase/firestore"; 
 import { db } from '../../../../firebase'
 import { toast } from 'react-toastify';
@@ -44,7 +43,7 @@ import { Files } from '../../../types/files'
                             <p className='text-[24px] max-lsm:text-[20px] mt-[10px] text-left'>{files[i]?.message ? "Edite a observação deste arquivo." : "Adicione uma observação ao arquivo."}</p>
                             <p className='self-start mt-[15px] text-[20px] max-lsm:text-[18px] justify-self-start text-left'>Menssagem:</p>
                             <div className='px-[5px] border-black border-[2px] rounded-[8px]'>
-                                <textarea maxLength={256} value={message} onChange={(text) =>  setMessage(text.target.value)} rows={3} id={styles.boxFiles} placeholder="Adicione uma observação..." className='w-full outline-none bg-transparent text-[18px] pr-[5px] dark:text-white dark:placeholder:text-gray-500'/>
+                                <textarea maxLength={256} value={message} onChange={(text) =>  setMessage(text.target.value)} rows={3} placeholder="Adicione uma observação..." className='w-full outline-none bg-transparent text-[18px] pr-[5px] dark:text-white dark:placeholder:text-gray-500'/>
                             </div>
                         </div>
                     <div className='flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end pr-[10px] py-[10px] rounded-b-[4px] mt-[10px]'>

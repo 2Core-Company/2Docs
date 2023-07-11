@@ -1,8 +1,7 @@
 import { toast } from "react-toastify";
 
-export async function VerifyFiles({files, setFiles}:{files:any, setFiles:Function}){
+export async function VerifyFiles({files}:{files:any}){
     const allFilesAfterVerify:any = []
-
     if(files.length > 10){
       throw toast.error('Você não pode armazenar mais de 10 arquivos de uma só vez.')
     }
@@ -20,6 +19,6 @@ export async function VerifyFiles({files, setFiles}:{files:any, setFiles:Functio
       throw Error
     }
     
-    setFiles(allFilesAfterVerify)
     files.value = null;
+    return allFilesAfterVerify
   }

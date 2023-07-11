@@ -13,7 +13,8 @@ export const adminContext = createContext<{dataAdmin:DataUserContext, setDataAdm
   status:true, 
   fixed:true,  
   permission:0,
-  phone:''}, setDataAdmin:(dataAdmin) => {}});
+  phone:'',
+  pendencies:0}, setDataAdmin:(dataAdmin) => {}});
 
 export default function Index({ children }) {
   const [dataAdmin, setDataAdmin] = useState<DataUserContext>({
@@ -27,7 +28,8 @@ export default function Index({ children }) {
     status:true, 
     fixed:true, 
     permission:0,
-    phone:''})
+    phone:'', 
+    pendencies:0})
   return (
     <adminContext.Provider value={{dataAdmin, setDataAdmin}}>
       {children}

@@ -30,7 +30,7 @@ function ComponentFolder() {
   const [recentFiles, setRecentFiles] = useState<Files[]>([]);
   const [createFolder, setCreateFolder] = useState<boolean>(false);
   const [folderConfig, setFolderConfig] = useState<FolderCfg>({status: false, name: "", color: "", isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3});
-  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", phone:"",verifiedEmail:true, id_company:"", permission:0, photo_url:'', enterprises:[], admins: []});
+  const [user, setUser] = useState<DataUser>({id:"", name: "", email:"", phone:"",verifiedEmail:true, id_company:"", permission:0, photo_url:'', created_date:0, pendencies:0, enterprises:[], admins: []});
   const [modal, setModal] = useState<Modal>({status: false, title:'', subject:'', target:''});
   const [id_feletFolder, setId_deletFolder] = useState<string>("");
   const [enterprise, setEnterprise] = useState<Enterprise>({ id:"", name:"", folders:[]});
@@ -66,7 +66,9 @@ function ComponentFolder() {
         permission: docSnap.data()?.permission,
         photo_url: docSnap.data()?.photo_url,
         enterprises: docSnap.data()?.enterprises,
-        admins: docSnap.data()?.admins
+        admins: docSnap.data()?.admins,
+        created_date:docSnap.data()?.created_date,
+        pendencies: docSnap.data()?.pendencies
       });
       const enterprise = docSnap.data()?.enterprises.find((enterprise) => enterprise.id === id_enterprise)
       if(enterprise){
