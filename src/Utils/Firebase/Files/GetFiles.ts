@@ -3,7 +3,7 @@ import { Files } from '../../../types/files';
 import { db } from "../../../../firebase";
 import { toast } from 'react-toastify';
 import { Event } from '../../../types/event'
-import { GetFolder } from "./../folders/getFolders";
+import { GetFolder } from "../Folders/getFolders";
 
 
 interface interfaceGetRecentFiles{
@@ -255,13 +255,11 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
 
 interface interfaceGetFilesEvent{
   id_company:string
-  eventSelected:Event,
-  setFiles:Function
+  eventSelected:Event
 }
 
-export async function GetFilesEvent({id_company, eventSelected, setFiles}: interfaceGetFilesEvent){
+export async function GetFilesEvent({id_company, eventSelected}: interfaceGetFilesEvent){
   const getFiles:Files[] = []
-  console.log(id_company)
   var q = query(collection(db, "files", id_company, eventSelected.id_user, 'user', 'files'), where("id_event", "==",  eventSelected.id));
 
   const querySnapshot = await getDocs(q);
@@ -286,8 +284,7 @@ export async function GetFilesEvent({id_company, eventSelected, setFiles}: inter
       downloaded:document.data()?.downloaded,
     })
   });
-
-  setFiles(getFiles)
+  return getFiles
 }
 
 

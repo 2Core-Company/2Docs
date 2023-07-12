@@ -19,24 +19,24 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
   useEffect(() => {
     GetThisEvent()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  }, [])
 
-  async function GetThisEvent(){
-    const result = await GetEvent({id_event, id_company:dataCompany.id})
+  async function GetThisEvent() {
+    const result = await GetEvent({ id_event, id_company: dataCompany.id })
     setEvent(result)
   }
-  
+
   return (
     <div>
-        <p className='font-poiretOne text-[40px] mt-[40px]'>Evento</p>
-        <div className='flex items-center text-[#AAAAAA] text-[18px] mt-[5px]'>
+      <p className='font-poiretOne text-[40px] mt-[40px]'>Evento</p>
+      <div className='flex items-center text-[#AAAAAA] text-[18px] mt-[5px]'>
         <PersonIcon width={17} height={17} className='mr-[5px]' />
-        {nameUser === 'undefined' ? 
+        {nameUser === 'undefined' ?
           <Link href={'/Dashboard/Clientes'}>Pessoal</Link>
-        :
-          <Link href={'/Dashboard/Admin/Clientes'}>{nameUser}</Link>
+          :
+          <Link href={'/Dashboard/Admin/Clientes'} className='max-w-[100px] truncate'>{nameUser}</Link>
         }
-        
+
         <p className='mx-[8px]'>{'>'}</p>
 
         <CalendarIcon width={17} height={17} className='mr-[5px]' />
@@ -44,18 +44,17 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
           Calendário
         </Link>
 
-        
-        {event?.title && 
+
+        {event?.title &&
           <>
             <p className='mx-[8px]'>{'>'}</p>
-            <FileTextIcon width={17} height={17} className='mr-[5px]'/>
-            <p>{event?.title}</p>
+            <FileTextIcon width={17} height={17} className='mr-[5px]' />
+            <p className='max-w-[100px] truncate'>{event?.title}</p>
           </>
         }
       </div>
-
-      <div className='flex'>
-        {event && <DataEvent event={event}/>}
+      <div className='flex flex-col  items-start ml-[20px] max-sm:ml-[10px]'>
+        {event && <DataEvent event={event} setEvent={setEvent} />}
       </div>
     </div>
   )

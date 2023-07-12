@@ -9,13 +9,16 @@ import ShowEvents from '../../Clients&Admin/Calendar/showEvents'
 import { FormatDate } from '../../../Utils/Other/FormatDate'
 import { companyContext } from '../../../app/Context/contextCompany'
 import Link from 'next/link'
+import { adminContext } from '../../../app/Context/contextAdmin'
 
 function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
+  const { dataAdmin } = useContext(adminContext)
   const { dataCompany } = useContext(companyContext)
   const [ eventsInDateSelected, setEventsInDateSelected] = useState<Event[]>([])
   const [dataMonth, setDataMonth] = useState({ firstDay: moment().clone().startOf("month").valueOf(), lastDay: moment().clone().endOf("month").valueOf() })
   const [events, setEvents] = useState<Event[]>([])
   const [dateSelected, setDateSelected] = useState<number>(new Date().getTime())
+  const admin = dataAdmin.id === '' ? false : true
 
   useEffect(() => {
     GetEventsInMonthSelected()

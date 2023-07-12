@@ -11,7 +11,7 @@ function ComponentHome () {
         <p  className=' font-poiretOne text-[40px]'>Home</p>
         <StatusOfAccount />
       </div>
-      <div className='flex flex-wrap gap-x-[150px] ml-[20px] max-sm:ml-[10px]'>
+      <div className='flex flex-wrap gap-x-[150px] ml-[20px] max-sm:ml-[10px] pb-[20px]'>
         <Event />
         <div className='mt-[20px] h-[690px] flex flex-col justify-between'>
           <RecentsFiles />

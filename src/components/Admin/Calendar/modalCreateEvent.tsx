@@ -2,7 +2,6 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { adminContext } from '../../../app/Context/contextAdmin';
 import { loadingContext } from '../../../app/Context/contextLoading';
-import { DataUser } from '../../../types/users';
 import { GetEnterprises } from '../../../Utils/Firebase/Enterprises/getEnterprises';
 import { GetUsers } from '../../../Utils/Firebase/Users/GetUsers';
 import DatePicker from "react-datepicker";
@@ -15,6 +14,8 @@ import { Event } from '../../../types/event';
 import { v4 as uuidv4 } from 'uuid';
 import CreateEvent from '../../../Utils/Firebase/Events/CreateEvent';
 import { UpdatePendencies } from '../../../Utils/Firebase/Users/UpdatePendencies';
+import { Notification } from '../../../types/notification';
+import CreateNotification from '../../../Utils/Firebase/Notification/CreateNotification';
 
 
 
@@ -156,8 +157,20 @@ function ModalCreateEvent({modalCreateEvent, setModalCreateEvent}:Props) {
         setLoading(true)
         const result = await CreateEvent({event:dataEvent, id_company:dataAdmin.id_company, email})
         const response = await UpdatePendencies({id_company:dataAdmin.id_company, id_user:dataEvent.id_user, action:'sum'})
+        await CreateNotificationAfterCreateEvent()
         setLoading(false)
         setModalCreateEvent(false)
+    }
+
+    async function CreateNotificationAfterCreateEvent(){
+        const data:Notification = {
+            id:uuidv4(),
+            photo_url:dataAdmin.photo_url,
+            nameSender:dataAdmin.name,
+            description:`Atribuiu o evento ${dataEvent.title} para você.`,
+            date:dataEvent.dateStarted
+          }
+        await CreateNotification({notification:data, id_company:dataAdmin.id_company, addressee:dataEvent.id_user})
     }
 
 
