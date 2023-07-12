@@ -11,7 +11,7 @@ import { companyContext } from '../Context/contextCompany';
 import { stripe } from '../../../lib/stripe'
 import {  DataUserContext } from '../../types/users';
 import { toast, ToastContainer } from 'react-toastify';
-
+import { setOnlineUsers } from '../../Utils/Firebase/Company/OnlineUsers';
 
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
@@ -102,6 +102,14 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
 
         if(allDataUser.permission === 0) {
           setDataUser(allDataUser)
+          
+          setOnlineUsers({
+            id_company: allDataUser.id_company,
+            id_user: allDataUser.id,
+            img: allDataUser.photo_url,
+            name: allDataUser.name
+          })
+          
         } else {
           setDataAdmin(allDataUser)
         }
