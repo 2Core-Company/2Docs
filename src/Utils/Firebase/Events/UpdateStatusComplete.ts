@@ -8,7 +8,11 @@ interface UpdateStatusComplete {
 }
 
 export async function UpdateStatusComplete({id_company, id_event, status}:UpdateStatusComplete){
-    await updateDoc(doc(db, 'companies', id_company, "events", id_event), {
-        complete:status
-    })    
+    try {
+        await updateDoc(doc(db, 'companies', id_company, "events", id_event), {
+            complete:status
+        })   
+    } catch (e) {
+        console.log(e)
+    }
 }

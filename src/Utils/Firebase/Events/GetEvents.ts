@@ -96,7 +96,7 @@ interface PropsGetEventLate {
 export async function GetEventLate({ id_company, id_user }: PropsGetEventLate) {
   const dateNow = new Date().getTime()
   const events: Event[] = []
-  const q = query(collection(db, "companies", id_company, "events"), where('id_user', '==', id_user), where('dateEnd', '<', dateNow), limit(1));
+  const q = query(collection(db, "companies", id_company, "events"), where('id_user', '==', id_user), where('dateEnd', '<', dateNow), where('delivered', '==', false), limit(1));
 
   const querySnapshot: any = await getDocs(q);
   querySnapshot.forEach((doc) => {

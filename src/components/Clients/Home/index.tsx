@@ -11,9 +11,9 @@ function ComponentHome () {
         <p  className=' font-poiretOne text-[40px]'>Home</p>
         <StatusOfAccount />
       </div>
-      <div className='flex flex-wrap gap-x-[150px] ml-[20px] max-sm:ml-[10px] pb-[20px]'>
+      <div className='flex flex-wrap gap-x-[150px] ml-[20px] max-sm:ml-[10px] mb-[20px]'>
         <Event />
-        <div className='mt-[20px] h-[690px] flex flex-col justify-between'>
+        <div className='mt-[20px] 2xl:h-[722px] flex flex-col justify-between'>
           <RecentsFiles />
           <UploadFast />
         </div>

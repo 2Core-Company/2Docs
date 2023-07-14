@@ -47,7 +47,7 @@ interface PropsGetUsersWithPendencies{
 export async function GetUsersWithPendencies({id_company}:PropsGetUsersWithPendencies) {
   try{
     const getUsers: DataUser[] = [];
-    const q = query(collection(db, "companies", id_company, "clients"), where('pendencies', '>', 0), where("permission", "==", 0),orderBy('pendencies'), orderBy('name'));
+    const q = query(collection(db, "companies", id_company, "clients"), where('pendencies', '>', 0), where("permission", "==", 0), orderBy('pendencies'), orderBy('name'));
     const querySnapshot = await getDocs(q);
     const result = querySnapshot.forEach((doc) => 
       getUsers.push({

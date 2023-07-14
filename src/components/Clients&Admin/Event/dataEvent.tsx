@@ -1,16 +1,31 @@
-import { ClockIcon } from '@radix-ui/react-icons'
-import React from 'react'
+import { ClockIcon, InfoCircledIcon } from '@radix-ui/react-icons'
+import React, { useContext } from 'react'
 import { Event } from '../../../types/event'
 import { Component } from '../../../Utils/Other/componentRoot'
 import UploadFile from './uploadFiles'
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { FormatDateToPageEvent } from '../../../Utils/Other/FormatDate'
+import { FormatDateSmall, FormatDateToPageEvent } from '../../../Utils/Other/FormatDate'
+import { adminContext } from '../../../app/Context/contextAdmin'
+import OptionsEvent from './optionsEvent'
+import { Files } from '../../../types/files'
 
-function DataEvent({ event, setEvent }: { event: Event, setEvent: Function }) {
-    const styleTextTitle = `text-[24px]`
-    const styleTextContent = `text-[#686868] text-[22px] font-[300] whitespace-pre-line ml-[5px]`
+interface Props {
+    files:Files[]
+    event: Event
+    setEvent: Function
+    childModalEvent: Function
+    childConcluedEvent: Function
+}
+
+function DataEvent({files, event, setEvent, childModalEvent, childConcluedEvent }: Props) {
+    const { dataAdmin } = useContext(adminContext)
+    const styleTextTitle = `text-[24px] max-lg:text-[22px] max-md:text-[20px] max-sm:text-[18px] max-lsm:text-[16px]`
+    const styleTextContent = `text-[#686868] text-[22px] max-lg:text-[20px] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px] font-[300] whitespace-pre-line ml-[5px]`
     const data = CalculateStatus(event)
-    const disabledUpload = (Number(event.dateEnd) - new Date().getTime()) < 0 &&  event.limitedDelivery ? true : false
+    const disabledUpload = (Number(event.dateEnd) - new Date().getTime()) < 0 && event.limitedDelivery ? true : false || event.complete
+    const admin = dataAdmin.id === '' ? false : true
+    const messageDisabled = disabledUpload && event.complete ?  'Este evento não pode receber arquivos pois já esta concluido.' : 'Este evento não pode receber arquivos após a data de vencimento.'
+
 
     function CalculateStatus(event) {
         const diffInMs = event.dateEnd - new Date().getTime()
@@ -55,25 +70,31 @@ function DataEvent({ event, setEvent }: { event: Event, setEvent: Function }) {
         return data
     }
 
-
     return (
         <div className='mt-[30px] max-2xl:w-[740px] max-lg:w-full'>
             <div className='flex items-center 2xl:w-[860px] '>
                 <p className='text-zinc-700 font-[200] text-[28px] max-sm:text-[25px] truncate'>{event.title}</p>
                 <div className={`ml-[15px] mr-[30px] min-w-[12px] min-h-[12px] rounded-full ${data.styleCircle}`} />
-                <Tooltip.Provider>
-                    <Tooltip.Root disableHoverableContent={!event.limitedDelivery}>
-                        <Tooltip.Trigger asChild className={`${event.limitedDelivery ? '' : 'hidden'}`}>
-                            <ClockIcon className={`min-w-[25px] min-h-[25px] ${data.styleClock} ml-auto`} />
-                        </Tooltip.Trigger>
-                        <Tooltip.Portal>
-                            <Tooltip.Content sideOffset={5} className="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-violet11 select-none rounded-[4px] bg-white px-[15px] py-[10px] text-[15px] leading-none drop-shadow-[0_5px_5px_rgba(0,0,0,0.20)] will-change-[transform,opacity]">
-                                <p className='text-center'>Este é um evento com entrega limitada à prazo. <br /> Não será possível entregar após o prazo.</p>
-                                <Tooltip.Arrow className="fill-white" />
-                            </Tooltip.Content>
-                        </Tooltip.Portal>
-                    </Tooltip.Root>
-                </Tooltip.Provider>
+                <div className='flex items-center ml-auto'>
+                    <Tooltip.Provider >
+                        <Tooltip.Root disableHoverableContent={!event.limitedDelivery}>
+                            <Tooltip.Trigger asChild className={`${event.limitedDelivery ? '' : 'hidden'}`}>
+                                <ClockIcon className={`min-w-[25px] min-h-[25px] ${data.styleClock}`} />
+                            </Tooltip.Trigger>
+                            <Tooltip.Portal>
+                                <Tooltip.Content sideOffset={5} className="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-violet11 select-none rounded-[4px] bg-white px-[15px] py-[10px] text-[15px] leading-none drop-shadow-[0_5px_5px_rgba(0,0,0,0.20)] will-change-[transform,opacity]">
+                                    <p className='text-center'>Este é um evento com entrega limitada à prazo. <br /> Não será possível entregar após o prazo.</p>
+                                    <Tooltip.Arrow className="fill-white" />
+                                </Tooltip.Content>
+                            </Tooltip.Portal>
+                        </Tooltip.Root>
+                    </Tooltip.Provider>
+                    {admin &&
+                        <div className='ml-[5px]'>
+                            <OptionsEvent files={files} event={event} childModalEvent={childModalEvent} childConcluedEvent={childConcluedEvent}/>
+                        </div>
+                    }
+                </div>
 
             </div>
             <div className='flex flex-wrap gap-x-[30px] gap-y-[20px] w-full'>
@@ -81,7 +102,7 @@ function DataEvent({ event, setEvent }: { event: Event, setEvent: Function }) {
                     <Component.root className='p-[30px] max-sm:p-[20px] max-lg:w-full'>
                         <div className='w-[800px] max-2xl:w-[680px] max-lg:w-full gap-y-[20px] flex flex-col'>
                             <div className='flex items-center'>
-                                <p className='text-[24px]'>Status:</p>
+                                <p className={styleTextTitle}>Status:</p>
                                 <div className={`${data.styleDivStatus} border-[1px] px-[8px] py-[2px]  flex items-center justify-center rounded-[10px]  ml-[10px]`}>
                                     <p className='text-[14px]'>{data.text}</p>
                                 </div>
@@ -105,7 +126,7 @@ function DataEvent({ event, setEvent }: { event: Event, setEvent: Function }) {
                             <div className='flex'>
                                 <p className={styleTextTitle} >
                                     Prazo para entrega:
-                                    <span className={styleTextContent} >{`De  ${new Date(event.dateStarted).toLocaleDateString()} ${event.dateEnd ? `Até ${new Date(event.dateEnd).toLocaleDateString()}` : ''}`}</span>
+                                    <span className={styleTextContent} >{`${event.dateEnd ? 'De' : ''}${FormatDateSmall(event.dateStarted)} ${event.dateEnd ? `Até ${FormatDateSmall(event.dateEnd)}` : ''}`}</span>
                                 </p>
                             </div>
 
@@ -119,10 +140,14 @@ function DataEvent({ event, setEvent }: { event: Event, setEvent: Function }) {
                         </div>
                     </Component.root>
                 </div>
-                
-                <UploadFile uploadDisabled={disabledUpload} id_event={event.id} id_folder={event.id_folder} id_enterprise={event.id_enterprise} event={event} setEvent={setEvent} />
-            </div>
 
+                {!admin && new Date().getTime() >= event.dateStarted && 
+                <UploadFile uploadDisabled={disabledUpload} messageDisabled={messageDisabled} id_event={event.id} id_folder={event.id_folder} id_enterprise={event.id_enterprise} event={event} setEvent={setEvent} />}
+            </div>
+            <div className='flex items-center justify-center gap-x-[5px] max-md:gap-x-[0px] text-[#21627e] bg-[rgba(46,134,171,0.2)] border-[1px] border-[#21627e] py-[8px] px-[10px] text-center mt-[25px] rounded-[4px]'>
+                <InfoCircledIcon className='min-w-[25px] min-h-[25px]'/>
+                Você só poderá fazer upload neste evento a partir do dia {FormatDateSmall(event.dateStarted)}
+            </div>
         </div>
     )
 }

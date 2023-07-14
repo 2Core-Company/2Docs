@@ -6,7 +6,7 @@ export function FormatDate(date:number){
   return `${newDate[0]} de ${months[Number(newDate[1]) - 1]} de ${newDate[2]}`
 }
 
-export function FormatDateSmall(date:string){
+export function FormatDateSmall(date:number){
   var newDate = new Date(date)
   return newDate.toLocaleDateString()
 }

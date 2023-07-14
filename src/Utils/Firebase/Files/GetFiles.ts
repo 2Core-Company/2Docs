@@ -255,12 +255,13 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
 
 interface interfaceGetFilesEvent{
   id_company:string
-  eventSelected:Event
+  id_user:string
+  id_event:string
 }
 
-export async function GetFilesEvent({id_company, eventSelected}: interfaceGetFilesEvent){
+export async function GetFilesEvent({id_company, id_user, id_event}: interfaceGetFilesEvent){
   const getFiles:Files[] = []
-  var q = query(collection(db, "files", id_company, eventSelected.id_user, 'user', 'files'), where("id_event", "==",  eventSelected.id));
+  var q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("id_event", "==",  id_event));
 
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((document) => {

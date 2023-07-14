@@ -8,7 +8,11 @@ interface UpdateStatusDelivered {
 }
 
 export async function UpdateStatusDelivered({id_company, id_event, status}:UpdateStatusDelivered){
-    await updateDoc(doc(db, 'companies', id_company, "events", id_event), {
-        delivered:status
-    })    
+    try{
+        await updateDoc(doc(db, 'companies', id_company, "events", id_event), {
+            delivered:status
+        })    
+    } catch (e){
+        console.log(e)
+    }
 }
