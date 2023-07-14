@@ -2,17 +2,16 @@ import {db, storage} from '../../../../firebase'
 import { doc, writeBatch} from "firebase/firestore";  
 import { ref, deleteObject} from "firebase/storage";
 import { Files } from '../../../types/files'
-import { DataCompanyContext } from '../../../types/dataCompany';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 
 interface Props{
   files?:Files[]
   selectFiles:Files[]
-  dataCompany:DataCompanyContext
+  id_company:string
   childToParentDelet?:Function
 }
 
-async function deletFiles({files, selectFiles, dataCompany, childToParentDelet}:Props) {
+async function deletFiles({files, selectFiles, id_company, childToParentDelet}:Props) {
   const batch = writeBatch(db);
   const promises:any = []
   var size = 0
@@ -30,7 +29,7 @@ async function deletFiles({files, selectFiles, dataCompany, childToParentDelet}:
         size += file.size
       }
 
-      await updateSizeCompany({id_company:dataCompany.id, size, action:'subtraction'})
+      await updateSizeCompany({id_company:id_company, size, action:'subtraction'})
 
       await Promise.all([promises, batch.commit()])
 

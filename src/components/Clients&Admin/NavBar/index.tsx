@@ -11,6 +11,7 @@ import logo2Docs from '../../../../public/icons/logo2Docs.svg'
 import style from './navBar.module.css'
 import * as Popover from '@radix-ui/react-popover';
 import Link from 'next/link';
+import { userContext } from '../../../app/Context/contextUser';
 
 interface Props{
     permission:number
@@ -19,6 +20,7 @@ interface Props{
 }
 
 function NavBar({permission, image, name}:Props) {
+    const { dataUser } = useContext(userContext)
     const path = usePathname()
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState<boolean>(false)
@@ -101,17 +103,19 @@ function NavBar({permission, image, name}:Props) {
                 }
                 
 
+                {permission === 0 && 
+                    <button onClick={() => (setMenu(true),  router.push(`/Dashboard/Clientes/Calendario/${dataUser.id}/${undefined}`))}  className={`${styleDivIconNavBar}`}>
+                        {path?.includes('/Dashboard/Clientes/Calendario') &&
+                            <div className={styleSubLineIcon}/>
+                        }
 
-                <button onClick={() => (setMenu(true), permission > 0 ? router.push('/Dashboard/Admin/Calendario') :  router.push('/Dashboard/Clientes/Calendario'))}  className={`${styleDivIconNavBar}`}>
-                    {path === '/Dashboard/Admin/Calendario' || path === '/Dashboard/Clientes/Calendario' ? 
-                        <div className={styleSubLineIcon}/>
-                    : <></>}
+                        <div className={`${path?.includes('/Dashboard/Clientes/Calendario') ? 'text-hilight' : 'text-black'} flex items-center`}>
+                            <CalendarIcon  className={styleIconNavBar}/>
+                            <p className={styleTextIcons}>Calendário</p>
+                        </div>
+                    </button>
+                }
 
-                    <div className={`${path === '/Dashboard/Admin/Calendario' || path === '/Dashboard/Clientes/Calendario' ? 'text-hilight' : 'text-black'} flex items-center`}>
-                        <CalendarIcon  className={styleIconNavBar}/>
-                        <p className={styleTextIcons}>Calendário</p>
-                    </div>
-                </button>
 
                 <Popover.Root onOpenChange={actionPopOver}>
                     <Popover.Trigger className='mt-auto  lg:group-hover:px-[30px] max-lg:px-[20px] cursor-pointer'>

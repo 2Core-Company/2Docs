@@ -11,17 +11,12 @@ interface PropsCreateEvent {
 }
 
 export default async function createEvent({event, email, id_company}:PropsCreateEvent) {      
-    const result = await toast.promise(CreatEventFireStore(), {pending:'Criando evento...', success:'Evento criado com sucesso!'})
-
-    async function CreatEventFireStore(){
-        try{            
-            const response = await setDoc(doc(db, "companies", id_company, "events", event.id), event)
-            SendEmail()
-        } catch(e){
-            console.log(e)
-            throw Error
-        }
-
+    try{            
+        const response = await setDoc(doc(db, "companies", id_company, "events", event.id), event)
+        SendEmail()
+    } catch(e){
+        console.log(e)
+        throw Error
     }
 
     async function SendEmail() {

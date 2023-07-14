@@ -13,6 +13,7 @@ import { Notification } from '../../../types/notification';
 import { toast } from 'react-toastify';
 
 interface Props {
+  messageDisabled:string
   uploadDisabled:boolean
   id_event:string
   id_folder:string
@@ -21,7 +22,7 @@ interface Props {
   setEvent: Function
 }
 
-function UploadFile({uploadDisabled, id_folder, id_enterprise, event, setEvent}:Props) {
+function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, event, setEvent}:Props) {
   const [files, setFiles] = useState()
   const { dataUser } = useContext(userContext)
   const { dataCompany } = useContext(companyContext)
@@ -29,7 +30,7 @@ function UploadFile({uploadDisabled, id_folder, id_enterprise, event, setEvent}:
   const handleDrop = async (e) => {
     e.preventDefault();
     if(uploadDisabled){
-      return toast.error('Este evento não pode receber arquivos após a data de vencimento.')
+      return toast.error(messageDisabled)
     }
 
     const files = Array.from(e.dataTransfer.files);
@@ -45,7 +46,7 @@ function UploadFile({uploadDisabled, id_folder, id_enterprise, event, setEvent}:
 
   async function OnChangeInputFiles(files){
     if(uploadDisabled){
-      return toast.error('Este evento não pode receber arquivos após a data de vencimento.')
+      return toast.error(messageDisabled)
     }
     const result = await VerifyFiles({ files })
     if(result){

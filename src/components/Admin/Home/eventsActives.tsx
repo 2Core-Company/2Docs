@@ -1,7 +1,7 @@
 'use client'
 import { CalendarIcon, MagnifyingGlassIcon, PlusIcon, TriangleDownIcon } from '@radix-ui/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
-import ModalCreateEvent from '../Calendar/modalCreateEvent'
+import ModalEvent from '../Calendar/modalEvent'
 import Image from 'next/image'
 import { GetUsersWithPendencies } from '../../../Utils/Firebase/Users/GetUsers'
 import { adminContext } from '../../../app/Context/contextAdmin'
@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { Component } from '../../../Utils/Other/componentRoot'
 
 function EventsActives() {
-  const [modalCreateEvent, setModalCreateEvent] = useState(false)
+  const [modalEvent, setModalEvent] = useState(false)
   const { dataAdmin } = useContext(adminContext)
   const [usersWithPendencies, setUsersWithPendencies] = useState<DataUser[]>()
   const [textSearch, setTextSearch] = useState<string>('')
@@ -55,12 +55,15 @@ function EventsActives() {
     setActionFilter({ alpabetical: 'asc', event: type })
   }
 
+  async function childModalEvent({event}:{event:Event}){
+    const result = await GetUserPendencies()
+  }
 
   return (
     <div>
       <Component.root title={'Eventos ativos'}>
         <div className='w-[500px] max-sm:w-[415px] max-lsm:w-[330px] h-[667px] max-sm:h-[644px] max-lsm:h-[600px] flex flex-col'>
-          {modalCreateEvent && <ModalCreateEvent modalCreateEvent={modalCreateEvent} setModalCreateEvent={setModalCreateEvent} />}
+          {modalEvent && <ModalEvent modalEvent={modalEvent} setModalEvent={setModalEvent} action={'create'} childModalEvent={childModalEvent}/>}
           <div className='flex items-center p-[30px] max-sm:p-[20px] max-lsm:p-[10px] text-[20px] max-sm:text-[16px] max-lsm:text-[14px] font-[500]'>
             <p>{usersWithPendencies ? usersWithPendencies.length : 0} <span className='text-[rgba(0,0,0,0.30)]'>Clientes</span></p>
 
@@ -69,7 +72,7 @@ function EventsActives() {
               <input onChange={(text) => setTextSearch(text.target.value)} placeholder='Buscar' className='ml-[10px] max-sm:ml-[5px] max-lsm:ml-[2px]  bg-transparent text-[#AAAAAA] w-[120px] max-sm:w-[110px] max-lsm:w-[70px]' />
             </label>
 
-            <button onClick={() => setModalCreateEvent(true)} className='flex items-center gap-x-[5px] max-sm:gap-x-[3px] px-[8px] max-sm:px-[5px] py-[8px] bg-hilight border-[1px] border-[#119E70] rounded-[8px] ml-auto text-white hover:bg-emerald-600 duration-100'>
+            <button onClick={() => setModalEvent(true)} className='flex items-center gap-x-[5px] max-sm:gap-x-[3px] px-[8px] max-sm:px-[5px] py-[8px] bg-hilight border-[1px] border-[#119E70] rounded-[8px] ml-auto text-white hover:bg-emerald-600 duration-100'>
               <PlusIcon width={21} height={20} className='max-sm:w-[18px] max-sm:h-[17px]' />
               <p className='text-[18px] max-sm:text-[16px] max-lsm:text-[14px] font-[400]'>Novo Evento</p>
             </button>

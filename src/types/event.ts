@@ -9,7 +9,7 @@ export interface Event{
   description:string
   complete:boolean
   dateStarted:number
-  dateEnd:null | Date | number
+  dateEnd:null | number
   definedDate:boolean
   repeatMonths:boolean
   limitedDelivery:boolean

@@ -8,7 +8,11 @@ interface UpdateLastModify {
 }
 
 export async function UpdateLastModify({id_company, id_event, date}:UpdateLastModify){
-    await updateDoc(doc(db, 'companies', id_company, "events", id_event), {
-        lastModify:date
-    })    
+    try {
+        await updateDoc(doc(db, 'companies', id_company, "events", id_event), {
+            lastModify:date
+        })    
+    } catch (e) {
+        console.log(e)
+    }
 }
