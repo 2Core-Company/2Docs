@@ -60,7 +60,7 @@ function OptionsEvent({ files, event, childModalEvent, childConcluedEvent }: Pro
     return (
         <Menubar.Root>
             {modal.status && <ModalDelete modal={modal} setModal={setModal} childModal={ChildModalDelet}/>}
-            {modalEvent && <ModalEvent event={event} action='edit' modalEvent={modalEvent} setModalEvent={setModalEvent} childModalEvent={childModalEvent} />}
+            {modalEvent && <ModalEvent defaultValue={{label:event.userName, value:{id_user:event.id_user}}} event={event}  action='edit' modalEvent={modalEvent} setModalEvent={setModalEvent} childModalEvent={childModalEvent} />}
             <Menubar.Menu>
                 <Menubar.Trigger className='outline-none'>
                     <DotsVerticalIcon width={25} height={25} className='text-black' />

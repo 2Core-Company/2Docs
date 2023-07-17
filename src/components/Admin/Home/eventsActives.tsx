@@ -26,7 +26,11 @@ function EventsActives() {
   async function GetUserPendencies() {
     const result = await GetUsersWithPendencies({ id_company: dataAdmin.id_company })
     setUsersWithPendencies(result)
-    const page = Math.floor(result.length / 10)
+    var page = Math.floor(result.length / 10)
+    if(page === 0){
+      page = 1
+    }
+
     const maxPage = Math.ceil(result.length / 10)
     setDataPages({ page: page, maxPage: maxPage })
   }

@@ -19,6 +19,7 @@ import CreateNotification from '../../../Utils/Firebase/Notification/CreateNotif
 import EditEvent from '../../../Utils/Firebase/Events/EditEvent';
 import style from './modalEvent.module.css'
 
+
 interface interfaceOptionsUser {
     value: {
         id: string
@@ -34,14 +35,15 @@ interface interfaceOptionsEnterprises {
 }
 
 interface Props {
+    action:string
     event?: Event
-    action: 'create' | 'edit'
+    defaultValue?:{label:string, value:{id_user:string}}
     modalEvent: boolean
     setModalEvent: Function
-    childModalEvent: Function
+    childModalEvent?: Function
 }
 
-function ModalEvent({ event, action, modalEvent, setModalEvent, childModalEvent }: Props) {
+function ModalEvent({ action, event, defaultValue, modalEvent, setModalEvent, childModalEvent }: Props) {
     registerLocale('pt-BR', pt)
     const { loading, setLoading } = useContext(loadingContext)
     const { dataAdmin } = useContext(adminContext)
@@ -50,7 +52,7 @@ function ModalEvent({ event, action, modalEvent, setModalEvent, childModalEvent 
     const styleText = 'mt-[15px] text-[20px] max-sm:text-[18px] max-lsm:text-[16px]'
     const refSelectEnterprese = useRef<any>()
     const [email, setEmail] = useState<string>('')
-    const [dataEvent, setDataEvent] = useState<Event>(event ? event : {
+    const [dataEvent, setDataEvent] = useState<Event>({
         id: uuidv4(),
         id_user: '',
         id_folder: '',
@@ -69,11 +71,22 @@ function ModalEvent({ event, action, modalEvent, setModalEvent, childModalEvent 
         delivered: false
     })
 
-
     useEffect(() => {
-        if (action === 'create') {
+        if(!defaultValue){
             CreateOptioOfSelectUser()
         }
+
+        var allDataEvent:Event = dataEvent
+
+        if(event){
+            allDataEvent = event
+        } 
+    
+        if(defaultValue){
+            allDataEvent={...allDataEvent, id_user:defaultValue.value.id_user}
+        }
+        console.log(defaultValue)
+        setDataEvent(allDataEvent)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -97,14 +110,11 @@ function ModalEvent({ event, action, modalEvent, setModalEvent, childModalEvent 
         }
     }
 
+
     useEffect(() => {
         if (dataEvent.id_user != '' && dataEvent.id_user) {
             CreateOptioOfSelectEnterprise(dataEvent.id_user)
-        } else {
-            refSelectEnterprese.current.clearValue()
-            setDataEvent({ ...dataEvent, id_enterprise: '', nameEnterprise: '', id_folder: '' })
         }
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataEvent.id_user])
 
@@ -155,11 +165,15 @@ function ModalEvent({ event, action, modalEvent, setModalEvent, childModalEvent 
         setLoading(true)
         if (action === 'create') {
             const result = await toast.promise(CreateEventInFireStore(), { pending: 'Criando evento...', success: 'Evento criado com sucesso!' })
-            childModalEvent({ event: dataEvent })
+
         } else {
             const result = await toast.promise(EditEventInFireStore(), { pending: 'Editando evento...', success: 'Evento editado com sucesso!' })
+        }
+
+        if (childModalEvent) {
             childModalEvent({ event: dataEvent })
         }
+
         setLoading(false)
         setModalEvent(false)
     }
@@ -173,7 +187,6 @@ function ModalEvent({ event, action, modalEvent, setModalEvent, childModalEvent 
     async function EditEventInFireStore() {
         const result = EditEvent({ event: dataEvent, id_company: dataAdmin.id_company, })
     }
-
 
     async function CreateNotificationAfterCreateEvent() {
         const data: Notification = {
@@ -190,7 +203,6 @@ function ModalEvent({ event, action, modalEvent, setModalEvent, childModalEvent 
         return <p className='text-center py-[10px]'>Não encontrado.</p>;
     };
 
-
     function OrganizeMinDateEnd() {
         const date = new Date(dataEvent.dateStarted)
         const day = date.getDate()
@@ -198,142 +210,151 @@ function ModalEvent({ event, action, modalEvent, setModalEvent, childModalEvent 
         return newDate
     }
 
+    function SelectUser (e){
+        if(e){
+            setDataEvent({ ...dataEvent, id_user: e?.value.id, userName: e?.value.nameUser })
+            setEmail(e?.value.email)
+        } else {
+            refSelectEnterprese.current.clearValue()
+            setDataEvent({...dataEvent, id_enterprise:'', nameEnterprise:'', id_folder:''})
+        }
+    }
 
     return (
-
         <Dialog.Root open={modalEvent}>
             <Dialog.Portal>
                 <Dialog.Overlay onClick={() => setModalEvent(false)} className="bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0 z-20 " />
                 <Dialog.Content id={style.boxModalEvent} className=" data-[state=open]:animate-contentShow fixed top-[50%] rounded-[15px] left-[50%] w-[530px] max-sm:w-[400px] max-lsm:w-[360px] overflow-hidden  translate-x-[-50%] translate-y-[-50%] focus:outline-none z-20 max-h-[95%] overflow-y-auto">
                     <div className='bg-primary rounded-[15px]'>
-                    <div className='bg-blue w-full h-[15px] rounded-t-[15px]' />
-                    <div>
-                                            <div className='text-left flex flex-col mt-[20px] max-sm:mt-[10px] px-[40px] max-sm:px-[20px] '>
-                        <p className='text-[26px] max-sm:text-[24px] max-lsm:text-[22px] after:w-[40px] after:h-[3px] after:block after:bg-blue after:rounded-full after:ml-[3px] after:mt-[-5px]'>
-                            {action === 'create' ? 'Criar Evento' : 'Editar Evento'}
-                        </p>
-                        <p className='text-[20px] max-sm:text-[18px] max-lsm:text-[16px] mt-[20px]'>Usuário Designado:</p>
-                        <Select
-                            placeholder={action === 'create' ? 'Selecionar...' : dataEvent.userName}
-                            components={{ NoOptionsMessage }}
-                            isDisabled={loading || action === 'edit'}
-                            options={optionsUser}
-                            isClearable={true}
-                            onChange={(e: any) => (setDataEvent({ ...dataEvent, id_user: e?.value.id, userName: e?.value.nameUser }), setEmail(e?.value.email))}
-                            className='text-[20px] max-sm:text-[18px] mt-[4px] text-[#686868] w-full'
-                            theme={(theme) => ({
-                                ...theme,
-                                borderRadius: 8,
-                                colors: {
-                                    ...theme.colors,
-                                    primary25: 'rgba(46,134,171,0.30)',
-                                    primary: '#2E86AB',
-                                },
-                            })}
-                        />
-
-                        <p className={styleText}>Empresa:</p>
-                        <Select
-                            placeholder='Selecionar...'
-                            value={{ label: dataEvent.nameEnterprise }}
-                            components={{ NoOptionsMessage }}
-                            ref={refSelectEnterprese}
-                            isDisabled={dataEvent.id_user ? false : true || loading}
-                            options={optionsEnterprise}
-                            isClearable={true}
-                            onChange={(e: any) => setDataEvent({ ...dataEvent, id_enterprise: e?.value.id_enterprise, nameEnterprise: e?.value.nameEnterprise, id_folder: e?.value.id_folderCliente })}
-                            className='text-[20px] max-sm:text-[18px] mt-[4px] text-[#686868] w-full'
-                            theme={(theme) => ({
-                                ...theme,
-                                borderRadius: 8,
-                                colors: {
-                                    ...theme.colors,
-                                    primary25: 'rgba(46,134,171,0.30)',
-                                    primary: '#2E86AB',
-                                },
-                            })}
-                        />
-
-                        <p className={styleText}>Título:</p>
-                        <input value={dataEvent.title} maxLength={50} disabled={loading} placeholder='Digite o título do evento' onChange={(text) => setDataEvent({ ...dataEvent, title: text.target.value })} className='text-[18px] max-sm:text-[16px] mt-[4px] w-full px-[15px] py-[8px] rounded-[8px] border-[1px] border-black text-[#9E9E9E] bg-transparent focus:outline-none focus:ring-[2px] focus:ring-[#686868]' />
-
-                        <p className={styleText}>Descrição:</p>
-                        <textarea value={dataEvent.description} maxLength={250} disabled={loading} rows={4} placeholder='Digite a mensagem do evento' onChange={(text) => setDataEvent({ ...dataEvent, description: text.target.value })} className='text-[18px] max-sm:text-[16px] resize-none mt-[4px] w-full px-[15px] py-[8px] rounded-[8px] border-[1px] border-black text-[#9E9E9E] bg-transparent focus:outline-none focus:ring-[2px] focus:ring-[#686868]' />
-
-                        <p className={styleText}>Prazo para Entrega:</p>
-
-                        <div className='mt-[4px] flex items-center text-[20px] max-sm:text-[18px] max-lsm:text-[16px] gap-x-[10px] text-[#686868]'>
-                            <p>De</p>
-                            <DatePicker
-                                locale="pt-BR"
-                                dateFormat="dd/MM/yyyy"
-                                selected={dataEvent.dateStarted}
-                                onChange={(date) => setDataEvent({ ...dataEvent, dateStarted: date.setHours(0, 0, 0, 0), dateEnd: null })}
-                                minDate={new Date()}
-                                disabled={loading}
-                                className='w-[180px]  max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px]'
-                                showPopperArrow={false}
-                                popperModifiers={[
-                                    {
-                                        name: "offset",
-                                        options: {
-                                            offset: [0, -5],
+                        <div className='bg-blue w-full h-[15px] rounded-t-[15px]' />
+                        <div>
+                            <div className='text-left flex flex-col mt-[20px] max-sm:mt-[10px] px-[40px] max-sm:px-[20px] '>
+                                <p className='text-[26px] max-sm:text-[24px] max-lsm:text-[22px] after:w-[40px] after:h-[3px] after:block after:bg-blue after:rounded-full after:ml-[3px] after:mt-[-5px]'>
+                                    {action === 'create' ? 'Criar Evento' : 'Editar Evento'}
+                                </p>
+                                <p className='text-[20px] max-sm:text-[18px] max-lsm:text-[16px] mt-[20px]'>Usuário Designado:</p>
+                                <Select
+                                    placeholder={'Selecionar...'}
+                                    components={{ NoOptionsMessage }}
+                                    defaultValue={defaultValue}
+                                    isDisabled={loading || defaultValue != undefined}
+                                    options={optionsUser}
+                                    isClearable={true}
+                                    onChange={(e: any) => SelectUser(e)}
+                                    className='text-[20px] max-sm:text-[18px] mt-[4px] text-[#686868] w-full'
+                                    theme={(theme) => ({
+                                        ...theme,
+                                        borderRadius: 8,
+                                        colors: {
+                                            ...theme.colors,
+                                            primary25: 'rgba(46,134,171,0.30)',
+                                            primary: '#2E86AB',
                                         },
-                                    },
-                                ]}
-                            />
+                                    })}
+                                />
 
-                            <p>Até</p>
-                            <DatePicker
-                                locale="pt-BR"
-                                dateFormat="dd/MM/yyyy"
-                                value={dataEvent.dateEnd}
-                                selected={dataEvent.dateEnd}
-                                onChange={(date) => setDataEvent({ ...dataEvent, dateEnd: date.setHours(23, 59, 59, 59) })}
-                                minDate={OrganizeMinDateEnd()}
-                                disabled={dataEvent.definedDate ? false : true || loading}
-                                placeholderText={dataEvent.definedDate ? '' : 'Desabilitado'}
-                                className='w-[180px] max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px] bg-white'
-                                showPopperArrow={false}
-                                popperModifiers={[
-                                    {
-                                        name: "offset",
-                                        options: {
-                                            offset: [0, -5],
+                                <p className={styleText}>Empresa:</p>
+                                <Select
+                                    placeholder='Selecionar...'
+                                    value={{ label: dataEvent.nameEnterprise }}
+                                    components={{ NoOptionsMessage }}
+                                    ref={refSelectEnterprese}
+                                    isDisabled={dataEvent.id_user ? false : true || loading}
+                                    options={optionsEnterprise}
+                                    isClearable={true}
+                                    onChange={(e: any) => setDataEvent({ ...dataEvent, id_enterprise: e?.value.id_enterprise, nameEnterprise: e?.value.nameEnterprise, id_folder: e?.value.id_folderCliente })}
+                                    className='text-[20px] max-sm:text-[18px] mt-[4px] text-[#686868] w-full'
+                                    theme={(theme) => ({
+                                        ...theme,
+                                        borderRadius: 8,
+                                        colors: {
+                                            ...theme.colors,
+                                            primary25: 'rgba(46,134,171,0.30)',
+                                            primary: '#2E86AB',
                                         },
-                                    },
-                                ]}
-                            />
-                        </div>
+                                    })}
+                                />
 
-                        <div className='flex items-center mt-[15px]'>
-                            <input disabled={loading} checked={dataEvent.definedDate} onChange={(e) => setDataEvent({ ...dataEvent, definedDate: !dataEvent.definedDate, dateEnd: null })} type="checkbox" style={{ appearance: dataEvent.definedDate ? 'auto' : 'none' }} className={`  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
-                            <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px] '>Definir data limite</p>
-                        </div>
+                                <p className={styleText}>Título:</p>
+                                <input value={dataEvent.title} maxLength={50} disabled={loading} placeholder='Digite o título do evento' onChange={(text) => setDataEvent({ ...dataEvent, title: text.target.value })} className='text-[18px] max-sm:text-[16px] mt-[4px] w-full px-[15px] py-[8px] rounded-[8px] border-[1px] border-black text-[#9E9E9E] bg-transparent focus:outline-none focus:ring-[2px] focus:ring-[#686868]' />
 
-                        {/* <div className='flex items-center mt-[10px]'>
+                                <p className={styleText}>Descrição:</p>
+                                <textarea value={dataEvent.description} maxLength={250} disabled={loading} rows={4} placeholder='Digite a mensagem do evento' onChange={(text) => setDataEvent({ ...dataEvent, description: text.target.value })} className='text-[18px] max-sm:text-[16px] resize-none mt-[4px] w-full px-[15px] py-[8px] rounded-[8px] border-[1px] border-black text-[#9E9E9E] bg-transparent focus:outline-none focus:ring-[2px] focus:ring-[#686868]' />
+
+                                <p className={styleText}>Prazo para Entrega:</p>
+
+                                <div className='mt-[4px] flex items-center text-[20px] max-sm:text-[18px] max-lsm:text-[16px] gap-x-[10px] text-[#686868]'>
+                                    <p>De</p>
+                                    <DatePicker
+                                        locale="pt-BR"
+                                        dateFormat="dd/MM/yyyy"
+                                        selected={dataEvent.dateStarted}
+                                        onChange={(date) => setDataEvent({ ...dataEvent, dateStarted: date.setHours(0, 0, 0, 0), dateEnd: null })}
+                                        minDate={new Date()}
+                                        disabled={loading}
+                                        className='w-[180px]  max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px]'
+                                        showPopperArrow={false}
+                                        popperModifiers={[
+                                            {
+                                                name: "offset",
+                                                options: {
+                                                    offset: [0, -5],
+                                                },
+                                            },
+                                        ]}
+                                    />
+
+                                    <p>Até</p>
+                                    <DatePicker
+                                        locale="pt-BR"
+                                        dateFormat="dd/MM/yyyy"
+                                        value={dataEvent.dateEnd}
+                                        selected={dataEvent.dateEnd}
+                                        onChange={(date) => setDataEvent({ ...dataEvent, dateEnd: date.setHours(23, 59, 59, 59) })}
+                                        minDate={OrganizeMinDateEnd()}
+                                        disabled={dataEvent.definedDate ? false : true || loading}
+                                        placeholderText={dataEvent.definedDate ? '' : 'Desabilitado'}
+                                        className='w-[180px] max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px] bg-white'
+                                        showPopperArrow={false}
+                                        popperModifiers={[
+                                            {
+                                                name: "offset",
+                                                options: {
+                                                    offset: [0, -5],
+                                                },
+                                            },
+                                        ]}
+                                    />
+                                </div>
+
+                                <div className='flex items-center mt-[15px]'>
+                                    <input disabled={loading} checked={dataEvent.definedDate} onChange={(e) => setDataEvent({ ...dataEvent, definedDate: !dataEvent.definedDate, dateEnd: null })} type="checkbox" style={{ appearance: dataEvent.definedDate ? 'auto' : 'none' }} className={`  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
+                                    <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px] '>Definir data limite</p>
+                                </div>
+
+                                {/* <div className='flex items-center mt-[10px]'>
                             <input disabled={loading} value={dataEvent.repeatMonths.toString()} onChange={(e) => setDataEvent({...dataEvent, repeatMonths:!dataEvent.repeatMonths})} type="checkbox" className={`${dataEvent.repeatMonths? '' : 'appearance-none'}  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
                             <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>Repetir mesmo eventos entre os meses</p>
                         </div> */}
 
-                        <div className='flex items-center mt-[10px]'>
-                            <input disabled={loading} checked={dataEvent.limitedDelivery} onChange={(e) => setDataEvent({ ...dataEvent, limitedDelivery: !dataEvent.limitedDelivery })} type="checkbox" style={{ appearance: dataEvent.limitedDelivery ? 'auto' : 'none' }} className={`${dataEvent.limitedDelivery ? '' : 'appearance-none'}  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
-                            <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>Limitar entrega pós vencimento</p>
+                                <div className='flex items-center mt-[10px]'>
+                                    <input disabled={loading} checked={dataEvent.limitedDelivery} onChange={(e) => setDataEvent({ ...dataEvent, limitedDelivery: !dataEvent.limitedDelivery })} type="checkbox" style={{ appearance: dataEvent.limitedDelivery ? 'auto' : 'none' }} className={`${dataEvent.limitedDelivery ? '' : 'appearance-none'}  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
+                                    <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>Limitar entrega pós vencimento</p>
+                                </div>
+                            </div>
+
+                            <div className='bg-[#D9D9D9] mt-[15px] px-[30px] max-sm:px-[15px] py-[14px] flex justify-between font-[500] rounded-b-[15px]'>
+                                <Dialog.Close asChild>
+                                    <button disabled={loading} onClick={() => setModalEvent(false)} className='text-[#EBEBEB] bg-[#8F8F8F] rounded-[8px] px-[14px] py-[9px] hover:bg-[#777777] duration-100'>
+                                        Cancelar
+                                    </button>
+                                </Dialog.Close>
+
+                                <button disabled={loading} onClick={() => VerifyDataEvent()} className='bg-[rgba(0,64,124,0.3)] text-[#FFFFFF] border-[1px] border-blue rounded-[8px] px-[14px] py-[9px] hover:bg-[rgba(0,64,124,0.5)] duration-100'>
+                                    Confirmar
+                                </button>
+                            </div>
                         </div>
-                    </div>
-
-                    <div className='bg-[#D9D9D9] mt-[15px] px-[30px] max-sm:px-[15px] py-[14px] flex justify-between font-[500] rounded-b-[15px]'>
-                        <Dialog.Close asChild>
-                            <button disabled={loading} onClick={() => setModalEvent(false)} className='text-[#EBEBEB] bg-[#8F8F8F] rounded-[8px] px-[14px] py-[9px] hover:bg-[#777777] duration-100'>
-                                Cancelar
-                            </button>
-                        </Dialog.Close>
-
-                        <button disabled={loading} onClick={() => VerifyDataEvent()} className='bg-[rgba(0,64,124,0.3)] text-[#FFFFFF] border-[1px] border-blue rounded-[8px] px-[14px] py-[9px] hover:bg-[rgba(0,64,124,0.5)] duration-100'>
-                            Confirmar
-                        </button>
-                    </div>
-                    </div>
 
                     </div>
                 </Dialog.Content>

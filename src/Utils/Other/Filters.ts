@@ -54,24 +54,19 @@
     return data
   }
 
+  export function FilterStatus({data, action}:props) {
+    data.sort(function (x, y) {
+      let a = x.disabled;
+      let b = y.disabled;
 
-  export function FilterStatus({dataFilter, filter, setReturn}) {
-    var dataToFilter = [...dataFilter];
-    dataToFilter.sort(function (x, y) {
-      let a = x.status;
-      let b = y.status;
-      if(x.status === undefined){
-        a = x.viwed
-        b= y.viwed
-      }
-
-      if (filter.status) {
-        return a == b ? 0 : a < b ? 1 : -1;
+      if (action === 'asc') {
+        return a - b
       } else {
-        return a == b ? 0 : a > b ? 1 : -1;
+        return b - a
       }
     });
-    setReturn(FilterFixed(dataToFilter));
+    console.log(data)
+    return data
   }
 
   export function FilterDate({data, action}:props) {

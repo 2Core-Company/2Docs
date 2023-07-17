@@ -14,7 +14,7 @@ interface Props {
 export default function Calendar({ events, AfterSelectDate, setDataMonth }: Props) {
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [indexMonth, setIndexMonth] = useState(new Date().getMonth())
-    const [dateSelected, setDateSelected] = useState<Date>()
+    const [dateSelected, setDateSelected] = useState<Date>(new Date(new Date().setHours(0,0,0,0)))
     const weekDays = ["D", "S", "T", "Q", "Q", "S", "S"];
     const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const monthBr = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]

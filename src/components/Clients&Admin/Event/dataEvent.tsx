@@ -126,7 +126,7 @@ function DataEvent({files, event, setEvent, childModalEvent, childConcluedEvent 
                             <div className='flex'>
                                 <p className={styleTextTitle} >
                                     Prazo para entrega:
-                                    <span className={styleTextContent} >{`${event.dateEnd ? 'De' : ''}${FormatDateSmall(event.dateStarted)} ${event.dateEnd ? `Até ${FormatDateSmall(event.dateEnd)}` : ''}`}</span>
+                                    <span className={styleTextContent} >{`${event.dateEnd ? 'De ' : ''}${FormatDateSmall(event.dateStarted)} ${event.dateEnd ? `Até ${FormatDateSmall(event.dateEnd)}` : ''}`}</span>
                                 </p>
                             </div>
 

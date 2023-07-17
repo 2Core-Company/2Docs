@@ -12,12 +12,11 @@ import Link from 'next/link'
 import { adminContext } from '../../../app/Context/contextAdmin'
 
 function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
-  const { dataAdmin } = useContext(adminContext)
   const { dataCompany } = useContext(companyContext)
   const [ eventsInDateSelected, setEventsInDateSelected] = useState<Event[]>([])
   const [dataMonth, setDataMonth] = useState({ firstDay: moment().clone().startOf("month").valueOf(), lastDay: moment().clone().endOf("month").valueOf() })
   const [events, setEvents] = useState<Event[]>([])
-  const [dateSelected, setDateSelected] = useState<number>(new Date().getTime())
+  const [dateSelected, setDateSelected] = useState<number>(new Date().setHours(0,0,0,0))
   
   useEffect(() => {
     GetEventsInMonthSelected()
@@ -26,8 +25,10 @@ function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
 
   async function GetEventsInMonthSelected() {
     const result = await GetEventsInOneMonth({ id_company: dataCompany.id, id_user, dateMin: dataMonth.firstDay, dateMax: dataMonth.lastDay })
+    const day = new Date(dateSelected).getTime()
     if (result) {
       setEvents(result)
+      setEventsInDateSelected(result.filter((date) => date.dateStarted === day))
     }
   }
 

@@ -105,7 +105,6 @@ function  CopyTo({file, setCopyTo}: Props) {
     } 
   }
 
-
     return (
       folders.length > 3 ?
       <div className='w-screen h-screen fixed bg-black/40 backdrop-blur-[4px] flex justify-center items-center text-black dark:text-white z-50 top-[0px] left-0'>
