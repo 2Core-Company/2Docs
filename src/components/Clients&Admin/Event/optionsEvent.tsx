@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import * as Menubar from '@radix-ui/react-menubar';
 import { CheckCircledIcon, DotsVerticalIcon, Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
 import ModalEvent from '../../Admin/Calendar/modalEvent';

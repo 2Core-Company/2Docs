@@ -164,15 +164,14 @@ function TableClients() {
             <input type="text" onChange={(text) => setSearchText(text.target.value)} placeholder="Buscar" className="w-[250px] outline-[#646464] dark:text-white text-black max-sm:w-[200px] max-lsm:w-[150px] bg-transparent dark:placeholder:text-gray-500" />
           </div>
 
-          <div className={`text-center flex gap-[10px] max-lg:absolute max-lg:flex-col max-lg:px-[5px] max-lg:pb-[5px] max-lg:right-[0px] max-lg:top-[0px] ${menu ? 'max-lg:bg-trasparent' : 'max-lg:bg-[#d1d1d1]'} dark:max-lg:bg-[#2b2b2b] rounded-[8px]`}>
-            <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`cursor-pointer flex-col hidden max-lg:flex absolute right-[10px] ${menu ? 'mt-[20px]' : 'mt-[27px]'} `}>
+          <div className={`text-center flex gap-[10px] max-lg:absolute max-lg:flex-col max-lg:px-[5px] max-lg:pb-[5px] max-lg:right-[0px] max-lg:top-[0px] ${menu ? 'max-lg:bg-trasparent' : 'max-lg:bg-[#e2e2e2]'} dark:max-lg:bg-[#2b2b2b] rounded-[8px]`}>
+            <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`cursor-pointer flex-col hidden max-lg:flex absolute right-[15px] ${menu ? 'mt-[15px]' : 'mt-[20px]'} `}>
               <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B] dark:bg-white ${menu ? "" : "rotate-45"}`} />
               <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B] dark:bg-white my-[4px] ${menu ? "" : "hidden"}`} />
               <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
             </button>
 
-            <button onClick={() => setModalEvent(true)} className={`flex items-center text-hilight hover:text-emerald-600 duration-100 max-lg:mt-[60px] ${menu ? "max-lg:hidden" : ""}`}>
-              <PlusIcon className="min-w-[20px] min-h-[20px]" />
+            <button onClick={() => setModalEvent(true)} className={`hover:bg-[#e0e0e0] flex items-center border border-terciary text-strong py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] duration-100 max-lg:mt-[40px] ${menu ? "max-lg:hidden" : ""}`}>
               Criar evento
             </button>
 
@@ -181,7 +180,7 @@ function TableClients() {
             </button>
 
             <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:bg-emerald-600 duration-100 bg-emerald-500 boder-[1px] border-emerald-600 text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
-              + Cadastrar
+              Cadastrar
             </button>
           </div>
         </div>

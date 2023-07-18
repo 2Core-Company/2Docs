@@ -79,7 +79,7 @@ function SetAdminOptions({ setModalAdminOptions, user, dataAdmin, setUsers, user
                                     map((admin, index) => {
                                         if (actualUser.admins.length === 0 && index === 0) {
                                             return (
-                                                <p key={admin.id} className="text-[16px] self-center font-normal text-neutral-500">Nenhum admin atribuído para esse cliente...😦</p>
+                                                <p key={admin.id} className="text-[16px] self-center font-normal text-neutral-500 text-center w-full">Nenhum admin atribuído para esse cliente...</p>
                                             )
                                         } else {
                                             if (actualUser.admins.findIndex((id) => id === admin.id) !== -1 && admin.permission !== 3) {
@@ -105,7 +105,7 @@ function SetAdminOptions({ setModalAdminOptions, user, dataAdmin, setUsers, user
                                     map((admin, index) => {
                                         if (actualUser.admins.length === allAdmins.filter((admin) => admin.permission < 3).length && index === 0) {
                                             return (
-                                                <p key={admin.id} className="text-[16px] font-normal text-neutral-500 self-center">Nenhum admin disponível para atribuição...😦</p>
+                                                <p key={admin.id} className="text-[16px] font-normal text-neutral-500 self-center text-center w-full">Nenhum admin disponível para atribuição...</p>
                                             )
                                         } else {
                                             if (actualUser.admins.findIndex((id) => id === admin.id) === -1 && admin.permission !== 3) {

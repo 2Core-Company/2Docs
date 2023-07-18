@@ -85,7 +85,7 @@ function ModalEvent({ action, event, defaultValue, modalEvent, setModalEvent, ch
         if(defaultValue){
             allDataEvent={...allDataEvent, id_user:defaultValue.value.id_user}
         }
-        console.log(defaultValue)
+
         setDataEvent(allDataEvent)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
