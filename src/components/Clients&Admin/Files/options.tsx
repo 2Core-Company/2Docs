@@ -28,15 +28,14 @@ interface Props{
   trash:boolean
   from:string
   DownloadFile:Function
-  DeleteFile:Function
-  childToParentDownload:Function
+  DeleteFile:Function  
 }
 
-function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile, DeleteFile, childToParentDownload}: Props){
+function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile, DeleteFile}: Props){
   const [moveTo, setMoveTo] = useState(false)
   const [copyTo, setCopyTo] = useState(false)
   const [rename, setRename] = useState(false)
-  const [viwedFile, setViwedFile] = useState<boolean>(false)
+  const [viewedFile, setViewFile] = useState<boolean>(false)
   const toastFavorite = {pending:'Favoritando arquivo...', success:'Arquivo Favoritado com sucesso.', error:'Não foi possivel favoritar este arquivo.'}
   const toastDesfavorite = {pending:'Desfavoritando arquivo...', success:'Arquivo Desfavoritado com sucesso.', error:'Não foi possivel desfavoritar este arquivo.'}
   const params:any = useSearchParams()
@@ -46,10 +45,9 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
 
   return (
     <>
-      {moveTo ? <MoveTo file={file} files={files} setMoveTo={setMoveTo} childToParentDownload={childToParentDownload}/> : <> </>}
-      {copyTo ? <CopyTo file={file} setCopyTo={setCopyTo} /> : <> </>}
-      {rename ? <Rename file={file} files={files} setRename={setRename} childToParentDownload={childToParentDownload}/> : <> </>}
-      {viwedFile ? <ViewFile id_folder={id_folder} files={files} file={file} from={from} childToParentDownload={childToParentDownload} setViwedFile={setViwedFile}  /> : <></>}
+      {/* {moveTo ? <MoveTo file={file} files={files} setMoveTo={setMoveTo}/> : <></>} */}
+      {copyTo ? <CopyTo file={file} setCopyTo={setCopyTo} /> : <></>}
+      {rename ? <Rename file={file} files={files} setRename={setRename}/> : <></>}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -63,7 +61,7 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
         <DropdownMenu.Portal >
           <DropdownMenu.Content align="end" alignOffset={-25}  className="bg-primary text-black text-[18px] rounded-[6px] flex flex-col gap-[5px] drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
             <DropdownMenu.Item  className="cursor-pointer rounded-t-[6px] hover:outline-none  hover:bg-neutral-300">
-              <div onClick={() => setViwedFile(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => setViewFile(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <EyeOpenIcon width={22} height={22} />
                 Visualizar
               </div>
@@ -107,19 +105,19 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
           
           <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
             {file?.favorite ? 
-              <div onClick={() => toast.promise(Desfavorite({desfavoriteFile:file, files, childToParentDownload, folderName}),toastDesfavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => toast.promise(Desfavorite({desfavoriteFile:file, files, folderName}),toastDesfavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={DesfavoriteIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Desfavoritar
               </div>
             :
-              <div onClick={() => toast.promise(Favorite({favoriteFile:file, files, childToParentDownload}), toastFavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
+              <div onClick={() => toast.promise(Favorite({favoriteFile:file, files}), toastFavorite)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={FavoriteIcon} width={22} height={22} alt={"Copiar documentos"}/>
                 Favoritar
               </div>
             }
           </DropdownMenu.Item>
  
-          {file?.from === 'admin' &&  from === 'admin' ? 
+          {file.from === 'admin' &&  from === 'admin' ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
               <div onClick={() => ShareFile({file:file})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={Share} width={22} height={22} alt={"Copiar documentos"}/>

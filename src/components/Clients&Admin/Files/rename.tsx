@@ -8,11 +8,10 @@ interface Props{
   file: Files
   files:Files[]
   setRename:Function
-  childToParentDownload:Function
 }
 
 
-function  Rename({file, files, setRename, childToParentDownload}:Props) {
+function  Rename({file, files, setRename}:Props) {
   const [nameFile, setNameFile] = useState(file.name)
   const messageToast = {pending:"Alterando nome.", success:"O nome do arquivo foi alterado com sucesso."}
 

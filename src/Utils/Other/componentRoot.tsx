@@ -1,4 +1,4 @@
-import React  from 'react'
+import React from 'react'
 
 interface PropsRoot{
     children:React.ReactNode,
@@ -17,6 +17,4 @@ export const Component = {
             </div>
         )
     }
-
 }
-

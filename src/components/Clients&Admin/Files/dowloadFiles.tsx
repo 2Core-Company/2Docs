@@ -11,18 +11,17 @@ interface Props{
   files?:Files[]
   id_folder: string
   from:string
-  childToParentDownload?:Function
 }
 
 
 
-async function DownloadsFile({selectFiles, files, id_folder, from, childToParentDownload}:Props){
+async function DownloadsFile({selectFiles, files, id_folder, from}:Props){
   const folders = await GetFolders({id_company:selectFiles[0].id_company, id_enterprise:selectFiles[0].id_enterprise, id_user:selectFiles[0].id_user})
   let folder:Folders = folders.find((folder) => folder.id === id_folder)
   let folderCliente = folders.find((folder) => folder.name === "Cliente")
   const batch = writeBatch(db);
 
-  toast.promise(GetUrlDownloadFile(), {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso"})
+  const result = await toast.promise(GetUrlDownloadFile(), {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso"})
 
   async function GetUrlDownloadFile(){
     const promises:any = []
@@ -75,9 +74,8 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
     .then(async () => {
       await batch.commit()
     })
-    if(childToParentDownload){
-      childToParentDownload(files)
-    }
+    
+    return files;
   }
 
   async function VerifyDownload(){
@@ -87,14 +85,14 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
       if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].downloaded === false) {
         const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {downloaded: true})
-        if(files && childToParentDownload){
+        if(files){
           const index = files.findIndex(file => file.id== selectFiles[i].id)
           files[index].downloaded = true;
         }
       } else if (from === "admin" && selectFiles[i].id_folder === folderCliente.id && selectFiles[i].downloaded === false) {
         const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {downloaded: true})
-        if(files && childToParentDownload){
+        if(files){
           const index = files.findIndex(file => file.id == selectFiles[i].id)
           files[index].downloaded = true;
         }
@@ -110,22 +108,24 @@ async function DownloadsFile({selectFiles, files, id_folder, from, childToParent
         const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {viewedDate:viewedDate})
 
-        if(files && childToParentDownload){
+        if(files){
           const index = files.findIndex(file => file.id == selectFiles[i].id)
-          files[index].viewedDate = viewedDate;
+          // files[index].viewedDate = viewedDate;
         }
 
       }else if(from === "admin" && selectFiles[i].id_folder == folderCliente.id && selectFiles[i].viewedDate === null){
         const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {viewedDate: viewedDate})
 
-        if(files && childToParentDownload){
+        if(files){
           const index = files.findIndex(file => file.id == selectFiles[i].id)
-          files[index].viewedDate = viewedDate;            
+          // files[index].viewedDate = viewedDate;            
         }
       }
     }
   }
+
+  return files;
 }
 
   export default DownloadsFile

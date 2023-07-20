@@ -8,11 +8,10 @@ import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany
 interface Props{
   files?:Files[]
   selectFiles:Files[]
-  dataCompany:DataCompanyContext
-  childToParentDelet?:Function
+  dataCompany:DataCompanyContext  
 }
 
-async function deletFiles({files, selectFiles, dataCompany, childToParentDelet}:Props) {
+async function deletFiles({ files, selectFiles, dataCompany }:Props) {
   const batch = writeBatch(db);
   const promises:any = []
   var size = 0
@@ -23,7 +22,7 @@ async function deletFiles({files, selectFiles, dataCompany, childToParentDelet}:
         const desertRef = ref(storage, file.path);
         promises.push(deleteObject(desertRef))
         batch.delete(ref1)
-        if(files && childToParentDelet){
+        if(files){
           const index:number = files.findIndex(file => file.id === file.id)
           files.splice(index, 1);
         }
@@ -33,10 +32,6 @@ async function deletFiles({files, selectFiles, dataCompany, childToParentDelet}:
       await updateSizeCompany({id_company:dataCompany.id, size, action:'subtraction'})
 
       await Promise.all([promises, batch.commit()])
-
-      if(childToParentDelet){
-        childToParentDelet(files)
-      }
     }
   } catch(e) {
     console.log(e)

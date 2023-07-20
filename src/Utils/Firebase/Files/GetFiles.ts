@@ -19,23 +19,24 @@ export async function GetRecentFiles({id_company,  id_user, from}:interfaceGetRe
   querySnapshot.forEach((document) => {
     var file:Files = {
       id:document.data()?.id,
-      id_company:document.data()?.id_company,
       id_user:document.data()?.id_user,
+      id_company:document.data()?.id_company,
       id_enterprise:document.data()?.id_enterprise,
-      id_folder:document.data()?.id_folder,
       id_event: document.data()?.id_event,
-      name:document.data()?.name,
-      trash:document.data()?.trash,
+      id_folder:document.data()?.id_folder,
       size:document.data()?.size,
-      favorite:document.data()?.favorite,
+      name:document.data()?.name,
       path:document.data()?.path,
       viewedDate:document.data()?.viewedDate,
       type:document.data()?.type,
-      created_date:document.data()?.created_date,
       from:document.data()?.from,
       message:document.data()?.message,
-      downloaded:document.data()?.downloaded,
-      checked:false
+      messageNotif: document.data()?.messageNotif,
+      created_date:document.data()?.created_date,
+      checked:false,
+      trash:document.data()?.trash,
+      favorite:document.data()?.favorite,
+      downloaded:document.data()?.downloaded
     }
     file.checked = false
     files.push(file)
@@ -78,7 +79,8 @@ export async function GetRecentFilesOfEnterprise({id_company,  id_user, id_enter
       from:document.data()?.from,
       message:document.data()?.message,
       downloaded:document.data()?.downloaded,
-      checked:false
+      checked:false,
+      messageNotif: document.data()?.messageNotif,
     }
     file.checked = false
     files.push(file)
@@ -118,7 +120,8 @@ export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setF
       from:document.data()?.from,
       message:document.data()?.message,
       downloaded:document.data()?.downloaded,
-      checked:false
+      checked:false,
+      messageNotif: document.data()?.messageNotif
     }
     file.checked = false
     files.push(file)
@@ -159,7 +162,8 @@ export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, 
       from:document.data()?.from,
       message:document.data()?.message,
       downloaded:document.data()?.downloaded,
-      checked:false
+      checked:false,
+      messageNotif: document.data()?.messageNotif
     }
     files.push(file)
   });
@@ -209,7 +213,8 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
         from:document.data()?.from,
         message:document.data()?.message,
         downloaded:document.data()?.downloaded,
-        checked:false
+        checked:false,
+        messageNotif: document.data()?.messageNotif
       }
       let timeDiff = Date.now() - Date.parse(file.created_date.toString());
 
@@ -284,6 +289,7 @@ export async function GetFilesEvent({id_company, eventSelected, setFiles}: inter
       from:document.data()?.from,
       message:document.data()?.message,
       downloaded:document.data()?.downloaded,
+      messageNotif: document.data()?.messageNotif
     })
   });
 
@@ -320,6 +326,7 @@ export async function GetSpecificFile({id_company, id_user, id_file, setFile}:in
     from:document.data()?.from,
     message:document.data()?.message,
     downloaded:document.data()?.downloaded,
+    messageNotif: document.data()?.messageNotif
   }
   setFile(data)
 } 
@@ -366,7 +373,8 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
         from:document.data()?.from,
         message:document.data()?.message,
         downloaded:document.data()?.downloaded,
-        checked:false
+        checked:false,
+        messageNotif: document.data()?.messageNotif
       }
       let timeDiff = Date.now() - Date.parse(file.created_date.toString());
 

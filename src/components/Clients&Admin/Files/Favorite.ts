@@ -6,10 +6,9 @@ import { toast } from 'react-toastify';
 interface Props{
     favoriteFile:Files
     files:Files[]
-    childToParentDownload:Function
 }
 
-async function Favorite({favoriteFile, files, childToParentDownload}:Props) {                                                                      
+async function Favorite({favoriteFile, files}:Props) {                                                                      
     try{
         await updateDoc(doc(db, 'files', favoriteFile.id_company, favoriteFile.id_user, 'user', 'files', favoriteFile.id), {
             favorite: true

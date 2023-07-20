@@ -13,7 +13,6 @@ import { FilterAlphabetical, FilterSize, FilterDate, FilterStatus } from '../../
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { toast } from 'react-toastify'
 import { usePathname } from 'next/navigation'
-import MessageIcon from "../../../../public/icons/message.svg";
 import { PlusCircledIcon } from '@radix-ui/react-icons';
 
 interface Props{
@@ -27,13 +26,12 @@ interface Props{
   SelectFile:Function
   setFiles:Function
   DeleteFile?:Function
-  childToParentDownload:Function
   setDataPages:Function
 }
 
-export default function TableFiles({id_folder, dataPages, trash, textSearch, files, folderName, from, SelectFile, DeleteFile, childToParentDownload, setFiles, setDataPages}:Props) {
+export default function TableFiles({id_folder, dataPages, trash, textSearch, files, folderName, from, SelectFile, DeleteFile, setFiles, setDataPages}:Props) {
   const [filter, setFilter] = useState<Filter>({name: false, size:false, date:false, status:false})
-  const [modalMessage, setModalMessage] = useState<{status:boolean, permission:string, index:number}>({status:false, permission:'', index:0})
+  const [modalMessage, setModalMessage] = useState<{status:boolean, action: 'view' | 'edit', index:number}>({status:false, action:'edit', index:0})
   const pathName = usePathname()
 
    // <--------------------------------- Select Files --------------------------------->
@@ -54,39 +52,39 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
 
    // <--------------------------------- Download Files --------------------------------->
   function DownloadFile(file){
-    DownloadsFile({selectFiles:[file], files:files, from:from, childToParentDownload:childToParentDownload, id_folder: id_folder})
+    DownloadsFile({selectFiles:[file], files:files, from:from, id_folder: id_folder})
   }
 
   return (
     <div className='min-h-[400px] grid'>
       {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
         <div>
-          {modalMessage.status ? <Message modalMessage={modalMessage} files={files} childToParentDownload={childToParentDownload}  setModalMessage={setModalMessage}/> : <></>}
+          {/* {modalMessage.status ? <Message modalMessage={modalMessage} files={files} setModalMessage={setModalMessage}/> : <></>} */}
           {/* <--------------------------------- HeadTable ---------------------------------> */}
-          <div className="w-full mt-[10px] grid grid-cols-[20px__1fr_120px_200px_110px_70px] max-lg:grid-cols-[20px__1fr_120px_110px_70px] max-md:grid-cols-[20px__1fr_110px_70px] max-sm:grid-cols-[20px__1fr_70px] gap-x-[15px] text-[18px] font-[500] border-y-[1px] border-y-neutral-400  bg-neutral-300  items-center py-[5px]">
+          <div className="w-full mt-[10px] grid grid-cols-[20px_1fr_120px_200px_110px_70px] max-lg:grid-cols-[20px_1fr_120px_110px_70px] max-md:grid-cols-[20px_1fr_110px_70px] max-sm:grid-cols-[20px_1fr_70px] gap-x-[15px] text-[18px] font-[500] border-y-[1px] border-y-neutral-400 bg-neutral-300 items-center py-[5px]">
             <button aria-label="checkbox demonstrativo" onClick={() => SelectAllFiles()} className='w-[22px] h-[22px] cursor-pointer bg-white rounded-[4px] ml-[5px] border-[1px] border-black'/>
             
-            <button id="filterName" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({name:!filter.name, status: false, date:false, size:false}), FilterAlphabetical({dataFilter:files, filter:filter, setReturn:setFiles}))} className='flex items-center cursor-pointer'>
-              <p className="dark:text-white">Nome</p> 
+            <button id="filterName" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({name:!filter.name, status: false, date:false, size:false}), FilterAlphabetical({data:files, action: 'asc'}))} className='flex items-center cursor-pointer'>
+              <p className="dark:text-white">Nome</p>
               <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.name ? "rotate-180" : ""}`}src={ArrowFilter}/>
             </button>
 
-            <button id="filterSize" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({size:! filter.size, name:false, status: false, date:false}), FilterSize({dataFilter:files, filter:filter, setReturn:setFiles}))} className='flex items-center cursor-pointer max-md:hidden'>
+            <button id="filterSize" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({size:!filter.size, name:false, status: false, date:false}), FilterSize({dataFilter:files, filter:filter, setReturn:setFiles}))} className='flex items-center cursor-pointer max-md:hidden'>
               <p className="dark:text-white">Tamanho</p> 
               <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.size ? "rotate-180" : ""}`}src={ArrowFilter}/>
             </button>
 
-            <button id="filterData" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({date:! filter.date, status: false, name:false, size:false}), FilterDate({dataFilter:files, filter:filter, setReturn:setFiles}))} className='flex items-center cursor-pointer max-lg:hidden'>
+            <button id="filterData" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({date:!filter.date, status: false, name:false, size:false}), FilterDate({dataFilter:files, filter:filter, setReturn:setFiles}))} className='flex items-center cursor-pointer max-lg:hidden'>
               <p className='text-left dark:text-white'>Data de upload</p>
               <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
             </button>
 
-            <button id="filterStatus" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, status:! filter.status, name: false,  size:false, date:false}), FilterStatus({dataFilter:files, filter:filter, setReturn:setFiles}))}  className='flex items-center cursor-pointer max-sm:hidden'>
+            <button id="filterStatus" title="Botão do filtro" aria-labelledby="labeldiv" onClick={() => (setFilter({...filter, status:!filter.status, name: false,  size:false, date:false}), FilterStatus({dataFilter:files, filter:filter, setReturn:setFiles}))} className='flex items-center cursor-pointer max-sm:hidden'>
               <p className="dark:text-white">Status</p>
               <Image alt="Imagem de uma flecha" className={`ml-[5px]  ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter}/>
             </button>
 
-            <p className='font-[400] dark:text-white'>Ações</p>
+            <p className='font-[400] text-[1.125rem] dark:text-white'>Ações</p>
           </div>
               
           {/* <--------------------------------- BodyTable ---------------------------------> */}
@@ -128,7 +126,7 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
                   </p>
 
                   <p className="font-[400] max-lg:hidden text-left dark:text-white">
-                    {FormatDate(file.created_date.toString())}
+                    {/* {FormatDate(file.created_date.toString())} */}
                   </p>
 
                   {file.viewedDate ? (
@@ -170,13 +168,13 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
                   <div className="flex justify-center items-center gap-[10px]">
 
                   {pathName == '/Dashboard/Admin/Arquivos' && file.from === "admin" || pathName == '/Dashboard/Clientes/Arquivos' && file.from === "user" ?
-                    <div onClick={() => setModalMessage({index:index, permission:"edit", status:true})} className='bg-[#15E08B] p-[3px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
-                      {file?.message && file?.message?.length > 0 ?  <Image src={MessageIcon} width={22} height={22} alt="Chat"/> : <PlusCircledIcon width={22} height={22} className='text-white'/> }
+                    <div onClick={() => setModalMessage({index:index, action:"edit", status:true})} className='bg-[#15E08B] p-[3px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
+                      {/* {file?.message && file?.message?.length > 0 ?  <Image src={MessageIcon} width={22} height={22} alt="Chat"/> : <PlusCircledIcon width={22} height={22} className='text-white'/> } */}
                     </div>
                   : 
                     file?.message && file?.message?.length > 0 ?
-                      <div onClick={() => setModalMessage({index:index, permission:"viwed", status:true})} className='bg-[#15E08B] p-[2px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
-                        <Image src={MessageIcon} width={22} height={22} alt="Chat"/>
+                      <div onClick={() => setModalMessage({index:index, action:"view", status:true})} className='bg-[#15E08B] p-[2px] rounded-[8px] justify-center items-center flex cursor-pointer hover:scale-105 duration-200'>
+                        {/* <Image src={MessageIcon} width={22} height={22} alt="Chat"/> */}
                       </div>
                     : <></>
                   }
@@ -190,7 +188,6 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
                       DownloadFile={DownloadFile}
                       DeleteFile={DeleteFile ? DeleteFile() : undefined}
                       trash={Boolean(trash)}
-                      childToParentDownload={childToParentDownload}
                     />
                   </div>
                 </div>

@@ -7,10 +7,9 @@ interface Props{
     desfavoriteFile:Files
     files:Files[]
     folderName:string
-    childToParentDownload:Function
   }
 
-  async function Desfavorite({desfavoriteFile, files, childToParentDownload, folderName}: Props) {                                                                          
+  async function Desfavorite({desfavoriteFile, files, folderName}: Props) {                                                                          
     try{
         await updateDoc(doc(db, 'files', desfavoriteFile.id_company, desfavoriteFile.id_user, 'user', 'files', desfavoriteFile.id), {
             favorite: false

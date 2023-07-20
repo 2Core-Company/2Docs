@@ -7,10 +7,9 @@ import { Files } from '../../../types/files'
 interface Props{
   files:Files[]
   selectFiles:Files[]
-  childToParentDelet:Function
 }
 
-async function DisableFiles({files, selectFiles, childToParentDelet}:Props) {
+async function DisableFiles({ files, selectFiles }:Props) {
   const allFiles = [...files]
   const batch = writeBatch(db);
   try{
@@ -23,7 +22,6 @@ async function DisableFiles({files, selectFiles, childToParentDelet}:Props) {
       allFiles.splice(index, 1);
     } 
     await batch.commit();
-    childToParentDelet(allFiles)
   }catch(e){
     console.log(e)
     toast.error("Não Foi possivel excluir este arquivo.")

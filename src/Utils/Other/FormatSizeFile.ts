@@ -1,15 +1,14 @@
 function FormatSizeFile(size:number) {
     if(size < 1024){
-        return `${size}B`
+        return [`${size}`, ' B']
     } else if(size < 1048576){
-        const sizeHere = size / 1024
-        return `${sizeHere.toFixed(1)}KB`
+        return [`${(size / 1024).toFixed(1).replace('.', ',')}`, ' KB']
     } else if(size < 1073741824){
-        const sizeHere = size / 1048576
-        return `${sizeHere.toFixed(1)}MB` 
+        return [`${(size / 1048576).toFixed(1).replace('.', ',')}`,' MB']
     } else if(size < 1073741824){
-        const sizeHere = size / 1073741824
-        return `${sizeHere.toFixed(1)}GB` 
+        return [`${(size / 1073741824).toFixed(1).replace('.', ',')}`,' GB']
+    } else {
+        return ['Não foi possível calcular o tamanho.', ''];
     }
 }
 
