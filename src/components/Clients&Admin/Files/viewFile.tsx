@@ -4,7 +4,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { getDownloadURL, ref } from 'firebase/storage';
-import { GetFolders } from '../../../Utils/Firebase/folders/getFolders';
+import { GetFolders } from '../../../Utils/Firebase/folders/GetFolders';
 
   interface Props{
     file:Files

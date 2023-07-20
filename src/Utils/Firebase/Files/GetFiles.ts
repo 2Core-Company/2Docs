@@ -2,7 +2,7 @@ import { collection, getDocs, query, where, doc, getDoc, orderBy, limit, writeBa
 import { Files } from '../../../types/files';
 import { db } from "../../../../firebase";
 import { toast } from 'react-toastify';
-import { GetFolder } from "../Folders/getFolders";
+import { GetFolder } from "../folders/GetFolders";
 
 
 interface interfaceGetRecentFiles{

@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { Folders } from '../../../types/folders'
 import { getDownloadURL, ref } from 'firebase/storage';
-import { GetFolders } from '../../../Utils/Firebase/Folders/getFolders';
+import { GetFolders } from '../../../Utils/Firebase/folders/GetFolders';
 
 interface Props{
   selectFiles:Files[]
