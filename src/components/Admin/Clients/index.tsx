@@ -1,13 +1,12 @@
 import React, { Suspense } from "react";
 import TableClients from "./tableClients";
-import LightModeSwitch from "../../Clients&Admin/LightModeSwitch";
 import 'react-loading-skeleton/dist/skeleton.css'
 
 
 function ComponentClients() {
   return (
-    <section className="bg-primary dark:bg-dprimary w-full h-full min-h-screen text-black">
-      <p  className="font-poiretOne text-[40px] dark:text-white">Clientes</p>
+    <section className="bg-primary dark:bg-dprimary text-black">
+      <p  className="font-poiretOne text-[40px] dark:text-white mt-[40px]">Clientes</p>
       <Suspense fallback={<SkeletonTableClients />}>
         <TableClients/>
       </Suspense>

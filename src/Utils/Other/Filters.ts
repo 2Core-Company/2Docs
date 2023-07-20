@@ -41,38 +41,45 @@
     return data
   }
 
-
-  export function FilterStatus({dataFilter, filter, setReturn}) {
-    var dataToFilter = [...dataFilter];
-    dataToFilter.sort(function (x, y) {
-      let a = x.status;
-      let b = y.status;
-      if(x.status === undefined){
-        a = x.viwed
-        b= y.viwed
-      }
-
-      if (filter.status) {
-        return a == b ? 0 : a < b ? 1 : -1;
+  export function FilterSizeFiles({data, action}:props) {
+    data.sort(function (x, y) {
+      let a = x.size
+      let b = y.size
+      if (action === 'asc') {
+        return a - b 
       } else {
-        return a == b ? 0 : a > b ? 1 : -1;
+        return b - a 
       }
     });
-    setReturn(FilterFixed(dataToFilter));
+    return data
   }
 
-  export function FilterDate({dataFilter, filter, setReturn}) {
-    var dataToFilter = [...dataFilter];
-    dataToFilter.sort((a, b) => {
-      a.date = new Date(a.created_date);
-      b.date = new Date(b.created_date);
-      if (filter.date) {
-        return b.date.getTime() - a.date.getTime();
+  export function FilterStatus({data, action}:props) {
+    data.sort(function (x, y) {
+      let a = x.disabled;
+      let b = y.disabled;
+
+      if (action === 'asc') {
+        return a - b
       } else {
-        return a.date.getTime() - b.date.getTime();
+        return b - a
       }
     });
-    setReturn(FilterFixed(dataToFilter));
+    console.log(data)
+    return data
+  }
+
+  export function FilterDate({data, action}:props) {
+    data.sort(function (x, y) {
+      let a = x.created_date
+      let b = y.created_date
+      if (action === 'asc') {
+        return a - b 
+      } else {
+        return b - a 
+      }
+    });
+    return data
   }
 
   export function FilterSize({dataFilter, filter, setReturn}){

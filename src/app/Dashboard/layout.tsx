@@ -11,7 +11,8 @@ import { companyContext } from '../Context/contextCompany';
 import { stripe } from '../../../lib/stripe'
 import {  DataUserContext } from '../../types/users';
 import { toast, ToastContainer } from 'react-toastify';
-
+import { setOnlineUsers } from '../../Utils/Firebase/Company/OnlineUsers';
+import { GetUser } from '../../Utils/Firebase/Users/GetUsers';
 
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
@@ -48,7 +49,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       }
 
       await Promise.all([
-        GetUser(user, idTokenResult?.claims.permission),
+        GetDataUser(user, idTokenResult?.claims.permission),
         GetDataCompanyUser({id_company:user.displayName, data})
       ])
 
@@ -79,29 +80,22 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
 
 
   //Pegando credenciais dos usuários
-  async function GetUser(user, permission){
+  async function GetDataUser(user, permission){
     try{
       if(user.displayName){
-        const docRef = doc(db, "companies", user.displayName, "clients", user.uid);
-        const docSnap = await getDoc(docRef);
-        setPropsNavBar({urlImage: docSnap.data()?.photo_url, permission: permission, name:docSnap.data()?.name})        
-        var allDataUser:DataUserContext = {
-          email:docSnap.data()?.email,  
-          id:docSnap.data()?.id, 
-          id_company:docSnap.data()?.id_company, 
-          verifiedEmail:docSnap.data()?.verifiedEmail,
-          photo_url:docSnap.data()?.photo_url,
-          status:docSnap.data()?.status,
-          fixed:docSnap.data()?.fixed,
-          name:docSnap.data()?.name,     
-          pendencies:docSnap.data()?.pendencies,
-          permission:permission, 
-          phone:docSnap.data()?.phone, 
-          enterprises:docSnap.data()?.enterprises,
-        }
+        const allDataUser = await GetUser({id_company:user.displayName, id_user:user.uid})
+        setPropsNavBar({urlImage: allDataUser.photo_url, permission: permission, name:allDataUser.name})  
 
         if(allDataUser.permission === 0) {
           setDataUser(allDataUser)
+          
+          setOnlineUsers({
+            id_company: allDataUser.id_company,
+            id_user: allDataUser.id,
+            img: allDataUser.photo_url,
+            name: allDataUser.name
+          })
+          
         } else {
           setDataAdmin(allDataUser)
         }

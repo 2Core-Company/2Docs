@@ -93,7 +93,7 @@ function UploadFiles({folderName, files, id_folder, menu, permission, id_user, i
       } else {
         type = "docs"
       }
-      const date = new Date().getTime() + ''
+      const date = new Date().getTime()
 
       const data:Files = {
         id_user: id_user,

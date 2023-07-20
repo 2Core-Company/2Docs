@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { db, storage } from '../../../../firebase'
-import { doc, updateDoc } from "firebase/firestore";  
+import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { getDownloadURL, ref } from 'firebase/storage';
@@ -34,7 +34,6 @@ function ViewFile({file, setFiles, setViewFile, admin}:Props) {
 
       if(admin === false && file.id_folder != folderCliente.id && file.viewedDate === null){
         updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
-          viewed: true,
           viewedDate: viewedDate
         })
         
@@ -45,7 +44,6 @@ function ViewFile({file, setFiles, setViewFile, admin}:Props) {
         })
       } else if(admin && file.id_folder == folderCliente.id && file.viewedDate === null){
           updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
-          viewed: true,
           viewedDate: viewedDate
         })
 

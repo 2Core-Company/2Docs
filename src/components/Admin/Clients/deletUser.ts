@@ -19,7 +19,8 @@ async function deletUser({ user, users, domain, ResetConfig }: Props) {
     await DeleteAuth()
   } else {
     await Promise.all([DeletePhoto(), DeletFile(), DeletFilesStorage(), DeletFilesFireStore(), DeletEvents()])
-      .then((values) => {
+      .then(async(values) => {
+        await batch.commit();
         const allUsers = [...users]
         const index = allUsers.findIndex((data) => data.id === user.id)
         allUsers.splice(index, 1);
@@ -33,15 +34,14 @@ async function deletUser({ user, users, domain, ResetConfig }: Props) {
     try {
       const result = await axios.post(`${domain}/api/users/deleteUser`, { users: user, uid: auth.currentUser?.uid })
       if (result.status === 200) {
-        await Promise.all([DeletePhoto(), DeletFile(), DeletFilesStorage(), DeletFilesFireStore(), DeletEvents()])
-          .then((values) => {
+        const result = await Promise.all([DeletePhoto(), DeletFile(), DeletFilesStorage(), DeletFilesFireStore(), DeletEvents()])
+          .then(async (values) => {
+            await batch.commit();
             const allUsers = [...users]
             const index = allUsers.findIndex((data) => data.id === user.id)
             allUsers.splice(index, 1);
             ResetConfig(allUsers)
           });
-
-        await batch.commit();
       } else {
         ErrorFirebase(result.data)
       }

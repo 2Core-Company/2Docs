@@ -2,7 +2,6 @@ import {db, storage} from '../../../../firebase'
 import { doc, writeBatch} from "firebase/firestore";  
 import { ref, deleteObject} from "firebase/storage";
 import { Files } from '../../../types/files'
-import { DataCompanyContext } from '../../../types/dataCompany';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 
 interface Props{
@@ -29,7 +28,7 @@ async function deletFiles({ files, selectFiles, dataCompany }:Props) {
         size += file.size
       }
 
-      await updateSizeCompany({id_company:dataCompany.id, size, action:'subtraction'})
+      await updateSizeCompany({id_company:id_company, size, action:'subtraction'})
 
       await Promise.all([promises, batch.commit()])
     }

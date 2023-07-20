@@ -85,7 +85,7 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
       photo_url: user.url,
       nameImage: user.referencesFile,
       created_date: date,
-      status: false,
+      disabled: false,
       verifiedEmail: false,
       permission: 0,
       fixed: false,
@@ -168,8 +168,8 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
 
 
   return (
-    <div className={`w-[600px] h-full z-10 max-sm:z-50 top-0 max-sm:w-screen absolute bg-[#DDDDDD] dark:bg-[#121212] min-h-screen right-0 flex flex-col items-center drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
-      <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full'>
+    <div className={`w-[600px] h-full z-10 max-sm:z-50 top-0 max-sm:w-screen fixed bg-[#DDDDDD] dark:bg-[#121212] min-h-screen right-0 flex flex-col items-center drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
+      <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[152px] max-md:h-[133px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full'>
         <button disabled={loading ? true : false} onClick={() => closedWindow()}>
           <DoubleArrowRightIcon className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]' />
         </button>

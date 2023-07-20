@@ -8,11 +8,11 @@ export interface Event{
   title:string
   description:string
   complete:boolean
-  dateStarted:Date | number
-  dateEnd:null | Date
+  dateStarted:number
+  dateEnd:null | number
   definedDate:boolean
   repeatMonths:boolean
   limitedDelivery:boolean
-  lastModify:string | null
+  lastModify:number | null
   delivered:boolean
 }

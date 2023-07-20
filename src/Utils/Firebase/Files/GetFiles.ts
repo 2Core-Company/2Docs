@@ -2,8 +2,7 @@ import { collection, getDocs, query, where, doc, getDoc, orderBy, limit, writeBa
 import { Files } from '../../../types/files';
 import { db } from "../../../../firebase";
 import { toast } from 'react-toastify';
-import { Event } from '../../../types/event'
-import { GetFolder } from "./../folders/getFolders";
+import { GetFolder } from "../Folders/getFolders";
 
 
 interface interfaceGetRecentFiles{
@@ -47,6 +46,92 @@ export async function GetRecentFiles({id_company,  id_user, from}:interfaceGetRe
   }
 }
 
+interface interfaceGetAllFilesOfEnterprise{
+  id_company:string
+  id_user:string
+  id_enterprise:string
+}
+
+export async function GetAllFilesOfEnterprise({id_company,  id_user, id_enterprise}:interfaceGetAllFilesOfEnterprise){
+  const files:Files[] = []
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("id_enterprise", "==", id_enterprise));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((document) => {
+    var file:Files = {
+      id:document.data()?.id,
+      id_company:document.data()?.id_company,
+      id_user:document.data()?.id_user,
+      id_enterprise:document.data()?.id_enterprise,
+      id_folder:document.data()?.id_folder,
+      id_event: document.data()?.id_event,
+      name:document.data()?.name,
+      trash:document.data()?.trash,
+      size:document.data()?.size,
+      favorite:document.data()?.favorite,
+      path:document.data()?.path,
+      viewedDate:document.data()?.viewedDate,
+      type:document.data()?.type,
+      created_date:document.data()?.created_date,
+      from:document.data()?.from,
+      message:document.data()?.message,
+      downloaded:document.data()?.downloaded,
+      checked:false
+    }
+    file.checked = false
+    files.push(file)
+  });
+
+  return files
+}
+
+interface interfaceGetAllFilesOfFolder{
+  id_company:string
+  id_user:string
+  id_enterprise:string
+  id_folder:string
+}
+
+export async function GetAllFilesOfFolder({id_company,  id_user, id_enterprise, id_folder}:interfaceGetAllFilesOfFolder){
+  const files:Files[] = []
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("id_enterprise", "==", id_enterprise), where("id_folder", "==", id_folder));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((document) => {
+    var file:Files = {
+      id:document.data()?.id,
+      id_company:document.data()?.id_company,
+      id_user:document.data()?.id_user,
+      id_enterprise:document.data()?.id_enterprise,
+      id_folder:document.data()?.id_folder,
+      id_event: document.data()?.id_event,
+      name:document.data()?.name,
+      trash:document.data()?.trash,
+      size:document.data()?.size,
+      favorite:document.data()?.favorite,
+      path:document.data()?.path,
+      viewedDate:document.data()?.viewedDate,
+      type:document.data()?.type,
+      created_date:document.data()?.created_date,
+      from:document.data()?.from,
+      message:document.data()?.message,
+      downloaded:document.data()?.downloaded,
+      checked:false
+    }
+    file.checked = false
+    files.push(file)
+  });
+
+  return files
+}
+
+
+
+interface interfaceGetRecentFilesOfEnterprise{
+  id_company:string
+  id_user:string
+  id_enterprise:string
+  from:string
+  setRecentFiles:Function
+}
 
 interface interfaceGetRecentFilesOfEnterprise{
   id_company:string
@@ -260,14 +345,13 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
 
 interface interfaceGetFilesEvent{
   id_company:string
-  eventSelected:Event,
-  setFiles:Function
+  id_user:string
+  id_event:string
 }
 
-export async function GetFilesEvent({id_company, eventSelected, setFiles}: interfaceGetFilesEvent){
+export async function GetFilesEvent({id_company, id_user, id_event}: interfaceGetFilesEvent){
   const getFiles:Files[] = []
-  console.log(id_company)
-  var q = query(collection(db, "files", id_company, eventSelected.id_user, 'user', 'files'), where("id_event", "==",  eventSelected.id));
+  var q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("id_event", "==",  id_event));
 
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((document) => {
@@ -292,8 +376,7 @@ export async function GetFilesEvent({id_company, eventSelected, setFiles}: inter
       messageNotif: document.data()?.messageNotif
     })
   });
-
-  setFiles(getFiles)
+  return getFiles
 }
 
 

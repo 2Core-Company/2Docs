@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { Files } from '../../../types/files' 
 import { Folders } from '../../../types/folders';
-import { GetFolders } from '../../../Utils/Firebase/folders/getFolders';
+import { GetFolders } from '../../../Utils/Firebase/Folders/getFolders';
 import { companyContext } from '../../../app/Context/contextCompany';
 import { GetSizeCompany } from '../../../Utils/Firebase/Company/GetSizeCompany';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
@@ -104,7 +104,6 @@ function  CopyTo({file, setCopyTo}: Props) {
       throw toast.error("Não foi possivel copiar o arquivo")
     } 
   }
-
 
     return (
       folders.length > 3 ?

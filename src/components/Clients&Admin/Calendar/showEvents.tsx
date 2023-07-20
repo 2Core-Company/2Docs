@@ -1,11 +1,12 @@
 import { ChevronRightIcon } from '@radix-ui/react-icons'
-import React from 'react'
+import React, { useContext } from 'react'
 import Image from 'next/image'
 import imageEventDashboard from '../../../../public/icons/imageEventDashboard.svg'
 import { FormatDateVerySmall } from '../../../Utils/Other/FormatDate'
 import { Event } from '../../../types/event'
 import { Component } from '../../../Utils/Other/componentRoot'
 import Link from 'next/link'
+import { adminContext } from '../../../app/Context/contextAdmin'
 
 interface Props {
     events: Event[]
@@ -15,7 +16,8 @@ interface Props {
 }
 
 function ShowEvents({events, from, nameUser, id_user}: Props) {
-    const admin = window.location.pathname.includes('Admin') ? true : false
+    const { dataAdmin } = useContext(adminContext)
+    const admin = dataAdmin.id === '' ? false : true
 
     function CalculateStatus(event) {
         const diffInMs = event.dateEnd - new Date().getTime()
@@ -29,6 +31,15 @@ function ShowEvents({events, from, nameUser, id_user}: Props) {
                 styleText: 'line-through',
                 text: 'Concluído'
             }
+        } else if (event.delivered) {
+            data = {
+                styleCircle: 'bg-[#2E86AB]',
+                styleDiv: 'text-[#000]',
+                styleDivStatus: 'border-[#2E86AB] text-[#2E86AB]',
+                styleText: '',
+                text: 'Entregue'
+            }
+
         } else if (event.dateEnd === null) {
             data = {
                 styleCircle: 'bg-[#BB8702]',
@@ -65,7 +76,7 @@ function ShowEvents({events, from, nameUser, id_user}: Props) {
                         {events.map((event, index) => {
                             const data = CalculateStatus(event)
                             return (
-                                <Link href={`${admin ? `/Dashboard/Clientes/Evento/${event.id}/${nameUser}` : `/Dashboard/Clientes/Evento/${event.id}/${undefined}`}`} key={event.id} className={`${index === 0 ? 'max-sm:rounded-t-[12px]' : ''} flex items-center group cursor-pointer `}>
+                                <Link href={`${admin ? `/Dashboard/Admin/Evento/${event.id}/${nameUser}` : `/Dashboard/Clientes/Evento/${event.id}/${undefined}`}`} key={event.id} className={`${index === 0 ? 'max-sm:rounded-t-[12px]' : ''} flex items-center group cursor-pointer `}>
                                     <div className='flex items-start'>
                                         <div className={`${data.styleCircle} w-[12px] h-[12px] rounded-full mt-[10px]`} />
                                         <div className={`${data.styleDiv} `}>
@@ -80,7 +91,7 @@ function ShowEvents({events, from, nameUser, id_user}: Props) {
                                                     </p>
                                                 </div>
 
-                                                <p className='ml-[20px] max-lsm:ml-[10px] max-sm:text-[14px]'>Data Venc.: <span className='text-[14px] max-sm:text-[12px]'>{FormatDateVerySmall(event.dateStarted)}</span></p>
+                                                {event.dateEnd && <p className='ml-[20px] max-lsm:ml-[10px] max-sm:text-[14px]'>Data Venc.: <span className='text-[14px] max-sm:text-[12px]'>{FormatDateVerySmall(event.dateEnd)}</span></p>}
                                             </div>
                                         </div>
                                     </div>

@@ -11,16 +11,16 @@ import { DisableUser } from "./DisableUser";
 import { WindowsAction } from "../../../types/others";
 import { toast } from "react-toastify";
 import { adminContext } from '../../../app/Context/contextAdmin';
-import { MagnifyingGlassIcon, DrawingPinFilledIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon, DrawingPinFilledIcon, PlusIcon } from "@radix-ui/react-icons";
 import EditUser from "./editUser";
 import CreateUser from "./createUser";
 import * as HoverCard from '@radix-ui/react-hover-card';
 import { loadingContext } from "../../../app/Context/contextLoading";
+import ModalEvent from "../Calendar/modalEvent";
 
 function TableClients() {
   const [showItens, setShowItens] = useState<{ min: number; max: number }>({ min: -1, max: 10, });
-  const [filter, setFilter] = useState<{ name: boolean; date: boolean; status: boolean; }>({ name: false, date: false, status: false });
-  const {loading, setLoading} = useContext(loadingContext)
+  const { loading, setLoading } = useContext(loadingContext)
   const { dataAdmin } = useContext(adminContext);
   const [users, setUsers] = useState<DataUser[]>([]);
   const [userEdit, setUserEdit] = useState<any>();
@@ -31,6 +31,8 @@ function TableClients() {
   const [searchText, setSearchText] = useState<string>("")
   const toastDisable = { pending: "Trocando status do usuário.", success: "Status trocado com sucesso." };
   const domain = window.location.origin
+  const [actionFilters, setActionFilters] = useState<{ name: 'desc' | 'asc', date: 'desc' | 'asc', status: 'desc' | 'asc' }>({ name: 'desc', date: 'desc', status: 'desc' })
+  const [modalEvent, setModalEvent] = useState(false)
 
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() => {
@@ -40,9 +42,9 @@ function TableClients() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataAdmin]);
 
-  async function GetAllUser(){
-    const result = await GetUsers({id_company:dataAdmin.id_company});
-    if(result){
+  async function GetAllUser() {
+    const result = await GetUsers({ id_company: dataAdmin.id_company });
+    if (result) {
       setPages(Math.ceil(result.length / 10));
       setUsers(FilterFixed(result));
     }
@@ -57,7 +59,7 @@ function TableClients() {
 
   // <--------------------------------- Select User --------------------------------->
   async function SelectUsers(index: number) {
-    if(!users[index].verifiedEmail){
+    if (!users[index].verifiedEmail) {
       return toast.error('Não é possivel selecionar um usúario pendente.')
     }
 
@@ -107,35 +109,78 @@ function TableClients() {
       return FormatDateSmall(date);
     }
   }
-  
+
+  function FilterName() {
+    const result = FilterAlphabetical({ data: users, action: actionFilters.name })
+    var type
+    if (actionFilters.name === 'asc') {
+      type = 'desc'
+    } else if (actionFilters.name === 'desc') {
+      type = 'asc'
+    }
+    setUsers(result)
+    setActionFilters({ name: type, date: 'desc', status: 'desc' })
+  }
+
+  function FilterDateHere() {
+    const result = FilterDate({ data: users, action: actionFilters.date })
+    var type
+    if (actionFilters.date === 'asc') {
+      type = 'desc'
+    } else if (actionFilters.date === 'desc') {
+      type = 'asc'
+    }
+    setUsers(result)
+    setActionFilters({ name: 'desc', date: type, status: 'desc' })
+  }
+
+  function FilterStatusHere() {
+    const result = FilterStatus({ data: users, action: actionFilters.status })
+    var type
+    if (actionFilters.status === 'asc') {
+      type = 'desc'
+    } else if (actionFilters.status === 'desc') {
+      type = 'asc'
+    }
+    setUsers(result)
+    setActionFilters({ name: 'desc', date: 'desc', status: type })
+  }
+
+
 
   return (
     <>
+      {modalEvent && <ModalEvent action={"create"} modalEvent={modalEvent} setModalEvent={setModalEvent} />}
       {windowsAction.createUser ? <CreateUser contextAdmin={dataAdmin} childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}
       {windowsAction.updateUser ? <EditUser contextAdmin={dataAdmin} user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow} /> : <></>}
-      <div className="relative min-h-[400px] w-full flex flex-col text-[17px] max-sm:text-[16px]  border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
-        <div className="my-[15px] flex justify-between mx-[30px] max-sm:mx-[20px] max-lsm:mx-[10px] ">
-          <div className="text-[20px] max-lg:text-[18px] max-sm:text-[17px] flex items-center bg-transparent">
-            <p className="mr-[30px] max-sm:mr-[20px] font-[500] dark:text-white">
+      <div className="relative h-[600px] w-full flex flex-col max-sm:text-[16px]  border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
+        <div className="my-[15px] flex justify-between px-[25px] max-sm:px-[20px] max-lsm:px-[10px] ">
+          <div className="text-[18px] max-sm:text-[17px] flex items-center bg-transparent">
+            <p className="mr-[20px] max-sm:mr-[20px] font-[500] dark:text-white whitespace-nowrap">
               {users.length}
               <span className="text-[#AAA] dark:text-white"> Clientes</span>
             </p>
             <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px] dark:text-white" />
-            <input type="text" onChange={(text) => setSearchText(text.target.value)} placeholder="Buscar" className="w-[330px] outline-[#646464] dark:text-white text-black max-sm:w-[200px] max-lsm:w-[150px] bg-transparent dark:placeholder:text-gray-500" />
+            <input type="text" onChange={(text) => setSearchText(text.target.value)} placeholder="Buscar" className="w-[250px] outline-[#646464] dark:text-white text-black max-sm:w-[200px] max-lsm:w-[150px] bg-transparent dark:placeholder:text-gray-500" />
           </div>
 
-          <div className={`text-center flex gap-[20px] max-lg:absolute max-lg:flex-col max-lg:px-[5px] max-lg:pb-[5px] max-lg:right-[0px] max-lg:top-[0px] ${menu ? 'max-lg:bg-trasparent' : 'max-lg:bg-[#d1d1d1]'} dark:max-lg:bg-[#2b2b2b] rounded-[8px]`}>
-            <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`cursor-pointer flex-col hidden max-lg:flex absolute right-[10px] ${menu ? 'mt-[20px]' : 'mt-[27px]'} `}>
-              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-[#6B6B6B] dark:bg-white ${menu ? "" : "rotate-45"}`} />
-              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-[#6B6B6B] dark:bg-white my-[4px] ${menu ? "" : "hidden"}`} />
-              <div className={`rounded-[100px] w-[30px] max-sm:w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
+          <div className={`text-center flex gap-[10px] max-lg:absolute max-lg:flex-col max-lg:px-[5px] max-lg:pb-[5px] max-lg:right-[0px] max-lg:top-[0px] ${menu ? 'max-lg:bg-trasparent' : 'max-lg:bg-[#e2e2e2]'} dark:max-lg:bg-[#2b2b2b] rounded-[8px]`}>
+            <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`cursor-pointer flex-col hidden max-lg:flex absolute right-[15px] ${menu ? 'mt-[15px]' : 'mt-[20px]'} `}>
+              <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B] dark:bg-white ${menu ? "" : "rotate-45"}`} />
+              <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B] dark:bg-white my-[4px] ${menu ? "" : "hidden"}`} />
+              <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
             </button>
 
-            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`max-lg:mt-[50px] hover:brightness-[.85] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
+            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`hover:bg-[#e0e0e0] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
               Trocar Status
             </button>
-            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:brightness-[.85] duration-100 bg-[#00B268] boder-[1px] border-[#119E70] text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
-              + Cadastrar
+
+            <button onClick={() => setModalEvent(true)} className={`flex items-center border hover:bg-emerald-600  bg-emerald-500 boder-[1px] border-emerald-600 py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] duration-100 max-lg:mt-[40px] text-white ${menu ? "max-lg:hidden" : ""}`}>
+              Novo Evento
+            </button>
+
+            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:bg-emerald-600 duration-100 bg-emerald-500 border-[1px] border-emerald-600  text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
+              Cadastrar
             </button>
           </div>
         </div>
@@ -158,9 +203,9 @@ function TableClients() {
               </div>
 
               <div>
-                <button onClick={() => (setFilter({ ...filter, name: !filter.name, status: false, date: false }), FilterAlphabetical({ dataFilter: users, filter: filter, setReturn: setUsers }))} className="hover:opacity-[.65] text-left flex items-center cursor-pointer  py-[15px] ">
+                <button onClick={() => FilterName()} className="hover:opacity-[.65] text-left flex items-center cursor-pointer  py-[15px] ">
                   <p className="dark:text-white">Nome</p>
-                  <Image alt="Imagem de uma flecha" className={`ml-[2px] ${filter.name ? "rotate-180" : ""}`} src={ArrowFilter} />
+                  <Image alt="Imagem de uma flecha" className={`ml-[2px] ${actionFilters.name === 'asc' ? "rotate-180" : ""}`} src={ArrowFilter} />
                 </button>
               </div>
 
@@ -168,17 +213,17 @@ function TableClients() {
               <p className="text-left dark:text-white max-sm:hidden"> Email </p>
 
               <div className="max-md:hidden">
-                <button onClick={() => (setFilter({ ...filter, date: !filter.date, status: false, name: false }), FilterDate({ dataFilter: users, filter: filter, setReturn: setUsers }))} className="hover:opacity-[.65] flex items-center cursor-pointer  py-[15px] ">
+                <button onClick={() => FilterDateHere()} className="hover:opacity-[.65] flex items-center cursor-pointer  py-[15px] ">
                   <p className="text-left dark:text-white hidden xl:block">Data de cadastro</p>
                   <p className="text-left dark:text-white hidden max-xl:block">Data</p>
-                  <Image alt="Imagem de uma flecha" className={`ml-[2px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter} />
+                  <Image alt="Imagem de uma flecha" className={`ml-[2px] ${actionFilters.date === 'asc' ? "rotate-180" : ""}`} src={ArrowFilter} />
                 </button>
               </div>
 
               <div>
-                <button onClick={() => (setFilter({ ...filter, status: !filter.status, name: false, date: false }), FilterStatus({ dataFilter: users, filter: filter, setReturn: setUsers }))} className="hover:opacity-[.65] flex items-center cursor-pointer  py-[15px] ">
+                <button onClick={() => FilterStatusHere()} className="hover:opacity-[.65] flex items-center cursor-pointer  py-[15px] ">
                   <p className="dark:text-white">Status</p>
-                  <Image alt="Imagem de uma flecha" className={`ml-[2px]  ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter} />
+                  <Image alt="Imagem de uma flecha" className={`ml-[2px]  ${actionFilters.status === 'asc' ? "rotate-180" : ""}`} src={ArrowFilter} />
                 </button>
               </div>
 
@@ -198,8 +243,8 @@ function TableClients() {
                       max-xl:grid-cols-[45px__repeat(2,1fr)_100px_100px_60px]
                       max-lg:grid-cols-[45px__repeat(2,1fr)_100px_90px_50px]
                       max-md:grid-cols-[45px__repeat(2,1fr)_90px_50px]
-                      max-sm:grid-cols-[35px__repeat(1,1fr)_90px_50px]
-                      max-lsm:grid-cols-[36px__repeat(1,1fr)_65px_50px]
+                      max-sm:grid-cols-[35px__repeat(1,1fr)_100px_50px]
+                      max-lsm:grid-cols-[36px__repeat(1,1fr)_80px_50px]
                       border-b-[1px] border-b-neutral-400 px-[15px] max-md:px-[10px] max-sm:px-[5px] gap-x-[30px] max-lg:gap-x-[10px] max-sm:gap-x-[5px] font-[500] items-center max-xl:text-[16px]`}>
                       <div className="flex justify-between w-full items-center">
                         <input disabled={loading ? true : false} aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)} onClick={() => SelectUsers(index)} className={`${user.checked ? '' : 'appearance-none'} accent-gray-600 cursor-pointer  w-[20px] h-[20px] border-[1px] border-[#666666] rounded-[4px]`} />
@@ -222,7 +267,7 @@ function TableClients() {
                       </p>
 
                       {user.verifiedEmail ?
-                        user.status ?
+                        user.disabled ?
                           <div className="w-full max-w-[90px] bg-red/20 border-red text-[#c50000] border-[1px] text-[17px] max-lg:text-[16px] rounded-[5px] text-center max-lsm:w-[20px] max-lsm:h-[20px] max-lsm:justify-self-center max-lsm:rounded-full max-lsm:bg-red">
                             <p className="max-lsm:hidden">Inativo</p>
                           </div>
@@ -233,17 +278,17 @@ function TableClients() {
                             <p className="max-lsm:hidden">Ativo</p>
                           </div>
                         :
-                          <HoverCard.Root>
-                            <HoverCard.Trigger className="w-full max-w-[90px] bg-[rgba(224,187,0,0.2)] border-[#E0BC00] text-[#9A8200] border-[1px] text-[17px]  max-lg:text-[16px] rounded-[5px] text-center max-lsm:w-[20px] max-lsm:h-[20px] max-lsm:justify-self-center max-lsm:rounded-full max-lsm:bg-[#E0BC00]">
-                              <p className="max-lsm:hidden">Pendente</p>
-                            </HoverCard.Trigger>
-                            <HoverCard.Portal>
-                              <HoverCard.Content className="bg-primary drop-shadow-[0_5px_5px_rgba(0,0,0,0.40)] rounded-[5px] px-[15px] py-[10px]">
-                                <p className="text-black">Este usúario não verificou o email.</p>
-                                <HoverCard.Arrow className="fill-primary" />
-                              </HoverCard.Content>
-                            </HoverCard.Portal>
-                          </HoverCard.Root>
+                        <HoverCard.Root>
+                          <HoverCard.Trigger className="w-full max-w-[90px] bg-[rgba(224,187,0,0.2)] border-[#E0BC00] text-[#9A8200] border-[1px] text-[17px]  max-lg:text-[16px] rounded-[5px] text-center max-lsm:w-[20px] max-lsm:h-[20px] max-lsm:justify-self-center max-lsm:rounded-full max-lsm:bg-[#E0BC00]">
+                            <p className="max-lsm:hidden">Pendente</p>
+                          </HoverCard.Trigger>
+                          <HoverCard.Portal>
+                            <HoverCard.Content className="bg-primary drop-shadow-[0_5px_5px_rgba(0,0,0,0.40)] rounded-[5px] px-[15px] py-[10px]">
+                              <p className="text-black">Este usúario não verificou o email.</p>
+                              <HoverCard.Arrow className="fill-primary" />
+                            </HoverCard.Content>
+                          </HoverCard.Portal>
+                        </HoverCard.Root>
                       }
 
                       <div className="w-full flex justify-center items-center">
@@ -271,15 +316,15 @@ function TableClients() {
           <div className="w-full h-full flex justify-center items-center flex-col">
             <Image src={users.length <= 0 ? '/icons/nullClient.svg' : '/icons/notFoundSearch.svg'} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="" className="cursor-pointer w-[170px] h-[170px]" />
 
-              {users.length <= 0 ? 
-                <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
-                  Nada por aqui... <br />Cadastre seu primeiro cliente! 
-                </p>
-              : 
-                <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
-                  Nenhum resultado foi encontrado.
-                </p>
-              }
+            {users.length <= 0 ?
+              <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
+                Nada por aqui... <br />Cadastre seu primeiro cliente!
+              </p>
+              :
+              <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
+                Nenhum resultado foi encontrado.
+              </p>
+            }
 
           </div>
         )}

@@ -12,7 +12,7 @@ export interface DataUserContext{
   permission:number
   phone:string 
   photo_url:string 
-  status:boolean
+  disabled:boolean
   fixed:boolean
   enterprises?:Enterprise[]
   checked?:boolean
@@ -30,7 +30,7 @@ export interface DataUserContext{
     permission:number
     phone?:string 
     photo_url:string 
-    status?:boolean
+    disabled?:boolean
     fixed?:boolean
     enterprises:Enterprise[]
     checked?:boolean

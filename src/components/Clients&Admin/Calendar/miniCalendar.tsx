@@ -1,8 +1,9 @@
-import { Dispatch, useEffect, useState } from "react";
+import { Dispatch, useContext, useEffect, useState } from "react";
 import moment from "moment";
 import calendarBuild from "./Calendarbuild";
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { Event } from "../../../types/event";
+import { adminContext } from "../../../app/Context/contextAdmin";
 
 interface Props {
     events: Event[]
@@ -13,13 +14,14 @@ interface Props {
 export default function Calendar({ events, AfterSelectDate, setDataMonth }: Props) {
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [indexMonth, setIndexMonth] = useState(new Date().getMonth())
-    const [dateSelected, setDateSelected] = useState<Date>()
+    const [dateSelected, setDateSelected] = useState<Date>(new Date(new Date().setHours(0,0,0,0)))
     const weekDays = ["D", "S", "T", "Q", "Q", "S", "S"];
     const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const monthBr = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
     moment.updateLocale("pt", { months: monthBr });
     const dateNow = new Date().setHours(0, 0, 0, 0)
     const [calendar, setCalendar] = useState(calendarBuild(moment().locale("pt").month(month[indexMonth]).year(currentYear)));
+
 
     function ChangeMonth(action) {
         if (action === 'before') {

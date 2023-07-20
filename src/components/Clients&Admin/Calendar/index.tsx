@@ -9,14 +9,15 @@ import ShowEvents from '../../Clients&Admin/Calendar/showEvents'
 import { FormatDate } from '../../../Utils/Other/FormatDate'
 import { companyContext } from '../../../app/Context/contextCompany'
 import Link from 'next/link'
+import { adminContext } from '../../../app/Context/contextAdmin'
 
 function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
   const { dataCompany } = useContext(companyContext)
   const [ eventsInDateSelected, setEventsInDateSelected] = useState<Event[]>([])
   const [dataMonth, setDataMonth] = useState({ firstDay: moment().clone().startOf("month").valueOf(), lastDay: moment().clone().endOf("month").valueOf() })
   const [events, setEvents] = useState<Event[]>([])
-  const [dateSelected, setDateSelected] = useState<number>(new Date().getTime())
-
+  const [dateSelected, setDateSelected] = useState<number>(new Date().setHours(0,0,0,0))
+  
   useEffect(() => {
     GetEventsInMonthSelected()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -24,9 +25,10 @@ function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
 
   async function GetEventsInMonthSelected() {
     const result = await GetEventsInOneMonth({ id_company: dataCompany.id, id_user, dateMin: dataMonth.firstDay, dateMax: dataMonth.lastDay })
-
+    const day = new Date(dateSelected).getTime()
     if (result) {
       setEvents(result)
+      setEventsInDateSelected(result.filter((date) => date.dateStarted === day))
     }
   }
 
@@ -39,17 +41,17 @@ function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
   return (
     <div className="bg-primary dark:bg-dprimary text-black dark:text-white">
       <p className='font-poiretOne text-[40px] mt-[40px]'>Calendário</p>
-      <div className='flex items-center text-[#AAAAAA] text-[18px] mt-[5px]'>
-        <PersonIcon width={17} height={17} className='mr-[5px]' />
+      <div className='flex items-center text-[#AAAAAA] text-[18px] max-sm:text-[16px] mt-[5px]'>
+        <PersonIcon className='min-w-[17px] min-h-[17px] mr-[5px]' />
         {nameUser === 'undefined' ? 
           <Link href={'/Dashboard/Clientes'}>Pessoal</Link>
         :
-          <Link href={'/Dashboard/Admin/Clientes'}>{nameUser}</Link>
+          <Link href={'/Dashboard/Admin/Clientes'}>{nameUser.replace("%20", ' ')}</Link>
         }
         
         <p className='mx-[8px]'>{'>'}</p>
 
-        <CalendarIcon width={17} height={17} className='mr-[5px]' />
+        <CalendarIcon className='min-w-[17px] min-h-[17px] mr-[5px]' />
         <p>Calendário</p>
       </div>
       <p className='text-zinc-700 font-[200] text-[28px] max-sm:text-[25px] mt-[30px] ml-[20px] max-sm:ml-[10px]'>Eventos - {FormatDate(dateSelected)}</p>
