@@ -58,7 +58,7 @@ function ModalCreateFolder({ user, setUser }: Props) {
 
     return (
         <Dialog.Root open={modalCreateEnterprise} onOpenChange={setModalCreateEnterprise} >
-            <Dialog.Trigger className='flex items-center text-emerald-500 ml-[20px] hover:text-emerald-600 duration-100'>
+            <Dialog.Trigger className='flex items-center text-emerald-500  hover:text-emerald-600 duration-100 border-b-[#686868] border-b py-[4px] px-[10px]'>
                 <PlusIcon width={20} height={20} />
                 Adicionar
             </Dialog.Trigger>

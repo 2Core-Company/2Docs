@@ -62,7 +62,7 @@ function Options({dataAdmin, domain, idUser, user, users, windowsAction, setWind
         <DropdownMenu.Portal >
           <DropdownMenu.Content align="end" alignOffset={-25}  className="p-[3px] bg-primary dark:bg-dprimary text-[#686868] dark:text-white rounded-[6px] flex flex-col drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
             <DropdownMenu.Item  className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
-              <Link href={{ pathname: '/Dashboard/Admin/Pastas', query:{id_user:idUser, id_enterprise:user.enterprises[0].id}}} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+              <Link href={{ pathname: '/Dashboard/Admin/Pastas', query:{id_user:idUser}}} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
                 <FileIcon width={18} height={18} />
                 Documentos
               </Link>

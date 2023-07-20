@@ -4,6 +4,8 @@ import { DataUser } from '../../../types/users'
 import axios from 'axios';
 import { Enterprise } from '../../../types/others';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
+import { GetAllFilesOfFolder } from '../../../Utils/Firebase/Files/GetFiles';
+import deletFiles from '../Files/DeletFiles';
 
 interface Props{
     user:DataUser,
@@ -15,27 +17,13 @@ interface Props{
 
 async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Props) {
     const folders = enterprise.folders
-    const q = query(collection(db, "files", id_company, user.id, 'user', 'files'), where("id_enterprise", "==", enterprise.id), where("id_folder", "==", id_folder));
     const domain:string = window.location.origin
-    const batch = writeBatch(db);
-    const querySnapshot = await getDocs(q);
-    var size = 0
 
     const index = folders.findIndex(folder => folder.id === id_folder)
     enterprise.folders.splice(index, 1)
 
     const index2 = user.enterprises.findIndex((data) => enterprise.id === data.id)
     user.enterprises[index2] = enterprise
-
-
-    querySnapshot.forEach((file:any) => {
-        const laRef = doc(db, "files", id_company, user.id, 'user', 'files', file.data().id);
-        batch.delete(laRef)
-        console.log(file)
-        size += file.data().size
-    })
-
-    await updateSizeCompany({id_company, size, action:'subtraction'})
 
     try{
         await Promise.all([
@@ -47,10 +35,12 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
         console.log(err)
     }
 
+    const allFiles = await GetAllFilesOfFolder({id_company, id_user:user.id, id_enterprise:enterprise.id, id_folder})
+
     try{
         await Promise.all([
-            await batch.commit(),
-            await axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}/${id_folder}`})
+            deletFiles({selectFiles:allFiles, id_company}),
+            axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}/${id_folder}`})
         ])
     } catch(e){
         console.log(e)

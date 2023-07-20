@@ -20,7 +20,7 @@ import ModalEvent from "../Calendar/modalEvent";
 
 function TableClients() {
   const [showItens, setShowItens] = useState<{ min: number; max: number }>({ min: -1, max: 10, });
-  const {loading, setLoading} = useContext(loadingContext)
+  const { loading, setLoading } = useContext(loadingContext)
   const { dataAdmin } = useContext(adminContext);
   const [users, setUsers] = useState<DataUser[]>([]);
   const [userEdit, setUserEdit] = useState<any>();
@@ -31,7 +31,7 @@ function TableClients() {
   const [searchText, setSearchText] = useState<string>("")
   const toastDisable = { pending: "Trocando status do usuário.", success: "Status trocado com sucesso." };
   const domain = window.location.origin
-  const [actionFilters, setActionFilters] = useState<{name:'desc' | 'asc', date:'desc' | 'asc', status:'desc' | 'asc'}>({name:'desc', date:'desc', status:'desc'})
+  const [actionFilters, setActionFilters] = useState<{ name: 'desc' | 'asc', date: 'desc' | 'asc', status: 'desc' | 'asc' }>({ name: 'desc', date: 'desc', status: 'desc' })
   const [modalEvent, setModalEvent] = useState(false)
 
   // <--------------------------------- GetUser --------------------------------->
@@ -42,9 +42,9 @@ function TableClients() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataAdmin]);
 
-  async function GetAllUser(){
-    const result = await GetUsers({id_company:dataAdmin.id_company});
-    if(result){
+  async function GetAllUser() {
+    const result = await GetUsers({ id_company: dataAdmin.id_company });
+    if (result) {
       setPages(Math.ceil(result.length / 10));
       setUsers(FilterFixed(result));
     }
@@ -59,7 +59,7 @@ function TableClients() {
 
   // <--------------------------------- Select User --------------------------------->
   async function SelectUsers(index: number) {
-    if(!users[index].verifiedEmail){
+    if (!users[index].verifiedEmail) {
       return toast.error('Não é possivel selecionar um usúario pendente.')
     }
 
@@ -110,19 +110,19 @@ function TableClients() {
     }
   }
 
-  function FilterName(){
+  function FilterName() {
     const result = FilterAlphabetical({ data: users, action: actionFilters.name })
     var type
     if (actionFilters.name === 'asc') {
       type = 'desc'
-    } else if (actionFilters.name  === 'desc') {
+    } else if (actionFilters.name === 'desc') {
       type = 'asc'
     }
     setUsers(result)
-    setActionFilters({ name:type, date:'desc', status:'desc'})
+    setActionFilters({ name: type, date: 'desc', status: 'desc' })
   }
 
-  function FilterDateHere(){
+  function FilterDateHere() {
     const result = FilterDate({ data: users, action: actionFilters.date })
     var type
     if (actionFilters.date === 'asc') {
@@ -131,22 +131,22 @@ function TableClients() {
       type = 'asc'
     }
     setUsers(result)
-    setActionFilters({ name:'desc', date:type, status:'desc'})
+    setActionFilters({ name: 'desc', date: type, status: 'desc' })
   }
 
-  function FilterStatusHere(){
-    const result = FilterStatus({data:users, action:actionFilters.status})
+  function FilterStatusHere() {
+    const result = FilterStatus({ data: users, action: actionFilters.status })
     var type
     if (actionFilters.status === 'asc') {
       type = 'desc'
-    } else if (actionFilters.status  === 'desc') {
+    } else if (actionFilters.status === 'desc') {
       type = 'asc'
     }
     setUsers(result)
-    setActionFilters({ name:'desc', date:'desc', status:type})
+    setActionFilters({ name: 'desc', date: 'desc', status: type })
   }
 
-  
+
 
   return (
     <>
@@ -171,15 +171,15 @@ function TableClients() {
               <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
             </button>
 
-            <button onClick={() => setModalEvent(true)} className={`hover:bg-[#e0e0e0] flex items-center border border-terciary text-strong py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] duration-100 max-lg:mt-[40px] ${menu ? "max-lg:hidden" : ""}`}>
-              Criar evento
-            </button>
-
             <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`hover:bg-[#e0e0e0] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
               Trocar Status
             </button>
 
-            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:bg-emerald-600 duration-100 bg-emerald-500 boder-[1px] border-emerald-600 text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
+            <button onClick={() => setModalEvent(true)} className={`flex items-center border hover:bg-emerald-600  bg-emerald-500 boder-[1px] border-emerald-600 py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] duration-100 max-lg:mt-[40px] text-white ${menu ? "max-lg:hidden" : ""}`}>
+              Novo Evento
+            </button>
+
+            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:bg-emerald-600 duration-100 bg-emerald-500 border-[1px] border-emerald-600  text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
               Cadastrar
             </button>
           </div>
@@ -223,7 +223,7 @@ function TableClients() {
               <div>
                 <button onClick={() => FilterStatusHere()} className="hover:opacity-[.65] flex items-center cursor-pointer  py-[15px] ">
                   <p className="dark:text-white">Status</p>
-                  <Image alt="Imagem de uma flecha" className={`ml-[2px]  ${actionFilters.status === 'asc'  ? "rotate-180" : ""}`} src={ArrowFilter} />
+                  <Image alt="Imagem de uma flecha" className={`ml-[2px]  ${actionFilters.status === 'asc' ? "rotate-180" : ""}`} src={ArrowFilter} />
                 </button>
               </div>
 
@@ -278,17 +278,17 @@ function TableClients() {
                             <p className="max-lsm:hidden">Ativo</p>
                           </div>
                         :
-                          <HoverCard.Root>
-                            <HoverCard.Trigger className="w-full max-w-[90px] bg-[rgba(224,187,0,0.2)] border-[#E0BC00] text-[#9A8200] border-[1px] text-[17px]  max-lg:text-[16px] rounded-[5px] text-center max-lsm:w-[20px] max-lsm:h-[20px] max-lsm:justify-self-center max-lsm:rounded-full max-lsm:bg-[#E0BC00]">
-                              <p className="max-lsm:hidden">Pendente</p>
-                            </HoverCard.Trigger>
-                            <HoverCard.Portal>
-                              <HoverCard.Content className="bg-primary drop-shadow-[0_5px_5px_rgba(0,0,0,0.40)] rounded-[5px] px-[15px] py-[10px]">
-                                <p className="text-black">Este usúario não verificou o email.</p>
-                                <HoverCard.Arrow className="fill-primary" />
-                              </HoverCard.Content>
-                            </HoverCard.Portal>
-                          </HoverCard.Root>
+                        <HoverCard.Root>
+                          <HoverCard.Trigger className="w-full max-w-[90px] bg-[rgba(224,187,0,0.2)] border-[#E0BC00] text-[#9A8200] border-[1px] text-[17px]  max-lg:text-[16px] rounded-[5px] text-center max-lsm:w-[20px] max-lsm:h-[20px] max-lsm:justify-self-center max-lsm:rounded-full max-lsm:bg-[#E0BC00]">
+                            <p className="max-lsm:hidden">Pendente</p>
+                          </HoverCard.Trigger>
+                          <HoverCard.Portal>
+                            <HoverCard.Content className="bg-primary drop-shadow-[0_5px_5px_rgba(0,0,0,0.40)] rounded-[5px] px-[15px] py-[10px]">
+                              <p className="text-black">Este usúario não verificou o email.</p>
+                              <HoverCard.Arrow className="fill-primary" />
+                            </HoverCard.Content>
+                          </HoverCard.Portal>
+                        </HoverCard.Root>
                       }
 
                       <div className="w-full flex justify-center items-center">
@@ -316,15 +316,15 @@ function TableClients() {
           <div className="w-full h-full flex justify-center items-center flex-col">
             <Image src={users.length <= 0 ? '/icons/nullClient.svg' : '/icons/notFoundSearch.svg'} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="" className="cursor-pointer w-[170px] h-[170px]" />
 
-              {users.length <= 0 ? 
-                <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
-                  Nada por aqui... <br />Cadastre seu primeiro cliente! 
-                </p>
-              : 
-                <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
-                  Nenhum resultado foi encontrado.
-                </p>
-              }
+            {users.length <= 0 ?
+              <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
+                Nada por aqui... <br />Cadastre seu primeiro cliente!
+              </p>
+              :
+              <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
+                Nenhum resultado foi encontrado.
+              </p>
+            }
 
           </div>
         )}

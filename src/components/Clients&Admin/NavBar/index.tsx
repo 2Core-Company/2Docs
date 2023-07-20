@@ -1,7 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
 import { DashboardIcon, FileTextIcon, PersonIcon, CalendarIcon, ChevronUpIcon, ExternalLinkIcon, MoonIcon, SunIcon, TriangleDownIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import ModalExit from './ModalExit'
 import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
 import { auth } from '../../../../firebase'
@@ -23,7 +22,6 @@ function NavBar({permission, image, name}:Props) {
     const { dataUser } = useContext(userContext)
     const path = usePathname()
     const [menu, setMenu] = useState(true)
-    const [modal, setModal] = useState<boolean>(false)
     const router = useRouter()
     const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[30px] max-lg:px-[20px] lg:group-hover:justify-start item-center cursor-pointer group/button"
     const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px] group-hover/button:opacity-[.65]"
@@ -44,6 +42,14 @@ function NavBar({permission, image, name}:Props) {
         } else {
             arrowIconRef?.current?.classList.remove('rotate-180')
         }
+    }
+
+    function ExitAccount() {
+        signOut(auth).then(() => {
+    
+        }).catch((error) => {
+          console.log(error)
+        });
     }
 
 
@@ -109,7 +115,7 @@ function NavBar({permission, image, name}:Props) {
                             <div className={styleSubLineIcon}/>
                         }
 
-                        <div className={`${path?.includes('/Dashboard/Clientes/Calendario') ? 'text-hilight' : 'text-black'} flex items-center`}>
+                        <div className={`${path?.includes('/Dashboard/Clientes/Calendario' || '/Dashboard/Clientes/Evento') || path?.includes('/Dashboard/Clientes/Evento')  ? 'text-hilight' : 'text-black'} flex items-center`}>
                             <CalendarIcon  className={styleIconNavBar}/>
                             <p className={styleTextIcons}>Calendário</p>
                         </div>
@@ -126,27 +132,27 @@ function NavBar({permission, image, name}:Props) {
                         </div>
                     </Popover.Trigger>
 
-                    <Popover.Content id={style.PopoverContent} className='z-10 bg-primary ml-[30px] max-lg:ml-[15px] px-[20px] text-[#686868] py-[15px] text-[14px] rounded-[5px] flex flex-col relative mb-[15px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.30)] outline-none'> 
-                        <div className='flex items-center justify-between'>
-                            <p>Tema:</p>
+                    <Popover.Content id={style.PopoverContent} className='gap-y-[10px] z-10 bg-primary ml-[30px] max-lg:ml-[15px] px-[20px] text-[#686868] py-[15px] text-[14px] rounded-[5px] flex flex-col relative mb-[15px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.30)] outline-none'> 
+                        {/* <div className='flex items-center justify-between'>
+                            <p>Tema: </p>
                             <div onClick={() => setTheme(theme => theme === 'light' ? 'dark' : 'light')} className='ml-[10px] cursor-pointer w-[56px] h-[26px] bg-[#000000] rounded-full relative flex items-center justify-between px-[3px]'>
                                 <div className={`w-[22px] h-[22px] bg-white rounded-full absolute duration-0 ${theme === 'light' ? 'left-[3px]' : 'right-[3px]'}`}/>
                                 <SunIcon className='text-[#FFC700] w-[20px] h-[20px]'/>
                                 <MoonIcon className='text-[#FFC700] w-[20px] h-[20px]'/>
                             </div>
-                        </div>
+                        </div> */}
 
                         {permission > 0 && 
-                            <Link href={'https://2dash.vercel.app/dashboard'} className='mt-[10px] flex items-center cursor-pointer hover:brightness-[.65] duration-100'>
+                            <Link href={'https://2dash.vercel.app/dashboard'} className='flex items-center cursor-pointer hover:brightness-[.65] duration-100'>
                                 <p className='underline'>Ir para o painel de Admin </p>
                                 <ExternalLinkIcon className='text-hilight ml-[5px] w-[20px] h-[20px]'/>
                             </Link>
                         }
 
 
-                        <div onClick={() => setModal(true)} className='mt-[10px] cursor-pointer bg-[rgba(255,0,0,0.16)] border-[1px] border-[#FF0000] rounded-[5px] px-[15px] py-[2px] hover:brightness-[.65] duration-100 self-end'>
+                        <button onClick={() => ExitAccount()} className='bg-[rgba(255,0,0,0.16)] border-[1px] border-[#FF0000] rounded-[5px] px-[15px] py-[2px] hover:brightness-[.65] duration-100 self-end'>
                             <p className='text-[#BE0000]'>Sair</p>
-                        </div>
+                        </button>
 
                         <TriangleDownIcon className='w-[40px] h-[40px] text-primary absolute bottom-[-23px] left-[-3px]'/>
                     </Popover.Content>
@@ -154,7 +160,6 @@ function NavBar({permission, image, name}:Props) {
                 </Popover.Root>
 
             </div>
-                {modal && <ModalExit setModal={setModal}/> }
         </div>
     )
 }

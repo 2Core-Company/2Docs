@@ -39,7 +39,7 @@ function UsersOnline() {
                         }).map((user, key) => {
                             return (
                                 <div key={key} className='flex items-center gap-2'>
-                                    <Image src={user.img} alt='User image' width={40} height={40} className='rounded-full'></Image>
+                                    <Image src={user.img} alt='User image' width={40} height={40} className='rounded-full aspect-square' />
                                     <p className='flex items-center gap-1 after:w-[10px] after:h-[10px] after:inline-block after:bg-emerald-500 after:rounded-full text-[20px]'>{user.name.length > 9 ? `${user.name.substring(0, 9)}...` : user.name}</p>
                                 </div>
                             )

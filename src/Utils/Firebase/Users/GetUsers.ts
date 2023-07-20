@@ -121,7 +121,7 @@ export async function GetUser({ id_company, id_user }:PropasGetUser) {
   const docRef = doc(db, "companies", id_company, "clients", id_user);
   const docSnap = await getDoc(docRef);
 
-  var dataUser: DataUserContext = {
+  var dataUser: DataUser = {
     id: docSnap.data()?.id,
     created_date: docSnap.data()?.created_date,
     email: docSnap.data()?.email,
@@ -133,6 +133,7 @@ export async function GetUser({ id_company, id_user }:PropasGetUser) {
     phone: docSnap.data()?.phone,
     photo_url: docSnap.data()?.photo_url,
     disabled: docSnap.data()?.disabled,
+    admins:docSnap.data()?.admins,
     fixed: docSnap.data()?.fixed,
     enterprises: docSnap.data()?.enterprises,
     checked: false,

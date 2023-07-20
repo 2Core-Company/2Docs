@@ -104,7 +104,7 @@ function EventsActives() {
                   max-lsm:grid-cols-[170px_30px_100px]
                   items-center  border-t-[1px] border-t-[#D2D2D2]'>
                       <div className='flex items-center gap-x-[15px] max-sm:gap-x-[10px]'>
-                        <Image src={user.photo_url} width={35} height={35} alt='Perfil' className='max-sm:w-[30px] max-sm:h-[30px] bg-black rounded-full' />
+                        <Image src={user.photo_url} width={35} height={35} alt='Perfil' className='min-w-[35px] max-sm:min-w-[30px] aspect-square bg-black rounded-full' />
                         <p className='text-[20px] max-sm:text-[18px] max-lsm:text-[16px] truncate mr-[40px]'>{user.name}</p>
                       </div>
 
