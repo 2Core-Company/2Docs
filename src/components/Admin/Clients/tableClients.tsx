@@ -146,14 +146,12 @@ function TableClients() {
     setActionFilters({ name: 'desc', date: 'desc', status: type })
   }
 
-
-
   return (
     <>
       {modalEvent && <ModalEvent action={"create"} modalEvent={modalEvent} setModalEvent={setModalEvent} />}
       {windowsAction.createUser ? <CreateUser contextAdmin={dataAdmin} childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}
       {windowsAction.updateUser ? <EditUser contextAdmin={dataAdmin} user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow} /> : <></>}
-      <div className="relative h-[600px] w-full flex flex-col max-sm:text-[16px]  border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]">
+      <div className="relative h-[600px] w-full flex flex-col max-sm:text-[16px]  border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px] mb-[10px]">
         <div className="my-[15px] flex justify-between px-[25px] max-sm:px-[20px] max-lsm:px-[10px] ">
           <div className="text-[18px] max-sm:text-[17px] flex items-center bg-transparent">
             <p className="mr-[20px] max-sm:mr-[20px] font-[500] dark:text-white whitespace-nowrap">

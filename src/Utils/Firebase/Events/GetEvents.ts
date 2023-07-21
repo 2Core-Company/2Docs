@@ -56,11 +56,15 @@ interface PropsGetEventsOpenToUser {
 
 export async function GetEventsOpenToUser({ id_company, id_user }: PropsGetEventsOpenToUser) {
   const dateNow = new Date().setHours(0, 0, 0, 0)
+  const dateMax = new Date().setHours(23, 59, 59, 59)
   const events: Event[] = []
   const q = query(collection(db, "companies", id_company, "events"), where('id_user', '==', id_user), where('complete', '==', false), where('dateStarted', '<=', dateNow), orderBy('dateStarted', 'asc'));
 
   const querySnapshot: any = await getDocs(q);
   querySnapshot.forEach((doc) => {
+    if(doc.data().limitedDelivery && doc.data().dateEnd < dateMax){
+      return
+    }
     const data: Event = {
       id: doc.data()?.id,
       id_user: doc.data()?.id_user,
