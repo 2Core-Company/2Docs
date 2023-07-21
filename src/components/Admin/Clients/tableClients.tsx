@@ -171,12 +171,12 @@ function TableClients() {
               <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
             </button>
 
-            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`hover:bg-[#e0e0e0] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
-              Trocar Status
-            </button>
-
             <button onClick={() => setModalEvent(true)} className={`flex items-center border hover:bg-emerald-600  bg-emerald-500 boder-[1px] border-emerald-600 py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] duration-100 max-lg:mt-[40px] text-white ${menu ? "max-lg:hidden" : ""}`}>
               Novo Evento
+            </button>
+
+            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`hover:bg-[#e0e0e0] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
+              Trocar Status
             </button>
 
             <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:bg-emerald-600 duration-100 bg-emerald-500 border-[1px] border-emerald-600  text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>

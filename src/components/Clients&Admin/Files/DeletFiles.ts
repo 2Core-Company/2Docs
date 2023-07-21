@@ -7,10 +7,10 @@ import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany
 interface Props{
   files?:Files[]
   selectFiles:Files[]
-  dataCompany:DataCompanyContext  
+  id_company:string 
 }
 
-async function deletFiles({ files, selectFiles, dataCompany }:Props) {
+async function deletFiles({ files, selectFiles, id_company }:Props) {
   const batch = writeBatch(db);
   const promises:any = []
   var size = 0
