@@ -11,16 +11,17 @@ import { GetSizeCompany } from '../../../Utils/Firebase/Company/GetSizeCompany';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 
 interface Props{
-  file:Files
-  setCopyTo:Function
+  copyFile: {status: boolean, file?: Files | undefined}
+  setCopyFile: React.Dispatch<React.SetStateAction<{status: boolean, file?: Files | undefined}>>
 }
 
-function  CopyTo({file, setCopyTo}: Props) {
+function  CopyTo({copyFile, setCopyFile}: Props) {
   const {dataCompany, setDataCompany} = useContext(companyContext)
   const [folders, setFolders] = useState([])
   const [dataFolder, setDataFolder] = useState({name:'', id:''})
   const [fileCopy, setFileCopy] = useState<any >()
   const messageToast = {pending:"Copiando arquivo.", success:"Arquivo copiado com sucesso para a pasta: " + dataFolder.name}
+  const file = copyFile.file!;
 
   useEffect(() =>{
     VerifyFolders()
@@ -37,8 +38,8 @@ function  CopyTo({file, setCopyTo}: Props) {
     if(foldersHere.length > 4){
       setFolders(foldersHere)
     } else {
-      setCopyTo(false)
-      throw toast.error("Você precisa ter criado no minimo 2 pastas para conseguir copiar um arquivo.")
+      setCopyFile({status: false})
+      throw toast.error("Você precisa ter criado no mínimo 2 pastas para conseguir copiar um arquivo.")
     }
   }
 
@@ -57,19 +58,19 @@ function  CopyTo({file, setCopyTo}: Props) {
   }
 
   async function CopyngFileStorage(){
-    setCopyTo(false)
+    setCopyFile({status: false})
     try{
       const referencesFile = `${file.id_company}|${Math.floor(1000 + Math.random() * 9000) + file.name}`;
       const docsRef = ref(storage, `${file.id_company}/files/${file.id_user}/${file.id_enterprise}/${dataFolder.id}/${referencesFile}`);
       const upload = await uploadBytes(docsRef, fileCopy)
       await UploadFilestore({path:upload.metadata.fullPath, id:referencesFile, name:file.name})
     }catch(e){
-      throw toast.error("Não foi possivel copiar o arquivo")
+      throw toast.error("Não foi possível copiar o arquivo")
     }
   }
 
   async function UploadFilestore({path, id, name}){
-    const date = new Date() + ""
+    const dateNow = new Date().getTime()
     const data:Files = {
       id_user: file.id_user,
       id: id,
@@ -78,13 +79,13 @@ function  CopyTo({file, setCopyTo}: Props) {
       path: path,
       name: name,
       size: file.size,
-      created_date: date,
+      created_date: dateNow,
       type:file.type, 
       trash: false,
       id_folder: dataFolder.id,
       from: file.from,
       favorite:false,
-      viewedDate:'',
+      viewedDate:null,
       id_event:'',
       message:'',
       downloaded:false
@@ -101,7 +102,7 @@ function  CopyTo({file, setCopyTo}: Props) {
       const docRef = await setDoc(doc(db, "files", file.id_company, file.id_user, 'user', 'files', id), data);
     } catch (e) {
       console.log(e)
-      throw toast.error("Não foi possivel copiar o arquivo")
+      throw toast.error("Não foi possível copiar o arquivo")
     } 
   }
 
@@ -132,7 +133,7 @@ function  CopyTo({file, setCopyTo}: Props) {
 
           </div>
           <div className='flex w-full justify-end gap-4 bg-hilight dark:bg-dhilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-            <button type='button' onClick={() => setCopyTo(false)} className='cursor-pointer bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong dark:border-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
+            <button type='button' onClick={() => setCopyFile({status: false})} className='cursor-pointer bg-strong/40 dark:bg-dstrong/40 border-[2px] border-strong dark:border-dstrong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
             <button  onClick={() => toast.promise(CopyngFileStorage(),messageToast)} className={`cursor-pointer  border-2 hover:scale-[1.10]  duration-300 py-[5px] px-[15px] rounded-[8px] text-[20px] text-white ${dataFolder.id.length > 2 ? "bg-greenV/40 border-greenV": "bg-strong/30 dark:bg-dstrong/20 border-strong dark:border-dstrong text-white cursor-not-allowed" }`}>Copiar</button>
           </div>
         </div>

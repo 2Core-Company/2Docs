@@ -7,18 +7,18 @@ import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany
 import { Files } from '../../../types/files';
 
 interface PropsUploadFiles{
-  id_company:string
-  id_user:string
-  id_enterprise:string
-  id_folder:string
-  id_event?:string
-  files:any
-  from:string
+  id_company: string
+  id_user: string
+  id_enterprise: string
+  id_folder: string
+  id_event?: string
+  files: any
+  from: 'user' | 'admin'
   maxSize:number
-  ChildToActiontUpload?:Function
+  ChildToActiontUpload?: Function
 }
 
-async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterprise, files, from, maxSize, ChildToActiontUpload}:PropsUploadFiles) {
+export async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterprise, files, from, maxSize, ChildToActiontUpload}:PropsUploadFiles) {
   const batch = writeBatch(db);
   const toastUpload = {pending:"Armazenando arquivos...", success:"Arquivos armazenados."}
   const response = await toast.promise(CreateReferencesOfFiles(), toastUpload)
@@ -31,6 +31,8 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
     var promises:any = []
     var size = 0
 
+    console.log(files)
+
     for await (const file of files) {
       const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name
       const docRef = ref(docsRef, referencesFile);
@@ -42,9 +44,7 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
     const response = await UpdateSizeInCompany(size)
     const response2 = await UploadFilesStorage({promises, allFilesFilter, files})
 
-    if(response?.status === 200 && response2?.status === 200){
-      return {message:'successfully stored files in firestore. and storage', status:200}
-    }
+    return response2
 
   }
 
@@ -65,8 +65,8 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
     try {
       const response = await Promise.all(promises)
       const response2 = await OrganizeFilesInArray({filesUpload:allFilesFilter, result:response.filter((file) => file != undefined)})
-      if(response2.status === 200){
-        return {message:'successfully stored files in firestore. and storage', status:200}
+      if(response2){
+        return {status: 200, files:response2}
       }
     } catch (error) {
       console.error('Erro ao fazer upload dos arquivos:', error);
@@ -78,7 +78,7 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
 
 
   async function OrganizeFilesInArray({filesUpload, result}){
-    const dataFilesUploaded:any = []
+    const dataFilesUploaded:Files[] = []
     const collectionRef = collection(db, "files", id_company, id_user, 'user', 'files')
     const id_eventHere = id_event ? id_event : ''
 
@@ -114,10 +114,8 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
 
     try{  
       const result = await batch.commit()
-      if(ChildToActiontUpload){
-        ChildToActiontUpload(dataFilesUploaded)
-      } 
-      return {message:'successfully stored files in firestore.', status:200}
+
+      return dataFilesUploaded
     }catch(e){
       console.log(e)
       throw e
@@ -145,5 +143,3 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
     return type
   }
 }
-
-export default UploadFiles

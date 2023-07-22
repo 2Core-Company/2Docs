@@ -15,10 +15,9 @@ import Rename from './rename'
 import { useSearchParams } from 'next/navigation';
 import ShareFile from '../../Admin/Files/shareFile';
 import ViewFile from './viewFile';
-import Favorite from './Favorite';
+import Favorite from './favoriteFile';
 import Desfavorite from './Desfavorite';
 import { toast } from 'react-toastify';
-
 
 interface Props{
   id_folder:string
@@ -46,8 +45,8 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
   return (
     <>
       {/* {moveTo ? <MoveTo file={file} files={files} setMoveTo={setMoveTo}/> : <></>} */}
-      {copyTo ? <CopyTo file={file} setCopyTo={setCopyTo} /> : <></>}
-      {rename ? <Rename file={file} files={files} setRename={setRename}/> : <></>}
+      {/* {copyTo ? <CopyTo file={file} setCopyTo={setCopyTo} /> : <></>} */}
+      {/* {rename ? <Rename file={file} files={files} setRename={setRename}/> : <></>} */}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -117,7 +116,7 @@ function OptionsFile({id_folder, file, files, from,  index, trash, DownloadFile,
             }
           </DropdownMenu.Item>
  
-          {file.from === 'admin' &&  from === 'admin' ? 
+          {file.from === 'admin' && from === 'admin' ? 
             <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300">
               <div onClick={() => ShareFile({file:file})} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
                 <Image src={Share} width={22} height={22} alt={"Copiar documentos"}/>

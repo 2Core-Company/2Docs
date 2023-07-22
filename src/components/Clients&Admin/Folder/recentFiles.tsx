@@ -2,7 +2,7 @@ import { DownloadIcon } from '@radix-ui/react-icons';
 import React from 'react'
 import Image from 'next/image';
 import Files from '../../Admin/Files';
-import DownloadsFile from '../Files/dowloadFiles';
+import DownloadsFile from '../Files/downloadFiles';
 
 function RecentFiles({recentFiles}:{recentFiles:Files[]}) {
   return (

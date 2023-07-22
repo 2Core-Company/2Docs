@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react'
-import iconAddFile from '../../../../public/icons/addFile.svg'
+// import iconAddFile from '../../../../public/icons/addFile.svg'
 import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
-import iconSearchFile from '../../../../public/icons/searchFile.svg' 
+// import iconSearchFile from '../../../../public/icons/searchFile.svg'
 import Image from 'next/image'
-import DownloadsFile from './dowloadFiles'
+import DownloadsFile from './downloadFiles'
 import { Files } from '../../../types/files'
 import { Filter } from '../../../types/others'
 import OptionsFile  from './options'
@@ -91,7 +91,6 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
           {files
           .filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
           .map((file:Files, index) => {
-            var checked = file.checked
             if((dataPages.page * 10 - (11)) < index && index < dataPages.page * 10){
               return (
                 <div
@@ -101,7 +100,7 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
                   <input
                     aria-label="Selecionar Arquivos"
                     type="checkbox"
-                    checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)}
+                    checked={file.checked} onChange={(e) => (file.checked = e.target.value === "on" ? true : false)}
                     onClick={() => SelectFile(index)}
                     className="w-[20px] h-[20px] cursor-pointer"
                   />
@@ -197,7 +196,7 @@ export default function TableFiles({id_folder, dataPages, trash, textSearch, fil
         </div>
       : 
         <div className='w-full h-full flex justify-center items-center flex-col'>
-          <Image src={files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="Imagem de 2 arquivos" priority className='w-[170px] h-[170px]'/>
+          {/* <Image src={files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="Imagem de 2 arquivos" priority className='w-[170px] h-[170px]'/> */}
           {trash ? 
             <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center dark:text-white'>{textSearch.length <= 0 ? 'Nenhum arquivo deletado encontrado.' : 'Nenhum resultado foi encontrado.'}</p>
           :

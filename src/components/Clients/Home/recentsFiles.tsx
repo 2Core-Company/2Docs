@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { CalendarIcon, DownloadIcon } from '@radix-ui/react-icons'
 import { FormatDateVerySmall } from '../../../Utils/Other/FormatDate'
 import FormatSizeFile from '../../../Utils/Other/FormatSizeFile'
-import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles'
+import DownloadsFile from '../../Clients&Admin/Files/downloadFiles'
 import { Component } from '../../../Utils/Other/componentRoot'
 
 function RecentsFiles() {

@@ -14,7 +14,9 @@ import { GetFolders } from '../../../Utils/Firebase/folders/GetFolders';
   }
 
 function ViewFile({file, setFiles, setViewFile, admin}:Props) {
+  const from: 'admin' | 'user' = admin ? 'admin' : 'user'
   const[url, setUrl] = useState('')
+
   useEffect(() => {
     UpdateFireStore()
     GetUrlViwed()
@@ -32,7 +34,7 @@ function ViewFile({file, setFiles, setViewFile, admin}:Props) {
     try{
       let viewedDate = new Date().getTime();
 
-      if(admin === false && file.id_folder != folderCliente.id && file.viewedDate === null){
+      if(from !== file.from && file.viewedDate === null){
         updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
           viewedDate: viewedDate
         })
@@ -42,17 +44,7 @@ function ViewFile({file, setFiles, setViewFile, admin}:Props) {
           files[index].viewedDate = viewedDate;
           return files;
         })
-      } else if(admin && file.id_folder == folderCliente.id && file.viewedDate === null){
-          updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
-          viewedDate: viewedDate
-        })
-
-        setFiles((files) => {
-          const index = files.findIndex((fileIndex) => fileIndex.id === file.id)
-          files[index].viewedDate = viewedDate;
-          return files;
-        })
-      }      
+      }
     } catch(e) {
       console.log(e)
       toast.error("Não foi possível visualizar este arquivo.")

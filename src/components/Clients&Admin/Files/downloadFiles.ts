@@ -1,5 +1,5 @@
 import { db, storage } from '../../../../firebase'
-import { doc, getDoc, writeBatch } from "firebase/firestore";  
+import { doc, writeBatch } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { Folders } from '../../../types/folders'
@@ -10,20 +10,20 @@ interface Props{
   selectFiles:Files[]
   files?:Files[]
   id_folder: string
-  from:string
+  from: 'admin' | 'user'
 }
 
 
 
-async function DownloadsFile({selectFiles, files, id_folder, from}:Props){
+async function downloadsFile({selectFiles, files, id_folder, from}:Props){
   const folders = await GetFolders({id_company:selectFiles[0].id_company, id_enterprise:selectFiles[0].id_enterprise, id_user:selectFiles[0].id_user})
   let folder:Folders = folders.find((folder) => folder.id === id_folder)
   let folderCliente = folders.find((folder) => folder.name === "Cliente")
   const batch = writeBatch(db);
 
-  const result = await toast.promise(GetUrlDownloadFile(), {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso"})
+  const result = await toast.promise(getUrlDownloadFile(), {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso"})
 
-  async function GetUrlDownloadFile(){
+  async function getUrlDownloadFile(){
     const promises:any = []
     const promises2:any = []
     try{
@@ -49,14 +49,14 @@ async function DownloadsFile({selectFiles, files, id_folder, from}:Props){
 
       const allUrls = await Promise.all(promises2)
 
-      await StartDownload(allUrls)
+      await startDownload(allUrls)
 
     }catch(e) {
       toast.error("Erro: " + e)
     }
   }
 
-  async function StartDownload(allUrls){
+  async function startDownload(allUrls){
     for(var i = 0; i < allUrls.length; i++){
       const url = (window.URL ? URL : webkitURL).createObjectURL(allUrls[i])
       const element:any = document.createElement("a");
@@ -70,7 +70,7 @@ async function DownloadsFile({selectFiles, files, id_folder, from}:Props){
       element.parentNode.removeChild(element);
     }
 
-    await Promise.all([VerifyDownload(), VerifyViwed()])
+    await Promise.all([verifyDownload(), verifyViewed()])
     .then(async () => {
       await batch.commit()
     })
@@ -78,48 +78,32 @@ async function DownloadsFile({selectFiles, files, id_folder, from}:Props){
     return files;
   }
 
-  async function VerifyDownload(){
+  async function verifyDownload(){
     for(let i = 0; i < selectFiles.length; i++) {
       selectFiles[i].checked = false
 
-      if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].downloaded === false) {
+      if(from !== selectFiles[i].from && selectFiles[i].downloaded === false) {
         const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {downloaded: true})
         if(files){
           const index = files.findIndex(file => file.id== selectFiles[i].id)
           files[index].downloaded = true;
         }
-      } else if (from === "admin" && selectFiles[i].id_folder === folderCliente.id && selectFiles[i].downloaded === false) {
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
-        batch.update(laRef, {downloaded: true})
-        if(files){
-          const index = files.findIndex(file => file.id == selectFiles[i].id)
-          files[index].downloaded = true;
-        }
       }
     }
   }
 
-  async function VerifyViwed(){
+  async function verifyViewed(){
     for(let i = 0; i < selectFiles.length; i++) {
-      let viewedDate = new Date().toString();
+      let viewedDate = new Date().getTime();
       
-      if(from === "user" && selectFiles[i].id_folder != folderCliente.id && selectFiles[i].viewedDate === null){
+      if(from !== selectFiles[i].from && selectFiles[i].viewedDate === null){
         const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
         batch.update(laRef, {viewedDate:viewedDate})
 
         if(files){
           const index = files.findIndex(file => file.id == selectFiles[i].id)
-          // files[index].viewedDate = viewedDate;
-        }
-
-      }else if(from === "admin" && selectFiles[i].id_folder == folderCliente.id && selectFiles[i].viewedDate === null){
-        const laRef = doc(db, 'files', selectFiles[i].id_company, selectFiles[i].id_user, 'user', 'files', selectFiles[i].id);
-        batch.update(laRef, {viewedDate: viewedDate})
-
-        if(files){
-          const index = files.findIndex(file => file.id == selectFiles[i].id)
-          // files[index].viewedDate = viewedDate;            
+          files[index].viewedDate = viewedDate;
         }
       }
     }
@@ -128,4 +112,4 @@ async function DownloadsFile({selectFiles, files, id_folder, from}:Props){
   return files;
 }
 
-  export default DownloadsFile
+  export default downloadsFile

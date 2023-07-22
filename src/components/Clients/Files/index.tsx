@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
 import TableFiles from '../../Clients&Admin/Files/tableFiles'
-import DownloadsFile from '../../Clients&Admin/Files/dowloadFiles';
+import DownloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import DeletFiles from '../../Clients&Admin/Files/DeletFiles';
 import { Files } from '../../../types/files'
 import { userContext } from '../../../app/Context/contextUser';

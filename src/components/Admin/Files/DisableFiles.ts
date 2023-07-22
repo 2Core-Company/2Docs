@@ -24,8 +24,10 @@ async function DisableFiles({ files, selectFiles }:Props) {
     await batch.commit();
   }catch(e){
     console.log(e)
-    toast.error("Não Foi possivel excluir este arquivo.")
+    toast.error("Não Foi possível excluir este arquivo.")
   }
+
+  return allFiles;
 }
 
 export default DisableFiles
