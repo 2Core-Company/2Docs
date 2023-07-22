@@ -22,9 +22,9 @@ function Enterprises({ user, enterprise, setUser, setEnterprise }: Props) {
       <div className='flex items-center mt-[30px] text-[20px] max-sm:text-[18px]'>
         {user?.enterprises.map((enterpriseMap, index) => {
           return (
-            <div key={enterpriseMap?.id} className={`duration-100 cursor-pointer border-b-[#686868] border-r-[#686868] border-b border-r gap-x-[10px] px-[10px] flex items-center hover:text-[rgba(0,0,0,0.5)] ${enterpriseMap.id === enterprise.id && 'bg-[#DBDBDB]'} ${index === 0 && 'rounded-tl-[8px]'} ${!admin && index === (user.enterprises.length - 1)  && 'border-r-[0px]'}`}>
+            <div key={enterpriseMap?.id} className={`duration-100 cursor-pointer border-b-[#686868] border-r-[#686868] border-b border-r gap-x-[10px] px-[10px] flex items-center hover:text-[rgba(0,0,0,0.5)] ${enterpriseMap.id === enterprise.id && 'bg-[#DBDBDB]'} ${index === 0 && 'rounded-tl-[8px]'} ${!admin && index === Enterprises.length && 'rounded-tr-[8px]'} ${!admin && index === (user.enterprises.length - 1)  && 'border-r-[0px]'}`}>
               <p onClick={() => setEnterprise(enterpriseMap)} className='whitespace-nowrap py-[4px] pl-[5px]'>{enterpriseMap.name}</p>
-              {admin && <OptionsEnterprise user={user} enterprise={enterprise} index={index} setUser={setUser} setEnterprise={setEnterprise} /> }
+              {admin && enterpriseMap.id === enterprise.id && <OptionsEnterprise user={user} enterprise={enterprise} index={index} setUser={setUser} setEnterprise={setEnterprise} /> }
             </div>
           )
         })}

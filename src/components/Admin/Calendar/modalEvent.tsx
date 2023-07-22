@@ -290,7 +290,7 @@ function ModalEvent({ action, event, defaultValue, modalEvent, setModalEvent, ch
                                         dateFormat="dd/MM/yyyy"
                                         selected={dataEvent.dateStarted}
                                         onChange={(date) => setDataEvent({ ...dataEvent, dateStarted: date.setHours(0, 0, 0, 0), dateEnd: null })}
-                                        minDate={new Date()}
+                                        // minDate={new Date()}
                                         disabled={loading}
                                         className='w-[180px]  max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px]'
                                         showPopperArrow={false}

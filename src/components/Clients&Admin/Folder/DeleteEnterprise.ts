@@ -1,3 +1,4 @@
+import { UpdatePendencies } from "@/src/Utils/Firebase/Users/UpdatePendencies";
 import axios from "axios";
 import { collection, doc, getDocs, query, updateDoc, where, writeBatch } from "firebase/firestore";
 import { toast } from "react-toastify";
@@ -70,7 +71,8 @@ export async function deleteEnterprise({ user, enterprise, setUser, setEnterpris
         try {
             var q = query(collection(db, "companies", user.id_company, "events"), where("id_enterprise", "==", enterprise.id))
             const querySnapshot = await getDocs(q);
-            const a = querySnapshot.forEach((event) => {
+            const a = querySnapshot.forEach(async (event) => {
+                const result = await UpdatePendencies({id_company:user.id_company, id_user:user.id, action:'subtraction'})
                 const laRef = doc(db, "companies", user.id_company, "events", event.data().id);
                 batch.delete(laRef)
             });

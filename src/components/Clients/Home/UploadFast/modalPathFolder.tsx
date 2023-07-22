@@ -19,11 +19,13 @@ interface options {
 }
 
 export default function ModalPathFolder({setPathSelected, files, setFiles}:PropsModalPathFolder){
+
     const { dataUser } = useContext(userContext)
     const { dataCompany } = useContext(companyContext)
     const { loading, setLoading } = useContext(loadingContext)
     const [options, setOptions] = useState<options[]>()
     const [enterpriseSelected, setEnterpriseSelected] = useState<{id_enterprise:string, id_folder:string}>()
+    console.log(options)
 
     useEffect(() => {
         const optionsHere:options[] = []
