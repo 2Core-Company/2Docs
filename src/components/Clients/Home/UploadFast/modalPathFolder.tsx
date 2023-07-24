@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { companyContext } from '../../../../app/Context/contextCompany'
 import { loadingContext } from '../../../../app/Context/contextLoading'
 import { userContext } from '../../../../app/Context/contextUser'
-import UploadFiles from '../../../Clients&Admin/Files/UploadFiles'
+import { UploadFiles }  from '../../../Clients&Admin/Files/UploadFiles'
 
 interface PropsModalPathFolder {
     files:any
@@ -19,13 +19,11 @@ interface options {
 }
 
 export default function ModalPathFolder({setPathSelected, files, setFiles}:PropsModalPathFolder){
-
     const { dataUser } = useContext(userContext)
     const { dataCompany } = useContext(companyContext)
     const { loading, setLoading } = useContext(loadingContext)
     const [options, setOptions] = useState<options[]>()
     const [enterpriseSelected, setEnterpriseSelected] = useState<{id_enterprise:string, id_folder:string}>()
-    console.log(options)
 
     useEffect(() => {
         const optionsHere:options[] = []
@@ -39,7 +37,6 @@ export default function ModalPathFolder({setPathSelected, files, setFiles}:Props
         setOptions(optionsHere)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
-
 
     async function UploadFilesSelecteds(){
         if(enterpriseSelected){
@@ -59,7 +56,6 @@ export default function ModalPathFolder({setPathSelected, files, setFiles}:Props
             toast.error('Selecione uma empresa!')
         }
     }
-
 
     const NoOptionsMessage = () => {
         return <p className='text-center py-[10px]'>Não encontrado.</p>;

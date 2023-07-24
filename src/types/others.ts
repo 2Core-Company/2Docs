@@ -22,5 +22,5 @@ import { Folders } from "./folders"
     name:boolean,
     size:boolean,
     date:boolean,
-    status:boolean
+    status?:boolean
   }

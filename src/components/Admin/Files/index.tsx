@@ -9,7 +9,6 @@ import folder from '../../../../public/icons/folder.svg';
 import Link from 'next/link';
 import DisableFiles from './DisableFiles';
 import EnableFiles from './enableFiles';
-import TableFiles from '../../Clients&Admin/Files/tableFiles';
 import downloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import { adminContext } from '../../../app/Context/contextAdmin';
 import { Files } from '../../../types/files';
@@ -34,7 +33,7 @@ import { UploadFiles } from '../../Clients&Admin/Files/UploadFiles';
 
 function Files() {
   const { dataAdmin } = useContext(adminContext)
-  const { dataCompany, setDataCompany } = useContext(companyContext)
+  const { dataCompany } = useContext(companyContext)
   const router = useRouter()
   const { setLoading } = useContext(loadingContext)
   const [files, setFiles] = useState<Files[]>([])

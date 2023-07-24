@@ -4,8 +4,6 @@ import { PersonIcon } from "@radix-ui/react-icons";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useContext, useState } from "react";
 import { adminContext } from "../../../app/Context/contextAdmin";
-import { getDoc, doc } from "firebase/firestore";
-import { db } from "../../../../firebase";
 import Link from "next/link";
 import { DataUser } from "../../../types/users";
 import { Files } from "../../../types/files";

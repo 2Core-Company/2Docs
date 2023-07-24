@@ -4,7 +4,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { getDownloadURL, ref } from 'firebase/storage';
-import { GetFolders } from '../../../Utils/Firebase/folders/GetFolders';
+import { Cross2Icon } from '@radix-ui/react-icons';
 
   interface Props{
     file:Files
@@ -28,9 +28,6 @@ function ViewFile({file, setFiles, setViewFile, admin}:Props) {
   }
 
   async function UpdateFireStore(){
-    const folders = await GetFolders({id_company:file.id_company, id_enterprise:file.id_enterprise, id_user:file.id_user})
-    let folderCliente = folders.find((folder) => folder.name === "Cliente")
-
     try{
       let viewedDate = new Date().getTime();
 
@@ -55,8 +52,7 @@ function ViewFile({file, setFiles, setViewFile, admin}:Props) {
     return (
       <div className='h-screen w-screen fixed bg-black/30 z-50 top-0 left-0 backdrop-blur-sm flex items-center justify-center'>
         <div className='bg-primary dark:bg-dprimary flex flex-col min-h-[90%] h-full w-[60%] max-sm:w-full px-[5px]'>
-          <div onClick={() => setViewFile({status: false})} className={`self-end cursor-pointer mt-[20px] w-[30px] h-[2px] bg-black dark:bg-white rotate-45 
-          after:w-[30px] after:h-[2px] after:absolute after:bg-black dark:after:bg-white after:rotate-90`}/>
+          <Cross2Icon width={35} height={35} onClick={() => setViewFile({status: false})} className={`self-end cursor-pointer mt-[5px]`}/>
           <object className='w-full h-[90%] mt-[20px]' data={`${url}#toolbar=0`} type="application/pdf">
             <p className='text-[20px] text-center text-black dark:text-white z-50 fixed'>Não foi possível exibir este arquivo.</p>  
           </object>
