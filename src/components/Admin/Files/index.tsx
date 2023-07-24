@@ -231,7 +231,7 @@ function Files() {
         {modalMessage.status && <Message admin={admin} modalMessage={modalMessage} setModalMessage={setModalMessage} setFiles={setFiles}/>}
         {viewFile.status && <ViewFile file={viewFile.file!} setFiles={setFiles} setViewFile={setViewFile} admin={admin}/>}
         {moveFile.status && <MoveTo files={files} moveFile={moveFile} setMoveFile={setMoveFile} setFiles={setFiles}/>}
-        {copyFile.status && <CopyTo copyFile={copyFile} setCopyFile={setCopyFile} />}
+        {copyFile.status && <CopyTo admin={admin} copyFile={copyFile} setCopyFile={setCopyFile} />}
         {renameFile.status && <Rename setFiles={setFiles} renameFile={renameFile} setRenameFile={setRenameFile}/>}
         <DocTable.Root>
           <DocTable.Header className={`${files.filter((file) => textSearch !== '' && file.name.toUpperCase().includes(textSearch.toUpperCase())).length === 0 && "border-b border-b-secondary"}`}>

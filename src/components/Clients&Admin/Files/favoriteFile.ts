@@ -1,6 +1,6 @@
-import { db } from '../../../../firebase'
-import { doc, updateDoc } from "firebase/firestore";  
-import { Files } from '../../../types/files'
+import { db } from '../../../../firebase';
+import { doc, updateDoc } from "firebase/firestore";
+import { Files } from '../../../types/files';
 import { toast } from 'react-toastify';
 
 interface Props{
@@ -21,14 +21,14 @@ async function favoriteFile({folderName, file, setFiles}: Props) {
                 files.splice(index, 1);
                 return files;
             } else {
-                files[index].favorite = !files[index].favorite;                
+                files[index].favorite = !files[index].favorite;
                 console.log(files[index]);
                 return [...files];
             }
         })
     } catch(e) {
-        console.log(e)
-        toast.error("Não foi possível favoritar este arquivo.")
+        console.log(e);
+        toast.error("Não foi possível favoritar este arquivo.");
     }
 }
 

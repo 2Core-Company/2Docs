@@ -141,10 +141,10 @@ function MoveTo({files, moveFile, setMoveFile, setFiles}:Props) {
               })}
             </div>
           </div>
-        <div className='flex w-full justify-between bg-[#D9D9D9] border-t border-t-[#AAAAAA] py-[14px] px-[33px] rounded-b-[15px] mt-[25px]'>
-          <button onClick={() => setMoveFile({status: false})} className='cursor-pointer bg-transparent border border-[#686868]/70 py-[10px] px-[23px] rounded-[8px] font-[500] text-[16px] text-[#686868]'>Fechar</button>
-          <button onClick={() => toast.promise(GetFile(), messageToast)} className={`${dataFolder.id !== '' ? "bg-[#10B981]/30 border-[#10B981] cursor-pointer" : "bg-strong/30 border-strong disabled cursor-not-allowed text-[#686868]" } border py-[10px] px-[30px] rounded-[8px] font-[500] text-[16px] text-[#117856]`}>Mover</button>
-        </div>
+          <div className='flex w-full justify-between bg-[#D9D9D9] border-t border-t-[#AAAAAA] py-[14px] px-[33px] rounded-b-[15px] mt-[25px]'>
+            <button onClick={() => setMoveFile({status: false})} className='cursor-pointer bg-transparent border border-[#686868]/70 py-[10px] px-[23px] rounded-[8px] font-[500] text-[16px] text-[#686868]'>Fechar</button>
+            <button onClick={() => toast.promise(GetFile(), messageToast)} className={`${dataFolder.id !== '' ? "bg-[#10B981]/30 border-[#10B981] cursor-pointer" : "bg-strong/30 border-strong disabled cursor-not-allowed text-[#686868]" } border py-[10px] px-[30px] rounded-[8px] font-[500] text-[16px] text-[#117856]`}>Mover</button>
+          </div>
       </div>
     </div>
     : <></>
