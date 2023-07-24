@@ -39,7 +39,7 @@ interface Props {
     event?: Event
     defaultValue?:{label:string, value:{id_user:string}}
     modalEvent: boolean
-    setModalEvent: Function
+    setModalEvent: React.Dispatch<React.SetStateAction<boolean>>
     childModalEvent?: Function
 }
 
@@ -221,9 +221,9 @@ function ModalEvent({ action, event, defaultValue, modalEvent, setModalEvent, ch
     }
 
     return (
-        <Dialog.Root open={modalEvent}>
+        <Dialog.Root open={modalEvent} onOpenChange={setModalEvent}>
             <Dialog.Portal>
-                <Dialog.Overlay onClick={() => setModalEvent(false)} className="bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0 z-20 " />
+                <Dialog.Overlay  className="bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0 z-20 " />
                 <Dialog.Content id={style.boxModalEvent} className=" data-[state=open]:animate-contentShow fixed top-[50%] rounded-[15px] left-[50%] w-[530px] max-sm:w-[400px] max-lsm:w-[360px] overflow-hidden  translate-x-[-50%] translate-y-[-50%] focus:outline-none z-20 max-h-[95%] overflow-y-auto">
                     <div className='bg-primary rounded-[15px]'>
                         <div className='bg-blue w-full h-[15px] rounded-t-[15px]' />
@@ -344,8 +344,8 @@ function ModalEvent({ action, event, defaultValue, modalEvent, setModalEvent, ch
                             </div>
 
                             <div className='bg-[#D9D9D9] mt-[15px] px-[30px] max-sm:px-[15px] py-[14px] flex justify-between font-[500] rounded-b-[15px]'>
-                                <Dialog.Close asChild>
-                                    <button disabled={loading} onClick={() => setModalEvent(false)} className='text-[#EBEBEB] bg-[#8F8F8F] rounded-[8px] px-[14px] py-[9px] hover:bg-[#777777] duration-100'>
+                                <Dialog.Close disabled={loading} asChild>
+                                    <button disabled={loading} className='text-[#EBEBEB] bg-[#8F8F8F] rounded-[8px] px-[14px] py-[9px] hover:bg-[#777777] duration-100'>
                                         Cancelar
                                     </button>
                                 </Dialog.Close>
