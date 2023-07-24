@@ -11,13 +11,14 @@ import { Files } from '../../../types/files'
 import { GetEvent } from '../../../Utils/Firebase/Events/GetEvents'
 import { GetFilesEvent } from '../../../Utils/Firebase/Files/GetFiles'
 import DataEvent from './dataEvent'
+import TableFiles from './tableFiles'
 
 function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
   const { dataCompany } = useContext(companyContext)
   const { dataUser } = useContext(userContext)
   const { dataAdmin } = useContext(adminContext)
   const [event, setEvent] = useState<Event>()
-  const [files, setFiles] = useState<Files[]>()
+  const [files, setFiles] = useState<Files[]>([])
   const admin = dataAdmin.id === '' ? false : true
   const router = useRouter()
 
@@ -30,11 +31,11 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
 
   async function GetThisEvent() {
     const result = await GetEvent({ id_event, id_company: dataCompany.id })
-    if(result){
+    if (result) {
       setEvent(result)
       GetFilesThisEvent(result)
     } else {
-      if(admin){
+      if (admin) {
         router.replace('/Dashboard/Admin')
       } else {
         router.replace('/Dashboard/Clientes')
@@ -43,20 +44,20 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
     }
   }
 
-  async function GetFilesThisEvent(event:Event){
-    if(event){
-      const result = await GetFilesEvent({id_company: dataCompany.id, id_user:event?.id_user, id_event:event.id})
+  async function GetFilesThisEvent(event: Event) {
+    if (event) {
+      const result = await GetFilesEvent({ id_company: dataCompany.id, id_user: event?.id_user, id_event: event.id })
       setFiles(result)
     }
   }
 
-  function childModalEvent({event}:{event:Event}){
+  function childModalEvent({ event }: { event: Event }) {
     setEvent(event)
   }
 
-  async function childConcluedEvent(){
-    if(event){
-      setEvent({...event, complete:true})
+  async function childConcluedEvent() {
+    if (event) {
+      setEvent({ ...event, complete: true })
     }
   }
 
@@ -91,8 +92,13 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
         }
       </div>
       <div className='flex flex-col  items-start ml-[20px] max-sm:ml-[10px]'>
-        {event && <DataEvent files={files!} event={event} setEvent={setEvent} childModalEvent={childModalEvent} childConcluedEvent={childConcluedEvent}/>}
+        {event && <DataEvent files={files!} event={event} setEvent={setEvent} childModalEvent={childModalEvent} childConcluedEvent={childConcluedEvent} setFiles={setFiles} />}
       </div>
+
+      <div className='mb-[10px]'>
+        {event && <TableFiles event={event} files={files} setFiles={setFiles} setEvent={setEvent} />}
+      </div>
+
     </div>
   )
 }

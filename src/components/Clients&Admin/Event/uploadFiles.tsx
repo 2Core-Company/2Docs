@@ -4,13 +4,14 @@ import { companyContext } from '../../../app/Context/contextCompany';
 import { userContext } from '../../../app/Context/contextUser';
 import { UpdateStatusDelivered } from '../../../Utils/Firebase/Events/UpdateStatusDelivered';
 import { VerifyFiles } from '../../../Utils/Other/VerifyFiles';
-import UploadFiles from '../Files/UploadFiles';
+import { UploadFiles } from '../Files/UploadFiles';
 import { Event } from '../../../types/event';
 import { UpdateLastModify } from '../../../Utils/Firebase/Events/UpdateLastModify';
 import CreateNotification from '../../../Utils/Firebase/Notification/CreateNotification';
 import { v4 as uuidv4 } from 'uuid';
 import { Notification } from '../../../types/notification';
 import { toast } from 'react-toastify';
+import { Files } from '@/src/types/files';
 
 interface Props {
   messageDisabled:string
@@ -20,10 +21,11 @@ interface Props {
   id_enterprise:string
   event:Event
   setEvent: Function
+  setFiles:React.Dispatch<React.SetStateAction<Files[]>>
 }
 
-function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, event, setEvent}:Props) {
-  const [files, setFiles] = useState()
+function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, event, setEvent, setFiles}:Props) {
+  const [filesUpload, setFilesUpload] = useState()
   const { dataUser } = useContext(userContext)
   const { dataCompany } = useContext(companyContext)
 
@@ -36,7 +38,7 @@ function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, 
     const files = Array.from(e.dataTransfer.files);
     const result = await VerifyFiles({ files })
     if(result){
-      setFiles(result)
+      setFilesUpload(result)
     }
   };
 
@@ -50,30 +52,33 @@ function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, 
     }
     const result = await VerifyFiles({ files })
     if(result){
-      setFiles(result)
+      setFilesUpload(result)
     }
-  }
-
-  function ChildToActiontUpload(){
-    setFiles(undefined)
   }
 
   useEffect(() => {
-    if(files){
+    if(filesUpload){
       UploadFilesHere()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[files])
+  },[filesUpload])
 
   async function UploadFilesHere(){
-    const result = await UploadFiles({ id_event:event.id, id_folder, id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise, files, from:'user', maxSize:dataCompany.maxSize, ChildToActiontUpload})
+    const result = await UploadFiles({ id_event:event.id, id_folder, id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise, files:filesUpload, from:'user', maxSize:dataCompany.maxSize})
     if(result?.status === 200){
       const dateNow = new Date().getTime()
+
       await UpdateLastModify({id_company:dataCompany.id, id_event:event.id, date:dateNow})
+
       if(event.delivered === false){
         await UpdateStatusDelivered({id_company:dataCompany.id, id_event:event.id, status:true})
-        await CreateNotificationAfterDeliveredEvent()
+        // await CreateNotificationAfterDeliveredEvent()
       }
+      setFilesUpload(undefined)
+
+      setFiles((files) => {
+        return result.files.concat(files)
+      })
       setEvent((event) => {
         return {...event, delivered:true, lastModify:dateNow}
       })

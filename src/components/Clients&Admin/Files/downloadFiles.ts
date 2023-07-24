@@ -2,9 +2,8 @@ import { db, storage } from '../../../../firebase'
 import { doc, writeBatch } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
-import { Folders } from '../../../types/folders'
 import { getDownloadURL, ref } from 'firebase/storage';
-import { GetFolders } from '../../../Utils/Firebase/folders/GetFolders';
+import { GetFolder } from '../../../Utils/Firebase/folders/GetFolders';
 
 interface Props{
   selectFiles:Files[]
@@ -13,12 +12,8 @@ interface Props{
   from: 'admin' | 'user'
 }
 
-
-
 async function downloadsFile({selectFiles, files, id_folder, from}:Props){
-  const folders = await GetFolders({id_company:selectFiles[0].id_company, id_enterprise:selectFiles[0].id_enterprise, id_user:selectFiles[0].id_user})
-  let folder:Folders = folders.find((folder) => folder.id === id_folder)
-  let folderCliente = folders.find((folder) => folder.name === "Cliente")
+  const folder = await GetFolder({id_folder, id_company:selectFiles[0].id_company, id_enterprise:selectFiles[0].id_enterprise, id_user:selectFiles[0].id_user})
   const batch = writeBatch(db);
 
   const result = await toast.promise(getUrlDownloadFile(), {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso"})
@@ -30,11 +25,11 @@ async function downloadsFile({selectFiles, files, id_folder, from}:Props){
       for await(const file of selectFiles){
         let monthDownload:Number = new Date(file.created_date).getMonth(), monthNow:Number = new Date().getMonth()
 
-        if(from === "user" &&  file.id_folder != folderCliente.id && folder.singleDownload === true && file.downloaded === true) {
+        if(from === "user" && file.from === 'admin' && folder?.singleDownload === true && file.downloaded === true) {
           return toast.error("Este(s) arquivo(s) já foram baixados uma vez (Pasta configurada para downloads únicos).")
         }
     
-        if(from === "user" && file.id_folder != folderCliente.id && folder.onlyMonthDownload === true && monthDownload !== monthNow) {
+        if(from === "user" && file.from === 'admin' && folder?.onlyMonthDownload === true && monthDownload !== monthNow) {
           return toast.error("Este(s) arquivo(s) são do mês passado (Pasta configurada para download no mês).")
         }
 

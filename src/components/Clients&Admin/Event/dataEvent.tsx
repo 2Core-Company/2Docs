@@ -15,9 +15,10 @@ interface Props {
     setEvent: Function
     childModalEvent: Function
     childConcluedEvent: Function
+    setFiles:React.Dispatch<React.SetStateAction<Files[]>>
 }
 
-function DataEvent({files, event, setEvent, childModalEvent, childConcluedEvent }: Props) {
+function DataEvent({ files, event, setEvent, childModalEvent, childConcluedEvent, setFiles }: Props) {
     const { dataAdmin } = useContext(adminContext)
     const styleTextTitle = `text-[24px] max-lg:text-[22px] max-md:text-[20px] max-sm:text-[18px] max-lsm:text-[16px]`
     const styleTextContent = `text-[#686868] text-[22px] max-lg:text-[20px] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px] font-[300] whitespace-pre-line ml-[5px]`
@@ -142,7 +143,7 @@ function DataEvent({files, event, setEvent, childModalEvent, childConcluedEvent 
                 </div>
 
                 {!admin && new Date().getTime() >= event.dateStarted && 
-                <UploadFile uploadDisabled={disabledUpload} messageDisabled={messageDisabled} id_event={event.id} id_folder={event.id_folder} id_enterprise={event.id_enterprise} event={event} setEvent={setEvent} />}
+                <UploadFile uploadDisabled={disabledUpload} messageDisabled={messageDisabled} id_event={event.id} id_folder={event.id_folder} id_enterprise={event.id_enterprise} event={event} setEvent={setEvent} setFiles={setFiles}/>}
             </div>
             <div className='flex items-center justify-center gap-x-[5px] max-md:gap-x-[0px] text-[#21627e] bg-[rgba(46,134,171,0.2)] border-[1px] border-[#21627e] py-[8px] px-[10px] text-center mt-[25px] rounded-[4px]'>
                 <InfoCircledIcon className='min-w-[25px] min-h-[25px]'/>

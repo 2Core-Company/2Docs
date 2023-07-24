@@ -15,10 +15,9 @@ interface PropsUploadFiles{
   files: any
   from: 'user' | 'admin'
   maxSize:number
-  ChildToActiontUpload?: Function
 }
 
-export async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterprise, files, from, maxSize, ChildToActiontUpload}:PropsUploadFiles) {
+export async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterprise, files, from, maxSize}:PropsUploadFiles) {
   const batch = writeBatch(db);
   const toastUpload = {pending:"Armazenando arquivos...", success:"Arquivos armazenados."}
   const response = await toast.promise(CreateReferencesOfFiles(), toastUpload)
@@ -30,8 +29,6 @@ export async function UploadFiles({id_event, id_folder, id_company, id_user, id_
     const allFilesFilter:any = []
     var promises:any = []
     var size = 0
-
-    console.log(files)
 
     for await (const file of files) {
       const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name

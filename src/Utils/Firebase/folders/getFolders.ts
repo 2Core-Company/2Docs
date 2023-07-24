@@ -15,7 +15,7 @@ export async function GetFolder({id_company, id_user, id_enterprise, id_folder}:
         const docSnap = await getDoc(docRef);
         let enterprises =  docSnap.data()?.enterprises
         let enterprise = enterprises.find((data) => data.id === id_enterprise)
-        let folder: Folders = enterprise.folders.find((folder) => folder.id == id_folder);
+        let folder: Folders = enterprise.folders.find((folder) => folder.id === id_folder);
         return folder
     }catch(e){
         console.log(e)

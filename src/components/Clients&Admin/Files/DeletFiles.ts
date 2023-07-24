@@ -22,7 +22,7 @@ async function deletFiles({ files, selectFiles, id_company }:Props) {
         promises.push(deleteObject(desertRef))
         batch.delete(ref1)
         if(files){
-          const index:number = files.findIndex(file => file.id === file.id)
+          const index:number = files.findIndex((dataFile) => dataFile.id === file.id)
           files.splice(index, 1);
         }
         size += file.size
@@ -31,6 +31,7 @@ async function deletFiles({ files, selectFiles, id_company }:Props) {
       await updateSizeCompany({id_company:id_company, size, action:'subtraction'})
 
       await Promise.all([promises, batch.commit()])
+      return files
     }
   } catch(e) {
     console.log(e)

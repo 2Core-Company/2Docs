@@ -28,7 +28,7 @@ export async function DisableUser({users, selectUsers, id_company, setMenu, setS
         if (result.data.type === "success") {
           try{
             for (let i = 0; i < selectUsers.length; i++) {
-              batch.update(doc(db, "companies", id_company, "clients", selectUsers[i].id),{status: !selectUsers[i].disabled});
+              batch.update(doc(db, "companies", id_company, "clients", selectUsers[i].id),{disabled: !selectUsers[i].disabled});
               const index = usersHere.findIndex((element) => element.id === selectUsers[i].id);
               usersHere[index].disabled = !users[index].disabled;
               usersHere[index].checked = false;

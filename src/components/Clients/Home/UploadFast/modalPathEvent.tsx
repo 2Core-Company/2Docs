@@ -6,7 +6,7 @@ import { companyContext } from '../../../../app/Context/contextCompany'
 import { loadingContext } from '../../../../app/Context/contextLoading'
 import { userContext } from '../../../../app/Context/contextUser'
 import { GetEventsOpenToUser } from '../../../../Utils/Firebase/Events/GetEvents'
-import UploadFiles from '../../../Clients&Admin/Files/UploadFiles'
+import { UploadFiles } from '../../../Clients&Admin/Files/UploadFiles'
 import { UpdateStatusDelivered } from '../../../../Utils/Firebase/Events/UpdateStatusDelivered'
 
 interface PropsModalPathFolder {
