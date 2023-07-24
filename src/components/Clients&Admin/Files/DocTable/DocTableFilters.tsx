@@ -6,8 +6,6 @@ interface DocTableFilters {
 
 export function DocTableFilters({ children }: DocTableFilters) {
     return(
-        <>
-            { children }
-        </>
+        { children }
     )
 }

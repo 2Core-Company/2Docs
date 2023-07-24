@@ -1,10 +1,10 @@
 import { DownloadIcon, EyeOpenIcon, Pencil2Icon, Share1Icon, TrashIcon } from '@radix-ui/react-icons';
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Image from 'next/image';
 import DocTable from '../../Clients&Admin/Files/DocTable';
 import { adminContext } from '@/src/app/Context/contextAdmin';
 import { Files } from '@/src/types/files';
-import { FormatDate } from '@/src/Utils/Other/FormatDate';
+import { FormatDate, FormatDateSmall } from '@/src/Utils/Other/FormatDate';
 import FormatSizeFile from '@/src/Utils/Other/FormatSizeFile';
 import { Filter } from '@/src/types/others';
 import { toast } from 'react-toastify';
@@ -32,6 +32,7 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
     const [viewFile, setViewFile] = useState<{ status: boolean, file?: Files }>({ status: false })
     const [renameFile, setRenameFile] = useState<{ status: boolean, file?: Files }>({ status: false })
     const admin = dataAdmin.id === '' ? false : true
+    const widthPage = window.visualViewport?.width
 
     function changeFilter(button: "name" | "size" | "date") {
         switch (button) {
@@ -93,27 +94,27 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
             {renameFile.status && <Rename setFiles={setFiles} renameFile={renameFile} setRenameFile={setRenameFile} />}
             {files.length > 0 ?
                 <DocTable.Content>
-                    <DocTable.Heading className="px-[25px] border-t-[0px] rounded-t-[8px] grid-cols-[1fr_200px_200px_100px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px]">
-                        <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")} />
-                        <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center" onClick={() => changeFilter("size")} />
-                        <DocTable.Filter label="Data de Upload" arrow active={filter.date} className={"max-lg:hidden"} onClick={() => changeFilter("date")} />
+                    <DocTable.Heading className="px-[25px] max-sm:px-[15px] border-t-[0px] rounded-t-[8px] grid-cols-[minmax(100px,_1fr)_200px_200px_100px] max-lg:grid-cols-[minmax(100px,_1fr)_120px_180px_50px] max-md:grid-cols-[minmax(100px,_1fr)_120px_40px]">
+                        <DocTable.Filter label="Nome" arrow active={filter.name} className='max-sm:text-[16px] max-sm:py-[15px]' onClick={() => changeFilter("name")} />
+                        <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center max-sm:py-[15px]" onClick={() => changeFilter("size")} />
+                        <DocTable.Filter label={widthPage! > 1024 ? "Data de Upload" : "Data"} className='max-lg:justify-center max-sm:text-[16px] max-sm:py-[15px]' arrow active={filter.date} onClick={() => changeFilter("date")} />
                     </DocTable.Heading>
                     <DocTable.Files>
                         {files.map((file: Files, index) => {
                             return (
-                                <DocTable.File key={index} className={`px-[25px] grid-cols-[1fr_200px_200px_100px] max-lg:grid-cols-[60px__1fr_120px_140px_150px] max-md:grid-cols-[60px__1fr_140px_150px] max-sm:grid-cols-[60px__1fr_150px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
+                                <DocTable.File key={index} className={`px-[25px] max-sm:py-[15px] max-sm:px-[15px] grid-cols-[minmax(100px,_1fr)_200px_200px_100px] max-lg:grid-cols-[minmax(100px,_1fr)_120px_180px_50px] max-md:grid-cols-[minmax(100px,_1fr)_120px_40px]  ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
                                     <DocTable.Data>
                                         <DocTable.Icon>
-                                            <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={30} height={30} className="mr-[23px] w-[30px] h-[30px] max-lg:w-[25px] max-lg:h-[25px]" />
+                                            <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={30} height={30} className="mr-[23px] max-sm:mr-[10px] w-[30px] h-[30px] max-lg:w-[25px] max-lg:h-[25px]" />
                                         </DocTable.Icon>
-                                        <DocTable.Text className="text-[#000] font-[400]">{file.name}</DocTable.Text>
+                                        <DocTable.Text className="text-[#000] font-[400] max-sm:text-[16px]">{file.name}</DocTable.Text>
                                     </DocTable.Data>
-                                    <DocTable.Data className="justify-center gap-1">
+                                    <DocTable.Data className="max-md:hidden justify-center gap-1">
                                         <DocTable.Text>{FormatSizeFile(file.size)[0]}</DocTable.Text>
                                         <DocTable.Label>{FormatSizeFile(file.size)[1]}</DocTable.Label>
                                     </DocTable.Data>
-                                    <DocTable.Data>
-                                        <DocTable.Text>{FormatDate(file.created_date)}</DocTable.Text>
+                                    <DocTable.Data className='max-lg:justify-center'>
+                                        <DocTable.Text className='max-sm:text-[16px]'>{widthPage! > 1024 ? FormatDate(file.created_date) : FormatDateSmall(file.created_date)}</DocTable.Text>
                                     </DocTable.Data>
                                     <DocTable.FileActions>
                                         <DocTable.Options>
@@ -121,14 +122,17 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
                                                 <DocTable.OptionsItemIcon><EyeOpenIcon width={18} height={18} className="text-[#686868] group-hover:text-white" /></DocTable.OptionsItemIcon>
                                                 <DocTable.OptionsItemLabel>Visualizar</DocTable.OptionsItemLabel>
                                             </DocTable.OptionsItem>
+
                                             <DocTable.OptionsItem onClick={() => downloadFiles([file])}>
                                                 <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white" /></DocTable.OptionsItemIcon>
                                                 <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
                                             </DocTable.OptionsItem>
+
                                             <DocTable.OptionsItem onClick={() => setRenameFile({ status: true, file: file })}>
                                                 <DocTable.OptionsItemIcon><Pencil2Icon width={18} height={18} className="text-[#686868] group-hover:text-white" /></DocTable.OptionsItemIcon>
                                                 <DocTable.OptionsItemLabel>Renomear</DocTable.OptionsItemLabel>
                                             </DocTable.OptionsItem>
+
                                             <DocTable.OptionsItem>
                                                 <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white" /></DocTable.OptionsItemIcon>
                                                 <DocTable.OptionsItemLabel>Compartilhar</DocTable.OptionsItemLabel>

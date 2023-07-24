@@ -67,7 +67,6 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
         setUser({ ...user, enterprises: user.enterprises })
     }
 
-
     return (
         <div>
             {folderConfig.status && <ModalFolderConfig user={user} enterprise={enterprise} id={id_user} id_company={dataAdmin.id_company} setFolderConfig={setFolderConfig} folderConfig={folderConfig} setUser={setUser} setEnterprise={setEnterprise} />}
@@ -90,6 +89,8 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                     enterprise.folders
                         .filter((folder) => textSearch != "" ? folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
                         .map((folder, index) => {
+                            console.log(enterprise.folders.length - 2)
+                            console.log(index)
                             if (folder.name === 'Lixeira') { 
                                 return 
                             } 
@@ -117,7 +118,8 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                                             </p>
                                         </Link>
                                     </div>
-                                    {index < (enterprise.folders.length - 2) && <div className='w-[1px] h-[60%] mx-[10px] bg-black' />}
+                                    {enterprise.folders.length != 3 && index < (enterprise.folders.length - 1) && <div className='w-[1px] h-[60%] mx-[10px] bg-black' />}
+                                    {enterprise.folders.length == 3 && index < (enterprise.folders.length - 2) && <div className='w-[1px] h-[60%] mx-[10px] bg-black' />}
                                 </div>
                             );
                         })
