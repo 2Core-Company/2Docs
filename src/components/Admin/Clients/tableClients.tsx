@@ -173,7 +173,7 @@ function TableClients() {
               Novo Evento
             </button>
 
-            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={`hover:bg-[#e0e0e0] duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white" : "border-terciary text-strong"} ${menu ? "max-lg:hidden" : ""}`}>
+            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={` duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white hover:bg-[rgba(46,134,171,0.7)]" : "border-terciary text-strong hover:bg-[#e0e0e0]"} ${menu ? "max-lg:hidden" : ""}`}>
               Trocar Status
             </button>
 
