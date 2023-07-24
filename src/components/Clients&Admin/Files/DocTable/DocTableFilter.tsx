@@ -5,10 +5,10 @@ import { twMerge } from "tailwind-merge"
 interface DocTableFilterProps extends ButtonHTMLAttributes<HTMLButtonElement>{
     label: string
     arrow?: boolean
-    active: 'asc' | 'desc'
+    active?: 'asc' | 'desc'
 }
 
-export function DocTableFilter({label, arrow = false, active: active, ...rest}: DocTableFilterProps) {
+export function DocTableFilter({label, arrow = false, active, ...rest}: DocTableFilterProps) {
     return(
         <button {...rest} className={twMerge("flex items-center cursor-pointer gap-[10px] py-[18px] text-[18px]", rest.className)}>
             <p className="font-[400]">{ label }</p>
