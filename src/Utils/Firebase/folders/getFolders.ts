@@ -9,7 +9,7 @@ interface GetFolder{
     id_folder:string
 }
 
-export async function GetFolder({id_company, id_user, id_enterprise, id_folder}:GetFolder){
+export async function getFolder({id_company, id_user, id_enterprise, id_folder}:GetFolder){
     try{
         const docRef = doc(db, "companies", id_company, "clients", id_user);
         const docSnap = await getDoc(docRef);
@@ -29,7 +29,7 @@ interface GetFolders{
     id_enterprise:string
 }
 
-export async function GetFolders({id_company, id_user, id_enterprise}:GetFolders){
+export async function getFolders({id_company, id_user, id_enterprise}:GetFolders){
     try{
         const docRef = doc(db, "companies", id_company, "clients", id_user);
         const docSnap = await getDoc(docRef);

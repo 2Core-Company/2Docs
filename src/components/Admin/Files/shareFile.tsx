@@ -1,45 +1,125 @@
-import { doc, getDoc } from 'firebase/firestore';
-import { toast } from 'react-toastify'
+import { collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
 import { db } from '../../../../firebase';
-import { Files } from '../../../types/files'
-import copy from "copy-to-clipboard"
+import { Files, ShareFiles } from '../../../types/files';
+import copy from 'copy-to-clipboard';
 import tinyUrl from 'tinyurl';
+import { uuidv4 } from '@firebase/util';
 
 interface Props{
-    file:Files
+    file: Files
+    shareUserAvatar: string
+    shareUserName: string
 }
 
-async function ShareFile({file}:Props) {
-  if(file.viewedDate){
-    return toast.error("Você não pode compartilhar um arquivo que ja foi visualizado.")
-  } else {
-    const docRef = doc(db, "companies", file.id_company);
-    const docSnap = await getDoc(docRef)
-    const nameCompany = docSnap.data()?.name
-    const url = window.location.origin
-    const urlFile = `${url}/CompartilharArquivo?ic=${file.id_company}&&if=${file.id}&&iu=${file.id_user}&&n=${file.name}&&d=${file.created_date}&&nc=${nameCompany}&&ty=${file.type}`
+async function shareFile({file, shareUserAvatar, shareUserName}:Props) {
+  const sharedFileId = uuidv4();
+  const url = window.location.origin;
 
-    shortenURL(urlFile).then((shortURL:string) => {
-      copy(shortURL)
-      toast.success('Link copiado!')
+  if(file.id_share) {
+    const urlFile = `${url}/Arquivo/${file.id_share}/${file.id_company}/${file.id_user}`;
+    shortenURL(urlFile).then((shortUrl: string) => {
+      copy(shortUrl);
     }).catch((error) => {
-        console.error(error);
-    });
-  } 
-}
+      toast.error(`Ocorreu um erro ao copiar o link: ${error}`);
+      return {status: 400, message: `Ocorreu um erro ao copiar o link: ${error}`};
+    })
+    // console.log('Link compartilhado!');
+  } else {
+    const response1 = await setSharedFileDoc({file, shareUserAvatar, shareUserName, sharedFileId});
+    if(response1.status === 400) {
+      throw toast.error(response1.message);
+    }
 
-export default ShareFile
+    const response2 = await updateFileDoc({file, sharedFileId});
+    if(response2.status === 400) {
+      throw toast.error(response2.message);
+    }
 
-  async function shortenURL(longURL) {
-    return new Promise((resolve, reject) => {
-      tinyUrl.shorten(longURL, (shortURL) => {
-        if (shortURL) {
-          resolve(shortURL);
-        } else {
-          reject(new Error('Failed to shorten URL'));
-        }
-      });
-    });
+    const urlFile = `${url}/Arquivo/${sharedFileId}/${file.id_company}/${file.id_user}`;
+    shortenURL(urlFile).then((shortUrl: string) => {
+      copy(shortUrl);
+      file.id_share = sharedFileId;
+    }).catch((error) => {
+      toast.error(`Ocorreu um erro ao copiar o link: ${error}`);
+      return {status: 400, message: `Ocorreu um erro ao copiar o link: ${error}`};
+    })
   }
 
+  return {status: 200, message: 'Link compartilhável copiado com sucesso!', file};
+  // const docRef = doc(db, "companies", file.id_company);
+  // const docSnap = await getDoc(docRef);
+  // const nameCompany = docSnap.data()?.name;
+  // const url = window.location.origin;
+  // const urlFile = `${url}/CompartilharArquivo?ic=${file.id_company}&&if=${file.id}&&iu=${file.id_user}&&n=${file.name}&&d=${file.created_date}&&nc=${nameCompany}&&ty=${file.type}`;
 
+  // shortenURL(urlFile).then((shortURL:string) => {
+  //   copy(shortURL);
+  //   toast.success('Link copiado!');
+  // }).catch((error) => {
+  //     console.error(error);
+  // });
+}
+
+interface setSharedFileDocProps {
+  file: Files
+  shareUserAvatar: string
+  shareUserName: string
+  sharedFileId: string
+}
+
+async function setSharedFileDoc({file, shareUserAvatar, shareUserName, sharedFileId}: setSharedFileDocProps) {
+  try {
+    const collectionRef = collection(db, 'files', file.id_company, file.id_user, 'user', 'sharedFiles');
+    const docRef = doc(collectionRef, sharedFileId);
+    const data: ShareFiles = {
+      id: sharedFileId,
+      fileName: file.name,
+      path: file.path,
+      shareUserAvatar: shareUserAvatar,
+      shareUserName: shareUserName,
+      size: file.size,
+      type: file.type,
+      uploadDate: file.created_date,
+      message: file.message
+    }
+    await setDoc(docRef, data);
+
+    return {status: 200, message: 'Documento criado nos arquivos compartilhados com sucesso!'};
+  } catch (error) {
+    return {status: 400, message: `Ocorreu um erro enquanto criava um documento nos arquivos compartilhados: ${error}`};
+  }
+}
+
+interface updateFileDocProps {
+  file: Files
+  sharedFileId: string
+}
+
+async function updateFileDoc({file, sharedFileId}: updateFileDocProps) {
+  try {
+    const collectionRef = collection(db, 'files', file.id_company, file.id_user, 'user', 'files');
+    const docRef = doc(collectionRef, file.id);
+    await updateDoc(docRef, {
+      id_share: sharedFileId
+    });
+
+    return {status: 200, message: 'Documento atualizada nos arquivos com sucesso!'}
+  } catch (error) {
+    return {status: 400, message: `Ocorreu um erro enquanto atualizava um documento nos arquivos: ${error}`};
+  }
+}
+
+async function shortenURL(longURL) {
+  return new Promise((resolve, reject) => {
+    tinyUrl.shorten(longURL, (shortURL) => {
+      if (shortURL) {
+        resolve(shortURL);
+      } else {
+        reject(new Error('Failed to shorten URL!'));
+      }
+    });
+  });
+}
+
+export default shareFile

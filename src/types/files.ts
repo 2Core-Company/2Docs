@@ -20,4 +20,17 @@ export interface Files{
   downloaded: boolean
   nameCompany?: string
   type2?: string
+  id_share?: string
+}
+
+export interface ShareFiles {
+  id: string
+  fileName: string
+  type: string
+  shareUserAvatar: string
+  shareUserName: string
+  uploadDate: number
+  path: string
+  size: number
+  message: string
 }

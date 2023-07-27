@@ -1,5 +1,5 @@
 'use client'
-import { FileIcon, PersonIcon, EyeOpenIcon, DownloadIcon, Pencil2Icon, StarFilledIcon, StarIcon , Share1Icon, ChatBubbleIcon, TrashIcon, UploadIcon } from '@radix-ui/react-icons';
+import { FileIcon, PersonIcon, EyeOpenIcon, DownloadIcon, Pencil2Icon, StarFilledIcon, StarIcon , Share1Icon, ChatBubbleIcon, TrashIcon, UploadIcon, Cross2Icon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import React, { useState, useContext, useEffect } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading';
@@ -9,7 +9,6 @@ import folder from '../../../../public/icons/folder.svg';
 import Link from 'next/link';
 import DisableFiles from './DisableFiles';
 import EnableFiles from './enableFiles';
-import TableFiles from '../../Clients&Admin/Files/tableFiles';
 import downloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import { adminContext } from '../../../app/Context/contextAdmin';
 import { Files } from '../../../types/files';
@@ -32,6 +31,8 @@ import favoriteFile from '@/src/components/Clients&Admin/Files/favoriteFile';
 import { VerifyFiles } from '@/src/Utils/Other/VerifyFiles';
 import { UploadFiles } from '../../Clients&Admin/Files/UploadFiles';
 import { FilterAlphabetical, FilterDate, FilterSize, FilterStatus } from '@/src/Utils/Other/Filters';
+import linkShareFile from './shareFile';
+import * as Popover from '@radix-ui/react-popover';
 
 function Files() {
   //<--------------------------------- Params Vars --------------------------------->
@@ -58,7 +59,7 @@ function Files() {
   const [moveFile, setMoveFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false});
-  const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});
+  const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});  
   
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter()
@@ -139,8 +140,7 @@ function Files() {
       })
     }
   }
-
-  // <--------------------------------- Select Files --------------------------------->
+  
   async function selectFile(index: number) {
     if (files.filter((file) => file.checked === true).length > 9 && files[index].checked === false) {
       throw toast.error("Você só pode selecionar 10 arquivos");
@@ -201,7 +201,6 @@ function Files() {
     }
   }
 
-  // <--------------------------------- Download File --------------------------------->
   async function downloadFiles(selectedFiles: Files[]) {
     if (selectedFiles.length === 0) {
       throw toast.error("Selecione um arquivo para baixar.")
@@ -214,6 +213,25 @@ function Files() {
       setDropdownState(true)
       setSelectFiles([])
     }
+  }
+
+  async function shareFile(file: Files) {
+    const sharePhotoUrl = dataAdmin.photo_url;
+    const shareName = dataAdmin.name;
+
+    const toastMessage = {pending:"Criando um link compartilhável...", success:"Link compartilhável copiado!."};
+
+    const response = await toast.promise(linkShareFile({file: file, shareUserName: shareName, shareUserAvatar: sharePhotoUrl}), toastMessage);
+
+    if(response.status === 200) {
+      setFiles((files) => {
+        let index = files.findIndex((data) => data.id === response.file.id);
+        files[index] = response.file;
+        return [...files];
+      })
+    }
+
+    // console.log(files);
   }
 
   return (
@@ -261,8 +279,8 @@ function Files() {
               <DocTable.GlobalCheckbox />
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
               <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center" onClick={() => changeFilter("size")}/>
-              <DocTable.Filter label="Data de Upload" arrow active={filter.date} className={"max-lg:hidden"} onClick={() => changeFilter("date")}/>
-              <DocTable.Filter label="Status" arrow active={filter.status!} className={"max-sm:hidden"} onClick={() => changeFilter("status")}/>
+              <DocTable.Filter label="Data de Upload" arrow active={filter.date} className="max-lg:hidden" onClick={() => changeFilter("date")}/>
+              <DocTable.Filter label="Status" arrow active={filter.status!} className="max-sm:hidden justify-center" onClick={() => changeFilter("status")}/>
               <DocTable.Filter label="Ações" className="cursor-default justify-center"/>
             </DocTable.Heading>
             <DocTable.Files>
@@ -340,10 +358,12 @@ function Files() {
                           <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
                         }
-                        <DocTable.OptionsItem>
-                          <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Compartilhar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
+                        {admin && 
+                          <DocTable.OptionsItem onClick={() => shareFile(file)}>
+                            <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                            <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
+                          </DocTable.OptionsItem>
+                        }
                         {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
                         <DocTable.OptionsItem onClick={() => setModalMessage({status: true, action: "edit", file: file})}>
                           <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>

@@ -9,7 +9,6 @@ import ShowEvents from '../../Clients&Admin/Calendar/showEvents'
 import { FormatDate } from '../../../Utils/Other/FormatDate'
 import { companyContext } from '../../../app/Context/contextCompany'
 import Link from 'next/link'
-import { adminContext } from '../../../app/Context/contextAdmin'
 
 function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
   const { dataCompany } = useContext(companyContext)
@@ -48,7 +47,7 @@ function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
         :
           <Link href={'/Dashboard/Admin/Clientes'}>{nameUser.replace("%20", ' ')}</Link>
         }
-        
+
         <p className='mx-[8px]'>{'>'}</p>
 
         <CalendarIcon className='min-w-[17px] min-h-[17px] mr-[5px]' />

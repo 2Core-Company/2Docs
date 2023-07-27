@@ -22,10 +22,8 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
   const admin = dataAdmin.id === '' ? false : true
   const router = useRouter()
 
-
   useEffect(() => {
     GetThisEvent()
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
