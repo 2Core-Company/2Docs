@@ -7,7 +7,7 @@ import { Files } from "../../../types/files";
 import { Enterprise } from "../../../types/others";
 import { DataUser } from "../../../types/users";
 import { GetAllFilesOfEnterprise } from "../../../Utils/Firebase/Files/GetFiles";
-import deletFiles from "../Files/DeletFiles";
+import deletFiles from "../Files/deleteFiles";
 
 interface Props {
     user:DataUser

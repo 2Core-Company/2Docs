@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Enterprise } from '../../../types/others';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 import { GetAllFilesOfFolder } from '../../../Utils/Firebase/Files/GetFiles';
-import deletFiles from '../Files/DeletFiles';
+import deletFiles from '../Files/deleteFiles';
 
 interface Props{
     user:DataUser,

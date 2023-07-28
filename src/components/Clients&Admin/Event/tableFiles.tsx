@@ -9,7 +9,7 @@ import FormatSizeFile from '@/src/Utils/Other/FormatSizeFile';
 import { Filter } from '@/src/types/others';
 import { toast } from 'react-toastify';
 import downloadsFile from '../Files/downloadFiles';
-import DeletFiles from '../Files/DeletFiles';
+import DeletFiles from '../Files/deleteFiles';
 import { companyContext } from '@/src/app/Context/contextCompany';
 import Rename from '../Files/rename';
 import ViewFile from '../Files/viewFile';

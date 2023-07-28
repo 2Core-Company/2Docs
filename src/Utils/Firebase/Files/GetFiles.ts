@@ -2,7 +2,7 @@ import { collection, getDocs, query, where, doc, getDoc, orderBy, limit, writeBa
 import { Files, ShareFiles } from '../../../types/files';
 import { db } from "../../../../firebase";
 import { toast } from 'react-toastify';
-import { getFolder } from "../folders/getFolders";
+import { getFolder } from "../Folders/getFolders";
 
 interface interfaceGetRecentFiles{
   id_company:string

@@ -10,7 +10,7 @@ import { UpdatePendencies } from '../../../Utils/Firebase/Users/UpdatePendencies
 import { Modal } from '../../../types/others';
 import ModalDelete from '../../../Utils/Other/modalDelete';
 import DeletEvent from '../../../Utils/Firebase/Events/DeletEvent';
-import DeletFiles from '../Files/DeletFiles';
+import DeletFiles from '../Files/deleteFiles';
 import { Files } from '../../../types/files';
 import { useRouter } from 'next/navigation';
 

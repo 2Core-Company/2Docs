@@ -15,7 +15,7 @@ import { Files } from '../../../types/files';
 import { GetFilesToTrash, GetFilesToFavorites, GetFilesAdmin } from '../../../Utils/Firebase/Files/GetFiles';
 import { useRouter } from 'next/navigation';
 import { companyContext } from '../../../app/Context/contextCompany';
-import DeletFiles from '../../Clients&Admin/Files/DeletFiles';
+import deleteFiles from '../../Clients&Admin/Files/deleteFiles';
 import DocTable from '../../Clients&Admin/Files/DocTable';
 import { Filter } from '../../../types/others';
 import FormatSizeFile from '@/src/Utils/Other/FormatSizeFile';
@@ -49,7 +49,7 @@ function Files() {
   
   //<--------------------------------- State vars --------------------------------->
   const [files, setFiles] = useState<Files[]>([]);
-  const [selectFiles, setSelectFiles] = useState<Files[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Files[]>([]);
   const [dataPages, setDataPages] = useState<{ page: number, maxPages: number }>({ page: 1, maxPages: 1 });
   const [dropdownState, setDropdownState] = useState<boolean>(true);
   const [textSearch, setTextSearch] = useState<string>('');
@@ -58,7 +58,7 @@ function Files() {
   const [moveFile, setMoveFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false});
-  const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});  
+  const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});
   
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter()
@@ -98,12 +98,12 @@ function Files() {
   useEffect(() => {
     if (dataAdmin != undefined) {
       setLoading(true)
-      GetFiles()
+      getFiles()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataAdmin])
 
-  async function GetFiles() {
+  async function getFiles() {
     if (trash) {
       await GetFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
     } else if (folderName === "Favoritos") {
@@ -147,23 +147,25 @@ function Files() {
       const allFiles = [...files];
       allFiles[index].checked = !allFiles[index].checked;
       const fileSelect = allFiles.filter((file) => file.checked === true);
-      setSelectFiles(fileSelect);
+      setSelectedFiles(fileSelect);
       setFiles(allFiles);
     }
   }
 
-  async function deleteFiles(selectedFiles: Files[]) {
-    let result;
+  async function deleteFilesHandle(selectedFiles: Files[]) {
+    let result: Files[] | undefined;
 
     if (selectedFiles.length === 0) {
       return toast.error("Selecione um arquivo para deletar.")
     }
 
     if (trash) {
-      result = await toast.promise(DeletFiles({ files, selectFiles: selectedFiles, id_company: dataCompany.id }), { pending: "Deletando arquivos...", success: "Seus arquivos foram deletados.", error: "Não foi possível deletar os arquivos." })
+      const toastMessage = { pending: `Deletando ${selectedFiles.length > 1 ? 'arquivos' : 'arquivo'}...`, success: `${selectedFiles.length > 1 ? 'Seus arquivos foram deletados' : 'Seu arquivo foi deletado'}.`, error: `Não foi possível deletar ${selectedFiles.length > 1 ? 'o arquivo' : 'os arquivos'}.` };
+      result = await toast.promise(deleteFiles({ files, selectedFiles: selectedFiles, id_company: dataCompany.id }), toastMessage);
     } 
     else {
-      result = await toast.promise(DisableFiles({ files, selectFiles: selectedFiles }), { pending: "Deletando arquivos...", success: "Seus arquivos foram movidos para a lixeira.", error: "Não foi possivel deletar os arquivos." })
+      const toastMessage = { pending: `Deletando ${selectedFiles.length > 1 ? 'arquivos' : 'arquivo'}...`, success: `${selectedFiles.length > 1 ? 'Seus arquivos foram movidos' : 'Seu arquivo foi movido'} para a lixeira.`, error: `Não foi possível deletar ${selectedFiles.length > 1 ? 'o arquivo' : 'os arquivos'}.` };
+      result = await toast.promise(DisableFiles({ files, selectFiles: selectedFiles }), toastMessage);
     }
 
     if(result) {
@@ -174,7 +176,7 @@ function Files() {
       }
       setFiles([...result])
       setDropdownState(true)
-      setSelectFiles([])
+      setSelectedFiles([])
       setDataPages({ maxPages: maxPages, page: page })
     }
   }
@@ -210,7 +212,7 @@ function Files() {
     if(result) {
       setFiles([...files])
       setDropdownState(true)
-      setSelectFiles([])
+      setSelectedFiles([])
     }
   }
 
@@ -242,7 +244,7 @@ function Files() {
               {"Usuários >"}
             </p>
           </div>
-          <Image className='min-w-[19px] min-h-[19px]' src={folder} alt="Imagem de uma pasta" />
+          <Image height={21} width={21} src={folder} alt="Imagem de uma pasta" />
           <Link href={{ pathname: "/Dashboard/Admin/Pastas", query: {id_user: id_user, id_enterprise: id_enterprise} }} className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{"Pastas  >"}</Link>
           <FileIcon className={'min-w-[19px] min-h-[19px] text-secondary'} />
           <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folderName}</p>
@@ -266,7 +268,7 @@ function Files() {
             <DocTable.Count count={textSearch === '' ? files.length : files.filter((file) => textSearch !== '' && file.name.toUpperCase().includes(textSearch.toUpperCase())).length} />
             <DocTable.Search onChange={(text) => setTextSearch(text.target.value)} placeholder="Buscar" />
             <DocTable.GlobalActions setDropdownState={setDropdownState} dropdownState={dropdownState}>
-              <DocTable.GlobalAction onClick={() => downloadFiles(selectFiles)} dropdownState={dropdownState} className={`${selectFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
+              <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
               {/* <DocTable.GlobalAction onClick={() => deleteFiles(selectFiles)} dropdownState={dropdownState} className={`${selectFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction> */}
             </DocTable.GlobalActions>
           </DocTable.Header>
@@ -366,7 +368,7 @@ function Files() {
                         </DocTable.OptionsItem>
                         }
                         {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
-                        <DocTable.OptionsItem onClick={() => deleteFiles([file])} dropdownClassName="rounded-b-[6px] hover:bg-[#BE0000]">
+                        <DocTable.OptionsItem onClick={() => deleteFilesHandle([file])} dropdownClassName="rounded-b-[6px] hover:bg-[#BE0000]">
                           <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Excluir</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>

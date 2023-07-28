@@ -112,12 +112,12 @@ export async function getAdmins({ id_company }: getAdminsProps) {
 }
 
 
-interface PropasGetUser{
+interface getUserProps{
   id_company:string
   id_user:string
 }
 
-export async function GetUser({ id_company, id_user }:PropasGetUser) {
+export async function GetUser({id_company, id_user}: getUserProps) {
   const docRef = doc(db, "companies", id_company, "clients", id_user);
   const docSnap = await getDoc(docRef);
 

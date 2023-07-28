@@ -3,7 +3,7 @@ import { doc, writeBatch } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { getDownloadURL, ref } from 'firebase/storage';
-import { getFolder } from '../../../Utils/Firebase/folders/getFolders';
+import { getFolder } from '../../../Utils/Firebase/Folders/getFolders';
 
 interface Props{
   selectFiles:Files[]
