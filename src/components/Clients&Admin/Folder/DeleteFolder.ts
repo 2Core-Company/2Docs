@@ -4,7 +4,7 @@ import { DataUser } from '../../../types/users'
 import axios from 'axios';
 import { Enterprise } from '../../../types/others';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
-import { GetAllFilesOfFolder } from '../../../Utils/Firebase/Files/getFiles';
+import { getAllFilesOfFolder } from '../../../Utils/Firebase/Files/getFiles';
 import deletFiles from '../Files/deleteFiles';
 
 interface Props{
@@ -35,11 +35,11 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
         console.log(err)
     }
 
-    const allFiles = await GetAllFilesOfFolder({id_company, id_user:user.id, id_enterprise:enterprise.id, id_folder})
+    const allFiles = await getAllFilesOfFolder({id_company, id_user:user.id, id_enterprise:enterprise.id, id_folder})
 
     try{
         await Promise.all([
-            deletFiles({selectFiles:allFiles, id_company}),
+            deletFiles({selectedFiles:allFiles, id_company}),
             axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}/${id_folder}`})
         ])
     } catch(e){

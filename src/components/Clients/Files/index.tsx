@@ -11,7 +11,7 @@ import DownloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import deleteFiles from '../../Clients&Admin/Files/deleteFiles';
 import { Files } from '../../../types/files'
 import { userContext } from '../../../app/Context/contextUser';
-import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/Files/getFiles';
+import { getFilesClient, getFilesToFavorites } from '../../../Utils/Firebase/Files/getFiles';
 import { companyContext } from '../../../app/Context/contextCompany';
 import { loadingContext } from '@/src/app/Context/contextLoading';
 import downloadsFile from '../../Clients&Admin/Files/downloadFiles';
@@ -97,9 +97,9 @@ function Files() {
   async function getFiles() {
     const response = await verifyFolder();
     if (folderName === "Favoritos" && response.status === 200) {
-      await GetFilesToFavorites({ id_company: dataUser.id_company, id_user: dataUser.id, id_enterprise: id_enterprise, setFiles, setDataPages });
+      await getFilesToFavorites({ id_company: dataUser.id_company, id_user: dataUser.id, id_enterprise: id_enterprise, setFiles, setDataPages });
     } else {
-      await GetFilesClient({ id_user: dataUser.id, id_company: dataUser.id_company, id_enterprise: id_enterprise, id_folder: id_folder, setFiles, setDataPages })
+      await getFilesClient({ id_user: dataUser.id, id_company: dataUser.id_company, id_enterprise: id_enterprise, id_folder: id_folder, setFiles, setDataPages })
     }
     setLoading(false)
   }
