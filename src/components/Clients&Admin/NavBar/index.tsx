@@ -6,7 +6,7 @@ import { signOut} from "firebase/auth";
 import { auth } from '../../../../firebase'
 import { useRouter } from 'next/navigation';
 import { themeContext } from "../../../hooks/useTheme"
-import logo2Docs from '../../../../public/icons/logo2Docs.svg'
+import Logo2Docs from 'public/icons/Logo2Docs.svg';
 import style from './navBar.module.css'
 import * as Popover from '@radix-ui/react-popover';
 import Link from 'next/link';
@@ -67,7 +67,7 @@ function NavBar({permission, image, name}:Props) {
             left-0 flex flex-col items-center border-r-[1px] border-terciary lg:hover:items-start fixed max-lg:items-start z-10 bg-primary duration-300`}> 
                 
                 <div className='flex justify-between mt-[50px] items-center lg:group-hover:px-[30px] max-lg:px-[20px]'>
-                    <Image src={logo2Docs} quality={100} priority alt='Logo App' className='w-[48px] h-[56px]'/>
+                    <Image src={Logo2Docs} quality={100} priority alt='Logo App' className='w-[48px] h-[56px]'/>
                     <div className='min-w-[2px] h-[35px] bg-black mx-[10px] hidden lg:group-hover:block max-lg:block'/>
                     <p className='text-[25px] hidden lg:group-hover:block max-lg:block'>2Docs</p>
                 </div>
