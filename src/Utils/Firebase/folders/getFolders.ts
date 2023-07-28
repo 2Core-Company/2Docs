@@ -2,14 +2,14 @@ import { doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../../../../firebase";
 import { Folders } from "../../../types/folders";
 
-interface GetFolder{
+interface getFolderProps {
     id_company:string
     id_user:string
     id_enterprise:string
     id_folder:string
 }
 
-export async function getFolder({id_company, id_user, id_enterprise, id_folder}:GetFolder){
+export async function getFolder({id_company, id_user, id_enterprise, id_folder}: getFolderProps){
     try{
         const docRef = doc(db, "companies", id_company, "clients", id_user);
         const docSnap = await getDoc(docRef);
@@ -23,13 +23,13 @@ export async function getFolder({id_company, id_user, id_enterprise, id_folder}:
 
 }
 
-interface GetFolders{
+interface getFoldersProps {
     id_company:string
     id_user:string
     id_enterprise:string
 }
 
-export async function getFolders({id_company, id_user, id_enterprise}:GetFolders){
+export async function getFolders({id_company, id_user, id_enterprise}:getFoldersProps){
     try{
         const docRef = doc(db, "companies", id_company, "clients", id_user);
         const docSnap = await getDoc(docRef);

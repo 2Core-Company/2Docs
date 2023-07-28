@@ -14,6 +14,7 @@ import { Files } from '../../../types/files'
 import { userContext } from '../../../app/Context/contextUser';
 import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/Files/GetFiles';
 import { companyContext } from '../../../app/Context/contextCompany';
+import { loadingContext } from '@/src/app/Context/contextLoading';
 
 function Files() {
   const { dataUser } = useContext(userContext)
@@ -28,20 +29,25 @@ function Files() {
   const id_enterprise: string = params.get("id_enterprise")
   const [textSearch, setTextSearch] = useState('')
   const router = useRouter();
+  const { setLoading } = useContext(loadingContext);
 
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() => {
-    if (dataUser != undefined) {
-      verifyFolder();
-      if (folderName === "Favoritos") {
-        GetFilesToFavorites({ id_company: dataUser.id_company, id_user: dataUser.id, id_enterprise: id_enterprise, setFiles, setDataPages })
-      } else {
-        GetFilesClient({ id_user: dataUser.id, id_company: dataUser.id_company, id_enterprise: id_enterprise, id_folder: id_folder, setFiles, setDataPages })
-      }
-    }
+    setLoading(true);
+    getFiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataUser])
+
+  async function getFiles() {
+    const response = await verifyFolder();
+    if (folderName === "Favoritos" && response.status === 200) {
+      await GetFilesToFavorites({ id_company: dataUser.id_company, id_user: dataUser.id, id_enterprise: id_enterprise, setFiles, setDataPages });
+    } else {
+      await GetFilesClient({ id_user: dataUser.id, id_company: dataUser.id_company, id_enterprise: id_enterprise, id_folder: id_folder, setFiles, setDataPages })
+    }
+    setLoading(false)
+  }
 
   async function verifyFolder() {
     let enterprise = dataUser.enterprises.find((data) => data.id === id_enterprise)
@@ -49,7 +55,10 @@ function Files() {
 
     if (mockFolder?.isPrivate === true) {
       router.push("Dashboard/Clientes/Pastas");
+      return {status: 401, message: "Cliente não autorizado a acessar essa pasta."}
     }
+
+    return {status: 200, message: "Cliente autorizado a acessar essa pasta."};
   }
 
   // <--------------------------------- Select File --------------------------------->
@@ -71,19 +80,6 @@ function Files() {
       const toastMessage = { pending: "Deletando arquivo.", success: "Arquivo deletado com sucesso.", error: "Não foi possivel deletar os arquivos." }
       toast.promise(DeletFiles({ files: files, selectFiles: [file], childToParentDelet, dataCompany }), toastMessage)
     }
-  }
-
-  function childToParentDelet(files) {
-    setFiles([...files])
-    setMenu(true)
-    setSelectFiles([])
-  }
-
-  // <--------------------------------- Download File --------------------------------->
-  function childToParentDownload(files) {
-    setFiles(files)
-    setMenu(true)
-    setSelectFiles([])
   }
 
   function DowloadFiles() {

@@ -32,7 +32,6 @@ import { VerifyFiles } from '@/src/Utils/Other/VerifyFiles';
 import { UploadFiles } from '../../Clients&Admin/Files/UploadFiles';
 import { FilterAlphabetical, FilterDate, FilterSize, FilterStatus } from '@/src/Utils/Other/Filters';
 import linkShareFile from './shareFile';
-import * as Popover from '@radix-ui/react-popover';
 
 function Files() {
   //<--------------------------------- Params Vars --------------------------------->
@@ -230,8 +229,6 @@ function Files() {
         return [...files];
       })
     }
-
-    // console.log(files);
   }
 
   return (
@@ -358,12 +355,10 @@ function Files() {
                           <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
                         }
-                        {admin && 
-                          <DocTable.OptionsItem onClick={() => shareFile(file)}>
-                            <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                            <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
-                          </DocTable.OptionsItem>
-                        }
+                        <DocTable.OptionsItem onClick={() => shareFile(file)}>
+                          <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                          <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
+                        </DocTable.OptionsItem>
                         {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
                         <DocTable.OptionsItem onClick={() => setModalMessage({status: true, action: "edit", file: file})}>
                           <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
