@@ -76,7 +76,7 @@ function EventsActives() {
               <input onChange={(text) => setTextSearch(text.target.value)} placeholder='Buscar' className='ml-[10px] max-sm:ml-[5px] max-lsm:ml-[2px]  bg-transparent text-[#AAAAAA] w-[120px] max-sm:w-[110px] max-lsm:w-[70px]' />
             </label>
 
-            <button onClick={() => setModalEvent(true)} className='flex items-center gap-x-[5px] max-sm:gap-x-[3px] px-[8px] max-sm:px-[5px] py-[8px] bg-hilight border-[1px] border-[#119E70] rounded-[8px] ml-auto text-white hover:bg-emerald-600 duration-100'>
+            <button disabled={dataAdmin.permission < 2} onClick={() => setModalEvent(true)} className='flex items-center gap-x-[5px] max-sm:gap-x-[3px] px-[8px] max-sm:px-[5px] py-[8px] bg-hilight border-[1px] border-[#119E70] rounded-[8px] ml-auto text-white hover:bg-emerald-600 duration-100'>
               <PlusIcon width={21} height={20} className='max-sm:w-[18px] max-sm:h-[17px]' />
               <p className='text-[18px] max-sm:text-[16px] max-lsm:text-[14px] font-[400]'>Novo Evento</p>
             </button>
