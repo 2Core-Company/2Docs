@@ -6,7 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { FormatDateSmall } from '../../../Utils/Other/FormatDate'
 import { getDownloadURL, ref } from 'firebase/storage';
 import { ShareFiles } from '../../../types/files';
-import { getSharedFile } from '../../../Utils/Firebase/Files/GetFiles'
+import { getSharedFile } from '../../../Utils/Firebase/Files/getFiles'
 import Logo2Docs from 'public/icons/Logo2Docs.svg';
 import FileShareImage from 'public/image/ShareFileImage.svg';
 import { FileIcon, ExternalLinkIcon, InfoCircledIcon } from '@radix-ui/react-icons';

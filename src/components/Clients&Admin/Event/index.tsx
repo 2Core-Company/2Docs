@@ -9,7 +9,7 @@ import { userContext } from '../../../app/Context/contextUser'
 import { Event } from '../../../types/event'
 import { Files } from '../../../types/files'
 import { GetEvent } from '../../../Utils/Firebase/Events/GetEvents'
-import { GetFilesEvent } from '../../../Utils/Firebase/Files/GetFiles'
+import { GetFilesEvent } from '../../../Utils/Firebase/Files/getFiles'
 import DataEvent from './dataEvent'
 import TableFiles from './tableFiles'
 

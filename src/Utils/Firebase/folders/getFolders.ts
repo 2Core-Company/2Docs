@@ -29,7 +29,7 @@ interface getFoldersProps {
     id_enterprise:string
 }
 
-export async function getFolders({id_company, id_user, id_enterprise}:getFoldersProps){
+export async function getFolders({id_company, id_user, id_enterprise}: getFoldersProps){
     try{
         const docRef = doc(db, "companies", id_company, "clients", id_user);
         const docSnap = await getDoc(docRef);

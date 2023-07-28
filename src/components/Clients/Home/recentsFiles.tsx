@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { userContext } from '../../../app/Context/contextUser'
 import { Files } from '../../../types/files'
-import { GetRecentFiles } from '../../../Utils/Firebase/Files/GetFiles'
+import { GetRecentFiles } from '../../../Utils/Firebase/Files/getFiles'
 import Image from 'next/image'
 import { CalendarIcon, DownloadIcon } from '@radix-ui/react-icons'
 import { FormatDateVerySmall } from '../../../Utils/Other/FormatDate'

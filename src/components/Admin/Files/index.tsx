@@ -12,7 +12,7 @@ import EnableFiles from './enableFiles';
 import downloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import { adminContext } from '../../../app/Context/contextAdmin';
 import { Files } from '../../../types/files';
-import { GetFilesToTrash, GetFilesToFavorites, GetFilesAdmin } from '../../../Utils/Firebase/Files/GetFiles';
+import { getFilesToTrash, getFilesToFavorites, getFilesAdmin } from '@/src/Utils/Firebase/Files/getFiles';
 import { useRouter } from 'next/navigation';
 import { companyContext } from '../../../app/Context/contextCompany';
 import deleteFiles from '../../Clients&Admin/Files/deleteFiles';
@@ -105,11 +105,11 @@ function Files() {
 
   async function getFiles() {
     if (trash) {
-      await GetFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
+      await getFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
     } else if (folderName === "Favoritos") {
-      await GetFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
+      await getFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
     } else {
-      await GetFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages })
+      await getFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages })
     }
     setLoading(false)
   }

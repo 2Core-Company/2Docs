@@ -11,7 +11,7 @@ import DownloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import deleteFiles from '../../Clients&Admin/Files/deleteFiles';
 import { Files } from '../../../types/files'
 import { userContext } from '../../../app/Context/contextUser';
-import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/Files/GetFiles';
+import { GetFilesClient, GetFilesToFavorites } from '../../../Utils/Firebase/Files/getFiles';
 import { companyContext } from '../../../app/Context/contextCompany';
 import { loadingContext } from '@/src/app/Context/contextLoading';
 import downloadsFile from '../../Clients&Admin/Files/downloadFiles';

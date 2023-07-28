@@ -10,7 +10,7 @@ import { Files } from "../../../types/files";
 import { Enterprise } from "../../../types/others";
 import Enterprises from "./enterprises";
 import { useRouter } from "next/navigation";
-import { GetRecentFilesOfEnterprise } from "../../../Utils/Firebase/Files/GetFiles";
+import { GetRecentFilesOfEnterprise } from "../../../Utils/Firebase/Files/getFiles";
 import RecentFiles from "./recentFiles";
 import Folders from "./folders";
 import { userContext } from "../../../app/Context/contextUser";

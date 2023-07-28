@@ -6,7 +6,7 @@ import { db } from "../../../../firebase";
 import { Files } from "../../../types/files";
 import { Enterprise } from "../../../types/others";
 import { DataUser } from "../../../types/users";
-import { GetAllFilesOfEnterprise } from "../../../Utils/Firebase/Files/GetFiles";
+import { GetAllFilesOfEnterprise } from "../../../Utils/Firebase/Files/getFiles";
 import deletFiles from "../Files/deleteFiles";
 
 interface Props {
