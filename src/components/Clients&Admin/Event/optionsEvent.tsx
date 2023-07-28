@@ -33,7 +33,7 @@ function OptionsEvent({ files, event, childModalEvent, childConcluedEvent }: Pro
         const result = await DeletEvent({id_company:dataCompany.id, id_event:event.id})
 
         if(files){
-            const response = await DeletFiles({id_company:dataCompany.id, selectFiles:files})
+            const response = await DeletFiles({id_company:dataCompany.id, selectedFiles:files})
         }
 
         if(!event.complete){
