@@ -1,58 +1,55 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Link from 'next/link'
-import { Pencil1Icon, FileTextIcon, DrawingPinIcon, DrawingPinFilledIcon, TrashIcon, PersonIcon } from '@radix-ui/react-icons';
+import { DrawingPinIcon, DrawingPinFilledIcon, TrashIcon, PersonIcon, FileIcon, Pencil2Icon, StopwatchIcon, CalendarIcon } from '@radix-ui/react-icons';
 import { DataUser, DataUserContext } from '../../../types/users'
 import { Modal, WindowsAction } from '../../../types/others';
 import Fix from './FixUser'
 import UnFix from './UnFixUser'
 import { toast } from 'react-toastify';
-import ModalEvent from '../../Clients&Admin/Calendar/modalEvent'
-import Calendar from '../../../../public/icons/calendar.svg'
-import Image from 'next/image';
 import DeletUser from './deletUser';
 import ModalDelete from '../../../Utils/Other/modalDelete'
 import ModalSetAdmin from './ModalSetAdmin';
+import ModalEvent from '../Calendar/modalEvent';
 
 
-interface Props{
-  domain:string,
-  idUser:string,
-  user:DataUser,
-  users:DataUser[],
-  windowsAction:WindowsAction,
-  setWindowsAction:Function,
-  setUserEdit:Function,
-  FilterFixed:Function,
-  setUsers:Function,
-  ResetConfig:Function,
+interface Props {
+  domain: string,
+  idUser: string,
+  user: DataUser,
+  users: DataUser[],
+  windowsAction: WindowsAction,
+  setWindowsAction: Function,
+  setUserEdit: Function,
+  FilterFixed: Function,
+  setUsers: Function,
+  ResetConfig: Function,
   dataAdmin: DataUserContext
 }
 
-function Options({dataAdmin, domain, idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed, setUsers, ResetConfig}: Props){
-  const messageFix = {pending:"Fixando usuário...", success:"Usuário fixado com sucesso."}
-  const messageUnFix = {pending:"Desfixando usuário...", success:"Usuário fixado com sucesso."}
-  const [ modalEvent, setModalEvent ] = useState<boolean>(false)
-  const [ modalAdminOptions, setModalAdminOptions ] = useState<boolean>(false)
-  const [ modal, setModal ] = useState<Modal>({status: false, title:'', subject:'', target:''})
-  
+function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed, setUsers, ResetConfig }: Props) {
+  const messageFix = { pending: "Fixando usuário...", success: "Usuário fixado com sucesso." }
+  const messageUnFix = { pending: "Desfixando usuário...", success: "Usuário fixado com sucesso." }
+  const [modalEvent, setModalEvent] = useState<boolean>(false)
+  const [modalAdminOptions, setModalAdminOptions] = useState<boolean>(false)
+  const [modal, setModal] = useState<Modal>({ status: false, title: '', subject: '', target: '' })
+
   //Confirmação de deletar usuário
-  function ConfirmationDeleteUser(){
-    setModal({status:true, title:'Deletar Usuário', subject:'o usuário', target:'Natã'})
+  function ConfirmationDeleteUser() {
+    setModal({ status: true, title: 'Deletar Usuário', subject: 'o usuário', target: 'Natã' })
   }
-  
-    //Resposta da confirmação
-    const childModal = () => {
-      toast.promise(DeletUser({user, users, domain, ResetConfig}), {pending:"Deletando o usuário...", success:"O usuário foi deletado com sucesso.", error:"Não foi possivel deletar o usuário."});
-      setModal({status: false, title:'', subject:'', target:''})
-    }
+
+  //Resposta da confirmação
+  const childModal = () => {
+    toast.promise(DeletUser({ user, users, domain, ResetConfig }), { pending: "Deletando o usuário...", success: "O usuário foi deletado com sucesso.", error: "Não foi possivel deletar o usuário." });
+    setModal({ status: false, title: '', subject: '', target: '' })
+  }
 
   return (
     <>
-      {modal.status && <ModalDelete modal={modal} childModal={childModal} setModal={setModal}/> }
-      {modalEvent &&  <ModalEvent id={user.id} email={user.email} enterprises={user.enterprises} userName={user.name} setModalEvent={setModalEvent}/>}
-      {modalAdminOptions &&  <ModalSetAdmin setModalAdminOptions={setModalAdminOptions} user={user} dataAdmin={dataAdmin} setUsers={setUsers} users={users} />}
-
+      {modal.status && <ModalDelete modal={modal} childModal={childModal} setModal={setModal} />}
+      {modalAdminOptions && <ModalSetAdmin setModalAdminOptions={setModalAdminOptions} user={user} dataAdmin={dataAdmin} setUsers={setUsers} users={users} />}
+      {modalEvent && <ModalEvent defaultValue={{ label: user.name, value: { id_user: user.id } }} action={'create'} modalEvent={modalEvent} setModalEvent={setModalEvent} />}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild className='flex justify-center items-center'>
           <button className="flex  cursor-pointer w-[20px] h-[20px] justify-between" aria-label="Customize options">
@@ -63,57 +60,63 @@ function Options({dataAdmin, domain, idUser, user, users, windowsAction, setWind
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Portal >
-          <DropdownMenu.Content align="end" alignOffset={-25}  className="bg-primary dark:bg-dprimary text-black dark:text-white text-[18px] rounded-[6px] flex flex-col gap-[5px] drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
-            <DropdownMenu.Item  className="cursor-pointer rounded-t-[6px] hover:outline-none  hover:bg-neutral-300 dark:hover:bg-gray-300/20">
-              <Link href={{ pathname: '/Dashboard/Admin/Pastas', query:{id_user:idUser, id_enterprise:user.enterprises[0].id}}} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <FileTextIcon width={22} height={22} className='text-[250px]'/>
+          <DropdownMenu.Content align="end" alignOffset={-25} className="p-[3px] bg-primary dark:bg-dprimary text-[#686868] dark:text-white rounded-[6px] flex flex-col drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
+            <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
+              <Link href={{ pathname: '/Dashboard/Admin/Pastas', query: { id_user: idUser } }} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <FileIcon width={18} height={18} />
                 Documentos
               </Link>
             </DropdownMenu.Item>
 
-            {dataAdmin.permission === 3 ? 
-            <DropdownMenu.Item  className="cursor-pointer rounded-t-[6px] hover:outline-none  hover:bg-neutral-300 dark:hover:bg-gray-300/20">
-              <div onClick={() => setModalAdminOptions(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <PersonIcon width={22} height={22} className='text-[250px]'/>
-                Definir Admins
-              </div>
-            </DropdownMenu.Item> :
-            <></>
+            {dataAdmin?.permission === 3 &&
+              <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
+                <div onClick={() => setModalAdminOptions(true)} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                  <PersonIcon width={18} height={18} />
+                  Definir Admins
+                </div>
+              </DropdownMenu.Item>
             }
 
-            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-gray-300/20">
-              <div onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <Pencil1Icon width={22} height={22} className='text-[250px]'/>
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
+              <button disabled={dataAdmin.permission < 2} onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='rounded-[6px] w-full cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <Pencil2Icon width={18} height={18}/>
                 Editar
-              </div>
+              </button>
             </DropdownMenu.Item>
 
-            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-gray-300/20">
-              <div onClick={() => setModalEvent(true)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <Image src={Calendar} alt="Calendário" width={22} height={22} />
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
+              <button disabled={dataAdmin.permission < 2} onClick={() => setModalEvent(true)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <StopwatchIcon width={18} height={18}/>
                 Agendar
-              </div>
+              </button>
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
+              <Link href={`/Dashboard/Admin/Calendario/${user.id}/${user.name}`} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <CalendarIcon width={18} height={18} />
+                Calendário
+              </Link>
             </DropdownMenu.Item>
             
-            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-neutral-300 dark:hover:bg-gray-300/20">
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
               {user.fixed ? 
-                <div onClick={() => toast.promise(UnFix({user: user, users:users, FilterFixed:FilterFixed, setUsers:setUsers}), messageUnFix)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                  <DrawingPinFilledIcon width={22} height={22} className='text-[250px]'/>
+                <button disabled={dataAdmin.permission < 2} onClick={() => toast.promise(UnFix({user: user, users:users, FilterFixed:FilterFixed, setUsers:setUsers}), messageUnFix)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                  <DrawingPinFilledIcon width={20} height={20}/>
                   Desfixar
-                </div>
+                </button>
               :
-                <div onClick={() => toast.promise(Fix({user: user, users:users, FilterFixed:FilterFixed, setUsers:setUsers}), messageFix)} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                  <DrawingPinIcon width={22} height={22} className='text-[250px]'/>
+                <button disabled={dataAdmin.permission < 2} onClick={() => toast.promise(Fix({user: user, users:users, FilterFixed:FilterFixed, setUsers:setUsers}), messageFix)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                  <DrawingPinIcon width={20} height={20}/>
                   Fixar
-                </div>
+                </button>
               }   
             </DropdownMenu.Item>
 
-            <DropdownMenu.Item className="cursor-pointer hover:outline-none hover:bg-red/30 dark:hover:bg-gray-300/20">
-              <div onClick={() => ConfirmationDeleteUser()} className='cursor-pointer flex items-center gap-[10px] px-[10px] py-[3px]'>
-                <TrashIcon width={22} height={22} className='text-[250px]'/>
-                Excluir
-              </div>
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
+              <button disabled={dataAdmin.permission < 3} onClick={() => ConfirmationDeleteUser()} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <TrashIcon width={20} height={20}/>
+                Excluir usuário
+              </button>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>

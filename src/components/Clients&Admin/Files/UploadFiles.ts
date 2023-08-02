@@ -7,70 +7,67 @@ import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany
 import { Files } from '../../../types/files';
 
 interface PropsUploadFiles{
-  id_company:string
-  id_user:string
-  id_enterprise:string
-  id_folder:string
-  id_event?:string
-  files:any
-  from:string
+  id_company: string
+  id_user: string
+  id_enterprise: string
+  id_folder: string
+  id_event?: string
+  files: any
+  from: 'user' | 'admin'
   maxSize:number
-  ChildToActiontUpload?:Function
 }
 
-async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterprise, files, from, maxSize, ChildToActiontUpload}:PropsUploadFiles) {
+export async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterprise, files, from, maxSize}:PropsUploadFiles) {
   const batch = writeBatch(db);
-  const toastUpload = {pending:"Armazenando arquivos...", success:"Arquivos armazenados."}
-  const response = await toast.promise(CreateReferencesOfFiles(), toastUpload)
-  return response
+  const toastUpload = {pending:"Armazenando arquivos...", success:"Arquivos armazenados."};
+  const response = await toast.promise(CreateReferencesOfFiles(), toastUpload);
+  return response;
 
 
   async function CreateReferencesOfFiles(){
     const docsRef = ref(storage, `${id_company}/files/${id_user}/${id_enterprise}/${id_folder}`);
-    const allFilesFilter:any = []
-    var promises:any = []
-    var size = 0
+    const allFilesFilter:any = [];
+    var promises:any = [];
+    var size = 0;
 
     for await (const file of files) {
-      const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name
+      const referencesFile = Math.floor(1000 + Math.random() * 9000) + file.name;
       const docRef = ref(docsRef, referencesFile);
       promises.push(uploadBytes(docRef , file));
-      allFilesFilter.push(file)
-      size += file.size
+      allFilesFilter.push(file);
+      size += file.size;
     }
 
-    const response = await UpdateSizeInCompany(size)
-    const response2 = await UploadFilesStorage({promises, allFilesFilter, files})
+    const response = await UpdateSizeInCompany(size);
+    const response2 = await UploadFilesStorage({promises, allFilesFilter, files});
 
-    if(response?.status === 200 && response2?.status === 200){
-      return {message:'successfully stored files in firestore. and storage', status:200}
-    }
+    return response2;
 
   }
 
   
   async function UpdateSizeInCompany(size){
-    const companySize = await GetSizeCompany({id_company})
+    const companySize = await GetSizeCompany({id_company});
 
     if((companySize + size) > maxSize){
-      throw toast.error('Limite de armazenamento foi excedido.')
+      throw toast.error('Limite de armazenamento foi excedido.');
     }
 
-    const response = await updateSizeCompany({id_company, size, action:'sum'})
-    return response
+    const response = await updateSizeCompany({id_company, size, action:'sum'});
+    return response;
   }
 
   
   async function UploadFilesStorage({promises, allFilesFilter, files}){
     try {
-      const response = await Promise.all(promises)
-      const response2 = await OrganizeFilesInArray({filesUpload:allFilesFilter, result:response.filter((file) => file != undefined)})
-      if(response2.status === 200){
-        return {message:'successfully stored files in firestore. and storage', status:200}
+      const response = await Promise.all(promises);
+      const response2 = await OrganizeFilesInArray({filesUpload:allFilesFilter, result:response.filter((file) => file != undefined)});
+      if(response2){
+        return {status: 200, files:response2};
       }
     } catch (error) {
       console.error('Erro ao fazer upload dos arquivos:', error);
-      throw error
+      throw error;
     }
 
     files.value = null;
@@ -78,13 +75,13 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
 
 
   async function OrganizeFilesInArray({filesUpload, result}){
-    const dataFilesUploaded:any = []
-    const collectionRef = collection(db, "files", id_company, id_user, 'user', 'files')
-    const id_eventHere = id_event ? id_event : ''
+    const dataFilesUploaded:Files[] = [];
+    const collectionRef = collection(db, "files", id_company, id_user, 'user', 'files');
+    const id_eventHere = id_event ? id_event : '';
 
     for(var i = 0; i < filesUpload.length; i++){
-      const type =  GetTypeFile(filesUpload[i])
-      const date = new Date().getTime() + ''
+      const type =  GetTypeFile(filesUpload[i]);
+      const date = new Date().getTime();
 
       const data:Files = {
         id_user: id_user,
@@ -107,43 +104,39 @@ async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterpr
       }
 
       const docRef  = doc(collectionRef, result[i].metadata.name);
-      batch.set(docRef, data)
-      data.checked = false
-      dataFilesUploaded.push(data)
+      batch.set(docRef, data);
+      data.checked = false;
+      dataFilesUploaded.push(data);
     }
 
     try{  
-      const result = await batch.commit()
-      if(ChildToActiontUpload){
-        ChildToActiontUpload(dataFilesUploaded)
-      } 
-      return {message:'successfully stored files in firestore.', status:200}
+      const result = await batch.commit();
+
+      return dataFilesUploaded;
     }catch(e){
-      console.log(e)
-      throw e
+      console.log(e);
+      throw e;
     }
   }
 
 
   function GetTypeFile(file){
-    var type = file.type.split('/')
-    var type2 = file.name.split('.')
+    var type = file.type.split('/');
+    var type2 = file.name.split('.');
 
     if (type.at(0) === 'image'){
-      type = "images"
+      type = "images";
     } else if (type.at(1) === "pdf"){
-      type = "pdfs"
+      type = "pdfs";
     } else if(type.at(1) === "x-zip-compressed" || type2[1] === 'rar') {
-      type = "zip"
+      type = "zip";
     } else if(type.at(0) === "text") {
-      type = "txt"
+      type = "txt";
     } else if(type[1] === "vnd.openxmlformats-officedocument.spreadsheetml.sheet" || type2[1] === 'xlsx'){
-      type = "excel"
+      type = "excel";
     } else {
-      type = "docs"
+      type = "docs";
     }
-    return type
+    return type;
   }
 }
-
-export default UploadFiles

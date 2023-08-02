@@ -3,7 +3,7 @@ import ComponentHome from '../../../components/Clients/Home/index'
 
 function Home(){
   return (
-      <ComponentHome />
-    );
+    <ComponentHome />
+  );
 };
 export default Home;

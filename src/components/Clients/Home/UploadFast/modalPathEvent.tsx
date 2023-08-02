@@ -5,9 +5,9 @@ import { toast } from 'react-toastify'
 import { companyContext } from '../../../../app/Context/contextCompany'
 import { loadingContext } from '../../../../app/Context/contextLoading'
 import { userContext } from '../../../../app/Context/contextUser'
-import { GetEventsOpenOfUser } from '../../../../Utils/Firebase/Events/GetEvents'
-import UploadFiles from '../../../Clients&Admin/Files/UploadFiles'
-import { UpdateStatusEvent } from '../../../../Utils/Firebase/Events/UpdateStatusEvent'
+import { GetEventsOpenToUser } from '../../../../Utils/Firebase/Events/GetEvents'
+import { UploadFiles } from '../../../Clients&Admin/Files/UploadFiles'
+import { UpdateStatusDelivered } from '../../../../Utils/Firebase/Events/UpdateStatusDelivered'
 
 interface PropsModalPathFolder {
     files:any
@@ -24,7 +24,7 @@ interface eventSelected {
     id_enterprise:string, 
     id_folder:string, 
     id_event:string
-    eventComplete:boolean
+    eventDelivered:boolean
 }
 
 export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsModalPathFolder){
@@ -40,7 +40,7 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
     },[])
 
     async function GetEvents(){
-        const result = await GetEventsOpenOfUser({id_company: dataCompany.id, id_user:dataUser.id})
+        const result = await GetEventsOpenToUser({id_company: dataCompany.id, id_user:dataUser.id})
         const optionsHere:options[] = []
 
         if(result){
@@ -50,7 +50,7 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
                         id_enterprise:event.id_enterprise, 
                         id_folder:event.id_folder, 
                         id_event:event.id, 
-                        eventComplete:event.complete
+                        eventDelivered:event.delivered
                     },
                     label:event.title
                 }
@@ -60,9 +60,6 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
         }
 
     }
-
-
-
 
     async function UploadFilesSelecteds(){
         if(eventSelected){
@@ -79,8 +76,8 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
             })
 
 
-            if(result?.status && eventSelected.eventComplete === false){
-                const result = await UpdateStatusEvent({id_company:dataCompany.id, id_event:eventSelected.id_event})
+            if(result?.status && eventSelected.eventDelivered === false){
+                const result = await UpdateStatusDelivered({id_company:dataCompany.id, id_event:eventSelected.id_event, status:true})
             }
 
             setLoading(false)
@@ -90,10 +87,13 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
         }
     }
 
+    const NoOptionsMessage = () => {
+        return <p className='text-center py-[10px]'>Não encontrado.</p>;
+    };
+
 
     return(
         <>  
-
             <div className='mt-[10px] flex items-center ml-[25px] max-sm:ml-[10px]'>
                 <button>
                     <ArrowLeftIcon onClick={() => setPathSelected(undefined)} className='text-[#9E9E9E] w-[25px] h-[25px] mr-[10px] cursor-pointer' />
@@ -109,6 +109,8 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
             <div className='px-[60px] max-sm:px-[30px]'>
                 <p className='mt-[20px] text-[20px] max-sm:text-[18px]'>Selecione a empresa</p>
                 <Select
+                placeholder='Selecionar...'
+                components={{ NoOptionsMessage }}
                 isDisabled={loading}
                 options={options} 
                 isClearable={true}

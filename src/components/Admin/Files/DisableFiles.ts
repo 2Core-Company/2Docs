@@ -1,33 +1,40 @@
 'use client'
 import { db } from '../../../../firebase'
-import { doc, writeBatch } from "firebase/firestore";  
+import { deleteField, doc, writeBatch } from "firebase/firestore";  
 import { toast } from 'react-toastify'; 
 import { Files } from '../../../types/files'
 
 interface Props{
   files:Files[]
   selectFiles:Files[]
-  childToParentDelet:Function
 }
 
-async function DisableFiles({files, selectFiles, childToParentDelet}:Props) {
+async function DisableFiles({ files, selectFiles }:Props) {
   const allFiles = [...files]
   const batch = writeBatch(db);
   try{
     for await (const file of selectFiles){
-      const laRef = doc(db, "files", file.id_company, file.id_user, 'user', 'files', file.id);
-      batch.update(laRef, {trash:true})
-
+      if(file.id_share) {
+        const shareRef = doc(db, 'files', file.id_company, file.id_user, 'user', 'sharedFiles', file.id_share);
+        batch.delete(shareRef);
+      }
+      
+      const fileRef = doc(db, "files", file.id_company, file.id_user, 'user', 'files', file.id);
+      batch.update(fileRef, {
+        trash:true,
+        id_share: deleteField()
+      })
       const index:number = allFiles.findIndex(file => file.id === file.id)
       file.checked = false
       allFiles.splice(index, 1);
     } 
     await batch.commit();
-    childToParentDelet(allFiles)
   }catch(e){
     console.log(e)
-    toast.error("Não Foi possivel excluir este arquivo.")
+    toast.error("Não Foi possível excluir este arquivo.")
   }
+
+  return allFiles;
 }
 
 export default DisableFiles

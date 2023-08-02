@@ -19,8 +19,8 @@ import { Folders } from "./folders"
   }
 
   export interface Filter {
-    name:boolean,
-    size:boolean,
-    date:boolean,
-    status:boolean
+    name: 'asc' | 'desc'
+    size: 'asc' | 'desc'
+    date: 'asc' | 'desc'
+    status?: 'asc' | 'desc'
   }

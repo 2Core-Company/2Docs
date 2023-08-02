@@ -3,10 +3,16 @@ export interface Event{
   id_user:string
   id_folder:string
   id_enterprise:string
-  name_enterprise:string
+  nameEnterprise:string
   userName:string
   title:string
-  observation:string
+  description:string
   complete:boolean
-  dateSelected:string
+  dateStarted:number
+  dateEnd:null | number
+  definedDate:boolean
+  repeatMonths:boolean
+  limitedDelivery:boolean
+  lastModify:number | null
+  delivered:boolean
 }

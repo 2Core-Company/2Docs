@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { companyContext } from '../../../../app/Context/contextCompany'
 import { loadingContext } from '../../../../app/Context/contextLoading'
 import { userContext } from '../../../../app/Context/contextUser'
-import UploadFiles from '../../../Clients&Admin/Files/UploadFiles'
+import { UploadFiles }  from '../../../Clients&Admin/Files/UploadFiles'
 
 interface PropsModalPathFolder {
     files:any
@@ -57,6 +57,9 @@ export default function ModalPathFolder({setPathSelected, files, setFiles}:Props
         }
     }
 
+    const NoOptionsMessage = () => {
+        return <p className='text-center py-[10px]'>Não encontrado.</p>;
+    };
 
     return(
         <>  
@@ -76,6 +79,8 @@ export default function ModalPathFolder({setPathSelected, files, setFiles}:Props
             <div className='px-[60px] max-sm:px-[30px]'>
                 <p className='mt-[20px] text-[20px] max-sm:text-[18px]'>Selecione a empresa</p>
                 <Select
+                placeholder='Selecionar...'
+                components={{ NoOptionsMessage }}
                 isDisabled={loading}
                 options={options} 
                 isClearable={true}

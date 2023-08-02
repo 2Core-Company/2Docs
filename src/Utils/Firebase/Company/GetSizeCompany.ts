@@ -7,7 +7,7 @@ interface PropsGetSizeCompanyRealTime{
 }
 
 export function GetSizeCompanyRealTime({id_company, childGetSizeCompany}:PropsGetSizeCompanyRealTime){
-    const starCountRef = ref(database, `/usage/ ${id_company}`);
+    const starCountRef = ref(database, `/usage/${id_company}`);
     onValue(starCountRef, (snapshot) => {
         const data = snapshot.val();
         if(data){
@@ -17,18 +17,18 @@ export function GetSizeCompanyRealTime({id_company, childGetSizeCompany}:PropsGe
 }
 
 
-
 interface PropsGetSizeCompany{
     id_company:string
 }
 
 export async function GetSizeCompany({id_company}:PropsGetSizeCompany){
     const dbRef = ref(database);
-    const result = await get(child(dbRef, `/usage/ ${id_company}`)).then((snapshot) => {
+    const result = await get(child(dbRef, `/usage/${id_company}`))
+    .then((snapshot) => {
         if (snapshot.exists()) {
             return snapshot.val()
         } else {
-            console.log("No data available");
+            return 'Não foi possivel localizar sua empresa!'
         }
     }).catch((error) => {
         console.error(error);

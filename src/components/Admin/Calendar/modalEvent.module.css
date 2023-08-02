@@ -1,0 +1,28 @@
+#boxModalEvent{
+    scrollbar-width: thin;
+    scrollbar-color: transparent;
+  }
+  
+  /* Chrome, Edge, and Safari */
+  #boxModalEvent::-webkit-scrollbar {
+    width: 5px;
+    margin-left: 10px;
+  }
+  
+  #boxModalEvent::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 5px;
+  }
+  
+  #boxModalEvent::-webkit-scrollbar-thumb {
+    background-color: #636363;
+    border-radius: 14px;
+    border: 0px solid #EBEBEB;
+    height: 10px;
+    width: 3px;
+  }
+
+  #boxModalEvent::-webkit-scrollbar-button {
+    width: 5px; 
+    height: 5px; 
+  }

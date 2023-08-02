@@ -49,7 +49,6 @@ function ModalSelectPathUpload({ files, setFiles }) {
                     </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root >
-
     )
 }
 

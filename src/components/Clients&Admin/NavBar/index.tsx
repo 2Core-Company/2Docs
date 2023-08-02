@@ -1,16 +1,17 @@
 import React, { useContext, useRef, useState } from 'react';
 import { DashboardIcon, FileTextIcon, PersonIcon, CalendarIcon, ChevronUpIcon, ExternalLinkIcon, MoonIcon, SunIcon, TriangleDownIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import ModalExit from './ModalExit'
 import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
 import { auth } from '../../../../firebase'
 import { useRouter } from 'next/navigation';
 import { themeContext } from "../../../hooks/useTheme"
-import logo2Docs from '../../../../public/icons/logo2Docs.svg'
+import Logo2Docs from 'public/icons/Logo2Docs.svg';
 import style from './navBar.module.css'
 import * as Popover from '@radix-ui/react-popover';
 import Link from 'next/link';
+import { userContext } from '../../../app/Context/contextUser';
+import { adminContext } from '@/src/app/Context/contextAdmin';
 
 interface Props{
     permission:number
@@ -19,14 +20,15 @@ interface Props{
 }
 
 function NavBar({permission, image, name}:Props) {
+    const { dataUser, setDataUser } = useContext(userContext)
+    const { setDataAdmin } = useContext(adminContext)
     const path = usePathname()
     const [menu, setMenu] = useState(true)
-    const [modal, setModal] = useState<boolean>(false)
     const router = useRouter()
     const styleDivIconNavBar = "h-[40px] lg:group-hover:h-[35px] max-lg:h-[35px] mt-[25px] relative lg:w-full flex justify-center lg:group-hover:px-[30px] max-lg:px-[20px] lg:group-hover:justify-start item-center cursor-pointer group/button"
     const styleIconNavBar = "w-[32px] h-[32px] lg:group-hover:w-[24px] lg:group-hover:h-[24px] max-lg:w-[24px] max-lg:h-[24px] group-hover/button:opacity-[.65]"
     const styleIcon2NavBar = "w-[32px] h-[38px] lg:group-hover:w-[24px] lg:group-hover:h-[28px] max-lg:w-[24px] max-lg:h-[28px] group-hover/button:opacity-[.65]"
-    const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-full left-0 top-0 absolute"
+    const styleSubLineIcon = "h-full w-[4px] bg-hilight rounded-full left-0 top-[-5px] absolute"
     const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.65]"
     const popoverRef = useRef<any>();
     const arrowIconRef = useRef<any>();
@@ -44,22 +46,24 @@ function NavBar({permission, image, name}:Props) {
         }
     }
 
- 
-    const childModal = () => {
-        signOut(auth).then(() => {
-            // router.refresh();
+    function ExitAccount() {
+        signOut(auth).
+        then(() => {
+            setDataUser()
+            setDataAdmin()
         }).catch((error) => {
-            console.log(error)
+          console.log(error)
         });
     }
+
 
     return (
         <div className='lg:min-w-[100px] text-black'>
             <div onClick={() => setMenu(true)} className={`z-10 fixed w-screen h-screen top-0 left-0 backdrop-blur-[2px] ${menu ? 'hidden' : ''}`}/>
-            <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`z-20 lg:hidden outline-none w-[30px] h-[25px] cursor-pointer  fixed top-[10px] left-[10px] flex flex-col items-center justify-center`}>
-                <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-45"}`}/>
-                <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary my-[5px] ${menu ? "" : "hidden"} `}/>
-                <div className={`rounded-[30px] w-[33px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+            <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className={`lg:hidden outline-none w-[30px] h-[25px] cursor-pointer  fixed top-[10px] left-[10px] flex flex-col items-center justify-center ${menu ? 'z-10 bg-primary' : 'z-20'}`}>
+                <div className={`rounded-[30px] w-[30px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-45"}`}/>
+                <div className={`rounded-[30px] w-[30px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary my-[5px] ${menu ? "" : "hidden"} `}/>
+                <div className={`rounded-[30px] w-[30px] max-sm:w-[28px] h-[3px] bg-terciary dark:bg-dterciary ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
             </button>
 
             {/*  '}  */}
@@ -67,7 +71,7 @@ function NavBar({permission, image, name}:Props) {
             left-0 flex flex-col items-center border-r-[1px] border-terciary lg:hover:items-start fixed max-lg:items-start z-10 bg-primary duration-300`}> 
                 
                 <div className='flex justify-between mt-[50px] items-center lg:group-hover:px-[30px] max-lg:px-[20px]'>
-                    <Image src={logo2Docs} quality={100} priority alt='Logo App' className='w-[48px] h-[56px]'/>
+                    <Image src={Logo2Docs} quality={100} priority alt='Logo App' className='w-[48px] h-[56px]'/>
                     <div className='min-w-[2px] h-[35px] bg-black mx-[10px] hidden lg:group-hover:block max-lg:block'/>
                     <p className='text-[25px] hidden lg:group-hover:block max-lg:block'>2Docs</p>
                 </div>
@@ -109,17 +113,19 @@ function NavBar({permission, image, name}:Props) {
                 }
                 
 
+                {permission === 0 && 
+                    <button onClick={() => (setMenu(true),  router.push(`/Dashboard/Clientes/Calendario/${dataUser.id}/${undefined}`))}  className={`${styleDivIconNavBar}`}>
+                        {path?.includes('/Dashboard/Clientes/Calendario') &&
+                            <div className={styleSubLineIcon}/>
+                        }
 
-                <button onClick={() => (setMenu(true), permission > 0 ? router.push('/Dashboard/Admin/Calendario') :  router.push('/Dashboard/Clientes/Calendario'))}  className={`${styleDivIconNavBar}`}>
-                    {path === '/Dashboard/Admin/Calendario' || path === '/Dashboard/Clientes/Calendario' ? 
-                        <div className={styleSubLineIcon}/>
-                    : <></>}
+                        <div className={`${path?.includes('/Dashboard/Clientes/Calendario' || '/Dashboard/Clientes/Evento') || path?.includes('/Dashboard/Clientes/Evento')  ? 'text-hilight' : 'text-black'} flex items-center`}>
+                            <CalendarIcon  className={styleIconNavBar}/>
+                            <p className={styleTextIcons}>Calendário</p>
+                        </div>
+                    </button>
+                }
 
-                    <div className={`${path === '/Dashboard/Admin/Calendario' || path === '/Dashboard/Clientes/Calendario' ? 'text-hilight' : 'text-black'} flex items-center`}>
-                        <CalendarIcon  className={styleIconNavBar}/>
-                        <p className={styleTextIcons}>Calendário</p>
-                    </div>
-                </button>
 
                 <Popover.Root onOpenChange={actionPopOver}>
                     <Popover.Trigger className='mt-auto  lg:group-hover:px-[30px] max-lg:px-[20px] cursor-pointer'>
@@ -130,27 +136,27 @@ function NavBar({permission, image, name}:Props) {
                         </div>
                     </Popover.Trigger>
 
-                    <Popover.Content id={style.PopoverContent} className='z-10 bg-primary ml-[30px] max-lg:ml-[15px] px-[20px] text-[#686868] py-[15px] text-[14px] rounded-[5px] flex flex-col relative mb-[15px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.30)] outline-none'> 
-                        <div className='flex items-center justify-between'>
-                            <p>Tema:</p>
+                    <Popover.Content id={style.PopoverContent} className='gap-y-[10px] z-10 bg-primary ml-[30px] max-lg:ml-[15px] px-[20px] text-[#686868] py-[15px] text-[14px] rounded-[5px] flex flex-col relative mb-[15px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.30)] outline-none'> 
+                        {/* <div className='flex items-center justify-between'>
+                            <p>Tema: </p>
                             <div onClick={() => setTheme(theme => theme === 'light' ? 'dark' : 'light')} className='ml-[10px] cursor-pointer w-[56px] h-[26px] bg-[#000000] rounded-full relative flex items-center justify-between px-[3px]'>
                                 <div className={`w-[22px] h-[22px] bg-white rounded-full absolute duration-0 ${theme === 'light' ? 'left-[3px]' : 'right-[3px]'}`}/>
                                 <SunIcon className='text-[#FFC700] w-[20px] h-[20px]'/>
                                 <MoonIcon className='text-[#FFC700] w-[20px] h-[20px]'/>
                             </div>
-                        </div>
+                        </div> */}
 
                         {permission > 0 && 
-                            <Link href={'https://2dash.vercel.app/dashboard'} className='mt-[10px] flex items-center cursor-pointer hover:brightness-[.65] duration-100'>
+                            <Link href={'https://2dash.vercel.app/dashboard'} className='flex items-center cursor-pointer hover:brightness-[.65] duration-100'>
                                 <p className='underline'>Ir para o painel de Admin </p>
                                 <ExternalLinkIcon className='text-hilight ml-[5px] w-[20px] h-[20px]'/>
                             </Link>
                         }
 
 
-                        <div onClick={() => setModal(true)} className='mt-[10px] cursor-pointer bg-[rgba(255,0,0,0.16)] border-[1px] border-[#FF0000] rounded-[5px] px-[15px] py-[2px] hover:brightness-[.65] duration-100 self-end'>
+                        <button onClick={() => ExitAccount()} className='bg-[rgba(255,0,0,0.16)] border-[1px] border-[#FF0000] rounded-[5px] px-[15px] py-[2px] hover:brightness-[.65] duration-100 self-end'>
                             <p className='text-[#BE0000]'>Sair</p>
-                        </div>
+                        </button>
 
                         <TriangleDownIcon className='w-[40px] h-[40px] text-primary absolute bottom-[-23px] left-[-3px]'/>
                     </Popover.Content>
@@ -158,7 +164,6 @@ function NavBar({permission, image, name}:Props) {
                 </Popover.Root>
 
             </div>
-                {modal && <ModalExit setModal={setModal} childModal={childModal}/> }
         </div>
     )
 }

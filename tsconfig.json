@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"],
+    },
     "target": "es5",
     "lib": [
       "dom",
@@ -40,8 +44,10 @@
     "src/components/Clients/Folder/index.jsx",
     "src/components/Clients&Admin/Calendar/calendarStyled.js",
     "src/pages/api/events/sendEmail.js",
-    "src/app/createdContext.js"
-, "pages/api/files/deletCollection.ts", "src/hooks/useTheme.js"  ],
+    "src/app/createdContext.js",
+    "pages/api/files/deletCollection.ts",
+    "src/hooks/useTheme.js"
+  ],
   "exclude": [
     "node_modules"
   ]
