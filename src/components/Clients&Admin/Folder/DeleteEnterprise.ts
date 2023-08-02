@@ -6,8 +6,8 @@ import { db } from "../../../../firebase";
 import { Files } from "../../../types/files";
 import { Enterprise } from "../../../types/others";
 import { DataUser } from "../../../types/users";
-import { GetAllFilesOfEnterprise } from "../../../Utils/Firebase/Files/GetFiles";
-import deletFiles from "../Files/DeletFiles";
+import { getAllFilesOfEnterprise } from "../../../Utils/Firebase/Files/getFiles";
+import deletFiles from "../Files/deleteFiles";
 
 interface Props {
     user:DataUser
@@ -48,7 +48,7 @@ export async function deleteEnterprise({ user, enterprise, setUser, setEnterpris
     //Puxando arquivos daquela empresa para deletar
     async function GetFilesToDelete() {
         try {
-            const result = await GetAllFilesOfEnterprise({ id_company: user.id_company, id_user: user.id, id_enterprise: enterprise.id })
+            const result = await getAllFilesOfEnterprise({ id_company: user.id_company, id_user: user.id, id_enterprise: enterprise.id })
             if(result){
                 const response = await DeleteFilesInStorageAndStore(result)
             }
@@ -62,7 +62,7 @@ export async function deleteEnterprise({ user, enterprise, setUser, setEnterpris
     async function DeleteFilesInStorageAndStore(files:Files[]){
         await Promise.all([
             axios.post(`${domain}/api/files/deletFolder`, { path: `${user.id_company}/files/${user.id}/${enterprise.id}`}),
-            deletFiles({selectFiles:files, id_company:user.id_company})
+            deletFiles({selectedFiles: files, id_company:user.id_company})
         ])
         
     }

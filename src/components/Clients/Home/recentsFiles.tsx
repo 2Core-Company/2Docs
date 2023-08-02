@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { userContext } from '../../../app/Context/contextUser'
 import { Files } from '../../../types/files'
-import { GetRecentFiles } from '../../../Utils/Firebase/Files/GetFiles'
+import { getRecentFiles } from '../../../Utils/Firebase/Files/getFiles'
 import Image from 'next/image'
 import { CalendarIcon, DownloadIcon } from '@radix-ui/react-icons'
 import { FormatDateVerySmall } from '../../../Utils/Other/FormatDate'
@@ -19,7 +19,7 @@ function RecentsFiles() {
     }, [])
 
     async function GetFiles() {
-        const result = await GetRecentFiles({ id_company: dataUser.id_company, id_user: dataUser.id, from: 'admin' })
+        const result = await getRecentFiles({ id_company: dataUser.id_company, id_user: dataUser.id, from: 'admin' })
         if (result) {
             setRecentFiles(result)
         }

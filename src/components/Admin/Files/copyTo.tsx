@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import {ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { Files } from '../../../types/files' 
 import { Folders } from '../../../types/folders';
-import { GetFolders } from '../../../Utils/Firebase/folders/GetFolders';
+import { getFolders } from '@/src/Utils/Firebase/Folders/getFolders';
 import { companyContext } from '../../../app/Context/contextCompany';
 import { GetSizeCompany } from '../../../Utils/Firebase/Company/GetSizeCompany';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
@@ -34,7 +34,7 @@ function  CopyTo({admin, copyFile, setCopyFile}: Props) {
     const id_company = file.id_company
     const id_user = file.id_user
     const id_enterprise = file.id_enterprise
-    const foldersHere = await GetFolders({id_company, id_user, id_enterprise})
+    const foldersHere = await getFolders({id_company, id_user, id_enterprise})
 
     if(foldersHere.length > 4){
       setFolders(foldersHere)

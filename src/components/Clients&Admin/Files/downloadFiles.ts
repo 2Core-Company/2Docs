@@ -3,7 +3,7 @@ import { doc, writeBatch } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { getDownloadURL, ref } from 'firebase/storage';
-import { GetFolder } from '../../../Utils/Firebase/folders/GetFolders';
+import { getFolder } from '../../../Utils/Firebase/Folders/getFolders';
 
 interface Props{
   selectFiles:Files[]
@@ -13,7 +13,7 @@ interface Props{
 }
 
 async function downloadsFile({selectFiles, files, id_folder, from}:Props){
-  const folder = await GetFolder({id_folder, id_company:selectFiles[0].id_company, id_enterprise:selectFiles[0].id_enterprise, id_user:selectFiles[0].id_user})
+  const folder = await getFolder({id_folder, id_company:selectFiles[0].id_company, id_enterprise:selectFiles[0].id_enterprise, id_user:selectFiles[0].id_user})
   const batch = writeBatch(db);
 
   const result = await toast.promise(getUrlDownloadFile(), {pending:"Fazendo download dos arquivos.",  success:"Download feito com sucesso"})

@@ -10,7 +10,7 @@ import { Files } from "../../../types/files";
 import { Enterprise } from "../../../types/others";
 import Enterprises from "./enterprises";
 import { useRouter } from "next/navigation";
-import { GetRecentFilesOfEnterprise } from "../../../Utils/Firebase/Files/GetFiles";
+import { getRecentFilesOfEnterprise } from "../../../Utils/Firebase/Files/getFiles";
 import RecentFiles from "./recentFiles";
 import Folders from "./folders";
 import { userContext } from "../../../app/Context/contextUser";
@@ -33,7 +33,7 @@ function ComponentFolder() {
       const from = admin ? 'user' : 'admin'
       const id_company = admin ? dataAdmin.id_company : dataUser.id_company
       const id_userHere = admin ? id_user : dataUser.id
-      GetRecentFilesOfEnterprise({ id_company: id_company, id_user:id_userHere, id_enterprise:enterprise.id, from: from , setRecentFiles })
+      getRecentFilesOfEnterprise({ id_company: id_company, id_user:id_userHere, id_enterprise:enterprise.id, from: from , setRecentFiles })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enterprise]);

@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as Dialog from '@radix-ui/react-dialog';
 import { PlusIcon } from "@radix-ui/react-icons";
 import { loadingContext } from "../../../app/Context/contextLoading";
+import { adminContext } from "@/src/app/Context/contextAdmin";
 
 interface Props {
   user: DataUser;
@@ -29,6 +30,7 @@ function CreateFolder({ user, enterprise, id, id_company, setUser }: Props) {
   const [createFolder, setCreateFolder] = useState<boolean>(false);
   const toastCreateFolder = { pending: "Criando pasta...", success: "Pasta criada." }
   const { theme } = useContext(themeContext);
+  const { dataAdmin } = useContext(adminContext);
 
   async function VerifyDataFolder() {
     if (dataFolder.name.toLocaleUpperCase() === 'MEUS') {
@@ -82,7 +84,7 @@ function CreateFolder({ user, enterprise, id, id_company, setUser }: Props) {
 
   return (
     <Dialog.Root open={createFolder} onOpenChange={setCreateFolder}>
-      <Dialog.Trigger disabled={loading} className={`bg-emerald-500 border border-[#119E70] dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] max-lsm:text-[12px] duration-100 hover:bg-emerald-600`}>
+      <Dialog.Trigger disabled={loading || dataAdmin.permission < 2} className={`bg-emerald-500 border border-[#119E70] dark:bg-white cursor-pointer text-white dark:text-black p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] max-lsm:text-[12px] duration-100 hover:bg-emerald-600`}>
         <PlusIcon width={18} height={18} className='mr-[5px]' />
         Criar
       </Dialog.Trigger>

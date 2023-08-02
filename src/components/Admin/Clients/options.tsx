@@ -77,18 +77,30 @@ function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWin
               </DropdownMenu.Item>
             }
 
+<<<<<<< HEAD
             <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
               <div onClick={() => (setUserEdit(user), setWindowsAction({ ...windowsAction, updateUser: true }))} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
                 <Pencil2Icon width={18} height={18} />
+=======
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
+              <button disabled={dataAdmin.permission < 2} onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='rounded-[6px] w-full cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <Pencil2Icon width={18} height={18}/>
+>>>>>>> 25ff2b6628fd49616472f5675f4f5cb96f13113a
                 Editar
-              </div>
+              </button>
             </DropdownMenu.Item>
 
+<<<<<<< HEAD
             <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
               <div onClick={() => setModalEvent(true)} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
                 <StopwatchIcon width={18} height={18} />
+=======
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
+              <button disabled={dataAdmin.permission < 2} onClick={() => setModalEvent(true)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <StopwatchIcon width={18} height={18}/>
+>>>>>>> 25ff2b6628fd49616472f5675f4f5cb96f13113a
                 Agendar
-              </div>
+              </button>
             </DropdownMenu.Item>
 
             <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
@@ -97,6 +109,7 @@ function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWin
                 Calendário
               </Link>
             </DropdownMenu.Item>
+<<<<<<< HEAD
 
             <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
               {user.fixed ?
@@ -115,8 +128,28 @@ function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWin
             <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-[#BE0000] hover:text-[#fff] duration-100">
               <div onClick={() => ConfirmationDeleteUser()} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
                 <TrashIcon width={20} height={20} />
+=======
+            
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
+              {user.fixed ? 
+                <button disabled={dataAdmin.permission < 2} onClick={() => toast.promise(UnFix({user: user, users:users, FilterFixed:FilterFixed, setUsers:setUsers}), messageUnFix)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                  <DrawingPinFilledIcon width={20} height={20}/>
+                  Desfixar
+                </button>
+              :
+                <button disabled={dataAdmin.permission < 2} onClick={() => toast.promise(Fix({user: user, users:users, FilterFixed:FilterFixed, setUsers:setUsers}), messageFix)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                  <DrawingPinIcon width={20} height={20}/>
+                  Fixar
+                </button>
+              }   
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
+              <button disabled={dataAdmin.permission < 3} onClick={() => ConfirmationDeleteUser()} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <TrashIcon width={20} height={20}/>
+>>>>>>> 25ff2b6628fd49616472f5675f4f5cb96f13113a
                 Excluir usuário
-              </div>
+              </button>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>

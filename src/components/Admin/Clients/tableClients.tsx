@@ -60,7 +60,7 @@ function TableClients() {
   // <--------------------------------- Select User --------------------------------->
   async function SelectUsers(index: number) {
     if (!users[index].verifiedEmail) {
-      return toast.error('Não é possivel selecionar um usúario pendente.')
+      return toast.error('Não é possível selecionar um usuário pendente.')
     }
 
     if (users.filter((user) => user.checked === true).length <= 9) {
@@ -169,15 +169,15 @@ function TableClients() {
               <div className={`rounded-[100px] w-[25px] h-[3px] bg-[#6B6B6B]  dark:bg-white ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
             </button>
 
-            <button onClick={() => setModalEvent(true)} className={`flex items-center border hover:bg-emerald-600  bg-emerald-500 boder-[1px] border-emerald-600 py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] duration-100 max-lg:mt-[40px] text-white ${menu ? "max-lg:hidden" : ""}`}>
+            <button disabled={dataAdmin.permission < 2} onClick={() => setModalEvent(true)} className={`flex items-center border hover:bg-emerald-600  bg-emerald-500 boder-[1px] border-emerald-600 py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] duration-100 max-lg:mt-[40px] text-white ${menu ? "max-lg:hidden" : ""}`}>
               Novo Evento
             </button>
 
-            <button onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} disabled={loading ? true : false} className={` duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white hover:bg-[rgba(46,134,171,0.7)]" : "border-terciary text-strong hover:bg-[#e0e0e0]"} ${menu ? "max-lg:hidden" : ""}`}>
+            <button disabled={dataAdmin.permission < 2 || loading ? true : false} onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} className={` duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white hover:bg-[rgba(46,134,171,0.7)]" : "border-terciary text-strong hover:bg-[#e0e0e0]"} ${menu ? "max-lg:hidden" : ""}`}>
               Trocar Status
             </button>
 
-            <button onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} disabled={loading ? true : false} className={`hover:bg-emerald-600 duration-100 bg-emerald-500 border-[1px] border-emerald-600  text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
+            <button disabled={dataAdmin.permission < 2 || loading ? true : false} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} className={`hover:bg-emerald-600 duration-100 bg-emerald-500 border-[1px] border-emerald-600  text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
               Cadastrar
             </button>
           </div>
@@ -282,7 +282,7 @@ function TableClients() {
                           </HoverCard.Trigger>
                           <HoverCard.Portal>
                             <HoverCard.Content className="bg-primary drop-shadow-[0_5px_5px_rgba(0,0,0,0.40)] rounded-[5px] px-[15px] py-[10px]">
-                              <p className="text-black">Este usúario não verificou o email.</p>
+                              <p className="text-black">Este usuário não verificou o email.</p>
                               <HoverCard.Arrow className="fill-primary" />
                             </HoverCard.Content>
                           </HoverCard.Portal>

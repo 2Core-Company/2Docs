@@ -6,17 +6,17 @@ import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany
 
 interface Props{
   files?:Files[]
-  selectFiles:Files[]
+  selectedFiles:Files[]
   id_company:string 
 }
 
-async function deletFiles({ files, selectFiles, id_company }:Props) {
+async function deleteFiles({ files, selectedFiles, id_company }:Props) {
   const batch = writeBatch(db);
   const promises:any = []
   var size = 0
   try{
-    if(selectFiles.length > 0) {
-      for await (const file of selectFiles){
+    if(selectedFiles.length > 0) {
+      for await (const file of selectedFiles){
         const ref1 = doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id)
         const desertRef = ref(storage, file.path);
         promises.push(deleteObject(desertRef))
@@ -39,4 +39,4 @@ async function deletFiles({ files, selectFiles, id_company }:Props) {
 }
 
 
-export default deletFiles
+export default deleteFiles

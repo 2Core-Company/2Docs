@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Files } from '../../../types/files'
 import { Folders } from '../../../types/folders';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { GetFolders } from '@/src/Utils/Firebase/folders/GetFolders';
+import { getFolders } from '@/src/Utils/Firebase/Folders/getFolders';
 
 interface Props{
   files:Files[]
@@ -30,7 +30,7 @@ function MoveTo({files, moveFile, setMoveFile, setFiles}:Props) {
     const id_company = file.id_company
     const id_user = file.id_user
     const id_enterprise = file.id_enterprise
-    const foldersHere = await GetFolders({id_company, id_user, id_enterprise})
+    const foldersHere = await getFolders({id_company, id_user, id_enterprise})
 
     if(foldersHere.length > 4){
       setFolders(foldersHere)

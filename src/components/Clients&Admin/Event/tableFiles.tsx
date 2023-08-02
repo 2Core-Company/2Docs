@@ -9,7 +9,7 @@ import FormatSizeFile from '@/src/Utils/Other/FormatSizeFile';
 import { Filter } from '@/src/types/others';
 import { toast } from 'react-toastify';
 import downloadsFile from '../Files/downloadFiles';
-import DeletFiles from '../Files/DeletFiles';
+import DeletFiles from '../Files/deleteFiles';
 import { companyContext } from '@/src/app/Context/contextCompany';
 import Rename from '../Files/rename';
 import ViewFile from '../Files/viewFile';
@@ -70,7 +70,7 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
             return toast.error("Selecione um arquivo para deletar.")
         }
 
-        result = await toast.promise(DeletFiles({ files, selectFiles: selectedFiles, id_company: dataCompany.id }), { pending: "Deletando arquivos...", success: "Seus arquivos foram deletados.", error: "Não foi possível deletar os arquivos." })
+        result = await toast.promise(DeletFiles({ files, selectedFiles: selectedFiles, id_company: dataCompany.id }), { pending: "Deletando arquivos...", success: "Seus arquivos foram deletados.", error: "Não foi possível deletar os arquivos." })
         
         if(result.length === 0){
             await UpdateStatusDelivered({id_company:dataCompany.id, id_event:event.id, status:false})

@@ -1,9 +1,8 @@
 import { collection, getDocs, query, where, doc, getDoc, orderBy, limit, writeBatch } from "firebase/firestore";
-import { Files } from '../../../types/files';
+import { Files, ShareFiles } from '../../../types/files';
 import { db } from "../../../../firebase";
 import { toast } from 'react-toastify';
-import { GetFolder } from "../folders/GetFolders";
-
+import { getFolder } from "@/src/Utils/Firebase/Folders/getFolders";
 
 interface interfaceGetRecentFiles{
   id_company:string
@@ -11,7 +10,7 @@ interface interfaceGetRecentFiles{
   from:string
 }
 
-export async function GetRecentFiles({id_company,  id_user, from}:interfaceGetRecentFiles){
+export async function getRecentFiles({id_company,  id_user, from}:interfaceGetRecentFiles){
   const files:Files[] = []
   const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where('from', '==', from), where("trash", "==", false), orderBy('created_date'), limit(4));
   const querySnapshot = await getDocs(q);
@@ -52,7 +51,7 @@ interface interfaceGetAllFilesOfEnterprise{
   id_enterprise:string
 }
 
-export async function GetAllFilesOfEnterprise({id_company,  id_user, id_enterprise}:interfaceGetAllFilesOfEnterprise){
+export async function getAllFilesOfEnterprise({id_company,  id_user, id_enterprise}:interfaceGetAllFilesOfEnterprise){
   const files:Files[] = []
   const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
@@ -91,7 +90,7 @@ interface interfaceGetAllFilesOfFolder{
   id_folder:string
 }
 
-export async function GetAllFilesOfFolder({id_company,  id_user, id_enterprise, id_folder}:interfaceGetAllFilesOfFolder){
+export async function getAllFilesOfFolder({id_company,  id_user, id_enterprise, id_folder}:interfaceGetAllFilesOfFolder){
   const files:Files[] = []
   const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("id_enterprise", "==", id_enterprise), where("id_folder", "==", id_folder));
   const querySnapshot = await getDocs(q);
@@ -123,8 +122,6 @@ export async function GetAllFilesOfFolder({id_company,  id_user, id_enterprise, 
   return files
 }
 
-
-
 interface interfaceGetRecentFilesOfEnterprise{
   id_company:string
   id_user:string
@@ -141,7 +138,7 @@ interface interfaceGetRecentFilesOfEnterprise{
   setRecentFiles:Function
 }
 
-export async function GetRecentFilesOfEnterprise({id_company,  id_user, id_enterprise, from, setRecentFiles}:interfaceGetRecentFilesOfEnterprise){
+export async function getRecentFilesOfEnterprise({id_company,  id_user, id_enterprise, from, setRecentFiles}:interfaceGetRecentFilesOfEnterprise){
   const files:Files[] = []
   const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where('from', '==', from), where("trash", "==", false), where("id_enterprise", "==", id_enterprise), orderBy('created_date'), limit(3));
   const querySnapshot = await getDocs(q);
@@ -182,7 +179,7 @@ interface interfaceGetFilesToTrash{
   setDataPages:Function
 }
 
-export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setFiles, setDataPages}:interfaceGetFilesToTrash){
+export async function getFilesToTrash({id_company,  id_user, id_enterprise, setFiles, setDataPages}:interfaceGetFilesToTrash){
   const files:Files[] = []
   const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("trash", "==", true), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
@@ -206,7 +203,8 @@ export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setF
       message:document.data()?.message,
       downloaded:document.data()?.downloaded,
       checked:false,
-      messageNotif: document.data()?.messageNotif
+      messageNotif: document.data()?.messageNotif,
+      id_share: document.data()?.id_share
     }
     file.checked = false
     files.push(file)
@@ -214,7 +212,6 @@ export async function GetFilesToTrash({id_company,  id_user, id_enterprise, setF
   setFiles(files)
   setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
 }
-
 
 interface interfaceGetFilesToFavorites{
   id_company:string
@@ -224,7 +221,7 @@ interface interfaceGetFilesToFavorites{
   setDataPages:Function
 }
 
-export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, setFiles, setDataPages}:interfaceGetFilesToFavorites){
+export async function getFilesToFavorites({id_company,  id_user, id_enterprise, setFiles, setDataPages}:interfaceGetFilesToFavorites){
   const files:Files[] = []
   const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("favorite", "==", true), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
@@ -248,7 +245,8 @@ export async function GetFilesToFavorites({id_company,  id_user, id_enterprise, 
       message:document.data()?.message,
       downloaded:document.data()?.downloaded,
       checked:false,
-      messageNotif: document.data()?.messageNotif
+      messageNotif: document.data()?.messageNotif,
+      id_share: document.data()?.id_share
     }
     files.push(file)
   });
@@ -266,18 +264,18 @@ interface interfaceGetFilesAdmin{
   setDataPages:Function
 }
 
-export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_folder, setFiles, setDataPages}:interfaceGetFilesAdmin){
+export async function getFilesAdmin({id_company,  id_user, id_enterprise, id_folder, setFiles, setDataPages}:interfaceGetFilesAdmin){
   const files:Files[] = []
   const q = query(collection(db, "files", id_company, id_user, 'user', 'files'),  where("id_folder", "==", id_folder), where("trash", "==", false), where("id_enterprise", "==", id_enterprise));
   const querySnapshot = await getDocs(q);
-  const folder = await GetFolder({id_company,  id_user, id_enterprise, id_folder})
+  const folder = await getFolder({id_company,  id_user, id_enterprise, id_folder})
 
   if(!folder){
     throw Error
   }
 
   try {
-    const batch = writeBatch(db);    
+    const batch = writeBatch(db);
 
     querySnapshot.forEach((document) => {
       let file: Files = {
@@ -299,7 +297,8 @@ export async function GetFilesAdmin({id_company,  id_user, id_enterprise, id_fol
         message:document.data()?.message,
         downloaded:document.data()?.downloaded,
         checked:false,
-        messageNotif: document.data()?.messageNotif
+        messageNotif: document.data()?.messageNotif,
+        id_share: document.data()?.id_share
       }
       let timeDiff = Date.now() - Date.parse(file.created_date.toString());
 
@@ -349,7 +348,7 @@ interface interfaceGetFilesEvent{
   id_event:string
 }
 
-export async function GetFilesEvent({id_company, id_user, id_event}: interfaceGetFilesEvent){
+export async function getFilesEvent({id_company, id_user, id_event}: interfaceGetFilesEvent){
   const getFiles:Files[] = []
   var q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("id_event", "==",  id_event));
 
@@ -387,11 +386,11 @@ interface interfaceGetSpecificFile{
   setFile:Function
 }
 
-export async function GetSpecificFile({id_company, id_user, id_file, setFile}:interfaceGetSpecificFile){
+export async function getSpecificFile({id_company, id_user, id_file, setFile}:interfaceGetSpecificFile){
   const docRefFile = doc(db, "files", id_company, id_user, 'user', 'files', id_file);
   const document = await getDoc(docRefFile)
-  console.log(document.data())
-  const data:Files = {      
+  // console.log(document.data())
+  const data:Files = {
     id:document.data()?.id,
     id_company:document.data()?.id_company,
     id_user:document.data()?.id_user,
@@ -414,8 +413,43 @@ export async function GetSpecificFile({id_company, id_user, id_file, setFile}:in
   setFile(data)
 } 
 
+interface getSharedFileProps {
+  id_company: string
+  id_user: string
+  id_share: string
+}
 
-interface interfaceGetFilesClient{
+export async function getSharedFile({id_company, id_user, id_share}: getSharedFileProps) {
+  try {
+    const collectionRef = collection(db, 'files', id_company, id_user, 'user', 'sharedFiles');
+    const docRef = doc(collectionRef, id_share);
+    const docSnap = await getDoc(docRef);
+
+    const file: ShareFiles = {
+      id: docSnap.data()?.id,
+      fileName: docSnap.data()?.fileName,
+      message: docSnap.data()?.message,
+      path: docSnap.data()?.path,
+      shareUserAvatar: docSnap.data()?.shareUserAvatar,
+      shareUserName: docSnap.data()?.shareUserName,
+      size: docSnap.data()?.size,
+      type: docSnap.data()?.type,
+      uploadDate: docSnap.data()?.uploadDate
+    }
+
+    console.log(docSnap);
+
+    if(file.id === undefined && file.fileName === undefined && file.message === undefined && file.path === undefined && file.shareUserAvatar === undefined && file.shareUserName === undefined && file.size === undefined && file.type === undefined && file.uploadDate === undefined) {
+      return {status: 404, message: 'Arquivo compartilhável não foi encontrado!'};
+    }
+
+    return {status: 200, message: 'Arquivo compartilhável foi encontrado com sucesso!', file: file};
+  } catch (error) {
+    return {status: 400, message: `Ocorreu um erro ao tentar encontrar o arquivo compartilhável: ${error}`};
+  }
+}
+
+interface getFilesClientProps{
   id_company:string
   id_user:string
   id_enterprise:string
@@ -424,12 +458,12 @@ interface interfaceGetFilesClient{
   setDataPages:Function
 }
 
-export async function GetFilesClient({id_company,  id_user, id_enterprise, id_folder, setFiles, setDataPages}:interfaceGetFilesClient){
+export async function getFilesClient({id_company,  id_user, id_enterprise, id_folder, setFiles, setDataPages}:getFilesClientProps){
 
   const files:Files[] = []
   const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where("trash", "==", false), where("id_enterprise", "==", id_enterprise), where("id_folder", "==", id_folder));
   const querySnapshot = await getDocs(q);
-  const folder = await GetFolder({id_company,  id_user, id_enterprise, id_folder})
+  const folder = await getFolder({id_company,  id_user, id_enterprise, id_folder})
 
   if(!folder){
     throw Error
@@ -499,4 +533,3 @@ export async function GetFilesClient({id_company,  id_user, id_enterprise, id_fo
   setFiles(files)
   setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
 }
-

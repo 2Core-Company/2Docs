@@ -8,7 +8,7 @@ interface DocTableRootProps {
 
 export function DocTableRoot({ children, className }: DocTableRootProps) {
     return(
-        <div className={twMerge('min-h-[600px] max-w-[1500px] relative border-[1px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px] flex flex-col', className)}>
+        <div className={twMerge('min-h-[600px] relative border-[1px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px] flex flex-col', className)}>
             {children}
         </div>
     )

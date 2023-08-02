@@ -56,8 +56,8 @@ export function FilterSizeFiles({ data, action }: props) {
 
 export function FilterStatus({ data, action }: props) {
   data.sort(function (x, y) {
-    let a = x.disabled;
-    let b = y.disabled;
+    let a = x.viewedDate;
+    let b = y.viewedDate;
 
     if (action === 'asc') {
       return a - b

@@ -1,5 +1,5 @@
 'use client'
-import { FileIcon, PersonIcon, EyeOpenIcon, DownloadIcon, Pencil2Icon, StarFilledIcon, StarIcon , Share1Icon, ChatBubbleIcon, TrashIcon, UploadIcon } from '@radix-ui/react-icons';
+import { FileIcon, PersonIcon, EyeOpenIcon, DownloadIcon, Pencil2Icon, StarFilledIcon, StarIcon , Share1Icon, ChatBubbleIcon, TrashIcon, UploadIcon, Cross2Icon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import React, { useState, useContext, useEffect } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading';
@@ -12,10 +12,10 @@ import EnableFiles from './enableFiles';
 import downloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import { adminContext } from '../../../app/Context/contextAdmin';
 import { Files } from '../../../types/files';
-import { GetFilesToTrash, GetFilesToFavorites, GetFilesAdmin } from '../../../Utils/Firebase/Files/GetFiles';
+import { getFilesToTrash, getFilesToFavorites, getFilesAdmin } from '@/src/Utils/Firebase/Files/getFiles';
 import { useRouter } from 'next/navigation';
 import { companyContext } from '../../../app/Context/contextCompany';
-import DeletFiles from '../../Clients&Admin/Files/DeletFiles';
+import deleteFiles from '../../Clients&Admin/Files/deleteFiles';
 import DocTable from '../../Clients&Admin/Files/DocTable';
 import { Filter } from '../../../types/others';
 import FormatSizeFile from '@/src/Utils/Other/FormatSizeFile';
@@ -30,29 +30,38 @@ import Rename from '@/src/components/Clients&Admin/Files/rename';
 import favoriteFile from '@/src/components/Clients&Admin/Files/favoriteFile';
 import { VerifyFiles } from '@/src/Utils/Other/VerifyFiles';
 import { UploadFiles } from '../../Clients&Admin/Files/UploadFiles';
+import { FilterAlphabetical, FilterDate, FilterSize, FilterStatus } from '@/src/Utils/Other/Filters';
+import linkShareFile from './shareFile';
 
 function Files() {
-  const { dataAdmin } = useContext(adminContext)
-  const { dataCompany } = useContext(companyContext)
+  //<--------------------------------- Params Vars --------------------------------->
+  const params: any = useSearchParams();
+  const trash: boolean = Boolean(params.get("trash"));
+  const folderName: string = params.get("folderName");
+  const id_user: string = params.get("id_user");
+  const id_enterprise: string = params.get("id_enterprise");
+  const id_folder: string = params.get("id_folder");
+  
+  //<--------------------------------- Context Vars --------------------------------->
+  const { dataAdmin } = useContext(adminContext);
+  const { dataCompany } = useContext(companyContext);
+  const { setLoading } = useContext(loadingContext);
+  
+  //<--------------------------------- State vars --------------------------------->
+  const [files, setFiles] = useState<Files[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Files[]>([]);
+  const [dataPages, setDataPages] = useState<{ page: number, maxPages: number }>({ page: 1, maxPages: 1 });
+  const [dropdownState, setDropdownState] = useState<boolean>(true);
+  const [textSearch, setTextSearch] = useState<string>('');
+  const [filter, setFilter] = useState<Filter>({name: 'asc', size: 'asc', date: 'asc', status: 'asc'});
+  const [viewFile, setViewFile] = useState<{status: boolean, file?: Files}>({status: false});
+  const [moveFile, setMoveFile] = useState<{status: boolean, file?: Files}>({status: false});
+  const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
+  const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false});
+  const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});
+  
+  //<--------------------------------- Other vars --------------------------------->
   const router = useRouter()
-  const { setLoading } = useContext(loadingContext)
-  const [files, setFiles] = useState<Files[]>([])
-  const [selectFiles, setSelectFiles] = useState<Files[]>([])
-  const [dataPages, setDataPages] = useState<{ page: number, maxPages: number }>({ page: 1, maxPages: 1 })
-  const [dropdownState, setDropdownState] = useState<boolean>(true)
-  const [textSearch, setTextSearch] = useState<string>('')
-  const params: any = useSearchParams()
-  const trash: boolean = Boolean(params.get("trash"))
-  const folderName: string = params.get("folderName")
-  const id_user: string = params.get("id_user")
-  const id_enterprise: string = params.get("id_enterprise")
-  const id_folder: string = params.get("id_folder")
-  const [filter, setFilter] = useState<Filter>({name: false, size: false, date: false, status: false})
-  const [viewFile, setViewFile] = useState<{status: boolean, file?: Files}>({status: false})
-  const [moveFile, setMoveFile] = useState<{status: boolean, file?: Files}>({status: false})
-  const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false})
-  const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false})
-  const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'})
   const admin = dataAdmin.id === '' ? false : true
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -84,22 +93,23 @@ function Files() {
       })
     }
   };
-  // <--------------------------------- GetFiles --------------------------------->  
+  
+  // <--------------------------------- GetFiles --------------------------------->
   useEffect(() => {
     if (dataAdmin != undefined) {
       setLoading(true)
-      GetFiles()
+      getFiles()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataAdmin])
 
-  async function GetFiles() {
+  async function getFiles() {
     if (trash) {
-      await GetFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
+      await getFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
     } else if (folderName === "Favoritos") {
-      await GetFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
+      await getFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
     } else {
-      await GetFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages })
+      await getFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages })
     }
     setLoading(false)
   }
@@ -129,8 +139,7 @@ function Files() {
       })
     }
   }
-
-  // <--------------------------------- Select Files --------------------------------->
+  
   async function selectFile(index: number) {
     if (files.filter((file) => file.checked === true).length > 9 && files[index].checked === false) {
       throw toast.error("Você só pode selecionar 10 arquivos");
@@ -138,23 +147,25 @@ function Files() {
       const allFiles = [...files];
       allFiles[index].checked = !allFiles[index].checked;
       const fileSelect = allFiles.filter((file) => file.checked === true);
-      setSelectFiles(fileSelect);
+      setSelectedFiles(fileSelect);
       setFiles(allFiles);
     }
   }
 
-  async function deleteFiles(selectedFiles: Files[]) {
-    let result;
+  async function deleteFilesHandle(selectedFiles: Files[]) {
+    let result: Files[] | undefined;
 
     if (selectedFiles.length === 0) {
       return toast.error("Selecione um arquivo para deletar.")
     }
 
     if (trash) {
-      result = await toast.promise(DeletFiles({ files, selectFiles: selectedFiles, id_company: dataCompany.id }), { pending: "Deletando arquivos...", success: "Seus arquivos foram deletados.", error: "Não foi possível deletar os arquivos." })
+      const toastMessage = { pending: `Deletando ${selectedFiles.length > 1 ? 'arquivos' : 'arquivo'}...`, success: `${selectedFiles.length > 1 ? 'Seus arquivos foram deletados' : 'Seu arquivo foi deletado'}.`, error: `Não foi possível deletar ${selectedFiles.length > 1 ? 'o arquivo' : 'os arquivos'}.` };
+      result = await toast.promise(deleteFiles({ files, selectedFiles: selectedFiles, id_company: dataCompany.id }), toastMessage);
     } 
     else {
-      result = await toast.promise(DisableFiles({ files, selectFiles: selectedFiles }), { pending: "Deletando arquivos...", success: "Seus arquivos foram movidos para a lixeira.", error: "Não foi possivel deletar os arquivos." })
+      const toastMessage = { pending: `Deletando ${selectedFiles.length > 1 ? 'arquivos' : 'arquivo'}...`, success: `${selectedFiles.length > 1 ? 'Seus arquivos foram movidos' : 'Seu arquivo foi movido'} para a lixeira.`, error: `Não foi possível deletar ${selectedFiles.length > 1 ? 'o arquivo' : 'os arquivos'}.` };
+      result = await toast.promise(DisableFiles({ files, selectFiles: selectedFiles }), toastMessage);
     }
 
     if(result) {
@@ -165,7 +176,7 @@ function Files() {
       }
       setFiles([...result])
       setDropdownState(true)
-      setSelectFiles([])
+      setSelectedFiles([])
       setDataPages({ maxPages: maxPages, page: page })
     }
   }
@@ -173,21 +184,24 @@ function Files() {
   function changeFilter(button: "name" | "size" | "date" | "status") {
     switch(button) {
       case "name":
-        setFilter({name: !filter.name, size: false, date: false, status: false});
+        const result = FilterAlphabetical({ data: files, action: filter.name })
+        setFilter({ name: filter.name === 'asc' ? 'desc' : 'asc', size: 'asc', date: 'asc', status: 'asc'});
         break;
       case "size":
-        setFilter({name: false, size: !filter.size, date: false, status: false});
+        const result2 = FilterSize({ data: files, action: filter.size })
+        setFilter({ name: 'asc', size: filter.size === 'asc' ? 'desc' : 'asc', date: 'asc', status: 'asc'});
         break;
       case "date":
-        setFilter({name: false, size: false, date: !filter.date, status: false});
+        const result3 = FilterDate({ data: files, action: filter.date })
+        setFilter({ name: 'asc', size: 'asc', date: filter.date === 'asc' ? 'desc' : 'asc', status: 'asc'});
         break;
       case "status":
-        setFilter({name: false, size: false, date: false, status: !filter.status});
+        const result4 = FilterStatus({ data: files, action: filter.status! })
+        setFilter({ name: 'asc', size: 'asc', date: 'asc', status: filter.status === 'asc' ? 'desc' : 'asc'});
         break;
     }
   }
 
-  // <--------------------------------- Download File --------------------------------->
   async function downloadFiles(selectedFiles: Files[]) {
     if (selectedFiles.length === 0) {
       throw toast.error("Selecione um arquivo para baixar.")
@@ -198,7 +212,24 @@ function Files() {
     if(result) {
       setFiles([...files])
       setDropdownState(true)
-      setSelectFiles([])
+      setSelectedFiles([])
+    }
+  }
+
+  async function shareFile(file: Files) {
+    const sharePhotoUrl = dataAdmin.photo_url;
+    const shareName = dataAdmin.name;
+
+    const toastMessage = {pending:"Criando um link compartilhável...", success:"Link compartilhável copiado!."};
+
+    const response = await toast.promise(linkShareFile({file: file, shareUserName: shareName, shareUserAvatar: sharePhotoUrl}), toastMessage);
+
+    if(response.status === 200) {
+      setFiles((files) => {
+        let index = files.findIndex((data) => data.id === response.file.id);
+        files[index] = response.file;
+        return [...files];
+      })
     }
   }
 
@@ -206,20 +237,20 @@ function Files() {
     <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
       <div className='w-full h-full mt-[42px]'>
         <p className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>{trash ? "Deletados" : "Documentos"}</p>
-        <div className='flex items-center overflow-hidden'>
+        <div className='flex items-center overflow-hidden mb-[35px]'>
           <div onClick={() => router.push('/Dashboard/Admin/Clientes')} className="flex cursor-pointer items-center">
             <PersonIcon height={25} width={25} className='text-secondary'/>
             <p className="cursor-pointer text-[18px] flex mr-[15px] max-sm:mr-[0px] max-sm:text-[16px] whitespace-nowrap text-secondary dark:text-dsecondary">
               {"Usuários >"}
             </p>
           </div>
-          <Image className='min-w-[19px] min-h-[19px]' src={folder} alt="Imagem de uma pasta" />
+          <Image height={21} width={21} src={folder} alt="Imagem de uma pasta" />
           <Link href={{ pathname: "/Dashboard/Admin/Pastas", query: {id_user: id_user, id_enterprise: id_enterprise} }} className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{"Pastas  >"}</Link>
           <FileIcon className={'min-w-[19px] min-h-[19px] text-secondary'} />
           <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folderName}</p>
         </div>
 
-        <div className='mt-[35px]'>
+        <div>
           <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
@@ -237,8 +268,8 @@ function Files() {
             <DocTable.Count count={textSearch === '' ? files.length : files.filter((file) => textSearch !== '' && file.name.toUpperCase().includes(textSearch.toUpperCase())).length} />
             <DocTable.Search onChange={(text) => setTextSearch(text.target.value)} placeholder="Buscar" />
             <DocTable.GlobalActions setDropdownState={setDropdownState} dropdownState={dropdownState}>
-              <DocTable.GlobalAction onClick={() => downloadFiles(selectFiles)} dropdownState={dropdownState} className={`${selectFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
-              <DocTable.GlobalAction onClick={() => deleteFiles(selectFiles)} dropdownState={dropdownState} className={`${selectFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction>
+              <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
+              {/* <DocTable.GlobalAction onClick={() => deleteFiles(selectFiles)} dropdownState={dropdownState} className={`${selectFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction> */}
             </DocTable.GlobalActions>
           </DocTable.Header>
           {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
@@ -247,8 +278,8 @@ function Files() {
               <DocTable.GlobalCheckbox />
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
               <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center" onClick={() => changeFilter("size")}/>
-              <DocTable.Filter label="Data de Upload" arrow active={filter.date} className={"max-lg:hidden"} onClick={() => changeFilter("date")}/>
-              <DocTable.Filter label="Status" arrow active={filter.status} className={"max-sm:hidden"} onClick={() => changeFilter("status")}/>
+              <DocTable.Filter label="Data de Upload" arrow active={filter.date} className="max-lg:hidden" onClick={() => changeFilter("date")}/>
+              <DocTable.Filter label="Status" arrow active={filter.status!} className="max-sm:hidden justify-center" onClick={() => changeFilter("status")}/>
               <DocTable.Filter label="Ações" className="cursor-default justify-center"/>
             </DocTable.Heading>
             <DocTable.Files>
@@ -289,6 +320,7 @@ function Files() {
                           <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
+                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
                         <DocTable.OptionsItem onClick={() => setMoveFile({status: true, file: file})}>
                           <DocTable.OptionsItemIcon>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
@@ -300,6 +332,7 @@ function Files() {
                           </DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Mover</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
+                        }
                         <DocTable.OptionsItem onClick={() => setCopyFile({status: true, file: file})}>
                           <DocTable.OptionsItemIcon>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
@@ -308,34 +341,36 @@ function Files() {
                           </DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Copiar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        <DocTable.OptionsItem onClick={() => setRenameFile({status: true, file: file})}>
-                          <DocTable.OptionsItemIcon><Pencil2Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Renomear</DocTable.OptionsItemLabel>
+                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
+                        <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setRenameFile({status: true, file: file})} dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#BE0000]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                          <DocTable.OptionsItemIcon><Pencil2Icon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Renomear</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        {file.favorite ?
+                        }
+                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') && file.favorite ?
                         <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folderName})}>
                           <DocTable.OptionsItemIcon><StarIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Desfavoritar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem> :
+                        </DocTable.OptionsItem> : (admin && file.from === 'admin' || admin === false && file.from === 'user') &&
                         <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folderName})}>
                           <DocTable.OptionsItemIcon><StarFilledIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
                         }
-                        <DocTable.OptionsItem>
+                        <DocTable.OptionsItem onClick={() => shareFile(file)}>
                           <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Compartilhar</DocTable.OptionsItemLabel>
+                          <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        {admin && 
-                        <DocTable.OptionsItem onClick={() => setModalMessage({status: true, action: "edit", file: file})}>
-                          <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Definir observação</DocTable.OptionsItemLabel>
+                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
+                        <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setModalMessage({status: true, action: "edit", file: file})} dropdownClassName={`w-full ${dataAdmin.permission < 3 && 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                          <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Definir observação</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
                         }
                         {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
-                        <DocTable.OptionsItem onClick={() => deleteFiles([file])} dropdownClassName="rounded-b-[6px] hover:bg-[#BE0000]">
-                          <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Excluir</DocTable.OptionsItemLabel>
+                        <DocTable.OptionsItem disabled={dataAdmin.permission < 3} onClick={() => deleteFilesHandle([file])} className='w-full' dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#BE0000]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                          <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Excluir</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
                         }
                       </DocTable.Options>
@@ -356,39 +391,6 @@ function Files() {
           }
           <DocTable.Footer textSearch={textSearch} files={files} dataPages={dataPages} setDataPages={setDataPages} />
         </DocTable.Root>
-
-        <div className='min-h-[400px] w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
-          <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
-            <div className='flex items-center bg-transparent'>
-              <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px] dark:text-white'>{files.length} <span className='text-black dark:text-white'>Documentos</span></p>
-              {/* <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px] dark:text-white" /> */}
-              <input type="text" placeholder='Buscar' onChange={(Text) => setTextSearch(Text.target.value)} className='w-[300px] text-black dark:text-white max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px] dark:placeholder:text-gray-500' />
-            </div>
-            <div className={`cursor-pointer flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${dropdownState ? "" : "max-lg:bg-white/30 dark:max-lg:bg-black/30 backdrop-blur"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
-              <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setDropdownState(!dropdownState)} className={`flex-col self-center hidden max-lg:flex ${dropdownState ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
-              <div className={`rounded-[10px] w-[30px] max-sm:w-[25px] h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${dropdownState ? "" : "rotate-45"}`} />
-              <div className={`rounded-[10px] w-[30px] max-sm:w-[25px] h-[3px] bg-black dark:bg-white my-[5px] ${dropdownState ? "" : "hidden"}`} />
-              <div className={`rounded-[10px] w-[30px] max-sm:w-[25px] h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${dropdownState ? "" : "rotate-[135deg] mt-[-3px]"}`} />
-            </button>
-
-              {
-                // trash ? <></> : <button onClick={() => downloadFiles()} className={`hover:brightness-[.85] cursor-pointer border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary text-strong dark:text-dstrong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${dropdownState ? "max-lg:hidden" : ""}`}>Download</button>
-              }
-
-              {/* <button onClick={() => deleteFiles()} className={`hover:brightness-[.85] text-center border-[2px] p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] cursor-pointer  ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight dark:bg-black/20 border-terciary dark:border-dterciary  text-strong dark:text-dstrong"} ${dropdownState ? "max-lg:hidden" : ""}`}>
-                Deletar
-              </button> */}
-
-              {trash
-              ? <EnableFiles files={files} menu={dropdownState} setMenu={setDropdownState} setFiles={setFiles} selectFiles={selectFiles} />
-                :
-                folderName != 'Favoritos' && folderName != 'Cliente' ? <></> : <></>
-              }
-            </div>
-          </div>
-          {/*<-------------- Table of Files --------------> */}
-          <TableFiles id_folder={id_folder} files={files} dataPages={dataPages} SelectFile={selectFile} trash={trash} folderName={folderName} from="admin" textSearch={textSearch} setFiles={setFiles} setDataPages={setDataPages} />
-        </div>
       </div>
     </div>
   )

@@ -9,7 +9,7 @@ import { userContext } from '../../../app/Context/contextUser'
 import { Event } from '../../../types/event'
 import { Files } from '../../../types/files'
 import { GetEvent } from '../../../Utils/Firebase/Events/GetEvents'
-import { GetFilesEvent } from '../../../Utils/Firebase/Files/GetFiles'
+import { getFilesEvent } from '../../../Utils/Firebase/Files/getFiles'
 import DataEvent from './dataEvent'
 import TableFiles from './tableFiles'
 
@@ -22,10 +22,8 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
   const admin = dataAdmin.id === '' ? false : true
   const router = useRouter()
 
-
   useEffect(() => {
     GetThisEvent()
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -46,7 +44,7 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
 
   async function GetFilesThisEvent(event: Event) {
     if (event) {
-      const result = await GetFilesEvent({ id_company: dataCompany.id, id_user: event?.id_user, id_event: event.id })
+      const result = await getFilesEvent({ id_company: dataCompany.id, id_user: event?.id_user, id_event: event.id })
       setFiles(result)
     }
   }

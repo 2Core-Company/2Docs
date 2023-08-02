@@ -17,7 +17,7 @@ function EnableFiles({selectFiles, menu, files, setMenu, setFiles}:Props) {
 
   function ConfirmationEnableFile(){
     if(selectFiles.length > 0){
-      toast.promise(EnableFile(),{pending:"Restaurando arquivos.", success:"Arquivos restaurados.", error:"Não foi possivel restaurar os arquivos."})
+      toast.promise(EnableFile(),{pending:"Restaurando arquivos.", success:"Arquivos restaurados.", error:"Não foi possível restaurar os arquivos."})
     } else {
       toast.error("Selecione um arquivo para recuperar.")
     }

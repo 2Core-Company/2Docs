@@ -10,9 +10,10 @@ import { UpdatePendencies } from '../../../Utils/Firebase/Users/UpdatePendencies
 import { Modal } from '../../../types/others';
 import ModalDelete from '../../../Utils/Other/modalDelete';
 import DeletEvent from '../../../Utils/Firebase/Events/DeletEvent';
-import DeletFiles from '../Files/DeletFiles';
+import DeletFiles from '../Files/deleteFiles';
 import { Files } from '../../../types/files';
 import { useRouter } from 'next/navigation';
+import { adminContext } from '@/src/app/Context/contextAdmin';
 
 interface Props {
     files:Files[]
@@ -23,6 +24,7 @@ interface Props {
 
 function OptionsEvent({ files, event, childModalEvent, childConcluedEvent }: Props) {
     const [modalEvent, setModalEvent] = useState(false)
+    const { dataAdmin } = useContext(adminContext);
     const { dataCompany } = useContext(companyContext)
     const toastMessage = {pending:'Completando evento...', success:'Evento completo.'}
     const dataModal = {title:'Deletar Evento', subject:'evento'}
@@ -33,7 +35,7 @@ function OptionsEvent({ files, event, childModalEvent, childConcluedEvent }: Pro
         const result = await DeletEvent({id_company:dataCompany.id, id_event:event.id})
 
         if(files){
-            const response = await DeletFiles({id_company:dataCompany.id, selectFiles:files})
+            const response = await DeletFiles({id_company:dataCompany.id, selectedFiles:files})
         }
 
         if(!event.complete){
@@ -67,19 +69,25 @@ function OptionsEvent({ files, event, childModalEvent, childConcluedEvent }: Pro
                 </Menubar.Trigger>
                 <Menubar.Portal>
                     <Menubar.Content className="flex flex-col  text-[#9E9E9E] rounded px-[2px] py-[5px] bg-white shadow-[0_10px_38px_-10px_hsla(206,22%,7%,.35),0_10px_20px_-15px_hsla(206,22%,7%,.2)] focus:shadow-[0_10px_38px_-10px_hsla(206,22%,7%,.35),0_10px_20px_-15px_hsla(206,22%,7%,.2),0_0_0_2px_theme(colors.violet7)] will-change-[transform,opacity] data-[state=open]:data-[side=top]:animate-slideDownAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade" sideOffset={5}>
-                        <Menubar.Item onClick={() => setModalEvent(true)} className='cursor-pointer outline-none flex items-center gap-x-[5px] hover:text-white hover:bg-emerald-500 px-[7px] py-[2px] rounded-[4px]'>
-                            <Pencil2Icon width={20} height={20} />
-                            <p>Editar Evento</p>
+                        <Menubar.Item onClick={() => setModalEvent(true)} className={`outline-none ${dataAdmin.permission < 2 ? 'hover:text-secondary hover:bg-transparent cursor-not-allowed' : 'hover:text-white hover:bg-emerald-500 cursor-pointer'} px-[7px] py-[2px] rounded-[4px]`}>
+                            <button disabled={dataAdmin.permission < 2} className='flex items-center gap-x-[5px] w-full rounded-[6px]'>
+                                <Pencil2Icon width={20} height={20} />
+                                <p>Editar Evento</p>
+                            </button>
                         </Menubar.Item >
 
-                        <Menubar.Item onClick={() => setModal({status:true, ...dataModal, target:event.title})} className='cursor-pointer outline-none flex items-center gap-x-[5px] hover:text-white hover:bg-[#BE0000] px-[7px] py-[2px] rounded-[4px]'>
-                            <TrashIcon width={20} height={20} />
-                            <p>Apagar Evento</p>
+                        <Menubar.Item onClick={() => setModal({status:true, ...dataModal, target:event.title})} className={`outline-none ${dataAdmin.permission < 3 ? 'hover:text-secondary hover:bg-transparent cursor-not-allowed' : 'hover:text-white hover:bg-[#BE0000] cursor-pointer'} px-[7px] py-[2px] rounded-[4px]`}>
+                            <button disabled={dataAdmin.permission < 3} className='flex items-center gap-x-[5px] w-full rounded-[6px]'>
+                                <TrashIcon width={20} height={20} />
+                                <p>Apagar Evento</p>
+                            </button>
                         </Menubar.Item >
 
-                        <Menubar.Item onClick={async () => await CompleteEvent()} className='cursor-pointer outline-none flex items-center gap-x-[5px] hover:text-white hover:bg-emerald-500 px-[7px] py-[2px] rounded-[4px]'>
-                            <CheckCircledIcon width={20} height={20} />
-                            <p>Fechar Evento</p>
+                        <Menubar.Item onClick={async () => await CompleteEvent()} className={`outline-none ${dataAdmin.permission < 2 ? 'hover:text-secondary hover:bg-transparent cursor-not-allowed' : 'hover:text-white hover:bg-emerald-500 cursor-pointer'} px-[7px] py-[2px] rounded-[4px]`}>
+                            <button disabled={dataAdmin.permission < 2} className='flex items-center gap-x-[5px] w-ull rounded-[6px]'>
+                                <CheckCircledIcon width={20} height={20} />
+                                <p>Fechar Evento</p>
+                            </button>
                         </Menubar.Item >
 
                         <Menubar.Arrow className="fill-white" />

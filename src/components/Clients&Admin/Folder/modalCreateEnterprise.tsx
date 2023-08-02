@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { DataUser } from '../../../types/users';
@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import { toast } from 'react-toastify';
+import { adminContext } from '@/src/app/Context/contextAdmin';
 
 interface Props {
     user: DataUser
@@ -16,6 +17,7 @@ function ModalCreateFolder({ user, setUser }: Props) {
     const [nameEnterprise, setNameEnterprise] = useState("")
     const messageToast = { pending: "Criando uma Empresa.", success: "Uma empresa foi criada com sucesso.", error: "Não foi possivel criar uma empresa." }
     const [modalCreateEnterprise, setModalCreateEnterprise] = useState(false)
+    const { dataAdmin } = useContext(adminContext);
 
     async function CreateEnterprise() {
         const enterprises = user.enterprises
@@ -58,7 +60,7 @@ function ModalCreateFolder({ user, setUser }: Props) {
 
     return (
         <Dialog.Root open={modalCreateEnterprise} onOpenChange={setModalCreateEnterprise} >
-            <Dialog.Trigger className='flex items-center text-emerald-500  hover:text-emerald-600 duration-100 border-b-[#686868] border-b py-[4px] px-[10px]'>
+            <Dialog.Trigger disabled={dataAdmin.permission < 2} className='flex items-center text-emerald-500  hover:text-emerald-600 duration-100 border-b-[#686868] border-b py-[4px] px-[10px]'>
                 <PlusIcon width={20} height={20} />
                 Adicionar
             </Dialog.Trigger>
