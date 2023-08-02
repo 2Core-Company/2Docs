@@ -11,6 +11,7 @@ import style from './navBar.module.css'
 import * as Popover from '@radix-ui/react-popover';
 import Link from 'next/link';
 import { userContext } from '../../../app/Context/contextUser';
+import { adminContext } from '@/src/app/Context/contextAdmin';
 
 interface Props{
     permission:number
@@ -19,7 +20,8 @@ interface Props{
 }
 
 function NavBar({permission, image, name}:Props) {
-    const { dataUser } = useContext(userContext)
+    const { dataUser, setDataUser } = useContext(userContext)
+    const { setDataAdmin } = useContext(adminContext)
     const path = usePathname()
     const [menu, setMenu] = useState(true)
     const router = useRouter()
@@ -45,8 +47,10 @@ function NavBar({permission, image, name}:Props) {
     }
 
     function ExitAccount() {
-        signOut(auth).then(() => {
-    
+        signOut(auth).
+        then(() => {
+            setDataUser()
+            setDataAdmin()
         }).catch((error) => {
           console.log(error)
         });

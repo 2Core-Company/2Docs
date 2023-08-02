@@ -29,11 +29,94 @@ export default async function SendFeed(req: NextApiRequest, res: NextApiResponse
         transporter.sendMail({
             from: '"2Docs" <contato@2core.com.br>', // sender address
             to: `${email}`, // list of receivers
-            subject: "`Email de confirmação 2Docs ✔", // Subject line
-            text: `Email de confirmação 2Docs.`, // plain text body
+            subject: "Confirmar Email ✔", // Subject line
+            text: `Seu email foi cadastrado no 2Docs`, // plain text body
             html: `
-                <h2>Clique no link:</h2>
-                <a href='https://2dash.vercel.app/convite?id_user=${id_user}&id_company=${id_company}'>Confirmar Email</a>
+            <!DOCTYPE html>
+            <html lang="en">
+            
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Document</title>
+                <style>
+                    * {
+                        padding: 0;
+                        margin: 0;
+                        vertical-align: baseline;
+                        list-style: none;
+                        border: 0
+                    }
+            
+                    body {
+                        display: flex;
+                        color: #333333;
+                        font-family: Arial, Helvetica, sans-serif;
+                        background-color: transparent;
+                    }
+                </style>
+            </head>
+            
+            <body>
+            
+                <table style="background-color: #ebebeb; padding-top: 15px; margin: 0 auto;">
+                    <tr>
+                        <td>
+                            <div style="padding-left: 15px; padding-right: 15px;">
+                                <img src="https://spktyf.stripocdn.email/content/guids/CABINET_461fe99fd880811ce6b950e7c045ec42843d945fadd61f0aadc694ffdfa95237/images/2docs_1_2.png"
+                                    alt="" width="50" />
+                            </div>
+                        </td>
+                    </tr>
+            
+                    <tr>
+                        <td>
+                            <div style="padding-left: 15px; padding-right: 15px; margin: 40px 0 0 0">
+                                <h1>Seu email foi cadastrado no 2Docs</h1>
+                            </div>
+                        </td>
+                    </tr>
+            
+                    <tr>
+                        <td>
+                            <div style="padding-left: 15px; padding-right: 15px; display: flex; margin: 40px 0 0 0">
+                                <img style="margin: auto;"
+                                    src="https://spktyf.stripocdn.email/content/guids/CABINET_461fe99fd880811ce6b950e7c045ec42843d945fadd61f0aadc694ffdfa95237/images/undraw_envelope_re_f5j4_1.png"
+                                    alt="" width="315" />
+                            </div>
+                        </td>
+                    </tr>
+            
+                    <tr>
+                        <td>
+                            <div style="padding-left: 15px; padding-right: 15px; text-align: center; margin: 40px 0 0 0;">
+                                <h2>Clique no botão abaixo para <br /> concluir o seu cadastro </h2>
+                            </div>
+                        </td>
+                    </tr>
+            
+                    <tr>
+                        <td>
+                            <div style="padding-left: 15px; padding-right: 15px; text-align: center; margin: 40px 0 0 0; cursor: pointer;">
+                                <a href="https://2dash.vercel.app/convite?id_user=${id_user}&id_company=${id_company}" style="text-decoration: none; background-color: #d6f4e9; border: 2px solid #10b981; border-radius: 8px; padding: 10px 20px; color: #10b981; font-weight: 600; font-size: 14px;" target="_blank">
+                                    Confirmar Email
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+            
+                    <tr>
+                        <td style="background-color: #10b981; display: flex; padding: 20px 0; margin: 40px 0 0 0">
+                            <a style="margin: auto;" target="_blank" href="https://www.2core.com.br/">
+                                <img src="https://spktyf.stripocdn.email/content/guids/CABINET_461fe99fd880811ce6b950e7c045ec42843d945fadd61f0aadc694ffdfa95237/images/logo2coreremovebgpreview_1_1.png"
+                                    alt="" width="45">
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            
+            </html>
             `, 
         }, (err, info) => {
             if (err) {

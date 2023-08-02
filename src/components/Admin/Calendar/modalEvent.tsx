@@ -181,23 +181,23 @@ function ModalEvent({ action, event, defaultValue, modalEvent, setModalEvent, ch
     async function CreateEventInFireStore() {
         const result = await CreateEvent({ event: dataEvent, id_company: dataAdmin.id_company, email })
         const response = await UpdatePendencies({ id_company: dataAdmin.id_company, id_user: dataEvent.id_user, action: 'sum' })
-        await CreateNotificationAfterCreateEvent()
+        // await CreateNotificationAfterCreateEvent()
     }
 
     async function EditEventInFireStore() {
         const result = EditEvent({ event: dataEvent, id_company: dataAdmin.id_company, })
     }
 
-    async function CreateNotificationAfterCreateEvent() {
-        const data: Notification = {
-            id: uuidv4(),
-            photo_url: dataAdmin.photo_url,
-            nameSender: dataAdmin.name,
-            description: `Atribuiu o evento ${dataEvent.title} para você.`,
-            date: dataEvent.dateStarted
-        }
-        await CreateNotification({ notification: data, id_company: dataAdmin.id_company, addressee: dataEvent.id_user })
-    }
+    // async function CreateNotificationAfterCreateEvent() {
+    //     const data: Notification = {
+    //         id: uuidv4(),
+    //         photo_url: dataAdmin.photo_url,
+    //         nameSender: dataAdmin.name,
+    //         description: `Atribuiu o evento ${dataEvent.title} para você.`,
+    //         date: dataEvent.dateStarted
+    //     }
+    //     await CreateNotification({ notification: data, id_company: dataAdmin.id_company, addressee: dataEvent.id_user })
+    // }
 
     const NoOptionsMessage = () => {
         return <p className='text-center py-[10px]'>Não encontrado.</p>;

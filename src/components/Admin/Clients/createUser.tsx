@@ -23,8 +23,8 @@ interface Props {
 
 function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) {
   const imageMimeType: RegExp = /image\/(png|jpg|jpeg)/i;
-  const {loading, setLoading} = useContext(loadingContext)
-  const [dataUser, setDataUser] = useState<DataUser>({ id: "", name: "", email: "", phone: "", id_company: "", permission: 0, photo_url: '', created_date:0, pendencies:0, enterprises: [], admins: [], verifiedEmail: false })
+  const [ loading, setLoading ] = useState(false)
+  const [dataUser, setDataUser] = useState<DataUser>({ id: "", name: "", email: "", phone: "", id_company: "", permission: 0, photo_url: '', created_date: 0, pendencies: 0, enterprises: [], admins: [], verifiedEmail: false })
   const [file, setFile] = useState<any>()
   const genericUrl = `https://ui-avatars.com/api/?name=${dataUser.name}&background=10b981&color=262626&format=svg`
   const [enterprise, setEnterprise] = useState<Enterprise>({
@@ -41,9 +41,11 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
   //Acionar o toast
   async function OnToast(e: { preventDefault: () => void; }) {
     e.preventDefault()
+    setLoading(true)
     const response = await axios.post(`${domain}/api/users/getUserByEmail`, { email: dataUser.email })
 
     if (response.data.emailExist) {
+      setLoading(false)
       return toast.error('Este email já foi cadastrado no 2Docs.')
     } else {
       toast.promise(UploadPhoto(), { pending: "Criando usuário...", success: "Usuário criado com sucesso" })
@@ -52,7 +54,6 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
 
   //Armazena a foto de perfil do usuário
   async function UploadPhoto() {
-    setLoading(true)
     const id = uuidv4()
     if (file) {
       var referencesFile = Math.floor(Math.random() * 65536).toString() + file.name;
@@ -68,7 +69,6 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
     } else {
       await SignUpFireStore({ url: genericUrl, referencesFile: '', id: id })
     }
-    setLoading(false)
   }
 
   //Armazena o arquivo no firestore
@@ -89,7 +89,7 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
       verifiedEmail: false,
       permission: 0,
       fixed: false,
-      pendencies:0,
+      pendencies: 0,
       enterprises: [
         enterprise
       ],
@@ -212,9 +212,19 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
           </label>
         </div>
 
-        <button disabled={loading} type="submit" className='hover:brightness-[.85] mt-auto mb-[50px] text-white cursor-pointer text-[22px] flex justify-center items-center self-center bg-gradient-to-br from-[#00B268] to-[#119E70] rounded-[8px] w-[200px] h-[50px]'>
-          Salvar
-        </button>
+        {loading ?
+          <div className='hover:from-[#009456] hover:to-[#108d63] mt-auto mb-[50px] text-white cursor-pointer text-[22px] flex justify-center items-center self-center bg-gradient-to-br from-[#00B268] to-[#119E70] rounded-[8px] w-[200px] h-[50px]'>
+            <svg className="h-6 w-6 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+          :
+          <button disabled={loading} type="submit" className='hover:from-[#009456] hover:to-[#108d63]  mt-auto mb-[50px] text-white cursor-pointer text-[22px] flex justify-center items-center self-center bg-gradient-to-br from-[#00B268] to-[#119E70] rounded-[8px] w-[200px] h-[50px]'>
+            Salvar
+          </button>
+        }
+
       </form>
     </div>
   )
