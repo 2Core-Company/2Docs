@@ -59,11 +59,11 @@ export default async function SendFeed(req: NextApiRequest, res: NextApiResponse
             
             <body>
             
-                <table style="background-color: #ebebeb; padding-top: 15px; margin: 0 auto;">
+                <table style="background-color: #ebebeb; padding-top: 15px; margin: 0 auto; max-width: 800px; width: 100%;">
                     <tr>
                         <td>
                             <div style="padding-left: 15px; padding-right: 15px;">
-                                <img src="https://spktyf.stripocdn.email/content/guids/CABINET_461fe99fd880811ce6b950e7c045ec42843d945fadd61f0aadc694ffdfa95237/images/2docs_1_2.png"
+                                <img src="https://firebasestorage.googleapis.com/v0/b/docs-dc26e.appspot.com/o/imagesEmail%2Flogo2DocsBlack.png?alt=media&token=222a6c8b-b106-4c91-a019-cabdf4a01288"
                                     alt="" width="50" />
                             </div>
                         </td>
@@ -71,7 +71,7 @@ export default async function SendFeed(req: NextApiRequest, res: NextApiResponse
             
                     <tr>
                         <td>
-                            <div style="padding-left: 15px; padding-right: 15px; margin: 40px 0 0 0">
+                            <div style="padding-left: 15px; padding-right: 15px; margin: 40px 0 0 0; text-align: center;">
                                 <h1>Seu email foi cadastrado no 2Docs</h1>
                             </div>
                         </td>
@@ -81,8 +81,8 @@ export default async function SendFeed(req: NextApiRequest, res: NextApiResponse
                         <td>
                             <div style="padding-left: 15px; padding-right: 15px; display: flex; margin: 40px 0 0 0">
                                 <img style="margin: auto;"
-                                    src="https://spktyf.stripocdn.email/content/guids/CABINET_461fe99fd880811ce6b950e7c045ec42843d945fadd61f0aadc694ffdfa95237/images/undraw_envelope_re_f5j4_1.png"
-                                    alt="" width="315" />
+                                    src="https://firebasestorage.googleapis.com/v0/b/docs-dc26e.appspot.com/o/imagesEmail%2FconfirmedEmail.png?alt=media&token=b7520fd9-f9e4-4bdd-8e6b-41a5ba23aaa7"
+                                    alt="" width="315">
                             </div>
                         </td>
                     </tr>
@@ -98,7 +98,7 @@ export default async function SendFeed(req: NextApiRequest, res: NextApiResponse
                     <tr>
                         <td>
                             <div style="padding-left: 15px; padding-right: 15px; text-align: center; margin: 40px 0 0 0; cursor: pointer;">
-                                <a href="https://2dash.vercel.app/convite?id_user=${id_user}&id_company=${id_company}" style="text-decoration: none; background-color: #d6f4e9; border: 2px solid #10b981; border-radius: 8px; padding: 10px 20px; color: #10b981; font-weight: 600; font-size: 14px;" target="_blank">
+                                <a href="https://2docs.app/convite?id_user=${id_user}&id_company=${id_company}" style="text-decoration: none; background-color: #d6f4e9; border: 2px solid #10b981; border-radius: 8px; padding: 10px 20px; color: #10b981; font-weight: 600; font-size: 14px;" target="_blank">
                                     Confirmar Email
                                 </a>
                             </div>
@@ -108,7 +108,7 @@ export default async function SendFeed(req: NextApiRequest, res: NextApiResponse
                     <tr>
                         <td style="background-color: #10b981; display: flex; padding: 20px 0; margin: 40px 0 0 0">
                             <a style="margin: auto;" target="_blank" href="https://www.2core.com.br/">
-                                <img src="https://spktyf.stripocdn.email/content/guids/CABINET_461fe99fd880811ce6b950e7c045ec42843d945fadd61f0aadc694ffdfa95237/images/logo2coreremovebgpreview_1_1.png"
+                                <img src="https://firebasestorage.googleapis.com/v0/b/docs-dc26e.appspot.com/o/imagesEmail%2Flogo2CoreWhite.png?alt=media&token=946d631e-52ae-48b5-83ed-bde5265767a5"
                                     alt="" width="45">
                             </a>
                         </td>
