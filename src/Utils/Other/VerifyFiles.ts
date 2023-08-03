@@ -8,8 +8,8 @@ export async function VerifyFiles({files}:{files: any}){
     }
 
     for await (const file of files) {
-      if (file.size > 31457280) {
-        toast.error(`Erro ao upar o arquivo: ${file.name}, ele excede o limite de 30mb`);
+      if (file.size > 104857600) {
+        toast.error(`Erro ao upar o arquivo: ${file.name}, ele excede o limite de 100mb`);
       } else {
         allFilesAfterVerify.push(file)
       }
