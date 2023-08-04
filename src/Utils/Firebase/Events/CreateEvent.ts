@@ -5,16 +5,16 @@ import { db } from '../../../../firebase'
 import { Event } from '../../../types/event'
 
 interface PropsCreateEvent {
-    event:Event
-    email:string
-    id_company:string
+    event: Event
+    email: string
+    id_company: string
 }
 
-export default async function createEvent({event, email, id_company}:PropsCreateEvent) {      
-    try{            
+export default async function createEvent({ event, email, id_company }: PropsCreateEvent) {
+    try {
         const response = await setDoc(doc(db, "companies", id_company, "events", event.id), event)
-        SendEmail()
-    } catch(e){
+        const result = await SendEmail()
+    } catch (e) {
         console.log(e)
         throw Error
     }
@@ -28,14 +28,17 @@ export default async function createEvent({event, email, id_company}:PropsCreate
             dateStarted: event.dateStarted
         }
 
-        const domain:string = new URL(window.location.href).origin
-        
-        try{
-          const result = await axios.post(`${domain}/api/events/sendEmail`, data)  
-          if(result.status === 200){
-            toast.success('Enviamos um email para seu cliente, notificando sobre este evento.')
-          }
-        }catch(e){
+        const domain: string = new URL(window.location.href).origin
+
+        try {
+            const result = await axios.post(`${domain}/api/events/notifyEvent`, data)
+
+            if (result?.data === 'success') {
+                toast.success('Enviamos um email para seu cliente, notificando sobre este evento.')
+            } else {
+                toast.info('Não foi possivelenviar um email para o cliente notificando a criação deste evento')
+            }
+        } catch (e) {
             console.log(e)
             throw Error
         }

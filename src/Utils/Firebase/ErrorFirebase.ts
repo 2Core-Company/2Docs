@@ -6,23 +6,28 @@ import {toast} from 'react-toastify'
  }
 
 function ErrorFirebase({message, code}:Props) {
+  var resultFunction = message
   if(code === "auth/too-many-requests"){        
-    message = "Limite de tentativas de login excedido, tente novamente mais tarde."        
+    resultFunction = "Limite de tentativas de login excedido, tente novamente mais tarde."        
   } else if (code === "auth/wrong-password"){
-    message = "Sua senha está incorreta."
+    resultFunction = "Sua senha está incorreta."
   } else if(code === "auth/user-not-found"){
-    message = "Este usuário não foi cadastrado."
+    resultFunction = "Este usuário não foi cadastrado."
   } else if(code === "auth/email-already-in-use"){
-    message = "Este email ja foi cadastrado em nosso sistema." 
+    resultFunction = "Este email ja foi cadastrado em nosso sistema." 
   } else if(code === "auth/email-already-exists"){
-    message = "Já existe um usuário cadastrado com este email." 
+    resultFunction = "Já existe um usuário cadastrado com este email." 
   } else if(code === "auth/user-disabled"){
-    message = "Este usuário foi desabilitado."
+    resultFunction = "Este usuário foi desabilitado."
   } else if(code === "auth/invalid-email"){
-    message = "O formato de email digitado não é aceito pelo nosso sistema."
+    resultFunction = "O formato de email digitado não é aceito pelo nosso sistema."
+  } else if(code === "auth/email-not-found"){
+    resultFunction = "Este usuário não foi cadastrado no 2Docs."
+  } else if(code === 'auth/internal-error'){
+    resultFunction = "O limite de tentativas foi excedido, tente novamente mais tarde!"
   }
   
-  throw toast.error(message);
+  throw toast.error(resultFunction);
 }
 
 export default ErrorFirebase
