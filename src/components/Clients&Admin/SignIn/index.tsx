@@ -12,6 +12,7 @@ import { themeContext } from "../../../hooks/useTheme"
 import { stripe } from '../../../../lib/stripe'
 import Logo2CorePretoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.svg'
 import Logo2CoreBrancoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.svg'
+import axios from 'axios';
 
 function Signin(){
   const contextLoading = useContext(loadingContext)
@@ -20,6 +21,7 @@ function Signin(){
   const [eye, setEye] = useState<boolean>(false)
   const checkbox = useRef<HTMLInputElement>(null)
   const router = useRouter()
+  const toastResetPassword = {pending:'resetando a senha', success:'Enviamos um email para você redefinir sua senha.'}
 
   //Verifica se o usuário ja esta logado
   useEffect(() => {
@@ -95,16 +97,15 @@ function Signin(){
   //Funçaõ de recuperar senha
   async function AlterPassword(email:string){
     if(loginUser.email === ""){
-      return toast.error("Preencha o campo de email.")
+      throw toast.error("Preencha o campo de email.")
     }
-    try{
-      const result = await sendPasswordResetEmail(auth, email)
-      contextLoading.setLoading(false)
-      toast.success(`Enviamos um link para o email: ${email}, Verifique a caixa de spam.`)
-    }catch(e){
-      contextLoading.setLoading(false)
-      ErrorFirebase(e)
-    }
+    const result = await axios.post('/api/users/resetPassword', {
+      email: email
+    })
+    
+    if(result.data != 'success'){
+      ErrorFirebase({message:result.data.message, code:result.data.code})
+    } 
   }
   
   const contextTheme = useContext(themeContext);
@@ -147,7 +148,7 @@ function Signin(){
                   <input id='checkBoxLogin' ref={checkbox} onChange={(e) => OnChangePersistenceLogin(e)} type="checkbox" className="appearance-none accent-gray-600 dark:accent-dhilight w-[20px] h-[20px] border-[1px] border-[#686868] dark:border-dhilight rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]" />
                   <p className='ml-[5px] text-[#686868] text-[18px] max-lsm:text-[16px] dark:text-dhilight '>Lembrar de mim</p>
                 </div>
-                <button type="button" onClick={() => AlterPassword(loginUser.email)} className='hover:brightness-[.85] underline text-[18px] max-lsm:text-[16px]  text-dblue cursor-pointer'>
+                <button type="button" onClick={() => toast.promise(AlterPassword(loginUser.email), toastResetPassword)} className='hover:brightness-[.85] underline text-[18px] max-lsm:text-[16px]  text-dblue cursor-pointer'>
                   Esqueci a senha
                 </button>
               </div>

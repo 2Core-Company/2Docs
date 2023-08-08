@@ -114,7 +114,12 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
         id_user: id,
         id_company: id_company
       })
-      toast.success('Enviamos uma confirmação para este email, verifique a caixa de span!')
+      if(result.data === 'success'){
+        toast.success('Enviamos uma confirmação para este email, verifique a caixa de span!')
+      } else {
+        toast.error('Erro ao enviar a confirmação de email, crie este usuário novamente. Caso o erro persista, entre em contato com o suporte.')
+      }
+
     } catch (e) {
       console.log(e)
     }
@@ -215,7 +220,7 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
         {loading ?
           <div className='hover:from-[#009456] hover:to-[#108d63] mt-auto mb-[50px] text-white cursor-pointer text-[22px] flex justify-center items-center self-center bg-gradient-to-br from-[#00B268] to-[#119E70] rounded-[8px] w-[200px] h-[50px]'>
             <svg className="h-6 w-6 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" style={{ strokeWidth: 4 }} />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           </div>
