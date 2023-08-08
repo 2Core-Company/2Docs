@@ -89,8 +89,6 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                     enterprise.folders
                         .filter((folder) => textSearch != "" ? folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
                         .map((folder, index) => {
-                            console.log(enterprise.folders.length - 2)
-                            console.log(index)
                             if (folder.name === 'Lixeira') { 
                                 return 
                             } 

@@ -4,7 +4,8 @@ import { doc, deleteDoc, query, where, collection, getDocs, writeBatch } from "f
 import axios from 'axios'
 import ErrorFirebase from "../../../Utils/Firebase/ErrorFirebase";
 import { DataUser } from '../../../types/users'
-import updateSizeCompany from "../../../Utils/Firebase/Company/UpdateSizeCompany";
+import deleteFiles from "../../Clients&Admin/Files/deleteFiles";
+import { getAllFilesOfUser } from "@/src/Utils/Firebase/Files/getFiles";
 
 interface Props {
   user: DataUser
@@ -18,7 +19,7 @@ async function deletUser({ user, users, domain, ResetConfig }: Props) {
   if (user.verifiedEmail) {
     await DeleteAuth()
   } else {
-    await Promise.all([DeletePhoto(), DeletFile(), DeletFilesStorage(), DeletFilesFireStore(), DeletEvents()])
+    await Promise.all([DeletePhoto(), DeletFile(), GetFiles(), DeletEvents()])
       .then(async(values) => {
         await batch.commit();
         const allUsers = [...users]
@@ -34,7 +35,7 @@ async function deletUser({ user, users, domain, ResetConfig }: Props) {
     try {
       const result = await axios.post(`${domain}/api/users/deleteUser`, { users: user, uid: auth.currentUser?.uid })
       if (result.status === 200) {
-        const result = await Promise.all([DeletePhoto(), DeletFile(), DeletFilesStorage(), DeletFilesFireStore(), DeletEvents()])
+        const result = await Promise.all([DeletePhoto(), DeletFile(), GetFiles(), DeletEvents()])
           .then(async (values) => {
             await batch.commit();
             const allUsers = [...users]
@@ -70,30 +71,10 @@ async function deletUser({ user, users, domain, ResetConfig }: Props) {
     }
   }
 
-  async function DeletFilesStorage() {
-    try {
-      const response = await axios.post(`${domain}/api/files/deletFolder`, { path: `${user.id_company}/files/${user.id}` })
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  async function DeletFilesFireStore() {
-    try {
-      var size = 0
-      const q = query(collection(db, "files", user.id_company, user.id, 'user', 'files'));
-      const querySnapshot = await getDocs(q);
-
-      querySnapshot.forEach((file) => {
-        size += file.data().size
-        const laRef = doc(db, "files", user.id_company, user.id, 'user', 'files', file.data().id);
-        batch.delete(laRef)
-      })
-
-      await updateSizeCompany({ id_company: user.id_company, size, action: 'subtraction' })
-
-    } catch (e) {
-      console.log(e)
+  async function GetFiles(){
+    const result = await getAllFilesOfUser({id_company:user.id_company, id_user:user.id})
+    if(result){
+      await deleteFiles({selectedFiles: result, id_company:user.id_company})
     }
   }
 

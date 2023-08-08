@@ -17,7 +17,7 @@ export default async function sendEmail({ email, subject, text, html }: Props) {
             pass: process.env.PUBLIC_EMAIL_PASS // generated ethereal password
         },
     });
-
+    
     await transporter.verify(function (error, success) {
         if (error) {
             console.log(error);
@@ -36,6 +36,7 @@ export default async function sendEmail({ email, subject, text, html }: Props) {
             return "success"
         }
     } catch(e){
+        console.log(e)
         return "error"
     }
 }

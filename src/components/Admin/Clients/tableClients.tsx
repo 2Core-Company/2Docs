@@ -159,7 +159,7 @@ function TableClients() {
               <span className="text-[#AAA] dark:text-white"> Clientes</span>
             </p>
             <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px] dark:text-white" />
-            <input type="text" onChange={(text) => setSearchText(text.target.value)} placeholder="Buscar" className="w-[250px] outline-[#646464] dark:text-white text-black max-sm:w-[200px] max-lsm:w-[150px] bg-transparent dark:placeholder:text-gray-500" />
+            <input type="text" onChange={(text) => setSearchText(text.target.value)} placeholder="Buscar" className="px-[10px] w-[250px] outline-[#646464] dark:text-white text-black max-sm:w-[200px] max-lsm:w-[150px] bg-transparent dark:placeholder:text-gray-500" />
           </div>
 
           <div className={`text-center flex gap-[10px] max-lg:absolute max-lg:flex-col max-lg:px-[5px] max-lg:pb-[5px] max-lg:right-[0px] max-lg:top-[0px] ${menu ? 'max-lg:bg-trasparent' : 'max-lg:bg-[#e2e2e2]'} dark:max-lg:bg-[#2b2b2b] rounded-[8px]`}>

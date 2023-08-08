@@ -122,13 +122,6 @@ export async function getAllFilesOfFolder({id_company,  id_user, id_enterprise, 
   return files
 }
 
-interface interfaceGetRecentFilesOfEnterprise{
-  id_company:string
-  id_user:string
-  id_enterprise:string
-  from:string
-  setRecentFiles:Function
-}
 
 interface interfaceGetRecentFilesOfEnterprise{
   id_company:string
@@ -532,4 +525,45 @@ export async function getFilesClient({id_company,  id_user, id_enterprise, id_fo
 
   setFiles(files)
   setDataPages({page: 1, maxPages:Math.ceil(files.length / 10)})
+}
+
+
+interface getAllFilesOfUserProps{
+  id_company:string
+  id_user:string
+}
+
+export async function getAllFilesOfUser({id_company,  id_user }:getAllFilesOfUserProps){
+  const files:Files[] = []
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'));
+  const querySnapshot = await getDocs(q);
+  try {
+    querySnapshot.forEach((document) => {
+      let file: Files = {
+        id:document.data()?.id,
+        id_company:document.data()?.id_company,
+        id_user:document.data()?.id_user,
+        id_enterprise:document.data()?.id_enterprise,
+        id_folder:document.data()?.id_folder,
+        id_event: document.data()?.id_event,
+        name:document.data()?.name,
+        trash:document.data()?.trash,
+        size:document.data()?.size,
+        favorite:document.data()?.favorite,
+        path:document.data()?.path,
+        viewedDate:document.data()?.viewedDate,
+        type:document.data()?.type,
+        created_date:document.data()?.created_date,
+        from:document.data()?.from,
+        message:document.data()?.message,
+        downloaded:document.data()?.downloaded,
+        checked:false,
+        messageNotif: document.data()?.messageNotif
+      }
+      files.push(file)
+    });
+    return files
+  }catch (e) {
+    toast.error("Erro: " + e)
+  }
 }

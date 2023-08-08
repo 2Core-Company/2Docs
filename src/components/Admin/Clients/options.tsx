@@ -49,7 +49,7 @@ function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWin
     <>
       {modal.status && <ModalDelete modal={modal} childModal={childModal} setModal={setModal} />}
       {modalAdminOptions && <ModalSetAdmin setModalAdminOptions={setModalAdminOptions} user={user} dataAdmin={dataAdmin} setUsers={setUsers} users={users} />}
-      {modalEvent && <ModalEvent defaultValue={{ label: user.name, value: { id_user: user.id } }} action={'create'} modalEvent={modalEvent} setModalEvent={setModalEvent} />}
+      {modalEvent && <ModalEvent emailUser={user.email} defaultValue={{ label: user.name, value: { id_user: user.id } }} action={'create'} modalEvent={modalEvent} setModalEvent={setModalEvent} />}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild className='flex justify-center items-center'>
           <button className="flex  cursor-pointer w-[20px] h-[20px] justify-between" aria-label="Customize options">
@@ -112,7 +112,7 @@ function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWin
               }   
             </DropdownMenu.Item>
 
-            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
+            <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-[#BE0000] hover:text-[#fff] hover:outline-none'} duration-100`}>
               <button disabled={dataAdmin.permission < 3} onClick={() => ConfirmationDeleteUser()} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
                 <TrashIcon width={20} height={20}/>
                 Excluir usuário
