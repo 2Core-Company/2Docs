@@ -1,6 +1,6 @@
 var admin = require("firebase-admin");
 const { Storage } = require('@google-cloud/storage');
-var serviceAccount = require("./serviceAccountKey.ts");
+var serviceAccount = require("./serviceAccountKey.js");
 import { getAuth } from 'firebase-admin/auth'
 
     const result = serviceAccount
