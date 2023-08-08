@@ -8,10 +8,10 @@ import { getAuth } from 'firebase-admin/auth'
     if(!admin.apps.length) {
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
-            databaseURL: "https://docs-dc26e-default-rtdb.firebaseio.com"
+            databaseURL: process.env.DATABASEURL
         });
     }
-    export const storage = new Storage({projectId:'docs-dc26e'});
+    export const storage = new Storage({projectId:process.env.PROJECT_ID});
     export const db = admin.firestore();
 
     
