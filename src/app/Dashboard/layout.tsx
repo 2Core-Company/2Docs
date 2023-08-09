@@ -39,8 +39,9 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
         expand: ['data.subscriptions']
       })
       .catch(err => err)
-      console.log(status)
+ 
       const status = data[0]?.subscriptions.data[0]?.status
+       console.log(status)
 
       if(status != 'active' && status != 'trialing'){
         // signOut(auth)
