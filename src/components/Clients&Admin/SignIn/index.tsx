@@ -75,7 +75,7 @@ function Signin(){
         throw toast.error("Seu email não foi confirmado.")
       }
 
-      if(status != 'active'){
+      if(status != 'active' && status != 'trialing'){
         signOut(auth)
         throw  toast.error("Você não tem um plano do 2Docs ativo.")
       }
