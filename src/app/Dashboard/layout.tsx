@@ -32,7 +32,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       }
       
       const idTokenResult = await auth.currentUser?.getIdTokenResult()
-
+      console.log(user.displayName)
       const {data} = await stripe.customers.search({
         query: 'metadata[\'id_company\']:\'' +user.displayName+ '\'',
         limit: 1,
@@ -43,7 +43,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       const status = data[0]?.subscriptions.data[0]?.status
       console.log(status)
       if(status != 'active'){
-        signOut(auth)
+        // signOut(auth)
         toast.error("Você não tem um plano do 2Docs ativo.")
         // return router.replace('/')
       }
