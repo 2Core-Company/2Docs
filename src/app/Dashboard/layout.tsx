@@ -41,7 +41,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       .catch(err => err)
 
       const status = data[0]?.subscriptions.data[0]?.status
-
+      console.log(status)
       if(status != 'active'){
         signOut(auth)
         toast.error("Você não tem um plano do 2Docs ativo.")
