@@ -17,9 +17,6 @@ interface Props {
 }
 
 export async function deleteEnterprise({ user, enterprise, setUser, setEnterprise }:Props) {
-    const batch = writeBatch(db);
-    const domain = window.location.origin
-
     if(user.enterprises.length <= 1){
         throw toast.error('Você não pode deletar todas as empresas de um usuário.')
     }
@@ -35,8 +32,7 @@ export async function deleteEnterprise({ user, enterprise, setUser, setEnterpris
                 enterprises: entrepisesUpdated,
             })
 
-            await Promise.all([DeletEvents(), GetFilesToDelete()])
-            await batch.commit()
+            const [result1, result2] = await Promise.all([DeletEvents(), GetFilesToDelete()])
             setEnterprise(entrepisesUpdated[0])
             setUser({ ...user, enterprises: entrepisesUpdated })
         } catch (e) {
@@ -61,21 +57,23 @@ export async function deleteEnterprise({ user, enterprise, setUser, setEnterpris
 
     async function DeleteFilesInStorageAndStore(files:Files[]){
         await Promise.all([
-            axios.post(`${domain}/api/files/deletFolder`, { path: `${user.id_company}/files/${user.id}/${enterprise.id}`}),
             deletFiles({selectedFiles: files, id_company:user.id_company})
-        ])
-        
+        ]) 
     }
 
     async function DeletEvents() {
+        const batch = writeBatch(db);
         try {
             var q = query(collection(db, "companies", user.id_company, "events"), where("id_enterprise", "==", enterprise.id))
             const querySnapshot = await getDocs(q);
-            const a = querySnapshot.forEach(async (event) => {
+            for await (const event of querySnapshot.docs){
                 const result = await UpdatePendencies({id_company:user.id_company, id_user:user.id, action:'subtraction'})
                 const laRef = doc(db, "companies", user.id_company, "events", event.data().id);
                 batch.delete(laRef)
-            });
+            }
+
+            await batch.commit()
+
         }catch (e){
             console.log(e)
             throw e

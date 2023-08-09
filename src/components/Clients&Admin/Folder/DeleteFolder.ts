@@ -17,7 +17,6 @@ interface Props{
 
 async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Props) {
     const folders = enterprise.folders
-    const domain:string = window.location.origin
 
     const index = folders.findIndex(folder => folder.id === id_folder)
     enterprise.folders.splice(index, 1)
@@ -39,8 +38,7 @@ async function DeletFolder({user, id_folder, id_company, enterprise, setUser}:Pr
 
     try{
         await Promise.all([
-            deletFiles({selectedFiles:allFiles, id_company}),
-            axios.post(`${domain}/api/files/deletFolder`, {path:`${user.id_company}/files/${user.id}/${enterprise.id}/${id_folder}`})
+            deletFiles({selectedFiles:allFiles, id_company})
         ])
     } catch(e){
         console.log(e)

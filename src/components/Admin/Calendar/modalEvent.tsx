@@ -35,6 +35,7 @@ interface interfaceOptionsEnterprises {
 }
 
 interface Props {
+    emailUser?: string
     action:string
     event?: Event
     defaultValue?:{label:string, value:{id_user:string}}
@@ -43,7 +44,7 @@ interface Props {
     childModalEvent?: Function
 }
 
-function ModalEvent({ action, event, defaultValue, modalEvent, setModalEvent, childModalEvent }: Props) {
+function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setModalEvent, childModalEvent }: Props) {
     registerLocale('pt-BR', pt)
     const { loading, setLoading } = useContext(loadingContext)
     const { dataAdmin } = useContext(adminContext)
@@ -51,7 +52,7 @@ function ModalEvent({ action, event, defaultValue, modalEvent, setModalEvent, ch
     const [optionsEnterprise, setOptionsEnterprise] = useState<interfaceOptionsEnterprises[]>()
     const styleText = 'mt-[15px] text-[20px] max-sm:text-[18px] max-lsm:text-[16px]'
     const refSelectEnterprese = useRef<any>()
-    const [email, setEmail] = useState<string>('')
+    const [email, setEmail] = useState<string>(emailUser ? emailUser : '')
     const [dataEvent, setDataEvent] = useState<Event>({
         id: uuidv4(),
         id_user: '',

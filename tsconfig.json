@@ -47,7 +47,7 @@
     "src/app/createdContext.js",
     "pages/api/files/deletCollection.ts",
     "src/hooks/useTheme.js"
-  ],
+, "pages/api/serviceAccountKey.js"  ],
   "exclude": [
     "node_modules"
   ]

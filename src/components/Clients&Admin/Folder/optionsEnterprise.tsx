@@ -49,8 +49,8 @@ function OptionsEnterprise({user, enterprise, index, setUser, setEnterprise}:Pro
                             </button>
                         </Menubar.Item>
 
-                        <Menubar.Item onClick={() => setModalDelete(dataModalActive)} className='cursor-pointer outline-none hover:bg-[#BE0000] hover:text-[#fff] duration-100 rounded-[6px] px-[10px] py-[3px]'>
-                            <button disabled={dataAdmin.permission < 3} onClick={() => setModalRenameEnterprise(true)} className='w-full flex items-center rounded-[6px]'>
+                        <Menubar.Item className='cursor-pointer outline-none hover:bg-[#BE0000] hover:text-[#fff] duration-100 rounded-[6px] px-[10px] py-[3px]'>
+                            <button disabled={dataAdmin.permission < 3} onClick={() => setModalDelete(dataModalActive)} className='w-full flex items-center rounded-[6px]'>
                                 <TrashIcon width={20} height={20} />
                                 <p className='ml-[5px]'>Excluir</p>
                             </button>
