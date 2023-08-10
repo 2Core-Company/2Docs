@@ -107,7 +107,7 @@ export default function ModalPathEvent({setPathSelected, files, setFiles}:PropsM
             </div>
 
             <div className='px-[60px] max-sm:px-[30px]'>
-                <p className='mt-[20px] text-[20px] max-sm:text-[18px]'>Selecione a empresa</p>
+                <p className='mt-[20px] text-[20px] max-sm:text-[18px]'>Selecione o evento</p>
                 <Select
                 placeholder='Selecionar...'
                 components={{ NoOptionsMessage }}

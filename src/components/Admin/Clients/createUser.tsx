@@ -1,7 +1,7 @@
 'use client'
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase';
 import { storage, db } from '../../../../firebase'
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -10,10 +10,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { DataUser, DataUserContext } from '../../../types/users'
 import { v4 as uuidv4 } from 'uuid';
-import { PhoneMask } from '../../../Utils/Other/Masks';
+import { PhoneMask, lineLandMask } from '../../../Utils/Other/Masks';
 import { Enterprise } from '../../../types/others';
-import { loadingContext } from '../../../app/Context/contextLoading';
-
+import { companyContext } from '@/src/app/Context/contextCompany';
 
 interface Props {
   contextAdmin: DataUserContext
@@ -23,9 +22,11 @@ interface Props {
 
 function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) {
   const imageMimeType: RegExp = /image\/(png|jpg|jpeg)/i;
-  const [ loading, setLoading ] = useState(false)
+  const { dataCompany } = useContext(companyContext)
+  const [loading, setLoading] = useState(false)
   const [dataUser, setDataUser] = useState<DataUser>({ id: "", name: "", email: "", phone: "", id_company: "", permission: 0, photo_url: '', created_date: 0, pendencies: 0, enterprises: [], admins: [], verifiedEmail: false })
   const [file, setFile] = useState<any>()
+  const [optionsNumberPhone, setOptionsNumberPhone] = useState({ cellPhone: true, landLine: false })
   const genericUrl = `https://ui-avatars.com/api/?name=${dataUser.name}&background=10b981&color=262626&format=svg`
   const [enterprise, setEnterprise] = useState<Enterprise>({
     name: "",
@@ -111,10 +112,11 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
     try {
       const result = await axios.post('/api/users/confirmEmail', {
         email: email,
+        company:dataCompany.name,
         id_user: id,
         id_company: id_company
       })
-      if(result.data === 'success'){
+      if (result.data === 'success') {
         toast.success('Enviamos uma confirmação para este email, verifique a caixa de span!')
       } else {
         toast.error('Erro ao enviar a confirmação de email, crie este usuário novamente. Caso o erro persista, entre em contato com o suporte.')
@@ -171,67 +173,96 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
+  function changeCellNumber(type: 'cellPhone' | 'landLine') {
+    if (type === 'cellPhone' && !optionsNumberPhone.cellPhone) {
+      setOptionsNumberPhone({ cellPhone: true, landLine: false })
+    }
+
+    if (type === 'landLine' && !optionsNumberPhone.landLine) {
+      setOptionsNumberPhone({ cellPhone: false, landLine: true })
+    }
+  }
+
 
   return (
-    <div className={`w-[600px] h-full z-10 max-sm:z-50 top-0 max-sm:w-screen fixed bg-[#DDDDDD] dark:bg-[#121212] min-h-screen right-0 flex flex-col items-center drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
-      <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[152px] max-md:h-[133px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full'>
-        <button disabled={loading ? true : false} onClick={() => closedWindow()}>
-          <DoubleArrowRightIcon className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]' />
-        </button>
-        <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Cadastrar</p>
-      </div>
-      <form onSubmit={OnToast} className='w-full h-full px-[10%] flex flex-col gap-y-[5px] max-sm:gap-y-[5px] text-[20px] max-sm:text-[18px]'>
-        {dataUser.photo_url.length > 0 ?
-          <div className='self-center w-[180px] h-[180px] max-sm:w-[150px] max-sm:h-[150px] mt-[10px] max-sm:mt-[10px] relative'>
-            <Image src={dataUser.photo_url} width={180} height={180} alt="preview" className='border-[2px] w-full h-full rounded-full' />
-            <button onClick={() => (setFile(undefined), setDataUser({ ...dataUser, photo_url: '' }))} disabled={loading ? true : false} className='absolute right-[-30px] top-[5px] w-[30px] h-[30px] flex items-center justify-center'>
-              <div className='z-10 cursor-pointer  w-[30px] h-[2px] bg-strong rotate-45 after:w-[30px] after:h-[2px] after:bg-strong after:block after:rotate-90 ' />
-            </button>
-          </div>
-          :
-          <label className={`cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] rounded-full mt-[10px] max-sm:mt-[10px]`}>
-            <input disabled={loading} type="file" className='hidden' accept='.png, .jpg, .jpeg' onChange={(e) => ChangePhoto(e.target)} />
-            <Image src={genericUrl} width={180} height={180} alt="preview" className='border-[2px] w-full h-full rounded-full' />
-          </label>
-        }
-
-        <label className='mt-[20px] flex flex-col dark:text-white'>
-          Nome
-          <input disabled={loading} type="text" autoComplete="off" maxLength={30} value={dataUser.name} required onChange={(Text) => setDataUser({ ...dataUser, name: Text.target.value })} className='mt-[8px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o nome da empresa' />
-        </label>
-
-        <label className='mt-[20px] max-sm:mt-[10px] flex flex-col dark:text-white'>
-          Email
-          <input disabled={loading} required autoComplete="off" maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({ ...dataUser, email: Text.target.value })} type="email" className='mt-[8px] max-sm:mt-[5px] outline-none w-full  py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o email' />
-        </label>
-
-        <div className='gap-x-[25px] flex max-sm:flex-col justify-between w-full'>
-          <label className='mt-[20px] max-sm:mt-[10px] flex flex-col max-sm:w-full dark:text-white'>
-            Telefone
-            <input disabled={loading} maxLength={15} autoComplete="off" minLength={15} required value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({ ...dataUser, phone: Text.target.value })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone' />
-          </label>
-
-          <label className='mt-[20px] max-sm:mt-[10px] flex flex-col max-sm:w-full dark:text-white'>
-            Empresa
-            <input disabled={loading} maxLength={30} autoComplete="off" required onChange={(Text) => setEnterprise({ ...enterprise, name: Text.target.value })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Nome da empresa' />
-          </label>
-        </div>
-
-        {loading ?
-          <div className='hover:from-[#009456] hover:to-[#108d63] mt-auto mb-[50px] text-white cursor-pointer text-[22px] flex justify-center items-center self-center bg-gradient-to-br from-[#00B268] to-[#119E70] rounded-[8px] w-[200px] h-[50px]'>
-            <svg className="h-6 w-6 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" style={{ strokeWidth: 4 }} />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </div>
-          :
-          <button disabled={loading} type="submit" className='hover:from-[#009456] hover:to-[#108d63]  mt-auto mb-[50px] text-white cursor-pointer text-[22px] flex justify-center items-center self-center bg-gradient-to-br from-[#00B268] to-[#119E70] rounded-[8px] w-[200px] h-[50px]'>
-            Salvar
+    <>
+      <div onClick={() => closedWindow()} className='w-screen h-screen left-0 top-0 fixed bg-black/30 z-10' />
+      <div className={`w-[600px] h-full z-10 max-sm:z-50 top-0 max-sm:w-screen fixed bg-[#DDDDDD] dark:bg-[#121212] min-h-screen right-0 flex flex-col items-center drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
+        <div className='bg-[#D2D2D2] dark:bg-white/10 flex items-center h-[153px] max-md:h-[133px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full relative'>
+          <button disabled={loading ? true : false} onClick={() => closedWindow()} className='absolute'>
+            <DoubleArrowRightIcon className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px]' />
           </button>
-        }
+          <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white mx-auto'>Cadastrar</p>
+        </div>
+        <form onSubmit={OnToast} className='w-full h-full px-[10%] flex flex-col text-[20px] max-sm:text-[18px]'>
+          {dataUser.photo_url.length > 0 ?
+            <div className='self-center w-[180px] h-[180px] max-sm:w-[150px] max-sm:h-[150px] mt-[10px] max-sm:mt-[10px] relative'>
+              <Image src={dataUser.photo_url} width={180} height={180} alt="preview" className='border-[2px] w-full h-full rounded-full' />
+              <button onClick={() => (setFile(undefined), setDataUser({ ...dataUser, photo_url: '' }))} disabled={loading ? true : false} className='absolute right-[-30px] top-[5px] w-[30px] h-[30px] flex items-center justify-center'>
+                <div className='z-10 cursor-pointer  w-[30px] h-[2px] bg-strong rotate-45 after:w-[30px] after:h-[2px] after:bg-strong after:block after:rotate-90 ' />
+              </button>
+            </div>
+            :
+            <label className={`cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] rounded-full mt-[10px] max-sm:mt-[10px]`}>
+              <input disabled={loading} type="file" className='hidden' accept='.png, .jpg, .jpeg' onChange={(e) => ChangePhoto(e.target)} />
+              <Image src={genericUrl} width={180} height={180} alt="preview" className='border-[2px] w-full h-full rounded-full' />
+            </label>
+          }
 
-      </form>
-    </div>
+          <label className='mt-[20px] flex flex-col dark:text-white'>
+            Nome
+            <input disabled={loading} type="text" autoComplete="off" maxLength={30} value={dataUser.name} required onChange={(Text) => setDataUser({ ...dataUser, name: Text.target.value })} className='mt-[8px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o nome da empresa' />
+          </label>
+
+          <label className='mt-[20px] max-sm:mt-[10px] flex flex-col dark:text-white'>
+            Email
+            <input disabled={loading} required autoComplete="off" maxLength={40} value={dataUser.email} onChange={(Text) => setDataUser({ ...dataUser, email: Text.target.value })} type="email" className='mt-[8px] max-sm:mt-[5px] outline-none w-full  py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white dark:placeholder:text-gray-500 rounded-[8px]' placeholder='Digite o email' />
+          </label>
+
+          <div className='gap-x-[25px] flex max-sm:flex-col justify-between w-full'>
+            {optionsNumberPhone.cellPhone ?
+              <label className='mt-[20px] max-sm:mt-[10px] flex flex-col max-sm:w-full dark:text-white'>
+                Celular
+                <input disabled={loading} autoComplete="off" minLength={15} maxLength={15} required value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({ ...dataUser, phone: Text.target.value })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone' />
+              </label>
+              :
+              <label className='mt-[20px] max-sm:mt-[10px] flex flex-col max-sm:w-full dark:text-white'>
+                Telefone Fixo
+                <input disabled={loading} autoComplete="off" minLength={9} maxLength={9} required value={lineLandMask(dataUser.phone)} onChange={(Text) => setDataUser({ ...dataUser, phone: Text.target.value })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone' />
+              </label>}
+
+            <label className='mt-[20px] max-sm:mt-[10px] flex flex-col max-sm:w-full dark:text-white'>
+              Empresa
+              <input disabled={loading} minLength={4} maxLength={30} autoComplete="off" required onChange={(Text) => setEnterprise({ ...enterprise, name: Text.target.value })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Nome da empresa' />
+            </label>
+          </div>
+
+          <div className='flex items-center mt-[10px]'>
+            <input checked={optionsNumberPhone.cellPhone} onChange={(e) => changeCellNumber('cellPhone')} type="checkbox" className={`${!optionsNumberPhone.cellPhone && 'appearance-none'} accent-gray-600 dark:accent-dhilight w-[15px] h-[15px] border-[1px] border-[#686868] dark:border-dhilight rounded-[3px] cursor-pointer`} />
+            <p className='ml-[5px] text-[#757575] text-[18px]'>Celular</p>
+          </div>
+
+          <div className='flex items-center'>
+            <input checked={optionsNumberPhone.landLine} onChange={(e) => changeCellNumber('landLine')} type="checkbox" className={`${!optionsNumberPhone.landLine && 'appearance-none'} accent-gray-600 dark:accent-dhilight w-[15px] h-[15px] border-[1px] border-[#686868] dark:border-dhilight rounded-[3px] cursor-pointer`} />
+            <p className='ml-[5px] text-[#757575] text-[18px]'>Telefone Fixo</p>
+          </div>
+
+          {loading ?
+            <div className='hover:from-[#009456] hover:to-[#108d63] mt-auto mb-[50px] text-white cursor-pointer text-[22px] flex justify-center items-center self-center bg-gradient-to-br from-[#00B268] to-[#119E70] rounded-[8px] w-[200px] h-[50px]'>
+              <svg className="h-6 w-6 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" style={{ strokeWidth: 4 }} />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            :
+            <button disabled={loading} type="submit" className='hover:from-[#009456] hover:to-[#108d63]  mt-auto mb-[50px] text-white cursor-pointer text-[22px] flex justify-center items-center self-center bg-gradient-to-br from-[#00B268] to-[#119E70] rounded-[8px] w-[200px] h-[50px]'>
+              Salvar
+            </button>
+          }
+
+        </form>
+      </div>
+    </>
   )
 }
 

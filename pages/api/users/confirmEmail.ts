@@ -4,7 +4,7 @@ import sendEmail from "@/src/Utils/Other/sendEmail";
 
 export default async function confirmEmail(req: NextApiRequest, res: NextApiResponse) {
 
-    const { email, id_user, id_company } = req.body
+    const { email, company, id_user, id_company } = req.body
     const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -46,7 +46,7 @@ export default async function confirmEmail(req: NextApiRequest, res: NextApiResp
             <tr>
                 <td>
                     <div style="padding-left: 15px; padding-right: 15px; margin: 40px 0 0 0; text-align: center;">
-                        <h1>Seu email foi cadastrado no 2Docs</h1>
+                        <h1>A empresa ${company} cadastrou você no 2Docs</h1>
                     </div>
                 </td>
             </tr>

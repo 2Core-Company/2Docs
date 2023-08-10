@@ -28,7 +28,6 @@ export default async function createEvent({ event, email, id_company }: PropsCre
             dateStarted: event.dateStarted
         }
 
-        console.log(email)
         const domain: string = new URL(window.location.href).origin
 
         try {

@@ -21,6 +21,8 @@ export interface Files{
   nameCompany?: string
   type2?: string
   id_share?: string
+  isPrivate?: boolean
+  singleDownload?: boolean
 }
 
 export interface ShareFiles {

@@ -80,7 +80,7 @@ function ModalCreateFolder({ user, setUser }: Props) {
                         <Dialog.Close className='px-[13px] py-[6px] cursor-pointer text-[#5C5C5C] border-[1px] border-strong hover:bg-[#cecbcb] duration-100 rounded-[8px]'>
                             Cancelar
                         </Dialog.Close>
-                        <button onClick={() => OnToast()} className={`px-[13px] py-[6px] cursor-pointer ${nameEnterprise.length > 4 ? "bg-[rgba(138,129,184,0.20)] text-[#3e3279] border-[#8a81b8] hover:bg-[rgba(138,129,184,0.40)]" : "bg-strong/30 border-strong text-[#777777]"} border duration-100 rounded-[8px]`}>
+                        <button onClick={() => OnToast()} className={`px-[13px] py-[6px] cursor-pointer ${nameEnterprise.length > 3 ? "bg-[rgba(138,129,184,0.20)] text-[#3e3279] border-[#8a81b8] hover:bg-[rgba(138,129,184,0.40)]" : "bg-strong/30 border-strong text-[#777777]"} border duration-100 rounded-[8px]`}>
                             Criar
                         </button>
                     </div>

@@ -1,13 +1,52 @@
-export function PhoneMask(value:string | undefined){
-    if(value != undefined){
-      return value
-      .replaceAll("(", "")
-      .replaceAll("(", "")
-      .replaceAll("-", "")
-      .replaceAll("-", "")
-      .replace(/\D+/g, '') // não deixa ser digitado nenhuma letra
-      .replace(/^(\d{2})(\d)/g,"($1) $2")
-      .replace(/(\d)(\d{4})$/,"$1-$2")// captura 2 grupos de número o primeiro com 2 digitos e o segundo de com 3 digitos, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de número
+export function PhoneMask(value: string | undefined) {
+  const cleaned = value?.replace(/\D/g, ''); // Remove todos os não dígitos
+
+  const match = cleaned?.match(/^(\d{0,2})(\d{0,4})(\d{0,4})$/);
+
+  if (match) {
+    let formattedValue = '';
+
+    if (match[1]) {
+      formattedValue += `(${match[1]}`;
     }
-    return ""
+
+    if (match[2]) {
+      formattedValue += `) ${match[2]}`;
+    }
+
+    if (match[3]) {
+      formattedValue += `-${match[3]}`;
+    }
+
+    return formattedValue;
+  }
+
+  return value;
+}
+
+export function lineLandMask(value: string | undefined) {
+  if (value) {
+    // if (value.length > 9) {
+    //   value = value.substring(value.length - 9)
+    // }
+
+    const cleaned = value.replace(/\D/g, ''); // Remove todos os não dígitos
+    const match = cleaned.match(/^(\d{0,4})(\d{0,4})$/);
+    if (match) {
+      let formattedValue = '';
+
+      if (match[1]) {
+        formattedValue += `${match[1]}`;
+      }
+
+      if (match[2]) {
+        formattedValue += `-${match[2]}`;
+      }
+
+      return formattedValue;
+    }
+  }
+
+
+  return value;
 }

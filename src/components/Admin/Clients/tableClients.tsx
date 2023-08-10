@@ -1,5 +1,5 @@
 'use client'
-import React, { useContext, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import ArrowFilter from "../../../../public/icons/arrowFilter.svg";
 import Image from "next/image";
 import { DataUser } from "../../../types/users";
@@ -11,16 +11,15 @@ import { DisableUser } from "./DisableUser";
 import { WindowsAction } from "../../../types/others";
 import { toast } from "react-toastify";
 import { adminContext } from '../../../app/Context/contextAdmin';
-import { MagnifyingGlassIcon, DrawingPinFilledIcon, PlusIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon, DrawingPinFilledIcon } from "@radix-ui/react-icons";
 import EditUser from "./editUser";
 import CreateUser from "./createUser";
 import * as HoverCard from '@radix-ui/react-hover-card';
-import { loadingContext } from "../../../app/Context/contextLoading";
 import ModalEvent from "../Calendar/modalEvent";
 
 function TableClients() {
-  const [showItens, setShowItens] = useState<{ min: number; max: number }>({ min: -1, max: 10, });
-  const { loading, setLoading } = useContext(loadingContext)
+  const [showItens, setShowItens] = useState<{ min: number; max: number }>({ min: -1, max: 10});
+  const [loading, setLoading] = useState(false)
   const { dataAdmin } = useContext(adminContext);
   const [users, setUsers] = useState<DataUser[]>([]);
   const [userEdit, setUserEdit] = useState<any>();
@@ -42,6 +41,17 @@ function TableClients() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataAdmin]);
 
+  useEffect(() => {
+    if(searchText.length > 0){
+      setPages(Math.ceil(users.filter((user) => user.name.toUpperCase().includes(searchText.toUpperCase())).length / 10));
+      setShowItens({ min: -1, max: 10})
+    } else {
+      setPages(Math.ceil(users.length / 10));
+    }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[searchText])
+
   async function GetAllUser() {
     const result = await GetUsers({ id_company: dataAdmin.id_company });
     if (result) {
@@ -53,8 +63,13 @@ function TableClients() {
   // <--------------------------------- Disable User --------------------------------->
   async function GetFunctionDisableUser() {
     setLoading(true)
-    await DisableUser({ users, selectUsers, id_company: dataAdmin.id_company, setMenu, setSelectUsers, setUsers })
-    setLoading(false)
+    try{
+      const result = await DisableUser({ users, selectUsers, id_company: dataAdmin.id_company, setMenu, setSelectUsers, setUsers })
+    } catch(e){
+      throw e
+    } finally {
+      setLoading(false)
+    }
   }
 
   // <--------------------------------- Select User --------------------------------->
@@ -311,17 +326,22 @@ function TableClients() {
             }
           </div>
         ) : (
-          <div className="w-full h-full flex justify-center items-center flex-col">
-            <Image src={users.length <= 0 ? '/icons/nullClient.svg' : '/icons/notFoundSearch.svg'} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="" className="cursor-pointer w-[170px] h-[170px]" />
-
+          <div className="w-full h-[550px] flex justify-center items-center flex-col">
             {users.length <= 0 ?
-              <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
-                Nada por aqui... <br />Cadastre seu primeiro cliente!
-              </p>
+              <>
+                <Image src={'/icons/nullClient.svg'} width={80} height={80} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} alt="" className="cursor-pointer w-[170px] h-[170px]" />
+                <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
+                  Nada por aqui... <br />Cadastre seu primeiro cliente!
+                </p>
+              </>
+
               :
-              <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
-                Nenhum resultado foi encontrado.
-              </p>
+              <>
+                <Image src={'/icons/notFoundSearch.svg'} width={80} height={100} alt="" className="w-[200px] h-[250px]" />
+                <p className="font-poiretOne text-[40px] max-sm:text-[30px] text-[#686868]  text-center dark:text-white">
+                  Nenhum resultado foi encontrado.
+                </p>
+              </>
             }
 
           </div>

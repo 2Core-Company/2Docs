@@ -21,18 +21,18 @@ interface Props {
     }
   
     return (
-      <div className='w-screen h-screen fixed  flex justify-center items-center text-black dark:text-white z-50 top-[0px] left-0 font-[400]'>
-        <div onClick={() => setModal({status: false, title:'', subject:'', target:''})} className="w-full h-full fixed bg-black/30"/>
+      <div className='cursor-default w-screen h-screen fixed  flex justify-center items-center text-black dark:text-white z-50 top-[0px] left-[0px] font-[400]'>
+        <div onClick={() => setModal({status: false, title:'', subject:'', target:''})} className="w-screen h-screen top-[0px] left-[0px] fixed bg-black/30"/>
         <div className='bg-primary dark:bg-dprimary w-[500px] max-sm:w-[350px] rounded-[15px] flex flex-col drop-shadow-[0_5px_5px_rgba(0,0,0,0.40)]'>
           <div  className='bg-red w-full h-[15px] rounded-t-[15px]'/>
           <div className='px-[25px] max-sm:px-[20px] py-[5px] text-left'>
             <h4 className="mt-[10px] font-poppins text-[26px] max-sm:text-[24px] font-[500] after:w-[40px] after:h-[3px] after:block after:bg-red after:rounded-full after:ml-[3px] after:mt-[-5px]">
-              {modal.title}
+              {modal?.title}
             </h4>
 
             <p className="text-[18px] max-sm:text-[16px] text-[#5C5C5C] mt-[20px]">
-              Tem certeza que deseja excluir {modal.subject}
-              <span className="font-[500]"> {modal.target} </span>
+              Tem certeza que deseja excluir {modal?.subject}
+              <span className="font-[500]"> {modal?.target} </span>
               e todos os seus <span className="font-[500]"> documentos? </span>
             </p>
 

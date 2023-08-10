@@ -20,8 +20,7 @@ interface Props{
 }
 
 function NavBar({permission, image, name}:Props) {
-    const { dataUser, setDataUser } = useContext(userContext)
-    const { setDataAdmin } = useContext(adminContext)
+    const { dataUser } = useContext(userContext)
     const path = usePathname()
     const [menu, setMenu] = useState(true)
     const router = useRouter()
@@ -32,7 +31,6 @@ function NavBar({permission, image, name}:Props) {
     const styleTextIcons = "lg:hidden lg:group-hover:block ml-[10px] group-hover/button:opacity-[.65]"
     const popoverRef = useRef<any>();
     const arrowIconRef = useRef<any>();
-    const { theme, setTheme } = useContext(themeContext);
 
     const leaveHover = () => {
         popoverRef.current?.click();
@@ -49,13 +47,11 @@ function NavBar({permission, image, name}:Props) {
     function ExitAccount() {
         signOut(auth).
         then(() => {
-            setDataUser()
-            setDataAdmin()
+            router.replace('/')
         }).catch((error) => {
           console.log(error)
         });
     }
-
 
     return (
         <div className='lg:min-w-[100px] text-black'>
@@ -147,7 +143,7 @@ function NavBar({permission, image, name}:Props) {
                         </div> */}
 
                         {permission > 0 && 
-                            <Link href={'https://2dash.vercel.app/dashboard'} className='flex items-center cursor-pointer hover:brightness-[.65] duration-100'>
+                            <Link href={'https://www.2docs.app/dashboard'} className='flex items-center cursor-pointer hover:brightness-[.65] duration-100'>
                                 <p className='underline'>Ir para o painel de Admin </p>
                                 <ExternalLinkIcon className='text-hilight ml-[5px] w-[20px] h-[20px]'/>
                             </Link>

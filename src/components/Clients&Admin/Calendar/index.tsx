@@ -9,13 +9,16 @@ import ShowEvents from '../../Clients&Admin/Calendar/showEvents'
 import { FormatDate } from '../../../Utils/Other/FormatDate'
 import { companyContext } from '../../../app/Context/contextCompany'
 import Link from 'next/link'
+import { adminContext } from '@/src/app/Context/contextAdmin'
 
 function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
   const { dataCompany } = useContext(companyContext)
+  const { dataAdmin } = useContext(adminContext)
   const [ eventsInDateSelected, setEventsInDateSelected] = useState<Event[]>([])
   const [dataMonth, setDataMonth] = useState({ firstDay: moment().clone().startOf("month").valueOf(), lastDay: moment().clone().endOf("month").valueOf() })
   const [events, setEvents] = useState<Event[]>([])
   const [dateSelected, setDateSelected] = useState<number>(new Date().setHours(0,0,0,0))
+  const admin = dataAdmin.id === '' ? false : true
   
   useEffect(() => {
     GetEventsInMonthSelected()
@@ -42,10 +45,10 @@ function Index({ id_user, nameUser }: { id_user: string, nameUser: string }) {
       <p className='font-poiretOne text-[40px] mt-[40px]'>Calendário</p>
       <div className='flex items-center text-[#AAAAAA] text-[18px] max-sm:text-[16px] mt-[5px]'>
         <PersonIcon className='min-w-[17px] min-h-[17px] mr-[5px]' />
-        {nameUser === 'undefined' ? 
-          <Link href={'/Dashboard/Clientes'}>Pessoal</Link>
+        {admin ? 
+          <Link href={'/Dashboard/Admin/Clientes'}>{nameUser.replaceAll("%20", ' ').replaceAll('%', '@')}</Link>
         :
-          <Link href={'/Dashboard/Admin/Clientes'}>{nameUser.replace("%20", ' ')}</Link>
+          <Link href={'/Dashboard/Clientes'}>Pessoal</Link>
         }
 
         <p className='mx-[8px]'>{'>'}</p>

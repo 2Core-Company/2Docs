@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 import folder from '../../../../public/icons/folder.svg';
 import Link from 'next/link';
 import DisableFiles from './DisableFiles';
-import EnableFiles from './enableFiles';
 import downloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import { adminContext } from '../../../app/Context/contextAdmin';
 import { Files } from '../../../types/files';
@@ -63,12 +62,14 @@ function Files() {
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter()
   const admin = dataAdmin.id === '' ? false : true
+
   const handleDragOver = (e) => {
     e.preventDefault();
   };
+
   const handleDrop = async (e) => {
     e.preventDefault();
-
+    
     const result = await VerifyFiles({files: Array.from(e.dataTransfer.files)})
     const newFiles = await UploadFiles({
       id_company: dataCompany.id,
@@ -77,7 +78,7 @@ function Files() {
       id_folder: id_folder,
       files: result,
       from: admin ? 'admin' : 'user',
-      maxSize: dataCompany.maxSize
+      maxSize: dataCompany.maxSize,
     })
     if(newFiles && newFiles.files) {
       setFiles((files) => {

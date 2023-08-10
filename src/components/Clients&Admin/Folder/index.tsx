@@ -33,14 +33,29 @@ function ComponentFolder() {
       const from = admin ? 'user' : 'admin'
       const id_company = admin ? dataAdmin.id_company : dataUser.id_company
       const id_userHere = admin ? id_user : dataUser.id
-      getRecentFilesOfEnterprise({ id_company: id_company, id_user:id_userHere, id_enterprise:enterprise.id, from: from , setRecentFiles })
+      getRecentFilesOfEnterprise({ id_company: id_company, id_user: id_userHere, id_enterprise: enterprise.id, from: from, setRecentFiles })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enterprise]);
 
   useEffect(() => {
-    async function GetUserHere(){
-      const result = await GetUser({id_company:dataAdmin.id_company, id_user})
+    if (admin) {
+      GetUserHere()
+    } else {
+      setUser(dataUser)
+      var enterprise = dataUser?.enterprises!.find((enterprise) => enterprise.id === id_enterprise)
+      if (enterprise) {
+        enterprise.folders = enterprise?.folders.filter((folder) => folder.isPrivate === false)
+        setEnterprise(enterprise);
+      } else {
+        var enterpriseHere: Enterprise = dataUser.enterprises![0]
+        enterpriseHere.folders = enterpriseHere?.folders.filter((folder) => folder.isPrivate === false)
+        setEnterprise(enterpriseHere);
+      }
+    }
+
+    async function GetUserHere() {
+      const result = await GetUser({ id_company: dataAdmin.id_company, id_user })
       setUser(result)
       const enterprise = result?.enterprises!.find((enterprise) => enterprise.id === id_enterprise)
       if (enterprise) {
@@ -53,18 +68,6 @@ function ComponentFolder() {
       }
     }
 
-    if (admin) {
-      GetUserHere()
-    } else{
-      setUser(dataUser)
-      const enterprise = dataUser?.enterprises!.find((enterprise) => enterprise.id === id_enterprise)
-      if (enterprise) {
-        setEnterprise(enterprise);
-      } else {
-        setEnterprise(dataUser.enterprises![0]);
-      }
-
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -88,11 +91,11 @@ function ComponentFolder() {
         <p>Pastas</p>
       </div>
 
-      <Enterprises user={user} enterprise={enterprise} setUser={setUser} setEnterprise={setEnterprise}/>
+      <Enterprises user={user} enterprise={enterprise} setUser={setUser} setEnterprise={setEnterprise} />
 
-      <RecentFiles recentFiles={recentFiles}/>
+      <RecentFiles recentFiles={recentFiles} admin={admin}/>
 
-      <Folders enterprise={enterprise} user={user} setUser={setUser} setEnterprise={setEnterprise}/>
+      <Folders enterprise={enterprise} user={user} setUser={setUser} setEnterprise={setEnterprise} />
     </div>
   );
 }

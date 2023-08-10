@@ -32,6 +32,10 @@ function OptionsEvent({ files, event, childModalEvent, childConcluedEvent }: Pro
     const router = useRouter()
 
     async function ChildModalDelet(){
+        toast.promise(GetDeletEvent(), {pending:'Deletando evento...', success:'Evento deletado com sucesso!'})
+    }
+
+    async function GetDeletEvent(){
         const result = await DeletEvent({id_company:dataCompany.id, id_event:event.id})
 
         if(files){
