@@ -120,12 +120,12 @@ function EventsActives() {
               })
             :
             <div className='w-full h-full flex flex-col justify-center items-center'>
-              <Image src={'/icons/eventsActiveOff.svg'} alt='' width={120} height={164} />
+              <Image src={'/icons/eventsActiveOff.svg'} alt='' width={120} height={164} priority={true} />
               <p className='font-poiretOne text-[28px] max-sm:text-[25px] max-lsm:text-[23px] text-[#686868] text-center'>Todos os eventos completos.</p>
             </div>
           }
 
-          {usersWithPendencies?.filter((user) => user.name.toUpperCase().includes(textSearch.toUpperCase())) ?
+          {usersWithPendencies?.filter((user) => user.name.toUpperCase().includes(textSearch.toUpperCase()))[0] ?
             <div className='flex items-center justify-between px-[20px] max-lsm:px-[10px] py-[13px] border-t-[#9E9E9E] border-t-[1px] mt-auto'>
               <button disabled={dataPages.page - 1 > 0 ? false : true} onClick={() => setDataPages({ ...dataPages, page: dataPages.page - 1 })} className={`${dataPages.page - 1 > 0 ? 'text-[#EBEBEB] bg-hilight hover:bg-emerald-600  border-[#00B268]' : 'text-[#AAAAAA]  border-[#9E9E9E] bg-[#D9D9D9]'} border-[1px] rounded-[8px] py-[4px] px-[15px] max-lsm:px-[10px] duration-100`}>
                 Anterior

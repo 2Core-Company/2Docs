@@ -23,7 +23,7 @@ export async function UpdatePendencies({ id_company, id_user, action }: Props) {
             }
             transaction.update(sfDocRef, { pendencies: newPendencies });
         });
-        console.log("Transaction successfully committed!");
+
     } catch (e) {
         console.log("Transaction failed: ", e);
     }

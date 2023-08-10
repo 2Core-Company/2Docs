@@ -106,7 +106,6 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
   }
 
   async function GetDataCompanyUser({id_company, data}){
-    console.log(id_company)
     const maxSize = await SearchCostumer({data})
     const docRef = doc(db, "companies", id_company);
     const docSnap = await getDoc(docRef);

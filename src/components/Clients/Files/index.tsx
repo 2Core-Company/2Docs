@@ -109,7 +109,7 @@ function Files() {
     let mockFolder = enterprise?.folders.find((folder) => folder.name === folderName);
 
     if (mockFolder?.isPrivate === true) {
-      router.push("Dashboard/Clientes/Pastas");
+      router.push("/Dashboard/Clientes/Pastas");
       return {status: 401, message: "Cliente não autorizado a acessar essa pasta."}
     }
 

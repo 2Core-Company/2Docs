@@ -72,7 +72,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
             {folderConfig.status && <ModalFolderConfig user={user} enterprise={enterprise} id={id_user} id_company={dataAdmin.id_company} setFolderConfig={setFolderConfig} folderConfig={folderConfig} setUser={setUser} setEnterprise={setEnterprise} />}
 
             {modal.status && <ModalDelete modal={modal} setModal={setModal} childModal={childModal} />}
-            <p className=" font-poiretOne text-[40px] mt-[20px] max-sm:text-[35px] dark:text-white">
+            <p className=" font-poiretOne text-[40px] mt-[20px] max-md:text-[30px] dark:text-white">
                 Pastas
             </p>
             <div className="w-[500px] max-md:w-[90%] flex justify-between">
@@ -89,7 +89,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                     enterprise.folders
                         .filter((folder) => textSearch != "" ? folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
                         .map((folder, index) => {
-                            if (folder.name === 'Lixeira') { 
+                            if (folder.name === 'Lixeira' || folder.isPrivate && !admin) { 
                                 return 
                             } 
                             return (
@@ -98,12 +98,12 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                                         {folder.name != "Cliente" && folder.name != "Favoritos" && admin &&
                                             <div className='text-[#AAAAAA]'>
                                                 {folder.isPrivate === true ? (
-                                                    <LockClosedIcon height={24} width={24} onClick={() => { PrivateFolderChange(folder.isPrivate, index); }} className="max-lg:w-[22px] max-sm:w-[20px] max-lsm:w-[18px] aspect-square absolute top-[5px] right-[40px] max-lg:right-[25px] max-lsm:right-[20px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
+                                                    <LockClosedIcon height={24} width={24} onClick={() => { PrivateFolderChange(folder.isPrivate, index); }} className="hover:text-black duration-100 max-lg:w-[22px] max-sm:w-[20px] max-lsm:w-[18px] aspect-square absolute top-[5px] right-[40px] max-lg:right-[25px] max-lsm:right-[20px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
                                                 ) : (
-                                                    <LockOpen1Icon height={24} width={24} onClick={() => { PrivateFolderChange(folder.isPrivate, index); }} className="max-lg:w-[22px] max-sm:w-[20px] max-lsm:w-[18px] aspect-square absolute top-[5px] right-[40px] max-lg:right-[25px] max-lsm:right-[20px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
+                                                    <LockOpen1Icon height={24} width={24} onClick={() => { PrivateFolderChange(folder.isPrivate, index); }} className="hover:text-black duration-100  max-lg:w-[22px] max-sm:w-[20px] max-lsm:w-[18px] aspect-square absolute top-[5px] right-[40px] max-lg:right-[25px] max-lsm:right-[20px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
                                                 )}
-                                                <TrashIcon height={25} width={25} onClick={() => ConfirmationDeleteFolder({ name: folder.name, id_folder: folder.id })} className="max-lg:w-[22px] max-sm:w-[20px] max-lsm:w-[18px] aspect-square absolute top-[5px] right-[10px] max-lg:right-[3px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
-                                                <GearIcon height={25} width={25} onClick={() => setFolderConfig({ status: true, name: folder.name, color: folder.color, isPrivate: folder.isPrivate, singleDownload: folder.singleDownload, onlyMonthDownload: folder.onlyMonthDownload, timeFile: folder.timeFile })} className="max-lg:w-[22px] max-sm:w-[20px] max-lsm:w-[18px] aspect-square absolute bottom-[10px] right-[10px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
+                                                <TrashIcon height={25} width={25} onClick={() => ConfirmationDeleteFolder({ name: folder.name, id_folder: folder.id })} className="hover:text-black duration-100 max-lg:w-[22px] max-sm:w-[20px] max-lsm:w-[18px] aspect-square absolute top-[5px] right-[10px] max-lg:right-[3px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
+                                                <GearIcon height={25} width={25} onClick={() => setFolderConfig({ status: true, name: folder.name, color: folder.color, isPrivate: folder.isPrivate, singleDownload: folder.singleDownload, onlyMonthDownload: folder.onlyMonthDownload, timeFile: folder.timeFile })} className="hover:text-black duration-100  max-lg:w-[22px] max-sm:w-[20px] max-lsm:w-[18px] aspect-square absolute bottom-[10px] right-[10px] lg:group-hover:block cursor-pointer hidden max-lg:block" />
                                             </div>
                                         }
 
@@ -127,7 +127,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
             </div>
             {dataAdmin.id !== '' &&
                 <>
-                    <p className=" font-poiretOne text-[40px] mt-[20px] ">Lixeira</p>
+                    <p className=" font-poiretOne text-[35px] max-md:text-[30px] mt-[20px] ">Lixeira</p>
                     <div className="px-[25px] py-[10px] mb-[10px] w-[180px] max-md:w-[180px] max-sm:w-[150px] max-lsm:w-[120px] rounded-[8px] dark:hover:shadow-[#414141] hover:shadow-[0_5px_10px_5px_rgba(0,0,0,0.1)] max-lg:shadow-[0_5px_10px_5px_rgba(0,0,0,0.1)] duration-100">
                         <Link
                           href={{

@@ -87,7 +87,7 @@ function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWin
             <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
               <button disabled={dataAdmin.permission < 2} onClick={() => setModalEvent(true)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
                 <StopwatchIcon width={18} height={18}/>
-                Agendar
+                Novo Evento
               </button>
             </DropdownMenu.Item>
 
