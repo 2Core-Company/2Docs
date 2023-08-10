@@ -10,26 +10,30 @@ interface Props{
 }
 
 async function favoriteFile({folderName, file, setFiles}: Props) {
-    try{
-        await updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
-            favorite: !file.favorite
-        })
+    const toastMessage = {pending:`${file.favorite ? 'Desfavoritando' : 'Favoritando'} o arquivo.`, success:`Arquivo ${file.favorite ? 'desfavoritado' : 'favoritado'} com sucesso!.`};
 
-        setFiles((files) => {
-            const index = files.findIndex((fileIndex) => fileIndex.id === file.id);
-            if(folderName === 'Favoritos') {
-                files.splice(index, 1);
-                return files;
-            } else {
-                files[index].favorite = !files[index].favorite;
-                console.log(files[index]);
-                return [...files];
-            }
-        })
-    } catch(e) {
-        console.log(e);
-        toast.error("Não foi possível favoritar este arquivo.");
-    }
+    toast.promise(async () => {
+        try{
+            await updateDoc(doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id), {
+                favorite: !file.favorite
+            })
+    
+            setFiles((files) => {
+                const index = files.findIndex((fileIndex) => fileIndex.id === file.id);
+                if(folderName === 'Favoritos') {
+                    files.splice(index, 1);
+                    return files;
+                } else {
+                    files[index].favorite = !files[index].favorite;
+                    return [...files];
+                }
+            })
+        } catch(e) {
+            console.log(e);
+            toast.error("Não foi possível favoritar este arquivo.");
+        }
+    }, toastMessage
+    )
 }
 
 export default favoriteFile
