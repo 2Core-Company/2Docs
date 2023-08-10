@@ -39,7 +39,6 @@ function Files() {
   //<--------------------------------- Params Vars --------------------------------->
   const params: any = useSearchParams();
   const trash: boolean = Boolean(params.get("trash"));
-  const folderName: string = params.get("folderName");
   const id_user: string = params.get("id_user");
   const id_enterprise: string = params.get("id_enterprise");
   const id_folder: string = params.get("id_folder");
@@ -111,7 +110,7 @@ function Files() {
 
     if (trash) {
       await getFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
-    } else if (folderName === "Favoritos") {
+    } else if (folder.name === "Favoritos") {
       await getFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
     } else {
       await getFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages })
@@ -363,11 +362,11 @@ function Files() {
                         </DocTable.OptionsItem>
                         }
                         {(admin && file.from === 'admin' || admin === false && file.from === 'user') && file.favorite ?
-                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folderName})}>
+                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Desfavoritar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem> : (admin && file.from === 'admin' || admin === false && file.from === 'user') &&
-                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folderName})}>
+                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarFilledIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
