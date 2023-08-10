@@ -5,7 +5,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
-import folder from '../../../../public/icons/folder.svg';
+import folderIcon from '../../../../public/icons/folder.svg';
 import Link from 'next/link';
 import DisableFiles from './DisableFiles';
 import EnableFiles from './enableFiles';
@@ -32,6 +32,8 @@ import { VerifyFiles } from '@/src/Utils/Other/VerifyFiles';
 import { UploadFiles } from '../../Clients&Admin/Files/UploadFiles';
 import { FilterAlphabetical, FilterDate, FilterSize, FilterStatus } from '@/src/Utils/Other/Filters';
 import linkShareFile from '../../Clients&Admin/Files/shareFile';
+import { getFolder } from '@/src/Utils/Firebase/Folders/getFolders'; 
+import { Folders } from '@/src/types/folders';
 
 function Files() {
   //<--------------------------------- Params Vars --------------------------------->
@@ -48,6 +50,7 @@ function Files() {
   const { setLoading } = useContext(loadingContext);
   
   //<--------------------------------- State vars --------------------------------->
+  const [folder, setFolder] = useState<Folders>({name: '', color: '', isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3, id: ''});
   const [files, setFiles] = useState<Files[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Files[]>([]);
   const [dataPages, setDataPages] = useState<{ page: number, maxPages: number }>({ page: 1, maxPages: 1 });
@@ -83,13 +86,13 @@ function Files() {
       setFiles((files) => {
         const result = files.concat(newFiles.files);
         const maxPages = Math.ceil(result.length / 10)
-        var page = dataPages.page
+        var page = dataPages.page;
         if (maxPages < dataPages.page) {
-          page = maxPages
+          page = maxPages;
         }
-        setDropdownState(true)
-        setDataPages({ maxPages: maxPages, page: page })
-        return result
+        setDropdownState(true);
+        setDataPages({ maxPages: maxPages, page: page });
+        return result;
       })
     }
   };
@@ -104,6 +107,8 @@ function Files() {
   }, [dataAdmin])
 
   async function getFiles() {
+    await verifyFolder();
+
     if (trash) {
       await getFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
     } else if (folderName === "Favoritos") {
@@ -112,6 +117,16 @@ function Files() {
       await getFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages })
     }
     setLoading(false)
+  }
+
+  async function verifyFolder() {
+    const fetchFolder = await getFolder({id_company: dataAdmin.id_company, id_user, id_enterprise, id_folder});
+
+    if(fetchFolder) {
+      setFolder(fetchFolder);
+    } else {
+      router.replace('./Dashboard/Clientes/Pastas');
+    }
   }
 
   async function getInputFiles(files){
@@ -244,13 +259,13 @@ function Files() {
               {"Usuários >"}
             </p>
           </div>
-          <Image height={21} width={21} src={folder} alt="Imagem de uma pasta" />
+          <Image height={21} width={21} src={folderIcon} alt="Imagem de uma pasta" />
           <Link href={{ pathname: "/Dashboard/Admin/Pastas", query: {id_user: id_user, id_enterprise: id_enterprise} }} className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{"Pastas  >"}</Link>
           <FileIcon className={'min-w-[19px] min-h-[19px] text-secondary'} />
-          <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folderName}</p>
+          <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folder!.name}</p>
         </div>
 
-        <div>
+        <div className={`${folder.name === 'Cliente' || folder.name === 'Favoritos' && 'hidden'}`}>
           <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
