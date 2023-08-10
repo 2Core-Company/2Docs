@@ -24,7 +24,6 @@ async function shareFile({file, shareUserAvatar, shareUserName}:Props) {
       toast.error(`Ocorreu um erro ao copiar o link: ${error}`);
       return {status: 400, message: `Ocorreu um erro ao copiar o link: ${error}`};
     })
-    // console.log('Link compartilhado!');
   } else {
     const response1 = await setSharedFileDoc({file, shareUserAvatar, shareUserName, sharedFileId});
     if(response1.status === 400) {

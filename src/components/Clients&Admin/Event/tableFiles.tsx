@@ -107,9 +107,10 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
         const response = await toast.promise(linkShareFile({file: file, shareUserName: shareName, shareUserAvatar: sharePhotoUrl}), toastMessage);
 
         if(response.status === 200) {
-        setFiles((files) => {
+        setFiles(() => {
             let index = files!.findIndex((data) => data.id === response.file.id);
-            files![index] = response.file;
+            files![index].id_share = response.file.id_share;
+            console.log(files);
             return [...files!];
         })
         }
