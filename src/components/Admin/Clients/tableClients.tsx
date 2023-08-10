@@ -11,7 +11,7 @@ import { DisableUser } from "./DisableUser";
 import { WindowsAction } from "../../../types/others";
 import { toast } from "react-toastify";
 import { adminContext } from '../../../app/Context/contextAdmin';
-import { MagnifyingGlassIcon, DrawingPinFilledIcon, PlusIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon, DrawingPinFilledIcon } from "@radix-ui/react-icons";
 import EditUser from "./editUser";
 import CreateUser from "./createUser";
 import * as HoverCard from '@radix-ui/react-hover-card';
@@ -43,7 +43,7 @@ function TableClients() {
   }, [dataAdmin]);
 
   async function GetAllUser() {
-    const result = await GetUsers({ id_company: dataAdmin.id_company });
+    const result = await GetUsers({ id_company: dataAdmin.id_company, permission: dataAdmin.permission, admin_id: dataAdmin.id });
     if (result) {
       setPages(Math.ceil(result.length / 10));
       setUsers(FilterFixed(result));

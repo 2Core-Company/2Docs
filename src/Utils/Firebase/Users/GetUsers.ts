@@ -4,32 +4,37 @@ import { DataUser, DataUserContext } from "../../../types/users";
 
 interface PropsGetUsers {
   id_company: string
+  permission: number
+  admin_id: string
 }
 
-export async function GetUsers({ id_company }: PropsGetUsers) {
+export async function GetUsers({ id_company, permission, admin_id }: PropsGetUsers) {
   try {
     const getUsers: DataUser[] = [];
     const q = query(collection(db, "companies", id_company, "clients"), where("permission", "==", 0), orderBy('name'));
     const querySnapshot = await getDocs(q);
-    const result = querySnapshot.forEach((doc) =>
-      getUsers.push({
-        id: doc.data()?.id,
-        name: doc.data()?.name,
-        email: doc.data()?.email,
-        permission: doc.data()?.permission,
-        enterprises: doc.data()?.enterprises,
-        photo_url: doc.data()?.photo_url,
-        disabled: doc.data()?.disabled,
-        verifiedEmail: doc.data()?.verifiedEmail,
-        checked: false,
-        created_date: doc.data()?.created_date,
-        fixed: doc.data()?.fixed,
-        id_company: doc.data()?.id_company,
-        nameImage: doc.data()?.nameImage,
-        phone: doc.data()?.phone,
-        admins: doc.data()?.admins,
-        pendencies: doc.data()?.pendencies
-      })
+    const result = querySnapshot.forEach((doc) => {
+      if(doc.data()?.admins == null || (doc.data()?.admins != null && doc.data()?.admins.includes(admin_id)) || permission === 3) {
+        getUsers.push({
+          id: doc.data()?.id,
+          name: doc.data()?.name,
+          email: doc.data()?.email,
+          permission: doc.data()?.permission,
+          enterprises: doc.data()?.enterprises,
+          photo_url: doc.data()?.photo_url,
+          disabled: doc.data()?.disabled,
+          verifiedEmail: doc.data()?.verifiedEmail,
+          checked: false,
+          created_date: doc.data()?.created_date,
+          fixed: doc.data()?.fixed,
+          id_company: doc.data()?.id_company,
+          nameImage: doc.data()?.nameImage,
+          phone: doc.data()?.phone,
+          admins: doc.data()?.admins,
+          pendencies: doc.data()?.pendencies
+        })
+      }
+    }
     );
 
     return getUsers
