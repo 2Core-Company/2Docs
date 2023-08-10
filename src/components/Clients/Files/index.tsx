@@ -5,7 +5,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import { FileIcon } from '@radix-ui/react-icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
-import folder from '../../../../public/icons/folder.svg'
+import folderIcon from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
 import DownloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import deleteFiles from '../../Clients&Admin/Files/deleteFiles';
@@ -30,11 +30,11 @@ import ViewFile from '../../Clients&Admin/Files/viewFile';
 import MoveTo from '../../Admin/Files/moveTo';
 import CopyTo from '../../Admin/Files/copyTo';
 import Rename from '../../Clients&Admin/Files/rename';
+import { Folders } from '@/src/types/folders';
 
 function Files() {
   //<--------------------------------- Params Vars --------------------------------->
-  const params: any = useSearchParams()
-  const folderName: string = params.get("folderName");
+  const params: any = useSearchParams();
   const id_folder: string = params.get("id_folder");
   const id_enterprise: string = params.get("id_enterprise");
 
@@ -44,6 +44,7 @@ function Files() {
   const { setLoading } = useContext(loadingContext);
 
   //<--------------------------------- State vars --------------------------------->
+  const [folder, setFolder] = useState<Folders>({name: '', color: '', isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3, id: ''});
   const [files, setFiles] = useState<Files[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Files[]>([]);
   const [dataPages, setDataPages] = useState<{ page: number, maxPages: number }>({ page: 1, maxPages: 1 });
@@ -96,7 +97,7 @@ function Files() {
 
   async function getFiles() {
     const response = await verifyFolder();
-    if (folderName === "Favoritos" && response.status === 200) {
+    if (folder.name === "Favoritos" && response.status === 200) {
       await getFilesToFavorites({ id_company: dataUser.id_company, id_user: dataUser.id, id_enterprise: id_enterprise, setFiles, setDataPages });
     } else {
       await getFilesClient({ id_user: dataUser.id, id_company: dataUser.id_company, id_enterprise: id_enterprise, id_folder: id_folder, setFiles, setDataPages })
@@ -106,11 +107,13 @@ function Files() {
 
   async function verifyFolder() {
     let enterprise = dataUser.enterprises.find((data) => data.id === id_enterprise)
-    let mockFolder = enterprise?.folders.find((folder) => folder.name === folderName);
+    let mockFolder = enterprise?.folders.find((folder) => folder.id === id_folder);
 
-    if (mockFolder?.isPrivate === true) {
+    if (mockFolder && mockFolder.isPrivate === true) {
       router.replace("/Dashboard/Clientes/Pastas");
       return {status: 401, message: "Cliente não autorizado a acessar essa pasta."}
+    } else if(mockFolder) {
+      setFolder(mockFolder);
     }
 
     return {status: 200, message: "Cliente autorizado a acessar essa pasta."};
@@ -249,16 +252,16 @@ function Files() {
         <p className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Documentos</p>
         <div className='flex items-center overflow-hidden mb-[35px]'>
           <Link href={'/Dashboard/Clientes/Pastas'} className="flex cursor-pointer items-center mr-1">
-            <Image width={21} height={21} src={folder} alt="Imagem de uma pasta" className='mr-1' />
+            <Image width={21} height={21} src={folderIcon} alt="Imagem de uma pasta" className='mr-1' />
             <p className="cursor-pointer text-[18px] max-sm:mr-[0px] max-sm:text-[16px] whitespace-nowrap text-secondary">
               {"Pastas >"}
             </p>
           </Link>
           <FileIcon width={21} height={21} className={'text-secondary mr-1'} />
-          <p className='text-[18px] flex text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{folderName}</p>
+          <p className='text-[18px] flex text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{folder.name}</p>
         </div>
 
-        <div>
+        <div className={`${folder.name !== 'Cliente' && 'hidden'}`}>
           <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
@@ -356,11 +359,11 @@ function Files() {
                         </DocTable.OptionsItem>
                         }
                         {file.from === 'user' && file.favorite ?
-                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folderName})}>
+                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Desfavoritar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem> : file.from === 'user' &&
-                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folderName})}>
+                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarFilledIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
