@@ -3,10 +3,11 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { DataUser, DataUserContext } from "../../../types/users";
 import { getAdmins } from "../../../Utils/Firebase/Users/GetUsers";
-import { Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
+import { Cross2Icon, PlusIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 import { toast } from "react-toastify";
 import { db } from "../../../../firebase";
 import { doc, updateDoc } from "firebase/firestore";
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 
 type Props = {
@@ -61,9 +62,29 @@ function SetAdminOptions({ setModalAdminOptions, user, dataAdmin, setUsers, user
             <div className="max-w-[600px] w-full flex flex-col bg-primary rounded-[18px] relative">
                 <div className="w-full rounded-t-[18px] h-[17px] bg-emerald-500" />
                 <div className="px-[30px] max-sm:px-[20px] max-lsm:px-[15px]">
-                    <p className="text-[26px] max-md:text-[25px] max-sm:text-[23px] max-lsm:text-[21px] mt-[15px] font-[500] dark:text-white after:w-[50px] after:h-[3px] after:bg-emerald-500 after:block after:rounded-full after:mt-[-5px]">
-                        Atribuição Pessoal de Admins
-                    </p>
+                    <div className="flex gap-[10px] items-center mt-[15px]" >
+                        <p className="text-[26px] max-md:text-[25px] max-sm:text-[23px] max-lsm:text-[21px] font-[500] dark:text-white after:w-[50px] after:h-[3px] after:bg-emerald-500 after:block after:rounded-full after:mt-[-5px]">
+                            Atribuição Pessoal de Admins
+                        </p>
+                        <Tooltip.Provider>
+                            <Tooltip.Root>
+                                <Tooltip.Trigger asChild>
+                                    <button className="text-[#10B981]">
+                                        <InfoCircledIcon width={16} height={16} />
+                                    </button>
+                                </Tooltip.Trigger>
+                                <Tooltip.Portal>
+                                    <Tooltip.Content
+                                        className="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade select-none rounded bg-primary p-[10px] text-[14px] font-[400] leading-5 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] will-change-[transform,opacity] z-50"
+                                        align='end'
+                                    >
+                                        Você precisa de admins cadastrados no 2Dash para o funcionamento dessa atribuição.<br /><span className="text-red">Admins de nível 3 não serão reconhecidos por terem acesso total.</span>
+                                        <Tooltip.Arrow className="fill-primary" />
+                                    </Tooltip.Content>
+                                </Tooltip.Portal>
+                            </Tooltip.Root>
+                        </Tooltip.Provider>
+                    </div>
 
                     <div className="mt-[20px] flex items-center gap-x-[8px]">
                         <Image src={actualUser.photo_url} quality={100} width={35} height={35} alt="Foto de Perfil" className="rounded-full h-[35px] w-[35px]" />
