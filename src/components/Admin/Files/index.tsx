@@ -31,7 +31,7 @@ import favoriteFile from '@/src/components/Clients&Admin/Files/favoriteFile';
 import { VerifyFiles } from '@/src/Utils/Other/VerifyFiles';
 import { UploadFiles } from '../../Clients&Admin/Files/UploadFiles';
 import { FilterAlphabetical, FilterDate, FilterSize, FilterStatus } from '@/src/Utils/Other/Filters';
-import linkShareFile from './shareFile';
+import linkShareFile from '../../Clients&Admin/Files/shareFile';
 
 function Files() {
   //<--------------------------------- Params Vars --------------------------------->
@@ -362,16 +362,16 @@ function Files() {
                           <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
                         {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
-                        <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setModalMessage({status: true, action: "edit", file: file})} dropdownClassName={`w-full ${dataAdmin.permission < 3 && 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
-                          <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Definir observação</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
-                        }
-                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
-                        <DocTable.OptionsItem disabled={dataAdmin.permission < 3} onClick={() => deleteFilesHandle([file])} className='w-full' dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#BE0000]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
-                          <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Excluir</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
+                        <>
+                          <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setModalMessage({status: true, action: "edit", file: file})} dropdownClassName={`w-full ${dataAdmin.permission < 3 && 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                            <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                            <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Definir observação</DocTable.OptionsItemLabel>
+                          </DocTable.OptionsItem>
+                          <DocTable.OptionsItem disabled={dataAdmin.permission < 3} onClick={() => deleteFilesHandle([file])} className='w-full' dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#BE0000]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                            <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                            <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Excluir</DocTable.OptionsItemLabel>
+                          </DocTable.OptionsItem>
+                        </>
                         }
                       </DocTable.Options>
                     </DocTable.FileActions>
