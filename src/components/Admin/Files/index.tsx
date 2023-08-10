@@ -269,7 +269,7 @@ function Files() {
             <DocTable.Search onChange={(text) => setTextSearch(text.target.value)} placeholder="Buscar" />
             <DocTable.GlobalActions setDropdownState={setDropdownState} dropdownState={dropdownState}>
               <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
-              {/* <DocTable.GlobalAction onClick={() => deleteFiles(selectFiles)} dropdownState={dropdownState} className={`${selectFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction> */}
+              <DocTable.GlobalAction onClick={() => deleteFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction>
             </DocTable.GlobalActions>
           </DocTable.Header>
           {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
