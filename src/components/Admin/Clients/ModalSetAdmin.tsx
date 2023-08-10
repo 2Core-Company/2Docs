@@ -66,7 +66,7 @@ function SetAdminOptions({ setModalAdminOptions, user, dataAdmin, setUsers, user
                     </p>
 
                     <div className="mt-[20px] flex items-center gap-x-[8px]">
-                        <Image src={actualUser.photo_url} quality={100} width={35} height={35} alt="Foto de Perfil" className="rounded-full min-w-[35px] min-h-[35px] max-lsm:min-w-[30px] max-lsm:min-h-[30px]" />
+                        <Image src={actualUser.photo_url} quality={100} width={35} height={35} alt="Foto de Perfil" className="rounded-full h-[35px] w-[35px]" />
                         <p className="text-[20px] max-sm:text-[19px] max-lsm:text-[18px] dark:text-white ">{actualUser.name}</p>
                     </div>
 
