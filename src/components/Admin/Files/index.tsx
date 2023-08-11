@@ -377,10 +377,12 @@ function Files() {
                           <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
+                        {file.from !== 'user' &&
                         <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setModalMessage({status: true, action: "edit", file: file})} dropdownClassName={`w-full ${dataAdmin.permission < 3 && 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
                           <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Definir observação</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
+                        }
                         <DocTable.OptionsItem disabled={dataAdmin.permission < 3} onClick={() => deleteFilesHandle([file])} className='w-full' dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#BE0000]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
                           <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Excluir</DocTable.OptionsItemLabel>
