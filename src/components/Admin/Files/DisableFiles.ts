@@ -1,8 +1,8 @@
-'use client'
-import { db } from '../../../../firebase'
-import { deleteField, doc, writeBatch } from "firebase/firestore";  
-import { toast } from 'react-toastify'; 
-import { Files } from '../../../types/files'
+'use client';
+import { db } from '../../../../firebase';
+import { deleteField, doc, writeBatch } from "firebase/firestore";
+import { toast } from 'react-toastify';
+import { Files } from '../../../types/files';
 
 interface Props{
   files:Files[]
@@ -10,7 +10,7 @@ interface Props{
 }
 
 async function DisableFiles({ files, selectFiles }:Props) {
-  const allFiles = [...files]
+  const allFiles = [...files];
   const batch = writeBatch(db);
   try{
     for await (const file of selectFiles){
@@ -24,14 +24,14 @@ async function DisableFiles({ files, selectFiles }:Props) {
         trash:true,
         id_share: deleteField()
       })
-      const index:number = allFiles.findIndex(file => file.id === file.id)
-      file.checked = false
+      const index:number = allFiles.findIndex((data) => data.id === file.id);
+      file.checked = false;
       allFiles.splice(index, 1);
     } 
     await batch.commit();
   }catch(e){
-    console.log(e)
-    toast.error("Não Foi possível excluir este arquivo.")
+    console.log(e);
+    toast.error("Não Foi possível excluir este arquivo.");
   }
 
   return allFiles;

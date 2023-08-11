@@ -298,7 +298,7 @@ function Files() {
             </DocTable.Heading>
             <DocTable.Files>
               {files
-              .filter((file) => textSearch != "" ? file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
+              .filter((file) => textSearch == null || file.name?.toUpperCase().includes(textSearch.toUpperCase()) ? true : false)
               .map((file: Files, index) => {
                 if((dataPages.page * 10 - (11)) < index && index < dataPages.page * 10){
                 return(
