@@ -93,7 +93,12 @@ function Files() {
     setLoading(true);
     getFiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataUser])
+  }, [dataUser]);
+
+  useEffect(() => {
+    textSearch == null ? setDataPages({page: dataPages.page, maxPages: Math.ceil(files.length / 10)}) : setDataPages({page: dataPages.page, maxPages: Math.ceil(files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length / 10)});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [textSearch]);
 
   async function getFiles() {
     const response = await verifyFolder();

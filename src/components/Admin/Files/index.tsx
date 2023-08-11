@@ -103,7 +103,12 @@ function Files() {
       getFiles()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataAdmin])
+  }, [dataAdmin]);
+
+  useEffect(() => {
+    textSearch == null ? setDataPages({page: dataPages.page, maxPages: Math.ceil(files.length / 10)}) : setDataPages({page: dataPages.page, maxPages: Math.ceil(files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length / 10)});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [textSearch]);
 
   async function getFiles() {
     await verifyFolder();
@@ -120,11 +125,12 @@ function Files() {
 
   async function verifyFolder() {
     const fetchFolder = await getFolder({id_company: dataAdmin.id_company, id_user, id_enterprise, id_folder});
+    console.log(fetchFolder);
 
     if(fetchFolder) {
       setFolder(fetchFolder);
     } else {
-      router.replace('./Dashboard/Clientes/Pastas');
+      router.replace(`/Dashboard/Admin/Pastas?id_user=${id_user}`);
     }
   }
 
@@ -279,14 +285,14 @@ function Files() {
         {renameFile.status && <Rename setFiles={setFiles} renameFile={renameFile} setRenameFile={setRenameFile}/>}
         <DocTable.Root>
           <DocTable.Header className={`${files.filter((file) => textSearch !== '' && file.name.toUpperCase().includes(textSearch.toUpperCase())).length === 0 && "border-b border-b-secondary"}`}>
-            <DocTable.Count count={textSearch === '' ? files.length : files.filter((file) => textSearch !== '' && file.name.toUpperCase().includes(textSearch.toUpperCase())).length} />
+            <DocTable.Count count={textSearch == null ? files.length : files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase())).length} />
             <DocTable.Search onChange={(text) => setTextSearch(text.target.value)} placeholder="Buscar" />
             <DocTable.GlobalActions setDropdownState={setDropdownState} dropdownState={dropdownState}>
               <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
               <DocTable.GlobalAction onClick={() => deleteFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction>
             </DocTable.GlobalActions>
           </DocTable.Header>
-          {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
+          {files.filter((file) => textSearch != "" ? file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
           <DocTable.Content>
             <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px]">
               <DocTable.GlobalCheckbox />
