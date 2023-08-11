@@ -270,7 +270,7 @@ function Files() {
           <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folder!.name}</p>
         </div>
 
-        <div className={`${(folder.name === 'Cliente' || folder.name === 'Favoritos') && 'hidden'}`}>
+        <div className={`${(folder.name === 'Cliente' || folder.name === 'Favoritos' || folder.name === 'Lixeira') && 'hidden'}`}>
           <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
