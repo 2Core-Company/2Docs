@@ -85,7 +85,7 @@ function Files() {
       setFiles((files) => {
         const result = files.concat(newFiles.files);
         const maxPages = Math.ceil(result.length / 10)
-        var page = dataPages.page;
+        let page = dataPages.page;
         if (maxPages < dataPages.page) {
           page = maxPages;
         }
