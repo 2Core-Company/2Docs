@@ -20,7 +20,7 @@ function Events() {
 
     return (
         <div className='mt-[20px] max-sm:mt-[10px] '>
-            <p className='text-zinc-700 font-[200] text-[28px] max-sm:text-[25px]'>Eventos</p>
+            <p className='text-zinc-700 font-[200] text-[28px] max-sm:text-[25px]'>Eventos ativos</p>
             <ShowEvents events={events} from={'dashboard'} id_user={dataUser.id} nameUser={undefined}/>
         </div>
     )

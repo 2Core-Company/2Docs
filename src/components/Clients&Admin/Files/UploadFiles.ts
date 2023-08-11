@@ -5,6 +5,8 @@ import { db, storage } from '../../../../firebase';
 import { GetSizeCompany } from '../../../Utils/Firebase/Company/GetSizeCompany';
 import updateSizeCompany from '../../../Utils/Firebase/Company/UpdateSizeCompany';
 import { Files } from '../../../types/files';
+import { getFolder } from '@/src/Utils/Firebase/Folders/getFolders';
+import { Folders } from '@/src/types/folders';
 
 interface PropsUploadFiles{
   id_company: string
@@ -20,8 +22,10 @@ interface PropsUploadFiles{
 export async function UploadFiles({id_event, id_folder, id_company, id_user, id_enterprise, files, from, maxSize}:PropsUploadFiles) {
   const batch = writeBatch(db);
   const toastUpload = {pending:"Armazenando arquivos...", success:"Arquivos armazenados."};
+  const folder:Folders | undefined = await getFolder({id_company, id_user, id_enterprise, id_folder})
   const response = await toast.promise(CreateReferencesOfFiles(), toastUpload);
   return response;
+  
 
 
   async function CreateReferencesOfFiles(){
@@ -100,7 +104,9 @@ export async function UploadFiles({id_event, id_folder, id_company, id_user, id_
         from: from,
         favorite:false,
         viewedDate:null, 
-        message:''
+        message:'',
+        isPrivate:folder?.isPrivate,
+        singleDownload: folder?.singleDownload
       }
 
       const docRef  = doc(collectionRef, result[i].metadata.name);

@@ -17,7 +17,6 @@ function Index() {
         const addressee = dataUser.id === '' ? dataCompany.id : dataUser.id
 
         const result = await GetNotifications({id_company:dataCompany.id, addressee})
-        console.log(new Date(result[0].date))
     }
 }
 

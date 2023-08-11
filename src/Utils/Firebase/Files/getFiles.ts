@@ -133,7 +133,13 @@ interface interfaceGetRecentFilesOfEnterprise{
 
 export async function getRecentFilesOfEnterprise({id_company,  id_user, id_enterprise, from, setRecentFiles}:interfaceGetRecentFilesOfEnterprise){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where('from', '==', from), where("trash", "==", false), where("id_enterprise", "==", id_enterprise), orderBy('created_date'), limit(3));
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), 
+  where('from', '==', from), 
+  where("trash", "==", false), 
+  where("isPrivate", "==", false), 
+  where("id_enterprise", "==", id_enterprise),
+  orderBy('created_date'), limit(3));
+
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((document) => {
     var file:Files = {
@@ -383,7 +389,7 @@ interface interfaceGetSpecificFile{
 export async function getSpecificFile({id_company, id_user, id_file, setFile}:interfaceGetSpecificFile){
   const docRefFile = doc(db, "files", id_company, id_user, 'user', 'files', id_file);
   const document = await getDoc(docRefFile)
-  // console.log(document.data())
+
   const data:Files = {
     id:document.data()?.id,
     id_company:document.data()?.id_company,

@@ -113,7 +113,7 @@ function ModalFolderConfig({ setUser, user, enterprise, id, id_company, setFolde
               <p className="text-[20px] dark:text-white">
                 Alterar nome da pasta:
               </p>
-              <input placeholder="Digite o nome da pasta" onChange={(text) => text.target.value !== "" ? setNameFolder(text.target.value) : setNameFolder(folderConfig.name)} maxLength={20}
+              <input placeholder="Digite o nome da pasta" value={nameFolder} onChange={(text) => text.target.value !== "" ? setNameFolder(text.target.value) : setNameFolder(folderConfig.name)} maxLength={20}
                 className="mt-[5px] px-[15px] py-[8px] w-[80%] bg-transparent border-black dark:border-white border rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] outline-none"
               />
             </div>
