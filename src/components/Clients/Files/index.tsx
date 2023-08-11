@@ -363,11 +363,11 @@ function Files() {
                           <DocTable.OptionsItemLabel>Renomear</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
                         }
-                        {file.from === 'user' && file.favorite ?
+                        {file.favorite ?
                         <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Desfavoritar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem> : file.from === 'user' &&
+                        </DocTable.OptionsItem> :
                         <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarFilledIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
