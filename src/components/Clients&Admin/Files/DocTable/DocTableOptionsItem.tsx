@@ -9,8 +9,8 @@ interface DocTableOptionsItemProps extends ButtonHTMLAttributes<HTMLButtonElemen
 
 export function DocTableOptionsItem({ children, dropdownClassName, ...rest }: DocTableOptionsItemProps) {
     return(
-        <DropdownMenu.Item className={twMerge("group cursor-pointer hover:outline-none hover:bg-[#10B981] mx-[3px] rounded", dropdownClassName)}>
-            <button {...rest} className='flex items-center gap-[4px] px-[7px] py-[2px]'>
+        <DropdownMenu.Item {...rest.onClick} className={twMerge("group cursor-pointer hover:outline-none hover:bg-[#10B981] px-[3px] rounded", dropdownClassName)}>
+            <button {...rest} className='w-full flex items-center gap-[4px] px-[7px] py-[2px]'>
                 { children }
             </button>
         </DropdownMenu.Item>
