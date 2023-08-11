@@ -52,8 +52,8 @@ function Files() {
   const [textSearch, setTextSearch] = useState<string>('');
   const [filter, setFilter] = useState<Filter>({name: 'asc', size: 'asc', date: 'asc', status: 'asc'});
   const [viewFile, setViewFile] = useState<{status: boolean, file?: Files}>({status: false});
-  const [moveFile, setMoveFile] = useState<{status: boolean, file?: Files}>({status: false});
-  const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
+  // const [moveFile, setMoveFile] = useState<{status: boolean, file?: Files}>({status: false});
+  // const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});
 
@@ -276,8 +276,8 @@ function Files() {
 
         {modalMessage.status && <Message admin={false} modalMessage={modalMessage} setModalMessage={setModalMessage} setFiles={setFiles}/>}
         {viewFile.status && <ViewFile admin={false} file={viewFile.file!} setFiles={setFiles} setViewFile={setViewFile}/>}
-        {moveFile.status && <MoveTo files={files} moveFile={moveFile} setMoveFile={setMoveFile} setFiles={setFiles}/>}
-        {copyFile.status && <CopyTo admin={false} copyFile={copyFile} setCopyFile={setCopyFile} />}
+        {/* {moveFile.status && <MoveTo files={files} moveFile={moveFile} setMoveFile={setMoveFile} setFiles={setFiles}/>}
+        {copyFile.status && <CopyTo admin={false} copyFile={copyFile} setCopyFile={setCopyFile} />} */}
         {renameFile.status && <Rename setFiles={setFiles} renameFile={renameFile} setRenameFile={setRenameFile}/>}
         <DocTable.Root>
           <DocTable.Header className={`${files.filter((file) => textSearch !== '' && file.name.toUpperCase().includes(textSearch.toUpperCase())).length === 0 && "border-b border-b-secondary"}`}>
@@ -336,7 +336,7 @@ function Files() {
                           <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        {file.from === 'user' &&
+                        {/* {file.from === 'user' &&
                         <DocTable.OptionsItem onClick={() => setMoveFile({status: true, file: file})}>
                           <DocTable.OptionsItemIcon>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
@@ -356,7 +356,7 @@ function Files() {
                             </svg>
                           </DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Copiar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
+                        </DocTable.OptionsItem> */}
                         {file.from === 'user' && 
                         <DocTable.OptionsItem onClick={() => setRenameFile({status: true, file: file})}>
                           <DocTable.OptionsItemIcon><Pencil2Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
