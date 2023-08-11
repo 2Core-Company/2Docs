@@ -126,7 +126,6 @@ function Files() {
 
   async function verifyFolder() {
     const fetchFolder = await getFolder({id_company: dataAdmin.id_company, id_user, id_enterprise, id_folder});
-    console.log(fetchFolder);
 
     if(fetchFolder) {
       setFolder(fetchFolder);
@@ -271,7 +270,7 @@ function Files() {
           <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folder!.name}</p>
         </div>
 
-        <div className={`${folder.name === 'Cliente' || folder.name === 'Favoritos' && 'hidden'}`}>
+        <div className={`${(folder.name === 'Cliente' || folder.name === 'Favoritos') && 'hidden'}`}>
           <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
@@ -341,7 +340,6 @@ function Files() {
                           <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
                         <DocTable.OptionsItem onClick={() => setMoveFile({status: true, file: file})}>
                           <DocTable.OptionsItemIcon>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
@@ -353,7 +351,6 @@ function Files() {
                           </DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Mover</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        }
                         <DocTable.OptionsItem onClick={() => setCopyFile({status: true, file: file})}>
                           <DocTable.OptionsItemIcon>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
@@ -362,17 +359,15 @@ function Files() {
                           </DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Copiar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
                         <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setRenameFile({status: true, file: file})} dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#10B981]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
                           <DocTable.OptionsItemIcon><Pencil2Icon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Renomear</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        }
-                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') && file.favorite ?
+                        {file.favorite ?
                         <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Desfavoritar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem> : (admin && file.from === 'admin' || admin === false && file.from === 'user') &&
+                        </DocTable.OptionsItem> :
                         <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarFilledIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
@@ -382,18 +377,14 @@ function Files() {
                           <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        {(admin && file.from === 'admin' || admin === false && file.from === 'user') &&
-                        <>
-                          <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setModalMessage({status: true, action: "edit", file: file})} dropdownClassName={`w-full ${dataAdmin.permission < 3 && 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
-                            <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
-                            <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Definir observação</DocTable.OptionsItemLabel>
-                          </DocTable.OptionsItem>
-                          <DocTable.OptionsItem disabled={dataAdmin.permission < 3} onClick={() => deleteFilesHandle([file])} className='w-full' dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#BE0000]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
-                            <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
-                            <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Excluir</DocTable.OptionsItemLabel>
-                          </DocTable.OptionsItem>
-                        </>
-                        }
+                        <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setModalMessage({status: true, action: "edit", file: file})} dropdownClassName={`w-full ${dataAdmin.permission < 3 && 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                          <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Definir observação</DocTable.OptionsItemLabel>
+                        </DocTable.OptionsItem>
+                        <DocTable.OptionsItem disabled={dataAdmin.permission < 3} onClick={() => deleteFilesHandle([file])} className='w-full' dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#BE0000]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                          <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Excluir</DocTable.OptionsItemLabel>
+                        </DocTable.OptionsItem>
                       </DocTable.Options>
                     </DocTable.FileActions>
                   </DocTable.File>

@@ -30,18 +30,19 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
     const id_user: string = params.get("id_user");
     const toastDeletFolder = { pending: "Deletando pasta.", success: "Pasta deletada.", error: "Não foi possível deletar esta pasta." }
     const messageModal = { status: true, title: "Deletar Pasta", subject: 'a pasta' }
-    const [id_feletFolder, setId_deletFolder] = useState<string>("");
+    const [id_DeleteFolder, setId_DeleteFolder] = useState<string>("");
     const admin = dataAdmin.id === '' ? false : true
+    const trashId: string | undefined = enterprise.folders.find((folder) => folder.name === 'Lixeira')?.id;
 
     //Confirmação de deletar pasta
     function ConfirmationDeleteFolder({ name, id_folder }: { name: string, id_folder: string }) {
-        setId_deletFolder(id_folder);
+        setId_DeleteFolder(id_folder);
         setModal({ ...messageModal, target: name });
     }
 
     const childModal = async () => {
         setModal({ status: false, title: '', subject: '', target: '' });
-        toast.promise(DeleteFolder({ user, id_folder: id_feletFolder, setUser, enterprise, id_company: dataAdmin.id_company }), toastDeletFolder)
+        toast.promise(DeleteFolder({ user, id_folder: id_DeleteFolder, setUser, enterprise, id_company: dataAdmin.id_company }), toastDeletFolder)
     };
 
     async function PrivateFolderChange(privateState: boolean, index: number) {
@@ -90,7 +91,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                         .filter((folder) => textSearch != "" ? folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
                         .map((folder, index) => {
                             if (folder.name === 'Lixeira' || folder.isPrivate && !admin) { 
-                                return 
+                                return
                             } 
                             return (
                                 <div key={folder.name} className='flex items-center'>
@@ -132,7 +133,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                         <Link
                           href={{
                             pathname: "/Dashboard/Admin/Arquivos",
-                            query: { trash: true, id_user: id_user, id_enterprise: enterprise?.id },
+                            query: { id_folder: trashId, trash: true, id_user: id_user, id_enterprise: enterprise?.id },
                           }}
                         >
                             <div className="relative w-[90px] max-lg:w-[70px] max-sm:w-[60px] max-lsm:w-[50px]">
