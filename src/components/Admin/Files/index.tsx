@@ -60,6 +60,7 @@ function Files() {
   const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});
+  const [globalCheckbox, setGlobalCheckbox] = useState<{status: 'off' | 'on' | 'half'}>({status: 'off'});
   
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter()
@@ -166,8 +167,31 @@ function Files() {
     } else {
       const allFiles = [...files];
       allFiles[index].checked = !allFiles[index].checked;
+
+      if(allFiles[index].checked === false && globalCheckbox.status === 'on') {
+        setGlobalCheckbox({status: 'half'});
+      }
+
       const fileSelect = allFiles.filter((file) => file.checked === true);
       setSelectedFiles(fileSelect);
+
+      const indexRange = {
+        start: dataPages.page * 10 - 10,
+        end: dataPages.page * 10 - 1
+      }
+
+      const filesOnPage = files.filter((file, index) => {
+        if(index >= indexRange.start && index <= indexRange.end ) {
+          return file;
+        }
+      })
+
+      if(fileSelect.length === 0) {
+        setGlobalCheckbox({status: 'off'});
+      } else if(fileSelect.length === filesOnPage.length || fileSelect.length === 10) {
+        setGlobalCheckbox({status: 'on'});
+      }
+
       setFiles(allFiles);
     }
   }
@@ -189,15 +213,16 @@ function Files() {
     }
 
     if(result) {
-      const maxPages = Math.ceil(result.length / 10)
-      var page = dataPages.page
+      const maxPages = Math.ceil(result.length / 10);
+      var page = dataPages.page;
       if (maxPages < dataPages.page) {
-        page = maxPages
+        page = maxPages;
       }
-      setFiles([...result])
-      setDropdownState(true)
-      setSelectedFiles([])
-      setDataPages({ maxPages: maxPages, page: page })
+      setFiles([...result]);
+      setDropdownState(true);
+      setSelectedFiles([]);
+      setGlobalCheckbox({status: 'off'});
+      setDataPages({ maxPages: maxPages, page: page });
     }
   }
 
@@ -222,6 +247,16 @@ function Files() {
     }
   }
 
+  function unselectAllFiles() {
+    setGlobalCheckbox({status: 'off'});
+    const unselectFiles = files.map((file) => {
+      file.checked = false;
+      return file;
+    })
+    setFiles(unselectFiles);
+    setSelectedFiles([]);
+  }
+
   async function downloadFiles(selectedFiles: Files[]) {
     if (selectedFiles.length === 0) {
       throw toast.error("Selecione um arquivo para baixar.")
@@ -230,9 +265,41 @@ function Files() {
     const result = await downloadsFile({selectFiles: selectedFiles, files: files, from: admin ? 'admin' : 'user', id_folder: id_folder})
 
     if(result) {
-      setFiles([...files])
-      setDropdownState(true)
-      setSelectedFiles([])
+      setFiles([...files]);
+      setDropdownState(true);
+      setSelectedFiles([]);
+      setGlobalCheckbox({status: 'off'});
+    }
+  }
+
+  function handleGlobalCheckbox() {
+    const indexRange = {
+      start: dataPages.page * 10 - 10,
+      end: dataPages.page * 10 - 1
+    }
+
+    if(globalCheckbox.status === 'off' || globalCheckbox.status === 'half') {
+      let filesSelected: Files[] = [];
+      const newFiles = files.filter((file) => textSearch == null || file.name?.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).map((file: Files, index) => {
+        if(index >= indexRange.start && index <= indexRange.end ) {
+          file.checked = true;
+          filesSelected.push(file);
+        }
+        return file;
+      });
+      setSelectedFiles(filesSelected);
+      setGlobalCheckbox({status: 'on'});
+      setFiles(newFiles);
+    } else {
+      const newFiles = files.filter((file) => textSearch == null || file.name?.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).map((file: Files, index) => {
+        if(index >= indexRange.start && index <= indexRange.end) {
+          file.checked = false;
+        }
+        return file;
+      });
+      setSelectedFiles([]);
+      setGlobalCheckbox({status: 'off'});
+      setFiles(newFiles);
     }
   }
 
@@ -295,7 +362,7 @@ function Files() {
           {files.filter((file) => textSearch != "" ? file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
           <DocTable.Content>
             <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px]">
-              <DocTable.GlobalCheckbox />
+              <DocTable.GlobalCheckbox onChange={() => handleGlobalCheckbox()} checked={globalCheckbox.status === 'on' ? true : false} handle={globalCheckbox.status === 'on' ? true : false} half={globalCheckbox.status === 'half' ? true : false}/>
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
               <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center" onClick={() => changeFilter("size")}/>
               <DocTable.Filter label="Data de Upload" arrow active={filter.date} className="max-lg:hidden" onClick={() => changeFilter("date")}/>
@@ -403,7 +470,7 @@ function Files() {
             }
           </div>
           }
-          <DocTable.Footer textSearch={textSearch} files={files} dataPages={dataPages} setDataPages={setDataPages} />
+          <DocTable.Footer textSearch={textSearch} files={files} dataPages={dataPages} setDataPages={setDataPages} unselectFunction={() => unselectAllFiles()} />
         </DocTable.Root>
       </div>
     </div>

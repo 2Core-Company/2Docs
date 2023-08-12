@@ -56,6 +56,7 @@ function Files() {
   // const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});
+  const [globalCheckbox, setGlobalCheckbox] = useState<{status: 'off' | 'on' | 'half'}>({status: 'off'});
 
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter();
@@ -131,8 +132,31 @@ function Files() {
     } else {
       const allFiles = [...files];
       allFiles[index].checked = !allFiles[index].checked;
+
+      if(allFiles[index].checked === false && globalCheckbox.status === 'on') {
+        setGlobalCheckbox({status: 'half'});
+      }
+
       const fileSelect = allFiles.filter((file) => file.checked === true);
       setSelectedFiles(fileSelect);
+
+      const indexRange = {
+        start: dataPages.page * 10 - 10,
+        end: dataPages.page * 10 - 1
+      }
+
+      const filesOnPage = files.filter((file, index) => {
+        if(index >= indexRange.start && index <= indexRange.end ) {
+          return file;
+        }
+      })
+
+      if(fileSelect.length === 0) {
+        setGlobalCheckbox({status: 'off'});
+      } else if(fileSelect.length === filesOnPage.length || fileSelect.length === 10) {
+        setGlobalCheckbox({status: 'on'});
+      }
+
       setFiles(allFiles);
     }
   }
@@ -171,6 +195,7 @@ function Files() {
       setFiles([...files]);
       setDropdownState(true);
       setSelectedFiles([]);
+      setGlobalCheckbox({status: 'off'});
     }
   }
 
@@ -193,6 +218,16 @@ function Files() {
         setFilter({ name: 'asc', size: 'asc', date: 'asc', status: filter.status === 'asc' ? 'desc' : 'asc'});
         break;
     }
+  }
+
+  function unselectAllFiles() {
+    setGlobalCheckbox({status: 'off'});
+    const unselectFiles = files.map((file) => {
+      file.checked = false;
+      return file;
+    })
+    setFiles(unselectFiles);
+    setSelectedFiles([]);
   }
 
   async function getInputFiles(files){
@@ -218,6 +253,37 @@ function Files() {
         setDataPages({ maxPages: maxPages, page: page })
         return result
       })
+    }
+  }
+
+  function handleGlobalCheckbox() {
+    const indexRange = {
+      start: dataPages.page * 10 - 10,
+      end: dataPages.page * 10 - 1
+    }
+
+    if(globalCheckbox.status === 'off' || globalCheckbox.status === 'half') {
+      let filesSelected: Files[] = [];
+      const newFiles = files.filter((file) => textSearch == null || file.name?.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).map((file: Files, index) => {
+        if(index >= indexRange.start && index <= indexRange.end ) {
+          file.checked = true;
+          filesSelected.push(file);
+        }
+        return file;
+      });
+      setSelectedFiles(filesSelected);
+      setGlobalCheckbox({status: 'on'});
+      setFiles(newFiles);
+    } else {
+      const newFiles = files.filter((file) => textSearch == null || file.name?.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).map((file: Files, index) => {
+        if(index >= indexRange.start && index <= indexRange.end) {
+          file.checked = false;
+        }
+        return file;
+      });
+      setSelectedFiles([]);
+      setGlobalCheckbox({status: 'off'});
+      setFiles(newFiles);
     }
   }
 
@@ -291,7 +357,7 @@ function Files() {
           {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
           <DocTable.Content>
             <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px]">
-              <DocTable.GlobalCheckbox />
+              <DocTable.GlobalCheckbox onChange={() => handleGlobalCheckbox()} checked={globalCheckbox.status === 'on' ? true : false} handle={globalCheckbox.status === 'on' ? true : false} half={globalCheckbox.status === 'half' ? true : false}/>
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
               <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center" onClick={() => changeFilter("size")}/>
               <DocTable.Filter label="Data de Upload" arrow active={filter.date} className="max-lg:hidden" onClick={() => changeFilter("date")}/>
@@ -397,7 +463,7 @@ function Files() {
             <p className='font-poiretOne text-[#686868] text-[40px] max-sm:text-[30px]'>{textSearch.length <= 0 ? 'Nenhum arquivo foi encontrado' : 'Nenhum resultado foi encontrado'}</p>
           </div>
           }
-          <DocTable.Footer textSearch={textSearch} files={files} dataPages={dataPages} setDataPages={setDataPages} />
+          <DocTable.Footer textSearch={textSearch} files={files} dataPages={dataPages} setDataPages={setDataPages} unselectFunction={() => unselectAllFiles()} />
         </DocTable.Root>
       </div>
     </div>
