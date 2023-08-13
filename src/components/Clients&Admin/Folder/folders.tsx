@@ -133,7 +133,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                         <Link
                           href={{
                             pathname: "/Dashboard/Admin/Arquivos",
-                            query: { id_folder: trashId, trash: true, id_user: id_user, id_enterprise: enterprise?.id },
+                            query: { id_folder: trashId, id_user: id_user, id_enterprise: enterprise?.id },
                           }}
                         >
                             <div className="relative w-[90px] max-lg:w-[70px] max-sm:w-[60px] max-lsm:w-[50px]">
