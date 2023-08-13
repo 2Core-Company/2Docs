@@ -68,7 +68,7 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
         {nameUser === 'undefined' ?
           <Link href={'/Dashboard/Clientes'}>Pessoal</Link>
           :
-          <Link href={'/Dashboard/Admin/Clientes'} className='max-w-[100px] truncate'>{nameUser.replace("%20", ' ')}</Link>
+          <Link href={'/Dashboard/Admin/Clientes'} className='max-w-[100px] truncate'>{nameUser.replaceAll("%20", ' ').replaceAll('%', '@')}</Link>
         }
 
         <p className='mx-[8px]'>{'>'}</p>
@@ -94,7 +94,7 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
         {event && <DataEvent files={files!} event={event} setEvent={setEvent} childModalEvent={childModalEvent} childConcluedEvent={childConcluedEvent} setFiles={setFiles} />}
       </div>
 
-      <div className='mb-[10px]'>
+      <div className='mb-[10px] ml-[20px] max-sm:ml-[10px]'>
         {event && <TableFiles event={event} files={files} setFiles={setFiles} setEvent={setEvent} />}
       </div>
 
