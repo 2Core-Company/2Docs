@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@next/font": "^13.4.3",
+        "@next/swc-win32-x64-msvc": "^13.4.13",
         "@radix-ui/colors": "^0.1.8",
         "@radix-ui/react-avatar": "^1.0.1",
         "@radix-ui/react-checkbox": "^1.0.4",
@@ -35,7 +36,7 @@
         "jszip": "^3.10.1",
         "moment": "^2.29.4",
         "namor": "^2.0.4",
-        "next": "^13.4.3",
+        "next": "^13.4.13",
         "nodemailer": "^6.9.1",
         "pnpm": "^7.26.0",
         "rc-slider": "^10.1.1",

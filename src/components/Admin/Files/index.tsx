@@ -37,7 +37,6 @@ import { Folders } from '@/src/types/folders';
 function Files() {
   //<--------------------------------- Params Vars --------------------------------->
   const params: any = useSearchParams();
-  const trash: boolean = Boolean(params.get("trash"));
   const id_user: string = params.get("id_user");
   const id_enterprise: string = params.get("id_enterprise");
   const id_folder: string = params.get("id_folder");
@@ -65,6 +64,7 @@ function Files() {
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter()
   const admin = dataAdmin.id === '' ? false : true
+  const [trash, setTrash] = useState<boolean | undefined>(undefined);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -113,26 +113,27 @@ function Files() {
   }, [textSearch]);
 
   async function getFiles() {
-    await verifyFolder();
-
-    if (trash) {
-      await getFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
-    } else if (folder.name === "Favoritos") {
-      await getFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages })
-    } else {
-      await getFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages })
-    }
-    setLoading(false)
-  }
-
-  async function verifyFolder() {
     const fetchFolder = await getFolder({id_company: dataAdmin.id_company, id_user, id_enterprise, id_folder});
 
     if(fetchFolder) {
       setFolder(fetchFolder);
+      if(fetchFolder.name === 'Lixeira') {
+        setTrash(true);
+      } else {
+        setTrash(false);
+      }
+
+      if (fetchFolder.name === 'Lixeira') {
+        await getFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages });
+      } else if (folder.name === "Favoritos") {
+        await getFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages });
+      } else {
+        await getFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages });
+      }
     } else {
       router.replace(`/Dashboard/Admin/Pastas?id_user=${id_user}`);
     }
+    setLoading(false);
   }
 
   async function getInputFiles(files){
@@ -334,7 +335,7 @@ function Files() {
           <Image height={21} width={21} src={folderIcon} alt="Imagem de uma pasta" />
           <Link href={{ pathname: "/Dashboard/Admin/Pastas", query: {id_user: id_user, id_enterprise: id_enterprise} }} className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{"Pastas  >"}</Link>
           <FileIcon className={'min-w-[19px] min-h-[19px] text-secondary'} />
-          <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folder!.name}</p>
+          <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folder?.name}</p>
         </div>
 
         <div className={`${(folder.name === 'Cliente' || folder.name === 'Favoritos' || folder.name === 'Lixeira') && 'hidden'}`}>
@@ -394,61 +395,65 @@ function Files() {
                       <DocTable.Viewed viewedDate={file.viewedDate}/>
                     </DocTable.Data>
                     <DocTable.FileActions>
-                      { file?.message && file?.message?.length > 0 ?
-                        <DocTable.Message notification={file.messageNotif} from={file.from} admin={admin} onClick={() => setModalMessage({status: true, action: 'view', file: file})} iconClassName="cursor-pointer"/> :
-                        <></>
-                      }
-                      <DocTable.Options>
-                        <DocTable.OptionsItem dropdownClassName="rounded-t-[6px]" onClick={() => setViewFile({status: true, file: file})}>
-                          <DocTable.OptionsItemIcon><EyeOpenIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Visualizar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
-                        <DocTable.OptionsItem onClick={() => downloadFiles([file])}>
-                          <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
-                        <DocTable.OptionsItem onClick={() => setMoveFile({status: true, file: file})}>
-                          <DocTable.OptionsItemIcon>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
-                              <path d="M2 12V3C2 2.44772 2.44772 2 3 2H5.46482C5.79917 2 6.1114 2.1671 6.29687 2.4453L7.70313 4.5547C7.8886 4.8329 8.20083 5 8.53518 5H12C12.5523 5 13 5.44772 13 6V12C13 12.5523 12.5523 13 12 13H3C2.44772 13 2 12.5523 2 12Z"/>
-                              <path d="M2 9H7"/>
-                              <path d="M7.08025 9.00008L6.08025 10.0001L6.0791 9.9989L5.08099 11.0002" stroke-linecap="round"/>
-                              <path d="M7.08025 8.99992L6.08025 7.99992L6.0791 8.0011L5.08099 6.99982" stroke-linecap="round"/>
-                            </svg>
-                          </DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Mover</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
-                        <DocTable.OptionsItem onClick={() => setCopyFile({status: true, file: file})}>
-                          <DocTable.OptionsItemIcon>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
-                              <path d="M1.875 10V2.5C1.875 1.80964 2.43464 1.25 3.125 1.25H9.375M5.625 13.75H11.25C11.9404 13.75 12.5 13.1904 12.5 12.5V5C12.5 4.30964 11.9404 3.75 11.25 3.75H5.625C4.93464 3.75 4.375 4.30964 4.375 5V12.5C4.375 13.1904 4.93464 13.75 5.625 13.75Z" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                          </DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Copiar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
-                        <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setRenameFile({status: true, file: file})} dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#10B981]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
-                          <DocTable.OptionsItemIcon><Pencil2Icon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Renomear</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
-                        {file.favorite ?
-                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
-                          <DocTable.OptionsItemIcon><StarIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Desfavoritar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem> :
-                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
-                          <DocTable.OptionsItemIcon><StarFilledIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
+                        { file?.message && file?.message?.length > 0 ?
+                          <DocTable.Message notification={file.messageNotif} from={file.from} admin={admin} onClick={() => setModalMessage({status: true, action: 'view', file: file})} iconClassName="cursor-pointer"/> :
+                          <></>
                         }
-                        <DocTable.OptionsItem onClick={() => shareFile(file)}>
-                          <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
-                        {file.from !== 'user' &&
-                        <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setModalMessage({status: true, action: "edit", file: file})} dropdownClassName={`w-full ${dataAdmin.permission < 3 && 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
-                          <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
-                          <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Definir observação</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
+                        <DocTable.Options>
+                          <DocTable.OptionsItem dropdownClassName="rounded-t-[6px]" onClick={() => setViewFile({status: true, file: file})}>
+                            <DocTable.OptionsItemIcon><EyeOpenIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                            <DocTable.OptionsItemLabel>Visualizar</DocTable.OptionsItemLabel>
+                          </DocTable.OptionsItem>
+                          <DocTable.OptionsItem onClick={() => downloadFiles([file])}>
+                            <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                            <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
+                          </DocTable.OptionsItem>
+                          {(!trash && trash !== undefined) &&
+                            <>
+                            <DocTable.OptionsItem onClick={() => setMoveFile({status: true, file: file})}>
+                              <DocTable.OptionsItemIcon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
+                                  <path d="M2 12V3C2 2.44772 2.44772 2 3 2H5.46482C5.79917 2 6.1114 2.1671 6.29687 2.4453L7.70313 4.5547C7.8886 4.8329 8.20083 5 8.53518 5H12C12.5523 5 13 5.44772 13 6V12C13 12.5523 12.5523 13 12 13H3C2.44772 13 2 12.5523 2 12Z"/>
+                                  <path d="M2 9H7"/>
+                                  <path d="M7.08025 9.00008L6.08025 10.0001L6.0791 9.9989L5.08099 11.0002" stroke-linecap="round"/>
+                                  <path d="M7.08025 8.99992L6.08025 7.99992L6.0791 8.0011L5.08099 6.99982" stroke-linecap="round"/>
+                                </svg>
+                              </DocTable.OptionsItemIcon>
+                              <DocTable.OptionsItemLabel>Mover</DocTable.OptionsItemLabel>
+                            </DocTable.OptionsItem>
+                            <DocTable.OptionsItem onClick={() => setCopyFile({status: true, file: file})}>
+                              <DocTable.OptionsItemIcon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
+                                  <path d="M1.875 10V2.5C1.875 1.80964 2.43464 1.25 3.125 1.25H9.375M5.625 13.75H11.25C11.9404 13.75 12.5 13.1904 12.5 12.5V5C12.5 4.30964 11.9404 3.75 11.25 3.75H5.625C4.93464 3.75 4.375 4.30964 4.375 5V12.5C4.375 13.1904 4.93464 13.75 5.625 13.75Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                              </DocTable.OptionsItemIcon>
+                              <DocTable.OptionsItemLabel>Copiar</DocTable.OptionsItemLabel>
+                            </DocTable.OptionsItem>
+                            <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setRenameFile({status: true, file: file})} dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#10B981]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                              <DocTable.OptionsItemIcon><Pencil2Icon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                              <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Renomear</DocTable.OptionsItemLabel>
+                            </DocTable.OptionsItem>
+                            {file.favorite ?
+                            <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
+                              <DocTable.OptionsItemIcon><StarIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                              <DocTable.OptionsItemLabel>Desfavoritar</DocTable.OptionsItemLabel>
+                            </DocTable.OptionsItem> :
+                            <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
+                              <DocTable.OptionsItemIcon><StarFilledIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                              <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
+                            </DocTable.OptionsItem>
+                            }
+                            <DocTable.OptionsItem onClick={() => shareFile(file)}>
+                              <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                              <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
+                            </DocTable.OptionsItem>
+                            {file.from !== 'user' &&
+                            <DocTable.OptionsItem disabled={dataAdmin.permission < 2} onClick={() => setModalMessage({status: true, action: "edit", file: file})} dropdownClassName={`w-full ${dataAdmin.permission < 3 && 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
+                              <DocTable.OptionsItemIcon><ChatBubbleIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
+                              <DocTable.OptionsItemLabel className={`${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}>Definir observação</DocTable.OptionsItemLabel>
+                            </DocTable.OptionsItem>
+                            }
+                          </>
                         }
                         <DocTable.OptionsItem disabled={dataAdmin.permission < 3} onClick={() => deleteFilesHandle([file])} className='w-full' dropdownClassName={`rounded-b-[6px] w-full ${dataAdmin.permission >= 3 ? 'hover:bg-[#BE0000]' : 'hover:bg-transparent hover:text-secondary cursor-not-allowed'}`}>
                           <DocTable.OptionsItemIcon><TrashIcon width={18} height={18} className={`text-[#686868] ${dataAdmin.permission >= 3 ? 'group-hover:text-white' : 'group-hover:text-[#686868]'}`}/></DocTable.OptionsItemIcon>
@@ -460,7 +465,7 @@ function Files() {
                 )}
               })}
             </DocTable.Files>
-          </DocTable.Content> : 
+          </DocTable.Content> :
           <div className='w-full h-[500px] flex justify-center items-center flex-col'>
             <Image src={files.length <= 0 ? iconAddFile : iconSearchFile} width={180} height={180}  alt="Imagem de 2 arquivos" priority className='w-[180px] h-[180px]'/>
             {trash ? 
