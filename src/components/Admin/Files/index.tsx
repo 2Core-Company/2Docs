@@ -126,7 +126,7 @@ function Files() {
 
       if (fetchFolder.name === 'Lixeira') {
         await getFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages });
-      } else if (folder.name === "Favoritos") {
+      } else if (fetchFolder.name === "Favoritos") {
         await getFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages });
       } else {
         await getFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages });
