@@ -30,6 +30,7 @@ function EditUser({ closedWindow, childToParentEdit, user, contextAdmin }: Props
 
   async function OnToast(e: { preventDefault: () => void; }) {
     e.preventDefault()
+    verifyCellNumber()
     toast.promise(UpdateDataUserAuth(), { pending: "Editando usuário...", success: "Usuário editado com sucesso" })
   }
 
@@ -188,6 +189,19 @@ function EditUser({ closedWindow, childToParentEdit, user, contextAdmin }: Props
     }
   }
 
+  function verifyCellNumber() {
+    console.log('a')
+    if (dataUser.phone) {
+      if (dataUser.phone.length < 11 && optionsNumberPhone.cellPhone) {
+        throw toast.error('O número de telefone tem que ter no mínimo 11 digítos.')
+      }
+
+      if (dataUser.phone.length < 8 && optionsNumberPhone.landLine) {
+        throw toast.error('O número de telefone tem que ter no mínimo 8 digítos.')
+      }
+    }
+  }
+
   return (
     <>
       <div onClick={() => closedWindow()} className='w-screen h-screen left-0 top-0 fixed bg-black/30 z-10' />
@@ -221,12 +235,12 @@ function EditUser({ closedWindow, childToParentEdit, user, contextAdmin }: Props
           {optionsNumberPhone.cellPhone ?
               <label className='mt-[20px] max-sm:mt-[10px] flex flex-col max-sm:w-full dark:text-white'>
                 Celular
-                <input autoComplete="off" minLength={14} maxLength={15} required value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({ ...dataUser, phone: Text.target.value })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone' />
+                <input autoComplete="off" minLength={14} maxLength={15} required value={PhoneMask(dataUser.phone)} onChange={(Text) => setDataUser({ ...dataUser, phone: Text.target.value.replaceAll(/\D/g, '') })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone' />
               </label>
               :
               <label className='mt-[20px] max-sm:mt-[10px] flex flex-col max-sm:w-full dark:text-white'>
                 Telefone Fixo
-                <input autoComplete="off" minLength={9} maxLength={9} required value={lineLandMask(dataUser.phone)} onChange={(Text) => setDataUser({ ...dataUser, phone: Text.target.value })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone' />
+                <input autoComplete="off" minLength={9} maxLength={9} required value={lineLandMask(dataUser.phone)} onChange={(Text) => setDataUser({ ...dataUser, phone: Text.target.value.replaceAll(/\D/g, '') })} type="text" className='mt-[8px] max-sm:mt-[5px] outline-none w-full py-[8px] px-[12px] bg-transparent border-[1px] border-black dark:border-white rounded-[8px] dark:placeholder:text-gray-500' placeholder='Digite o telefone' />
               </label>}
 
           <div className='flex items-center mt-[10px]'>

@@ -12,7 +12,13 @@ interface interfaceGetRecentFiles{
 
 export async function getRecentFiles({id_company,  id_user, from}:interfaceGetRecentFiles){
   const files:Files[] = []
-  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), where('from', '==', from), where("trash", "==", false), orderBy('created_date'), limit(4));
+  const q = query(collection(db, "files", id_company, id_user, 'user', 'files'), 
+  where('from', '==', from), 
+  where("trash", "==", false), 
+  where("isPrivate", "==", false),
+  orderBy('created_date', 'desc'), 
+  limit(4));
+
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((document) => {
     var file:Files = {
@@ -138,7 +144,7 @@ export async function getRecentFilesOfEnterprise({id_company,  id_user, id_enter
   where("trash", "==", false), 
   where("isPrivate", "==", false), 
   where("id_enterprise", "==", id_enterprise),
-  orderBy('created_date'), limit(3));
+  orderBy('created_date', 'desc'), limit(3));
 
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((document) => {

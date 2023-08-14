@@ -24,7 +24,7 @@ function EventsActives() {
   }, [])
 
   async function GetUserPendencies() {
-    const result = await GetUsersWithPendencies({ id_company: dataAdmin.id_company })
+    const result = await GetUsersWithPendencies({ id_company: dataAdmin.id_company, permission:dataAdmin.permission, admin_id: dataAdmin.id})
     setUsersWithPendencies(result)
     var page = Math.floor(result.length / 10)
     if(page === 0){

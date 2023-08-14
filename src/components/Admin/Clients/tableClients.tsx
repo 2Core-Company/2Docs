@@ -18,17 +18,15 @@ import * as HoverCard from '@radix-ui/react-hover-card';
 import ModalEvent from "../Calendar/modalEvent";
 
 function TableClients() {
-  const [showItens, setShowItens] = useState<{ min: number; max: number }>({ min: -1, max: 10});
+  const [showItens, setShowItens] = useState<{ min: number; max: number }>({ min: -1, max: 10 });
   const [loading, setLoading] = useState(false)
   const { dataAdmin } = useContext(adminContext);
   const [users, setUsers] = useState<DataUser[]>([]);
   const [userEdit, setUserEdit] = useState<any>();
-  const [selectUsers, setSelectUsers] = useState<DataUser[]>([]);
   const [windowsAction, setWindowsAction] = useState<WindowsAction>({ createUser: false, updateUser: false });
   const [pages, setPages] = useState<number>(0);
   const [menu, setMenu] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("")
-  const toastDisable = { pending: "Trocando status do usuário.", success: "Status trocado com sucesso." };
   const domain = window.location.origin
   const [actionFilters, setActionFilters] = useState<{ name: 'desc' | 'asc', date: 'desc' | 'asc', status: 'desc' | 'asc' }>({ name: 'desc', date: 'desc', status: 'desc' })
   const [modalEvent, setModalEvent] = useState(false)
@@ -42,50 +40,21 @@ function TableClients() {
   }, [dataAdmin]);
 
   useEffect(() => {
-    if(searchText.length > 0){
+    if (searchText.length > 0) {
       setPages(Math.ceil(users.filter((user) => user.name.toUpperCase().includes(searchText.toUpperCase())).length / 10));
-      setShowItens({ min: -1, max: 10})
+      setShowItens({ min: -1, max: 10 })
     } else {
       setPages(Math.ceil(users.length / 10));
     }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[searchText])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText])
 
   async function GetAllUser() {
     const result = await GetUsers({ id_company: dataAdmin.id_company, permission: dataAdmin.permission, admin_id: dataAdmin.id });
     if (result) {
       setPages(Math.ceil(result.length / 10));
       setUsers(FilterFixed(result));
-    }
-  }
-
-  // <--------------------------------- Disable User --------------------------------->
-  async function GetFunctionDisableUser() {
-    setLoading(true)
-    try{
-      const result = await DisableUser({ users, selectUsers, id_company: dataAdmin.id_company, setMenu, setSelectUsers, setUsers })
-    } catch(e){
-      throw e
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // <--------------------------------- Select User --------------------------------->
-  async function SelectUsers(index: number) {
-    if (!users[index].verifiedEmail) {
-      return toast.error('Não é possível selecionar um usuário pendente.')
-    }
-
-    if (users.filter((user) => user.checked === true).length <= 9) {
-      const allUsers = [...users];
-      allUsers[index].checked = !allUsers[index].checked;
-      const userSelect = allUsers.filter((user) => user.checked === true);
-      setSelectUsers(userSelect);
-      setUsers(allUsers);
-    } else {
-      toast.error("Você só pode selecionar 10 usuários");
     }
   }
 
@@ -113,7 +82,6 @@ function TableClients() {
     closedWindow()
     setPages(Math.ceil(users.length / 10));
     setMenu(true);
-    setSelectUsers([]);
     setUsers(users);
   }
 
@@ -188,10 +156,6 @@ function TableClients() {
               Novo Evento
             </button>
 
-            <button disabled={dataAdmin?.permission < 2 || loading ? true : false} onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} className={` duration-100 cursor-pointer border-[1px] py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] ${selectUsers.length > 0 ? "bg-[#2E86AB] border-[#206684] text-white hover:bg-[rgba(46,134,171,0.7)]" : "border-terciary text-strong hover:bg-[#e0e0e0]"} ${menu ? "max-lg:hidden" : ""}`}>
-              Trocar Status
-            </button>
-
             <button disabled={dataAdmin?.permission < 2 || loading ? true : false} onClick={() => setWindowsAction({ ...windowsAction, createUser: true })} className={`hover:bg-emerald-600 duration-100 bg-emerald-500 border-[1px] border-emerald-600  text-white py-[6px] px-[10px] rounded-[8px] max-sm:text-[14px] cursor-pointer ${menu ? "max-lg:hidden" : ""}`}>
               Cadastrar
             </button>
@@ -201,19 +165,14 @@ function TableClients() {
         {users.filter((user) => searchText != "" ? user.name?.toUpperCase().includes(searchText.toUpperCase()) : true).length > 0 ? (
           <div>
             {/* <--------------------------------- HeadTable ---------------------------------> */}
-            <div className="w-full grid grid-cols-[45px__repeat(2,1fr)_250px_130px_100px]
-              max-2xl:grid-cols-[45px__repeat(2,1fr)_200px_100px_80px]
-              max-xl:grid-cols-[45px__repeat(2,1fr)_100px_100px_60px]
-              max-lg:grid-cols-[45px__repeat(2,1fr)_100px_90px_50px]
-              max-md:grid-cols-[45px__repeat(2,1fr)_90px_50px]
-              max-sm:grid-cols-[36px__repeat(1,1fr)_90px_50px]
-              max-lsm:grid-cols-[36px__repeat(1,1fr)_65px_50px]
+            <div className="w-full grid grid-cols-[repeat(2,1fr)_250px_130px_100px]
+              max-2xl:grid-cols-[repeat(2,1fr)_200px_100px_80px]
+              max-xl:grid-cols-[repeat(2,1fr)_100px_100px_60px]
+              max-lg:grid-cols-[repeat(2,1fr)_100px_90px_50px]
+              max-md:grid-cols-[repeat(2,1fr)_90px_50px]
+              max-sm:grid-cols-[repeat(1,1fr)_90px_50px]
+              max-lsm:grid-cols-[repeat(1,1fr)_65px_50px]
               gap-x-[30px] max-lg:gap-x-[10px] font-[500] border-y-[1px] border-y-neutral-400  bg-[#DDDDDD] items-center px-[15px] max-md:px-[10px] max-sm:px-[5px]">
-
-              <div className="flex items-center h-full justify-between">
-                <input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className="w-[20px] h-[20px] appearance-none border-[#afafaf] border-[2px] rounded-[4px]" />
-                <div className="w-[1px] h-full bg-[#B1B1B1] mr-[5px]" />
-              </div>
 
               <div>
                 <button onClick={() => FilterName()} className="hover:opacity-[.65] text-left flex items-center cursor-pointer  py-[15px] ">
@@ -251,20 +210,18 @@ function TableClients() {
                 var checked = user.checked;
                 if (showItens.min < index && index < showItens.max) {
                   return (
-                    <div key={index} className={`text-[#686868] w-full py-[10px] grid grid-cols-[45px__repeat(2,1fr)_250px_130px_100px]
-                      max-2xl:grid-cols-[45px__repeat(2,1fr)_200px_100px_80px]
-                      max-xl:grid-cols-[45px__repeat(2,1fr)_100px_100px_60px]
-                      max-lg:grid-cols-[45px__repeat(2,1fr)_100px_90px_50px]
-                      max-md:grid-cols-[45px__repeat(2,1fr)_90px_50px]
-                      max-sm:grid-cols-[35px__repeat(1,1fr)_100px_50px]
-                      max-lsm:grid-cols-[36px__repeat(1,1fr)_80px_50px]
+                    <div key={index} className={`text-[#686868] w-full py-[10px] grid 
+                      grid-cols-[repeat(2,1fr)_250px_130px_100px]
+                      max-2xl:grid-cols-[repeat(2,1fr)_200px_100px_80px]
+                      max-xl:grid-cols-[repeat(2,1fr)_100px_100px_60px]
+                      max-lg:grid-cols-[repeat(2,1fr)_100px_90px_50px]
+                      max-md:grid-cols-[repeat(2,1fr)_90px_50px]
+                      max-sm:grid-cols-[repeat(1,1fr)_100px_50px]
+                      max-lsm:grid-cols-[repeat(1,1fr)_80px_50px]
                       border-b-[1px] border-b-neutral-400 px-[15px] max-md:px-[10px] max-sm:px-[5px] gap-x-[30px] max-lg:gap-x-[10px] max-sm:gap-x-[5px] font-[500] items-center max-xl:text-[16px]`}>
-                      <div className="flex justify-between w-full items-center">
-                        <input disabled={loading ? true : false} aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => (checked = e.target.value === "on" ? true : false)} onClick={() => SelectUsers(index)} className={`${user.checked ? '' : 'appearance-none'} accent-gray-600 cursor-pointer  w-[20px] h-[20px] border-[1px] border-[#666666] rounded-[4px]`} />
-                        {user.fixed && <DrawingPinFilledIcon className="w-[16px] h-[16px] text-[#666666]" />}
-                      </div>
 
                       <div className="min-w-full flex items-center">
+                        {user.fixed && <DrawingPinFilledIcon className="w-[16px] h-[16px] text-[#666666] mr-[5px]" />}
                         <Image src={user.photo_url} width={35} height={35} alt="Perfil" className="rounded-full w-[35px] h-[35px] mr-[10px] max-md:w-[30px] max-md:h-[30px]" />
                         <p className="text-black overflow-hidden whitespace-nowrap text-ellipsis dark:text-white">
                           {user.name}
@@ -306,6 +263,7 @@ function TableClients() {
 
                       <div className="w-full flex justify-center items-center">
                         <Options
+                          loading={loading}
                           domain={domain}
                           idUser={user.id}
                           windowsAction={windowsAction}
@@ -316,6 +274,7 @@ function TableClients() {
                           setWindowsAction={setWindowsAction}
                           setUsers={setUsers}
                           ResetConfig={ResetConfig}
+                          setLoading={setLoading}
                           dataAdmin={dataAdmin}
                         />
                       </div>

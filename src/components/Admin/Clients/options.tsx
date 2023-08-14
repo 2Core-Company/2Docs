@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Link from 'next/link'
-import { DrawingPinIcon, DrawingPinFilledIcon, TrashIcon, PersonIcon, FileIcon, Pencil2Icon, StopwatchIcon, CalendarIcon } from '@radix-ui/react-icons';
+import { DrawingPinIcon, DrawingPinFilledIcon, TrashIcon, PersonIcon, FileIcon, Pencil2Icon, StopwatchIcon, CalendarIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { DataUser, DataUserContext } from '../../../types/users'
 import { Modal, WindowsAction } from '../../../types/others';
 import Fix from './FixUser'
@@ -11,6 +11,7 @@ import DeletUser from './deletUser';
 import ModalDelete from '../../../Utils/Other/modalDelete'
 import ModalSetAdmin from './ModalSetAdmin';
 import ModalEvent from '../Calendar/modalEvent';
+import { DisableUser } from './DisableUser';
 
 
 interface Props {
@@ -25,14 +26,17 @@ interface Props {
   setUsers: Function,
   ResetConfig: Function,
   dataAdmin: DataUserContext
+  loading: boolean
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed, setUsers, ResetConfig }: Props) {
+function Options({ loading, dataAdmin, domain, idUser, user, users, windowsAction, setWindowsAction, setUserEdit, FilterFixed, setUsers, setLoading, ResetConfig }: Props) {
   const messageFix = { pending: "Fixando usuário...", success: "Usuário fixado com sucesso." }
   const messageUnFix = { pending: "Desfixando usuário...", success: "Usuário fixado com sucesso." }
   const [modalEvent, setModalEvent] = useState<boolean>(false)
   const [modalAdminOptions, setModalAdminOptions] = useState<boolean>(false)
   const [modal, setModal] = useState<Modal>({ status: false, title: '', subject: '', target: '' })
+  const toastDisable = { pending: "Trocando status do usuário.", success: "Status trocado com sucesso." };
 
   //Confirmação de deletar usuário
   function ConfirmationDeleteUser() {
@@ -43,6 +47,17 @@ function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWin
   const childModal = () => {
     toast.promise(DeletUser({ user, users, domain, ResetConfig }), { pending: "Deletando o usuário...", success: "O usuário foi deletado com sucesso.", error: "Não foi possivel deletar o usuário." });
     setModal({ status: false, title: '', subject: '', target: '' })
+  }
+
+  async function GetFunctionDisableUser() {
+    setLoading(true)
+    try {
+      const result = await DisableUser({ users, user, id_company: dataAdmin.id_company, setUsers })
+    } catch (e) {
+      throw e
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -96,6 +111,14 @@ function Options({ dataAdmin, domain, idUser, user, users, windowsAction, setWin
                 <CalendarIcon width={18} height={18} />
                 Calendário
               </Link>
+            </DropdownMenu.Item>
+
+
+            <DropdownMenu.Item disabled={ dataAdmin?.permission < 2 || loading ? true : false} onClick={() => toast.promise(GetFunctionDisableUser(), toastDisable)} className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
+              <button className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                <UpdateIcon width={18} height={18} />
+                Trocar Status
+              </button>
             </DropdownMenu.Item>
             
             <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-emerald-500 hover:text-[#fff] hover:outline-none'} duration-100`}>
