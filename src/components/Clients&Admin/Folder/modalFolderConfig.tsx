@@ -5,7 +5,6 @@ import { db } from "../../../../firebase";
 import { toast } from "react-toastify";
 import { DataUser } from "../../../types/users";
 import { FolderCfg } from "../../../types/folders";
-import { Cross1Icon } from "@radix-ui/react-icons";
 import * as Switch from "@radix-ui/react-switch"
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -25,7 +24,7 @@ interface Props {
 function ModalFolderConfig({ setUser, user, enterprise, id, id_company, setFolderConfig, folderConfig, setEnterprise }: Props) {
   const [nameFolder, setNameFolder] = useState<string>(folderConfig.name);
   const [color, setColor] = useState<string>(folderConfig.color);
-  const [timeFile, setTimeFile] = useState<number>(folderConfig.timeFile);
+  const [timeFile, setTimeFile] = useState<0 | 1 | 2 |3>(folderConfig.timeFile);
   const [singleDownload, setSingleDownload] = useState<boolean>(folderConfig.singleDownload);
   const [onlyMonthDownload, setOnlyMonthDownload] = useState<boolean>(folderConfig.onlyMonthDownload);
   const toastUpdateCfg = { pending: "Salvando configurações.", success: "Salvamento concluído." }
@@ -163,7 +162,7 @@ function ModalFolderConfig({ setUser, user, enterprise, id, id_company, setFolde
                 max={3}
                 marks={marks}
                 step={null}
-                onChange={(value: number) => { setTimeFile(value) }}
+                onChange={(value: 0 | 1 | 2 | 3) => { setTimeFile(value) }}
                 defaultValue={timeFile}
               />
             </div>
