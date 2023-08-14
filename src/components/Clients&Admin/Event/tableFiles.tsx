@@ -16,6 +16,8 @@ import ViewFile from '../Files/viewFile';
 import { Event } from '@/src/types/event';
 import { FilterAlphabetical, FilterDate, FilterSize } from '@/src/Utils/Other/Filters';
 import { UpdateStatusDelivered } from '@/src/Utils/Firebase/Events/UpdateStatusDelivered';
+import linkShareFile from '../Files/shareFile';
+import { userContext } from '@/src/app/Context/contextUser';
 
 interface Props {
     event: Event
@@ -26,6 +28,7 @@ interface Props {
 
 function TableFiles({ event, files, setFiles, setEvent }: Props) {
     const { dataAdmin } = useContext(adminContext)
+    const { dataUser } = useContext(userContext);
     const { dataCompany } = useContext(companyContext)
     const [dataPages, setDataPages] = useState<{ page: number, maxPages: number }>({ page: 1, maxPages: 1 })
     const [filter, setFilter] = useState<{ name: 'asc' | 'desc', size: 'asc' | 'desc', date: 'asc' | 'desc' }>({ name: 'asc', size: 'asc', date: 'asc' })
@@ -88,6 +91,31 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
         }
     }
 
+    async function shareFile(file: Files) {
+        let sharePhotoUrl: string, shareName: string;
+
+        if(dataAdmin.id !== '') {
+            sharePhotoUrl = dataAdmin.photo_url;
+            shareName = dataAdmin.name;
+        } else {
+            sharePhotoUrl = dataUser.photo_url;
+            shareName = dataUser.name;
+        }
+
+        const toastMessage = {pending:"Criando um link compartilhável...", success:"Link compartilhável copiado!."};
+
+        const response = await toast.promise(linkShareFile({file: file, shareUserName: shareName, shareUserAvatar: sharePhotoUrl}), toastMessage);
+
+        if(response.status === 200) {
+        setFiles(() => {
+            let index = files!.findIndex((data) => data.id === response.file.id);
+            files![index].id_share = response.file.id_share;
+            console.log(files);
+            return [...files!];
+        })
+        }
+    }
+
     return (
         <DocTable.Root>
             {viewFile.status && <ViewFile file={viewFile.file!} setFiles={setFiles} setViewFile={setViewFile} admin={admin} />}
@@ -133,9 +161,9 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
                                                 <DocTable.OptionsItemLabel>Renomear</DocTable.OptionsItemLabel>
                                             </DocTable.OptionsItem>
 
-                                            <DocTable.OptionsItem>
+                                            <DocTable.OptionsItem onClick={() => shareFile(file)}>
                                                 <DocTable.OptionsItemIcon><Share1Icon width={18} height={18} className="text-[#686868] group-hover:text-white" /></DocTable.OptionsItemIcon>
-                                                <DocTable.OptionsItemLabel>Compartilhar</DocTable.OptionsItemLabel>
+                                                <DocTable.OptionsItemLabel>{file.id_share ? 'Copiar Link' : 'Compartilhar'}</DocTable.OptionsItemLabel>
                                             </DocTable.OptionsItem>
 
                                             <DocTable.OptionsItem onClick={() => deleteFiles([file])} dropdownClassName="rounded-b-[6px] hover:bg-[#BE0000]">

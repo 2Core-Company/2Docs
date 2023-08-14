@@ -371,7 +371,8 @@ export async function getFilesEvent({id_company, id_user, id_event}: interfaceGe
       from:document.data()?.from,
       message:document.data()?.message,
       downloaded:document.data()?.downloaded,
-      messageNotif: document.data()?.messageNotif
+      messageNotif: document.data()?.messageNotif,
+      id_share: document.data()?.id_share
     })
   });
   return getFiles

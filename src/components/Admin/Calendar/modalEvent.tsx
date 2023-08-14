@@ -92,7 +92,7 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
     }, [])
 
     async function CreateOptioOfSelectUser() {
-        const result = await GetUsers({ id_company: dataAdmin.id_company })
+        const result = await GetUsers({ id_company: dataAdmin.id_company, permission: dataAdmin.permission, admin_id: dataAdmin.id })
         const options: interfaceOptionsUser[] = []
         if (result) {
             for await (const user of result) {

@@ -5,7 +5,7 @@ export interface Folders{
   isPrivate:boolean
   singleDownload: boolean
   onlyMonthDownload: boolean
-  timeFile: number
+  timeFile: 0 | 1 | 2 | 3
   id:string
 }
 
@@ -16,5 +16,5 @@ export interface Folders{
     isPrivate: boolean;
     singleDownload: boolean;
     onlyMonthDownload: boolean;
-    timeFile: number;
+    timeFile: 0 | 1 | 2 | 3;
   }

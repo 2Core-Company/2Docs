@@ -12,31 +12,38 @@ interface Props{
 
 async function deleteFiles({ files, selectedFiles, id_company }:Props) {
   const batch = writeBatch(db);
-  const promises:any = []
-  var size = 0
+  const promises:any = [];
+  let size = 0;
+
   try{
     if(selectedFiles.length > 0) {
       for await (const file of selectedFiles){
-        const ref1 = doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id)
-        const desertRef = ref(storage, file.path);
-        promises.push(deleteObject(desertRef))
-        batch.delete(ref1)
-        if(files){
-          const index:number = files.findIndex((dataFile) => dataFile.id === file.id)
-          files.splice(index, 1);
+        if(file.id_share) {
+          const shareRef = doc(db, 'files', file.id_company, file.id_user, 'user', 'sharedFiles', file.id_share);
+          batch.delete(shareRef);
         }
-        size += file.size
+        
+        const ref1 = doc(db, 'files', file.id_company, file.id_user, 'user', 'files', file.id);
+        const desertRef = ref(storage, file.path);
+        promises.push(deleteObject(desertRef));
+        batch.delete(ref1);
+        if(files){
+          const index = files.findIndex((data) => data.id === file.id);
+          files.splice(index, 1);
+          // files = files.filter((data) => data.id !== file.id);
+        }
+        size += file.size;
       }
 
-      await updateSizeCompany({id_company:id_company, size, action:'subtraction'})
+      await updateSizeCompany({id_company:id_company, size, action:'subtraction'});
+      await Promise.all([promises, batch.commit()]);
 
-      await Promise.all([promises, batch.commit()])
-      return files
+      return files;
     }
   } catch(e) {
-    console.log(e)
+    throw Error(e);
   }
 }
 
 
-export default deleteFiles
+export default deleteFiles;

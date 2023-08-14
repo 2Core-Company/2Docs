@@ -53,7 +53,7 @@ function TableClients() {
   },[searchText])
 
   async function GetAllUser() {
-    const result = await GetUsers({ id_company: dataAdmin.id_company });
+    const result = await GetUsers({ id_company: dataAdmin.id_company, permission: dataAdmin.permission, admin_id: dataAdmin.id });
     if (result) {
       setPages(Math.ceil(result.length / 10));
       setUsers(FilterFixed(result));

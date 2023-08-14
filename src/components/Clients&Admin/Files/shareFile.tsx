@@ -24,7 +24,6 @@ async function shareFile({file, shareUserAvatar, shareUserName}:Props) {
       toast.error(`Ocorreu um erro ao copiar o link: ${error}`);
       return {status: 400, message: `Ocorreu um erro ao copiar o link: ${error}`};
     })
-    // console.log('Link compartilhado!');
   } else {
     const response1 = await setSharedFileDoc({file, shareUserAvatar, shareUserName, sharedFileId});
     if(response1.status === 400) {
@@ -47,18 +46,6 @@ async function shareFile({file, shareUserAvatar, shareUserName}:Props) {
   }
 
   return {status: 200, message: 'Link compartilhável copiado com sucesso!', file};
-  // const docRef = doc(db, "companies", file.id_company);
-  // const docSnap = await getDoc(docRef);
-  // const nameCompany = docSnap.data()?.name;
-  // const url = window.location.origin;
-  // const urlFile = `${url}/CompartilharArquivo?ic=${file.id_company}&&if=${file.id}&&iu=${file.id_user}&&n=${file.name}&&d=${file.created_date}&&nc=${nameCompany}&&ty=${file.type}`;
-
-  // shortenURL(urlFile).then((shortURL:string) => {
-  //   copy(shortURL);
-  //   toast.success('Link copiado!');
-  // }).catch((error) => {
-  //     console.error(error);
-  // });
 }
 
 interface setSharedFileDocProps {

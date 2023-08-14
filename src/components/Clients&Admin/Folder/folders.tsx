@@ -30,18 +30,19 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
     const id_user: string = params.get("id_user");
     const toastDeletFolder = { pending: "Deletando pasta.", success: "Pasta deletada.", error: "Não foi possível deletar esta pasta." }
     const messageModal = { status: true, title: "Deletar Pasta", subject: 'a pasta' }
-    const [id_feletFolder, setId_deletFolder] = useState<string>("");
+    const [id_DeleteFolder, setId_DeleteFolder] = useState<string>("");
     const admin = dataAdmin.id === '' ? false : true
+    const trashId: string | undefined = enterprise.folders.find((folder) => folder.name === 'Lixeira')?.id;
 
     //Confirmação de deletar pasta
     function ConfirmationDeleteFolder({ name, id_folder }: { name: string, id_folder: string }) {
-        setId_deletFolder(id_folder);
+        setId_DeleteFolder(id_folder);
         setModal({ ...messageModal, target: name });
     }
 
     const childModal = async () => {
         setModal({ status: false, title: '', subject: '', target: '' });
-        toast.promise(DeleteFolder({ user, id_folder: id_feletFolder, setUser, enterprise, id_company: dataAdmin.id_company }), toastDeletFolder)
+        toast.promise(DeleteFolder({ user, id_folder: id_DeleteFolder, setUser, enterprise, id_company: dataAdmin.id_company }), toastDeletFolder)
     };
 
     async function PrivateFolderChange(privateState: boolean, index: number) {
@@ -90,7 +91,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                         .filter((folder) => textSearch != "" ? folder.name?.toUpperCase().includes(textSearch.toUpperCase()) : true)
                         .map((folder, index) => {
                             if (folder.name === 'Lixeira' || folder.isPrivate && !admin) { 
-                                return 
+                                return
                             } 
                             return (
                                 <div key={folder.name} className='flex items-center'>
@@ -107,7 +108,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                                             </div>
                                         }
 
-                                        <Link href={{ pathname: `/Dashboard/${admin ? 'Admin' : 'Clientes'}/Arquivos`, query: { folderName: folder.name, id_folder: folder.id, id_user: id_user, id_enterprise: enterprise.id } }}>
+                                        <Link href={{ pathname: `/Dashboard/${admin ? 'Admin' : 'Clientes'}/Arquivos`, query: { id_folder: folder.id, id_user: id_user, id_enterprise: enterprise.id } }}>
                                             <div className="w-[90px] max-lg:w-[70px] max-sm:w-[60px] max-lsm:w-[50px]">
                                                 <svg width="100%" height="100%" viewBox="0 0 79 79" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M77.537 15.361H34.4308L29.0135 7.23427C28.7414 6.82757 28.2849 6.58325 27.7963 6.58325H1.46296C0.655407 6.58325 0 7.2372 0 8.04621V16.824V22.6758V65.1062C0 69.1381 3.27704 72.4166 7.30604 72.4166H71.694C75.723 72.4166 79 69.1381 79 65.1062V22.6758V16.824C79 16.015 78.3446 15.361 77.537 15.361ZM76.0741 21.2129H2.92593V18.287H33.6481H76.0741V21.2129ZM2.92593 9.50918H27.0136L30.9153 15.361H2.92593V9.50918ZM76.0741 65.1062C76.0741 67.523 74.1093 69.4907 71.694 69.4907H7.30604C4.89069 69.4907 2.92593 67.523 2.92593 65.1062V24.1388H76.0741V65.1062Z" fill={folder.color} /></svg>
                                             </div>
@@ -132,7 +133,7 @@ function Folders({ enterprise, user, setUser, setEnterprise }: Props) {
                         <Link
                           href={{
                             pathname: "/Dashboard/Admin/Arquivos",
-                            query: { trash: true, id_user: id_user, id_enterprise: enterprise?.id },
+                            query: { id_folder: trashId, id_user: id_user, id_enterprise: enterprise?.id },
                           }}
                         >
                             <div className="relative w-[90px] max-lg:w-[70px] max-sm:w-[60px] max-lsm:w-[50px]">

@@ -20,7 +20,6 @@ export async function getFolder({id_company, id_user, id_enterprise, id_folder}:
     }catch(e){
         console.log(e)
     }
-
 }
 
 interface getFoldersProps {

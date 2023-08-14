@@ -5,7 +5,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import { FileIcon } from '@radix-ui/react-icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
-import folder from '../../../../public/icons/folder.svg'
+import folderIcon from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
 import DownloadsFile from '../../Clients&Admin/Files/downloadFiles';
 import deleteFiles from '../../Clients&Admin/Files/deleteFiles';
@@ -30,11 +30,11 @@ import ViewFile from '../../Clients&Admin/Files/viewFile';
 import MoveTo from '../../Admin/Files/moveTo';
 import CopyTo from '../../Admin/Files/copyTo';
 import Rename from '../../Clients&Admin/Files/rename';
+import { Folders } from '@/src/types/folders';
 
 function Files() {
   //<--------------------------------- Params Vars --------------------------------->
-  const params: any = useSearchParams()
-  const folderName: string = params.get("folderName");
+  const params: any = useSearchParams();
   const id_folder: string = params.get("id_folder");
   const id_enterprise: string = params.get("id_enterprise");
 
@@ -44,6 +44,7 @@ function Files() {
   const { setLoading } = useContext(loadingContext);
 
   //<--------------------------------- State vars --------------------------------->
+  const [folder, setFolder] = useState<Folders>({name: '', color: '', isPrivate: false, singleDownload: false, onlyMonthDownload: false, timeFile: 3, id: ''});
   const [files, setFiles] = useState<Files[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Files[]>([]);
   const [dataPages, setDataPages] = useState<{ page: number, maxPages: number }>({ page: 1, maxPages: 1 });
@@ -51,10 +52,11 @@ function Files() {
   const [textSearch, setTextSearch] = useState<string>('');
   const [filter, setFilter] = useState<Filter>({name: 'asc', size: 'asc', date: 'asc', status: 'asc'});
   const [viewFile, setViewFile] = useState<{status: boolean, file?: Files}>({status: false});
-  const [moveFile, setMoveFile] = useState<{status: boolean, file?: Files}>({status: false});
-  const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
+  // const [moveFile, setMoveFile] = useState<{status: boolean, file?: Files}>({status: false});
+  // const [copyFile, setCopyFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});
+  const [globalCheckbox, setGlobalCheckbox] = useState<{status: 'off' | 'on' | 'half'}>({status: 'off'});
 
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter();
@@ -92,11 +94,16 @@ function Files() {
     setLoading(true);
     getFiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataUser])
+  }, [dataUser]);
+
+  useEffect(() => {
+    textSearch == null ? setDataPages({page: dataPages.page, maxPages: Math.ceil(files.length / 10)}) : setDataPages({page: dataPages.page, maxPages: Math.ceil(files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length / 10)});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [textSearch]);
 
   async function getFiles() {
     const response = await verifyFolder();
-    if (folderName === "Favoritos" && response.status === 200) {
+    if (folder.name === "Favoritos" && response.status === 200) {
       await getFilesToFavorites({ id_company: dataUser.id_company, id_user: dataUser.id, id_enterprise: id_enterprise, setFiles, setDataPages });
     } else {
       await getFilesClient({ id_user: dataUser.id, id_company: dataUser.id_company, id_enterprise: id_enterprise, id_folder: id_folder, setFiles, setDataPages })
@@ -106,11 +113,13 @@ function Files() {
 
   async function verifyFolder() {
     let enterprise = dataUser.enterprises.find((data) => data.id === id_enterprise)
-    let mockFolder = enterprise?.folders.find((folder) => folder.name === folderName);
+    let mockFolder = enterprise?.folders.find((folder) => folder.id === id_folder);
 
-    if (mockFolder?.isPrivate === true) {
-      router.push("/Dashboard/Clientes/Pastas");
+    if (mockFolder && mockFolder.isPrivate === true) {
+      router.replace("/Dashboard/Clientes/Pastas");
       return {status: 401, message: "Cliente não autorizado a acessar essa pasta."}
+    } else if(mockFolder) {
+      setFolder(mockFolder);
     }
 
     return {status: 200, message: "Cliente autorizado a acessar essa pasta."};
@@ -123,8 +132,31 @@ function Files() {
     } else {
       const allFiles = [...files];
       allFiles[index].checked = !allFiles[index].checked;
+
+      if(allFiles[index].checked === false && globalCheckbox.status === 'on') {
+        setGlobalCheckbox({status: 'half'});
+      }
+
       const fileSelect = allFiles.filter((file) => file.checked === true);
       setSelectedFiles(fileSelect);
+
+      const indexRange = {
+        start: dataPages.page * 10 - 10,
+        end: dataPages.page * 10 - 1
+      }
+
+      const filesOnPage = files.filter((file, index) => {
+        if(index >= indexRange.start && index <= indexRange.end ) {
+          return file;
+        }
+      })
+
+      if(fileSelect.length === 0) {
+        setGlobalCheckbox({status: 'off'});
+      } else if(fileSelect.length === filesOnPage.length || fileSelect.length === 10) {
+        setGlobalCheckbox({status: 'on'});
+      }
+
       setFiles(allFiles);
     }
   }
@@ -163,6 +195,7 @@ function Files() {
       setFiles([...files]);
       setDropdownState(true);
       setSelectedFiles([]);
+      setGlobalCheckbox({status: 'off'});
     }
   }
 
@@ -185,6 +218,16 @@ function Files() {
         setFilter({ name: 'asc', size: 'asc', date: 'asc', status: filter.status === 'asc' ? 'desc' : 'asc'});
         break;
     }
+  }
+
+  function unselectAllFiles() {
+    setGlobalCheckbox({status: 'off'});
+    const unselectFiles = files.map((file) => {
+      file.checked = false;
+      return file;
+    })
+    setFiles(unselectFiles);
+    setSelectedFiles([]);
   }
 
   async function getInputFiles(files){
@@ -210,6 +253,37 @@ function Files() {
         setDataPages({ maxPages: maxPages, page: page })
         return result
       })
+    }
+  }
+
+  function handleGlobalCheckbox() {
+    const indexRange = {
+      start: dataPages.page * 10 - 10,
+      end: dataPages.page * 10 - 1
+    }
+
+    if(globalCheckbox.status === 'off' || globalCheckbox.status === 'half') {
+      let filesSelected: Files[] = [];
+      const newFiles = files.filter((file) => textSearch == null || file.name?.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).map((file: Files, index) => {
+        if(index >= indexRange.start && index <= indexRange.end ) {
+          file.checked = true;
+          filesSelected.push(file);
+        }
+        return file;
+      });
+      setSelectedFiles(filesSelected);
+      setGlobalCheckbox({status: 'on'});
+      setFiles(newFiles);
+    } else {
+      const newFiles = files.filter((file) => textSearch == null || file.name?.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).map((file: Files, index) => {
+        if(index >= indexRange.start && index <= indexRange.end) {
+          file.checked = false;
+        }
+        return file;
+      });
+      setSelectedFiles([]);
+      setGlobalCheckbox({status: 'off'});
+      setFiles(newFiles);
     }
   }
 
@@ -249,16 +323,16 @@ function Files() {
         <p className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Documentos</p>
         <div className='flex items-center overflow-hidden mb-[35px]'>
           <Link href={'/Dashboard/Clientes/Pastas'} className="flex cursor-pointer items-center mr-1">
-            <Image width={21} height={21} src={folder} alt="Imagem de uma pasta" className='mr-1' />
+            <Image width={21} height={21} src={folderIcon} alt="Imagem de uma pasta" className='mr-1' />
             <p className="cursor-pointer text-[18px] max-sm:mr-[0px] max-sm:text-[16px] whitespace-nowrap text-secondary">
               {"Pastas >"}
             </p>
           </Link>
           <FileIcon width={21} height={21} className={'text-secondary mr-1'} />
-          <p className='text-[18px] flex text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{folderName}</p>
+          <p className='text-[18px] flex text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{folder.name}</p>
         </div>
 
-        <div>
+        <div className={`${folder.name !== 'Cliente' && 'hidden'}`}>
           <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
@@ -268,8 +342,8 @@ function Files() {
 
         {modalMessage.status && <Message admin={false} modalMessage={modalMessage} setModalMessage={setModalMessage} setFiles={setFiles}/>}
         {viewFile.status && <ViewFile admin={false} file={viewFile.file!} setFiles={setFiles} setViewFile={setViewFile}/>}
-        {moveFile.status && <MoveTo files={files} moveFile={moveFile} setMoveFile={setMoveFile} setFiles={setFiles}/>}
-        {copyFile.status && <CopyTo admin={false} copyFile={copyFile} setCopyFile={setCopyFile} />}
+        {/* {moveFile.status && <MoveTo files={files} moveFile={moveFile} setMoveFile={setMoveFile} setFiles={setFiles}/>}
+        {copyFile.status && <CopyTo admin={false} copyFile={copyFile} setCopyFile={setCopyFile} />} */}
         {renameFile.status && <Rename setFiles={setFiles} renameFile={renameFile} setRenameFile={setRenameFile}/>}
         <DocTable.Root>
           <DocTable.Header className={`${files.filter((file) => textSearch !== '' && file.name.toUpperCase().includes(textSearch.toUpperCase())).length === 0 && "border-b border-b-secondary"}`}>
@@ -277,13 +351,13 @@ function Files() {
             <DocTable.Search onChange={(text) => setTextSearch(text.target.value)} placeholder="Buscar" />
             <DocTable.GlobalActions setDropdownState={setDropdownState} dropdownState={dropdownState}>
               <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
-              {/* <DocTable.GlobalAction onClick={() => deleteFiles(selectFiles)} dropdownState={dropdownState} className={`${selectFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction> */}
+              <DocTable.GlobalAction onClick={() => deleteFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction>
             </DocTable.GlobalActions>
           </DocTable.Header>
           {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
           <DocTable.Content>
             <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px]">
-              <DocTable.GlobalCheckbox />
+              <DocTable.GlobalCheckbox onChange={() => handleGlobalCheckbox()} checked={globalCheckbox.status === 'on' ? true : false} handle={globalCheckbox.status === 'on' ? true : false} half={globalCheckbox.status === 'half' ? true : false}/>
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
               <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center" onClick={() => changeFilter("size")}/>
               <DocTable.Filter label="Data de Upload" arrow active={filter.date} className="max-lg:hidden" onClick={() => changeFilter("date")}/>
@@ -328,7 +402,7 @@ function Files() {
                           <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
-                        {file.from === 'user' &&
+                        {/* {file.from === 'user' &&
                         <DocTable.OptionsItem onClick={() => setMoveFile({status: true, file: file})}>
                           <DocTable.OptionsItemIcon>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
@@ -348,19 +422,19 @@ function Files() {
                             </svg>
                           </DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Copiar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem>
+                        </DocTable.OptionsItem> */}
                         {file.from === 'user' && 
                         <DocTable.OptionsItem onClick={() => setRenameFile({status: true, file: file})}>
                           <DocTable.OptionsItemIcon><Pencil2Icon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Renomear</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
                         }
-                        {file.from === 'user' && file.favorite ?
-                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folderName})}>
+                        {file.favorite ?
+                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Desfavoritar</DocTable.OptionsItemLabel>
-                        </DocTable.OptionsItem> : file.from === 'user' &&
-                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folderName})}>
+                        </DocTable.OptionsItem> :
+                        <DocTable.OptionsItem onClick={() => favoriteFile({file: file, setFiles: setFiles, folderName: folder.name})}>
                           <DocTable.OptionsItemIcon><StarFilledIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
                           <DocTable.OptionsItemLabel>Favoritar</DocTable.OptionsItemLabel>
                         </DocTable.OptionsItem>
@@ -389,7 +463,7 @@ function Files() {
             <p className='font-poiretOne text-[#686868] text-[40px] max-sm:text-[30px]'>{textSearch.length <= 0 ? 'Nenhum arquivo foi encontrado' : 'Nenhum resultado foi encontrado'}</p>
           </div>
           }
-          <DocTable.Footer textSearch={textSearch} files={files} dataPages={dataPages} setDataPages={setDataPages} />
+          <DocTable.Footer textSearch={textSearch} files={files} dataPages={dataPages} setDataPages={setDataPages} unselectFunction={() => unselectAllFiles()} />
         </DocTable.Root>
       </div>
     </div>
