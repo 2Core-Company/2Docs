@@ -17,7 +17,7 @@ export function DocTableOptions({ children, ...rest }: DocTableOptionsProps) {
             </DropdownMenu.Trigger>
 
             <DropdownMenu.Portal>
-                <DropdownMenu.Content {...rest} align="end" alignOffset={-25} className="bg-primary text-black rounded-[4px] flex flex-col gap-[3px] drop-shadow-[0_0px_10px_rgba(0,0,0,0.20)] py-[6px]" sideOffset={5}>
+                <DropdownMenu.Content {...rest} align="end" alignOffset={-25} className="bg-primary text-black rounded-[4px] flex flex-col gap-[3px] drop-shadow-[0_0px_10px_rgba(0,0,0,0.20)]" sideOffset={5}>
                     { children }
                     <DropdownMenu.Arrow className="fill-primary"/>
                 </DropdownMenu.Content>

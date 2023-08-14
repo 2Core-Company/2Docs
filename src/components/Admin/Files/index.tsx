@@ -109,7 +109,26 @@ function Files() {
   }, [dataAdmin]);
 
   useEffect(() => {
-    textSearch == null ? setDataPages({page: dataPages.page, maxPages: Math.ceil(files.length / 10)}) : setDataPages({page: dataPages.page, maxPages: Math.ceil(files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length / 10)});
+    if(textSearch != '') {
+      const searchingNumberFiles = files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length;
+
+      setDataPages({
+        page: dataPages.page <= Math.ceil(searchingNumberFiles / 10) ? dataPages.page : Math.ceil(searchingNumberFiles / 10),
+        maxPages: Math.ceil(searchingNumberFiles / 10)
+      });
+
+      if(dataPages.page <= 0) {
+        setDataPages({
+          ...dataPages,
+          page: 1
+        })
+      }
+    } else {
+      setDataPages({
+        page: 1,
+        maxPages: Math.ceil(files.length / 10)
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textSearch]);
 
@@ -126,7 +145,7 @@ function Files() {
 
       if (fetchFolder.name === 'Lixeira') {
         await getFilesToTrash({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages });
-      } else if (folder.name === "Favoritos") {
+      } else if (fetchFolder.name === "Favoritos") {
         await getFilesToFavorites({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, setFiles: setFiles, setDataPages: setDataPages });
       } else {
         await getFilesAdmin({ id_company: dataAdmin.id_company, id_user: id_user, id_enterprise: id_enterprise, id_folder: id_folder, setFiles: setFiles, setDataPages: setDataPages });
@@ -377,24 +396,24 @@ function Files() {
             <DocTable.GlobalActions setDropdownState={setDropdownState} dropdownState={dropdownState}>
               {trash &&
                 <>
-                  <DocTable.GlobalAction onClick={() => enableFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#0064AC] border-[#00518C]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Restaurar</DocTable.GlobalAction>
+                  <DocTable.GlobalAction onClick={() => enableFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length <= 0 && "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Recuperar</DocTable.GlobalAction>
                 </>
               }
               {trash === false &&
-                <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
+                <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length <= 0 && "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
               }
               <DocTable.GlobalAction onClick={() => deleteFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction>
             </DocTable.GlobalActions>
           </DocTable.Header>
           {files.filter((file) => textSearch != "" ? file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
           <DocTable.Content>
-            <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_60px] max-lg:grid-cols-[60px_1fr_120px_140px_60px] max-md:grid-cols-[60px_1fr_140px_60px] max-sm:grid-cols-[60px_1fr_60px]">
+            <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_80px] max-lg:grid-cols-[60px_1fr_120px_140px_80px] max-md:grid-cols-[60px_1fr_140px_80px] max-sm:grid-cols-[60px_1fr_80px]">
               <DocTable.GlobalCheckbox onChange={() => handleGlobalCheckbox()} checked={globalCheckbox.status === 'on' ? true : false} handle={globalCheckbox.status === 'on' ? true : false} half={globalCheckbox.status === 'half' ? true : false}/>
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
-              <DocTable.Filter label="Tamanho" arrow active={filter.size} colClassName="max-md:hidden justify-center" onClick={() => changeFilter("size")}/>
+              <DocTable.Filter label="Tamanho" arrow active={filter.size} colClassName="max-md:hidden" onClick={() => changeFilter("size")}/>
               <DocTable.Filter label="Data de Upload" arrow active={filter.date} colClassName="max-lg:hidden" onClick={() => changeFilter("date")}/>
               <DocTable.Filter label="Status" arrow active={filter.status!} colClassName="max-sm:hidden justify-center" onClick={() => changeFilter("status")}/>
-              <DocTable.Filter label="Ações" colClassName="cursor-default justify-center"/>
+              <DocTable.Filter label="Ações" colClassName="justify-center" className="cursor-default"/>
             </DocTable.Heading>
             <DocTable.Files>
               {files
@@ -402,7 +421,7 @@ function Files() {
               .map((file: Files, index) => {
                 if((dataPages.page * 10 - (11)) < index && index < dataPages.page * 10){
                 return(
-                  <DocTable.File key={index} className={`grid-cols-[60px_1fr_120px_200px_140px_60px] max-lg:grid-cols-[60px_1fr_120px_140px_60px] max-md:grid-cols-[60px_1fr_140px_60px] max-sm:grid-cols-[60px_1fr_60px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
+                  <DocTable.File key={index} className={`grid-cols-[60px_1fr_120px_200px_140px_80px] max-lg:grid-cols-[60px_1fr_120px_140px_80px] max-md:grid-cols-[60px_1fr_140px_80px] max-sm:grid-cols-[60px_1fr_80px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
                     <DocTable.FileCheckbox checked={file.checked} onChange={() => selectFile(index)} />
                     <DocTable.Data>
                       <DocTable.Icon>

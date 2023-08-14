@@ -6,7 +6,7 @@ import { getAdmins } from "../../../Utils/Firebase/Users/GetUsers";
 import { Cross2Icon, PlusIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 import { toast } from "react-toastify";
 import { db } from "../../../../firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { deleteField, doc, updateDoc } from "firebase/firestore";
 import * as Tooltip from '@radix-ui/react-tooltip';
 
 
@@ -46,7 +46,7 @@ function SetAdminOptions({ setModalAdminOptions, user, dataAdmin, setUsers, user
             updateDoc(
                 doc(db, "companies", dataAdmin.id_company, "clients", actualUser.id),
                 {
-                    admins: actualUser.admins
+                    admins: actualUser.admins.length > 0 ? actualUser.admins : deleteField()
                 }
             )
 

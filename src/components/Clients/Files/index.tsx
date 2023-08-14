@@ -60,9 +60,11 @@ function Files() {
 
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter();
+
   const handleDragOver = (e) => {
     e.preventDefault();
   };
+
   const handleDrop = async (e) => {
     e.preventDefault();
     const result = await VerifyFiles({files: Array.from(e.dataTransfer.files)})
@@ -97,13 +99,32 @@ function Files() {
   }, [dataUser]);
 
   useEffect(() => {
-    textSearch == null ? setDataPages({page: dataPages.page, maxPages: Math.ceil(files.length / 10)}) : setDataPages({page: dataPages.page, maxPages: Math.ceil(files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length / 10)});
+    if(textSearch != '') {
+      const searchingNumberFiles = files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length;
+
+      setDataPages({
+        page: dataPages.page <= Math.ceil(searchingNumberFiles / 10) ? dataPages.page : Math.ceil(searchingNumberFiles / 10),
+        maxPages: Math.ceil(searchingNumberFiles / 10)
+      });
+
+      if(dataPages.page <= 0) {
+        setDataPages({
+          ...dataPages,
+          page: 1
+        })
+      }
+    } else {
+      setDataPages({
+        page: 1,
+        maxPages: Math.ceil(files.length / 10)
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textSearch]);
 
   async function getFiles() {
-    const response = await verifyFolder();
-    if (folder.name === "Favoritos" && response.status === 200) {
+    const fetchFolder = await verifyFolder();
+    if (fetchFolder && fetchFolder.name === 'Favoritos') {
       await getFilesToFavorites({ id_company: dataUser.id_company, id_user: dataUser.id, id_enterprise: id_enterprise, setFiles, setDataPages });
     } else {
       await getFilesClient({ id_user: dataUser.id, id_company: dataUser.id_company, id_enterprise: id_enterprise, id_folder: id_folder, setFiles, setDataPages })
@@ -117,12 +138,11 @@ function Files() {
 
     if (mockFolder && mockFolder.isPrivate === true) {
       router.replace("/Dashboard/Clientes/Pastas");
-      return {status: 401, message: "Cliente não autorizado a acessar essa pasta."}
     } else if(mockFolder) {
       setFolder(mockFolder);
     }
 
-    return {status: 200, message: "Cliente autorizado a acessar essa pasta."};
+    return mockFolder;
   }
 
   // <--------------------------------- Select File --------------------------------->
@@ -160,7 +180,6 @@ function Files() {
       setFiles(allFiles);
     }
   }
-
 
   async function deleteFilesHandle(selectedFiles: Files[]) {
     if (selectedFiles.length === 0) {
@@ -287,37 +306,7 @@ function Files() {
     }
   }
 
-  return (
-    //     <p className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Documentos</p>
-    //     <div className='flex items-top overflow-hidden items-center'>
-    //       <Image src={folder} alt="Imagem de uma pasta" className='min-w-[19px] min-h-[19px]' />
-    //       <Link href={{ pathname: "Dashboard/Clientes/Pastas", query: { id_enterprise: id_enterprise } }} className='text-[18px] flex mx-[5px] text-secondary whitespace-nowrap'>{"Pastas  >"}</Link>
-    //       <FileIcon className={'min-w-[19px] min-h-[19px] text-secondary'} />
-    //       <p className='text-[18px] flex mx-[5px] text-secondary whitespace-nowrap'>{folderName}</p>
-    //     </div>
-    //     <div className=' w-full relative border-[2px] border-terciary dark:border-dterciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
-    //       <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
-    //         <div className='flex items-center bg-transparent'>
-    //           <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{files.length} <span className='text-black dark:text-white'>Documentos</span></p>
-    //           <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px]" />
-    //           <input type="text" onChange={(Text) => setTextSearch(Text.target.value)} className='w-[300px] text-black max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px] dark:placeholder:text-gray-500' placeholder='Buscar' ></input>
-    //         </div>
-    //         <div className={`flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${menu ? "" : "max-lg:bg-white/30 dark:max-lg:bg-black/30 backdrop-blur"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
-    //           <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`flex-col self-center hidden max-lg:flex ${menu ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
-    //             <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`} />
-    //             <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white my-[8px] max-lsm:my-[5px] transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "hidden"}`} />
-    //             <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black dark:bg-white transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`} />
-    //           </button>
-    //           <button onClick={() => downloadFiles(selectedFiles)} className={` border-[2px] ${selectedFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
-    //           <UploadFile folderName={folderName} id_folder={id_folder} files={files} childToParentDownload={childToParentDownload} id_enterprise={id_enterprise} permission={dataUser?.permission} id_user={dataUser?.id} id_company={dataUser?.id_company} menu={menu} from={"user"} />
-    //         </div>
-    //       </div>
-    //       {/*<-------------- Table of Files --------------> */}
-    //       <TableFiles id_folder={id_folder} dataPages={dataPages} files={files} DeleteFile={deleteFiles} childToParentDownload={childToParentDownload} SelectFile={selectFile} folderName={folderName} trash={false} from={"user"} setFiles={setFiles} textSearch={textSearch} setDataPages={setDataPages} />
-    //     </div>
-    //   </div>
-    // </div>
-
+  return ( 
     <div className="bg-primary dark:bg-dprimary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
       <div className='w-full h-full mt-[42px]'>
         <p className=' font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white'>Documentos</p>
@@ -333,7 +322,7 @@ function Files() {
         </div>
 
         <div className={`${folder.name !== 'Cliente' && 'hidden'}`}>
-          <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
+          <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full h-[250px] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
               <input onChange={(e) => getInputFiles(e.target.files)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
@@ -351,18 +340,20 @@ function Files() {
             <DocTable.Search onChange={(text) => setTextSearch(text.target.value)} placeholder="Buscar" />
             <DocTable.GlobalActions setDropdownState={setDropdownState} dropdownState={dropdownState}>
               <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
-              <DocTable.GlobalAction onClick={() => deleteFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction>
+              {folder.name === 'Cliente' &&
+                <DocTable.GlobalAction onClick={() => deleteFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction>
+              }
             </DocTable.GlobalActions>
           </DocTable.Header>
           {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
           <DocTable.Content>
-            <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px]">
+            <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_80px] max-lg:grid-cols-[60px_1fr_120px_140px_80px] max-md:grid-cols-[60px_1fr_140px_80px] max-sm:grid-cols-[60px_1fr_80px]">
               <DocTable.GlobalCheckbox onChange={() => handleGlobalCheckbox()} checked={globalCheckbox.status === 'on' ? true : false} handle={globalCheckbox.status === 'on' ? true : false} half={globalCheckbox.status === 'half' ? true : false}/>
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
-              <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center" onClick={() => changeFilter("size")}/>
-              <DocTable.Filter label="Data de Upload" arrow active={filter.date} className="max-lg:hidden" onClick={() => changeFilter("date")}/>
-              <DocTable.Filter label="Status" arrow active={filter.status!} className="max-sm:hidden justify-center" onClick={() => changeFilter("status")}/>
-              <DocTable.Filter label="Ações" className="cursor-default justify-center"/>
+              <DocTable.Filter label="Tamanho" arrow active={filter.size} colClassName="max-md:hidden" onClick={() => changeFilter("size")}/>
+              <DocTable.Filter label="Data de Upload" arrow active={filter.date} colClassName="max-lg:hidden" onClick={() => changeFilter("date")}/>
+              <DocTable.Filter label="Status" arrow active={filter.status!} colClassName="max-sm:hidden justify-center" onClick={() => changeFilter("status")}/>
+              <DocTable.Filter label="Ações" colClassName="justify-center" className="cursor-default"/>
             </DocTable.Heading>
             <DocTable.Files>
               {files
@@ -370,22 +361,22 @@ function Files() {
               .map((file: Files, index) => {
                 if((dataPages.page * 10 - (11)) < index && index < dataPages.page * 10){
                 return(
-                  <DocTable.File key={index} className={`grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
+                  <DocTable.File key={index} className={`grid-cols-[60px_1fr_120px_200px_140px_80px] max-lg:grid-cols-[60px_1fr_120px_140px_80px] max-md:grid-cols-[60px_1fr_140px_80px] max-sm:grid-cols-[60px_1fr_80px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
                     <DocTable.FileCheckbox checked={file.checked} onClick={() => selectFile(index)} />
                     <DocTable.Data>
                       <DocTable.Icon>
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={30} height={30} className="mr-[23px] w-[30px] h-[30px] max-lg:w-[25px] max-lg:h-[25px]" />
                       </DocTable.Icon>
-                      <DocTable.Text className="text-[#000] font-[400] truncate">{file.name}</DocTable.Text>
+                      <DocTable.Text className="text-[#000] font-[400] truncate max-2xl:w-[400px] max-xl:w-[220px] max-lsm:w-[150px]">{file.name}</DocTable.Text>
                     </DocTable.Data>
-                    <DocTable.Data className="justify-center gap-1">
+                    <DocTable.Data className="justify-center gap-1 hidden md:block">
                       <DocTable.Text>{FormatSizeFile(file.size)[0]}</DocTable.Text>
                       <DocTable.Label>{FormatSizeFile(file.size)[1]}</DocTable.Label>
                     </DocTable.Data>
-                    <DocTable.Data>
+                    <DocTable.Data className="hidden lg:block">
                       <DocTable.Text>{FormatDate(file.created_date)}</DocTable.Text>
                     </DocTable.Data>
-                    <DocTable.Data>
+                    <DocTable.Data className="hidden sm:block">
                       <DocTable.Viewed viewedDate={file.viewedDate}/>
                     </DocTable.Data>
                     <DocTable.FileActions>
