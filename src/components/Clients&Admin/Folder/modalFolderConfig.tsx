@@ -36,6 +36,9 @@ function ModalFolderConfig({ setUser, user, enterprise, id, id_company, setFolde
   }
 
   async function UpdateCfg() {
+    if(nameFolder.length < 4){
+     throw toast.error('Sua pasta tem que ter no mínimo 4 letras.')
+    }
     const docRef = doc(db, "companies", id_company, "clients", id);
     const docSnap = await getDoc(docRef);
     const enterprises = docSnap.data()?.enterprises

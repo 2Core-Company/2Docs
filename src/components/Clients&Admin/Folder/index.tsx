@@ -93,7 +93,7 @@ function ComponentFolder() {
 
       <Enterprises user={user} enterprise={enterprise} setUser={setUser} setEnterprise={setEnterprise} />
 
-      <RecentFiles recentFiles={recentFiles} admin={admin}/>
+      <RecentFiles recentFiles={recentFiles} admin={admin} setRecentFiles={setRecentFiles}/>
 
       <Folders enterprise={enterprise} user={user} setUser={setUser} setEnterprise={setEnterprise} />
     </div>
