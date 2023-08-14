@@ -303,7 +303,7 @@ function Files() {
         </div>
 
         <div className={`${folder.name !== 'Cliente' && 'hidden'}`}>
-          <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
+          <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full h-[250px] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
               <input onChange={(e) => getInputFiles(e.target.files)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
@@ -328,12 +328,12 @@ function Files() {
           </DocTable.Header>
           {files.filter((file) => textSearch != "" ?  file.name?.toUpperCase().includes(textSearch.toUpperCase()) : true).length > 0 ?
           <DocTable.Content>
-            <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px]">
+            <DocTable.Heading className="grid-cols-[60px_1fr_120px_200px_140px_80px] max-lg:grid-cols-[60px_1fr_120px_140px_80px] max-md:grid-cols-[60px_1fr_140px_80px] max-sm:grid-cols-[60px_1fr_80px]">
               <DocTable.GlobalCheckbox onChange={() => handleGlobalCheckbox()} checked={globalCheckbox.status === 'on' ? true : false} handle={globalCheckbox.status === 'on' ? true : false} half={globalCheckbox.status === 'half' ? true : false}/>
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
-              <DocTable.Filter label="Tamanho" arrow active={filter.size} className="max-md:hidden justify-center" onClick={() => changeFilter("size")}/>
-              <DocTable.Filter label="Data de Upload" arrow active={filter.date} className="max-lg:hidden" onClick={() => changeFilter("date")}/>
-              <DocTable.Filter label="Status" arrow active={filter.status!} className="max-sm:hidden justify-center" onClick={() => changeFilter("status")}/>
+              <DocTable.Filter label="Tamanho" arrow active={filter.size} colClassName="max-md:hidden" onClick={() => changeFilter("size")}/>
+              <DocTable.Filter label="Data de Upload" arrow active={filter.date} colClassName="max-lg:hidden" onClick={() => changeFilter("date")}/>
+              <DocTable.Filter label="Status" arrow active={filter.status!} colClassName="max-sm:hidden" className="justify-center" onClick={() => changeFilter("status")}/>
               <DocTable.Filter label="Ações" className="cursor-default justify-center"/>
             </DocTable.Heading>
             <DocTable.Files>
@@ -342,22 +342,22 @@ function Files() {
               .map((file: Files, index) => {
                 if((dataPages.page * 10 - (11)) < index && index < dataPages.page * 10){
                 return(
-                  <DocTable.File key={index} className={`grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
+                  <DocTable.File key={index} className={`grid-cols-[60px_1fr_120px_200px_140px_80px] max-lg:grid-cols-[60px_1fr_120px_140px_80px] max-md:grid-cols-[60px_1fr_140px_80px] max-sm:grid-cols-[60px_1fr_80px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
                     <DocTable.FileCheckbox checked={file.checked} onClick={() => selectFile(index)} />
                     <DocTable.Data>
                       <DocTable.Icon>
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={30} height={30} className="mr-[23px] w-[30px] h-[30px] max-lg:w-[25px] max-lg:h-[25px]" />
                       </DocTable.Icon>
-                      <DocTable.Text className="text-[#000] font-[400] truncate">{file.name}</DocTable.Text>
+                      <DocTable.Text className="text-[#000] font-[400] truncate max-2xl:w-[400px] max-xl:w-[220px] max-lsm:w-[150px]">{file.name}</DocTable.Text>
                     </DocTable.Data>
-                    <DocTable.Data className="justify-center gap-1">
+                    <DocTable.Data className="justify-center gap-1 hidden md:block">
                       <DocTable.Text>{FormatSizeFile(file.size)[0]}</DocTable.Text>
                       <DocTable.Label>{FormatSizeFile(file.size)[1]}</DocTable.Label>
                     </DocTable.Data>
-                    <DocTable.Data>
+                    <DocTable.Data className="hidden lg:block">
                       <DocTable.Text>{FormatDate(file.created_date)}</DocTable.Text>
                     </DocTable.Data>
-                    <DocTable.Data>
+                    <DocTable.Data className="hidden sm:block">
                       <DocTable.Viewed viewedDate={file.viewedDate}/>
                     </DocTable.Data>
                     <DocTable.FileActions>
