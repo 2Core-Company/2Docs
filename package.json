@@ -56,7 +56,6 @@
     "devDependencies": {
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
-        "@next/swc-win32-x64-msvc": "^13.4.13",
         "@types/react": "^18.0.25",
         "@types/uuid": "^9.0.0",
         "autoprefixer": "^10.4.13",
