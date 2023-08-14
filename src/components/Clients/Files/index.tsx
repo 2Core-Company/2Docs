@@ -333,8 +333,8 @@ function Files() {
               <DocTable.Filter label="Nome" arrow active={filter.name} onClick={() => changeFilter("name")}/>
               <DocTable.Filter label="Tamanho" arrow active={filter.size} colClassName="max-md:hidden" onClick={() => changeFilter("size")}/>
               <DocTable.Filter label="Data de Upload" arrow active={filter.date} colClassName="max-lg:hidden" onClick={() => changeFilter("date")}/>
-              <DocTable.Filter label="Status" arrow active={filter.status!} colClassName="max-sm:hidden" className="justify-center" onClick={() => changeFilter("status")}/>
-              <DocTable.Filter label="Ações" className="cursor-default justify-center"/>
+              <DocTable.Filter label="Status" arrow active={filter.status!} colClassName="max-sm:hidden justify-center" onClick={() => changeFilter("status")}/>
+              <DocTable.Filter label="Ações" colClassName="justify-center" className="cursor-default"/>
             </DocTable.Heading>
             <DocTable.Files>
               {files
