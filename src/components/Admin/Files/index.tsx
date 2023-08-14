@@ -1,5 +1,5 @@
 'use client'
-import { FileIcon, PersonIcon, EyeOpenIcon, DownloadIcon, Pencil2Icon, StarFilledIcon, StarIcon , Share1Icon, ChatBubbleIcon, TrashIcon, UploadIcon, Cross2Icon } from '@radix-ui/react-icons';
+import { FileIcon, PersonIcon, EyeOpenIcon, DownloadIcon, Pencil2Icon, StarFilledIcon, StarIcon , Share1Icon, ChatBubbleIcon, TrashIcon, UploadIcon, CounterClockwiseClockIcon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import React, { useState, useContext, useEffect } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading';
@@ -33,6 +33,7 @@ import { FilterAlphabetical, FilterDate, FilterSize, FilterStatus } from '@/src/
 import linkShareFile from '../../Clients&Admin/Files/shareFile';
 import { getFolder } from '@/src/Utils/Firebase/Folders/getFolders'; 
 import { Folders } from '@/src/types/folders';
+import enableFiles from './enableFiles';
 
 function Files() {
   //<--------------------------------- Params Vars --------------------------------->
@@ -215,7 +216,7 @@ function Files() {
 
     if(result) {
       const maxPages = Math.ceil(result.length / 10);
-      var page = dataPages.page;
+      let page = dataPages.page;
       if (maxPages < dataPages.page) {
         page = maxPages;
       }
@@ -270,6 +271,24 @@ function Files() {
       setDropdownState(true);
       setSelectedFiles([]);
       setGlobalCheckbox({status: 'off'});
+    }
+  }
+
+  async function enableFilesHandle(selectedFiles: Files[]) {
+    const result = await enableFiles({selectedFiles, files});
+
+    if(result) {
+      const maxPages = Math.ceil(result.length / 10);
+      let page = dataPages.page;
+      if (maxPages < dataPages.page) {
+        page = maxPages;
+      }
+
+      setFiles([...result]);
+      setDropdownState(false);
+      setSelectedFiles([]);
+      setGlobalCheckbox({ status: 'off' });
+      setDataPages({ maxPages: maxPages, page: page });
     }
   }
 
@@ -338,7 +357,7 @@ function Files() {
           <p className='text-[18px] flex mx-[5px] text-secondary dark:text-dsecondary max-sm:text-[16px] whitespace-nowrap'>{trash ? "Lixeira" : folder?.name}</p>
         </div>
 
-        <div className={`${(folder.name === 'Cliente' || folder.name === 'Favoritos' || folder.name === 'Lixeira') && 'hidden'}`}>
+        <div className={`${(folder.name === '' || folder.name === 'Cliente' || folder.name === 'Favoritos' || folder.name === 'Lixeira') && 'hidden'}`}>
           <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
@@ -356,7 +375,14 @@ function Files() {
             <DocTable.Count count={textSearch == null ? files.length : files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase())).length} />
             <DocTable.Search onChange={(text) => setTextSearch(text.target.value)} placeholder="Buscar" />
             <DocTable.GlobalActions setDropdownState={setDropdownState} dropdownState={dropdownState}>
-              <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
+              {trash &&
+                <>
+                  <DocTable.GlobalAction onClick={() => enableFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#0064AC] border-[#00518C]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Restaurar</DocTable.GlobalAction>
+                </>
+              }
+              {trash === false &&
+                <DocTable.GlobalAction onClick={() => downloadFiles(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`}>Download</DocTable.GlobalAction>
+              }
               <DocTable.GlobalAction onClick={() => deleteFilesHandle(selectedFiles)} dropdownState={dropdownState} className={`${selectedFiles.length > 0 ? "bg-[#BE0000] border-[#970000]" : "cursor-not-allowed hover:brightness-100 text-[#AAAAAA] bg-[#D9D9D9] border-[2px] border-[#9E9E9E]"}`} >Deletar</DocTable.GlobalAction>
             </DocTable.GlobalActions>
           </DocTable.Header>
@@ -377,7 +403,7 @@ function Files() {
                 if((dataPages.page * 10 - (11)) < index && index < dataPages.page * 10){
                 return(
                   <DocTable.File key={index} className={`grid-cols-[60px__1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px__1fr_120px_140px_150px] max-md:grid-cols-[60px__1fr_140px_150px] max-sm:grid-cols-[60px__1fr_150px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
-                    <DocTable.FileCheckbox checked={file.checked} onClick={() => selectFile(index)} />
+                    <DocTable.FileCheckbox checked={file.checked} onChange={() => selectFile(index)} />
                     <DocTable.Data>
                       <DocTable.Icon>
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={30} height={30} className="mr-[23px] w-[30px] h-[30px] max-lg:w-[25px] max-lg:h-[25px]" />
@@ -400,14 +426,22 @@ function Files() {
                           <></>
                         }
                         <DocTable.Options>
-                          <DocTable.OptionsItem dropdownClassName="rounded-t-[6px]" onClick={() => setViewFile({status: true, file: file})}>
-                            <DocTable.OptionsItemIcon><EyeOpenIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                            <DocTable.OptionsItemLabel>Visualizar</DocTable.OptionsItemLabel>
-                          </DocTable.OptionsItem>
-                          <DocTable.OptionsItem onClick={() => downloadFiles([file])}>
-                            <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
-                            <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
-                          </DocTable.OptionsItem>
+                        {trash ?
+                          <DocTable.OptionsItem onClick={() => enableFilesHandle([file])}>
+                            <DocTable.OptionsItemIcon><CounterClockwiseClockIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                            <DocTable.OptionsItemLabel>Recuperar</DocTable.OptionsItemLabel>
+                          </DocTable.OptionsItem> :
+                          <>
+                            <DocTable.OptionsItem dropdownClassName="rounded-t-[6px]" onClick={() => setViewFile({status: true, file: file})}>
+                              <DocTable.OptionsItemIcon><EyeOpenIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                              <DocTable.OptionsItemLabel>Visualizar</DocTable.OptionsItemLabel>
+                            </DocTable.OptionsItem>
+                              <DocTable.OptionsItem onClick={() => downloadFiles([file])}>
+                                <DocTable.OptionsItemIcon><DownloadIcon width={18} height={18} className="text-[#686868] group-hover:text-white"/></DocTable.OptionsItemIcon>
+                                <DocTable.OptionsItemLabel>Baixar</DocTable.OptionsItemLabel>
+                              </DocTable.OptionsItem>
+                          </>
+                          }
                           {(!trash && trash !== undefined) &&
                             <>
                             <DocTable.OptionsItem onClick={() => setMoveFile({status: true, file: file})}>
