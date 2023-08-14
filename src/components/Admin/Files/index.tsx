@@ -109,7 +109,26 @@ function Files() {
   }, [dataAdmin]);
 
   useEffect(() => {
-    textSearch == null ? setDataPages({page: dataPages.page, maxPages: Math.ceil(files.length / 10)}) : setDataPages({page: dataPages.page, maxPages: Math.ceil(files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length / 10)});
+    if(textSearch != '') {
+      const searchingNumberFiles = files.filter((file) => file.name.toUpperCase().includes(textSearch.toUpperCase()) ? true : false).length;
+
+      setDataPages({
+        page: dataPages.page <= Math.ceil(searchingNumberFiles / 10) ? dataPages.page : Math.ceil(searchingNumberFiles / 10),
+        maxPages: Math.ceil(searchingNumberFiles / 10)
+      });
+
+      if(dataPages.page <= 0) {
+        setDataPages({
+          ...dataPages,
+          page: 1
+        })
+      }
+    } else {
+      setDataPages({
+        page: 1,
+        maxPages: Math.ceil(files.length / 10)
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textSearch]);
 
