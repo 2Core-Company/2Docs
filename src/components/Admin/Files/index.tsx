@@ -358,7 +358,7 @@ function Files() {
         </div>
 
         <div className={`${(folder.name === '' || folder.name === 'Cliente' || folder.name === 'Favoritos' || folder.name === 'Lixeira') && 'hidden'}`}>
-          <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full max-sm:w-[410px] max-lsm:w-[340px] h-[250px] drop-shadow-[0_0  _10px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center'>
+          <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full h-[250px] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
               <input onChange={(e) => getInputFiles(e.target.files)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
@@ -402,22 +402,22 @@ function Files() {
               .map((file: Files, index) => {
                 if((dataPages.page * 10 - (11)) < index && index < dataPages.page * 10){
                 return(
-                  <DocTable.File key={index} className={`grid-cols-[60px__1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px__1fr_120px_140px_150px] max-md:grid-cols-[60px__1fr_140px_150px] max-sm:grid-cols-[60px__1fr_150px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
+                  <DocTable.File key={index} className={`grid-cols-[60px_1fr_120px_200px_140px_150px] max-lg:grid-cols-[60px_1fr_120px_140px_150px] max-md:grid-cols-[60px_1fr_140px_150px] max-sm:grid-cols-[60px_1fr_150px] ${(index % 9 === 0 && index !== 0) && 'border-none'}`}>
                     <DocTable.FileCheckbox checked={file.checked} onChange={() => selectFile(index)} />
                     <DocTable.Data>
                       <DocTable.Icon>
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={30} height={30} className="mr-[23px] w-[30px] h-[30px] max-lg:w-[25px] max-lg:h-[25px]" />
                       </DocTable.Icon>
-                      <DocTable.Text className="text-[#000] font-[400]">{file.name}</DocTable.Text>
+                      <DocTable.Text className="text-[#000] font-[400] truncate">{file.name}</DocTable.Text>
                     </DocTable.Data>
-                    <DocTable.Data className="justify-center gap-1">
+                    <DocTable.Data className="justify-center gap-1 hidden md:block">
                       <DocTable.Text>{FormatSizeFile(file.size)[0]}</DocTable.Text>
                       <DocTable.Label>{FormatSizeFile(file.size)[1]}</DocTable.Label>
                     </DocTable.Data>
-                    <DocTable.Data>
+                    <DocTable.Data className="hidden lg:block">
                       <DocTable.Text>{FormatDate(file.created_date)}</DocTable.Text>
                     </DocTable.Data>
-                    <DocTable.Data>
+                    <DocTable.Data className="hidden sm:block">
                       <DocTable.Viewed viewedDate={file.viewedDate}/>
                     </DocTable.Data>
                     <DocTable.FileActions>
@@ -449,8 +449,8 @@ function Files() {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
                                   <path d="M2 12V3C2 2.44772 2.44772 2 3 2H5.46482C5.79917 2 6.1114 2.1671 6.29687 2.4453L7.70313 4.5547C7.8886 4.8329 8.20083 5 8.53518 5H12C12.5523 5 13 5.44772 13 6V12C13 12.5523 12.5523 13 12 13H3C2.44772 13 2 12.5523 2 12Z"/>
                                   <path d="M2 9H7"/>
-                                  <path d="M7.08025 9.00008L6.08025 10.0001L6.0791 9.9989L5.08099 11.0002" stroke-linecap="round"/>
-                                  <path d="M7.08025 8.99992L6.08025 7.99992L6.0791 8.0011L5.08099 6.99982" stroke-linecap="round"/>
+                                  <path d="M7.08025 9.00008L6.08025 10.0001L6.0791 9.9989L5.08099 11.0002" strokeLinecap="round"/>
+                                  <path d="M7.08025 8.99992L6.08025 7.99992L6.0791 8.0011L5.08099 6.99982" strokeLinecap="round"/>
                                 </svg>
                               </DocTable.OptionsItemIcon>
                               <DocTable.OptionsItemLabel>Mover</DocTable.OptionsItemLabel>
@@ -458,7 +458,7 @@ function Files() {
                             <DocTable.OptionsItem onClick={() => setCopyFile({status: true, file: file})}>
                               <DocTable.OptionsItemIcon>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 15" fill="none" className="stroke-[#686868] group-hover:stroke-white">
-                                  <path d="M1.875 10V2.5C1.875 1.80964 2.43464 1.25 3.125 1.25H9.375M5.625 13.75H11.25C11.9404 13.75 12.5 13.1904 12.5 12.5V5C12.5 4.30964 11.9404 3.75 11.25 3.75H5.625C4.93464 3.75 4.375 4.30964 4.375 5V12.5C4.375 13.1904 4.93464 13.75 5.625 13.75Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                  <path d="M1.875 10V2.5C1.875 1.80964 2.43464 1.25 3.125 1.25H9.375M5.625 13.75H11.25C11.9404 13.75 12.5 13.1904 12.5 12.5V5C12.5 4.30964 11.9404 3.75 11.25 3.75H5.625C4.93464 3.75 4.375 4.30964 4.375 5V12.5C4.375 13.1904 4.93464 13.75 5.625 13.75Z" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                               </DocTable.OptionsItemIcon>
                               <DocTable.OptionsItemLabel>Copiar</DocTable.OptionsItemLabel>
