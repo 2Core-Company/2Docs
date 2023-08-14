@@ -1,6 +1,7 @@
 import { getAuth } from '../sdkFirebase'
 
 export default async function disableUser(req, res) {
+    console.log("a")
     const user = await getAuth().getUser(req.body.uid)
         console.log(user)
     if (user?.customClaims?.permission > 0 ) {
