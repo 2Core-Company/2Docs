@@ -16,5 +16,4 @@ export default async function disableUser(req, res) {
   } else {
     res.json({ error: 'Usuario não permitido' })
   }
-
 }
