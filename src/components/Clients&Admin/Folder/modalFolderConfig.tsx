@@ -27,7 +27,7 @@ function ModalFolderConfig({ setUser, user, enterprise, id, id_company, setFolde
   const [timeFile, setTimeFile] = useState<0 | 1 | 2 |3>(folderConfig.timeFile);
   const [singleDownload, setSingleDownload] = useState<boolean>(folderConfig.singleDownload);
   const [onlyMonthDownload, setOnlyMonthDownload] = useState<boolean>(folderConfig.onlyMonthDownload);
-  const toastUpdateCfg = { pending: "Salvando configurações.", success: "Salvamento concluído." }
+  const toastUpdateCfg = { pending: "Salvando configurações.", success: "Salvamento concluído."}
   const marks = {
     0: "1 dia",
     1: "1 semana",
@@ -107,7 +107,7 @@ function ModalFolderConfig({ setUser, user, enterprise, id, id_company, setFolde
               </svg>
 
               <p className={`text-[24px] ml-2 ${nameFolder === "" ? "opacity-50" : ""}`} style={{ color: color }}>
-                {nameFolder === "" ? folderConfig.name : nameFolder}
+                { nameFolder }
               </p>
 
             </div>
@@ -115,7 +115,7 @@ function ModalFolderConfig({ setUser, user, enterprise, id, id_company, setFolde
               <p className="text-[20px] dark:text-white">
                 Alterar nome da pasta:
               </p>
-              <input placeholder="Digite o nome da pasta" value={nameFolder} onChange={(text) => text.target.value !== "" ? setNameFolder(text.target.value) : setNameFolder(folderConfig.name)} maxLength={20}
+              <input placeholder="Digite o nome da pasta" value={nameFolder} onChange={(text) => setNameFolder(text.target.value)} maxLength={20}
                 className="mt-[5px] px-[15px] py-[8px] w-[80%] bg-transparent border-black dark:border-white border rounded-[8px] text-[20px] max-sm:text-[18px] dark:text-white dark:placeholder:text-gray-500 max-lsm:text-[16px] outline-none"
               />
             </div>

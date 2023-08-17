@@ -25,7 +25,7 @@ function Signin() {
   const [eye, setEye] = useState<boolean>(false)
   const checkbox = useRef<HTMLInputElement>(null)
   const router = useRouter()
-  const toastResetPassword = { pending: 'resetando a senha', success: 'Enviamos um email para você redefinir sua senha.' }
+  const toastResetPassword = { pending: 'Resetando a senha', success: 'Enviamos um email para você redefinir sua senha.' }
 
   //Verifica se o usuário ja esta logado
   useEffect(() => {
