@@ -22,7 +22,7 @@ async function favoriteFile({folderName, file, setFiles}: Props) {
                 const index = files.findIndex((fileIndex) => fileIndex.id === file.id);
                 if(folderName === 'Favoritos') {
                     files.splice(index, 1);
-                    return files;
+                    return [...files];
                 } else {
                     files[index].favorite = !files[index].favorite;
                     return [...files];
