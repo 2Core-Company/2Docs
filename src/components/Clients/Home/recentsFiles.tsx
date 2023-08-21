@@ -27,7 +27,7 @@ function RecentsFiles() {
 
     return (
         <div>
-            <Component.root title='Arquivos recentes' className='p-[30px] max-sm:p-[20px]'>
+            <Component.root title='Arquivos recentes do Admin' className='p-[30px] max-sm:p-[20px]'>
                 <div className='flex flex-col bg-primary gap-y-[20px] rounded-[12px] w-[500px] max-sm:w-[370px] max-lsm:w-[290px] min-h-[200px] max-sm:h-[280px] max-lsm:h-[270px]'>
                     {recentsFiles ?
                         recentsFiles.map((file) => {
