@@ -32,7 +32,7 @@ function UsersOnline() {
     return (
         <div>
             <Component.root title={'Clientes Ativos'} className='p-[30px] max-sm:p-[20px] h-[360px] overflow-y-scroll max-w-[443px]'>
-                <div className="flex flex-wrap justify-between items-center gap-x-[25px] max-sm:gap-x-[20px] ">
+                <div className="flex flex-wrap justify-between items-center gap-x-[25px] max-sm:gap-x-[20px] gap-y-[10px] ">
                     {onlineUsers ?
                         Object.keys(onlineUsers).map((key) => {
                             return { img: onlineUsers[key].img, name: onlineUsers[key].name }
