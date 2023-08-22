@@ -1,7 +1,7 @@
 'use client'
 import { ChatBubbleIcon, DownloadIcon, EyeOpenIcon, MagnifyingGlassIcon, Pencil2Icon, Share1Icon, StarFilledIcon, StarIcon, TrashIcon, UploadIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { FileIcon } from '@radix-ui/react-icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -57,6 +57,7 @@ function Files() {
   const [renameFile, setRenameFile] = useState<{status: boolean, file?: Files}>({status: false});
   const [modalMessage, setModalMessage] = useState<{status:boolean, action:'view' | 'edit', file?: Files}>({status:false, action:'view'});
   const [globalCheckbox, setGlobalCheckbox] = useState<{status: 'off' | 'on' | 'half'}>({status: 'off'});
+  const fileInputRef = useRef<any>(null);
 
   //<--------------------------------- Other vars --------------------------------->
   const router = useRouter();
@@ -77,6 +78,9 @@ function Files() {
       from: 'user',
       maxSize: dataCompany.maxSize
     })
+
+    fileInputRef.current.value = ''
+    
     if(newFiles && newFiles.files) {
       setFiles((files) => {
         const result = files.concat(newFiles.files);
@@ -260,6 +264,7 @@ function Files() {
       from: 'user',
       maxSize: dataCompany.maxSize
     })
+    fileInputRef.current.value = ''
     if(newFiles && newFiles.files) {
       setFiles((files) => {
         const result = files.concat(newFiles.files);
@@ -325,7 +330,7 @@ function Files() {
           <label onDrop={handleDrop} onDragOver={handleDragOver} className='cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[3px] border-[#AAAAAA] rounded-[12px] w-full h-[250px] flex flex-col items-center justify-center'>
               <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]'/>
               <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou faça um <span className='text-hilight underline'>upload</span></p>
-              <input onChange={(e) => getInputFiles(e.target.files)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
+              <input ref={fileInputRef} onChange={(e) => getInputFiles(e.target.files)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
           </label>
         </div>
 

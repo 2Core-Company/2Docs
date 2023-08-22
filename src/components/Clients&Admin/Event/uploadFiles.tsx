@@ -1,5 +1,5 @@
 import { UploadIcon } from '@radix-ui/react-icons';
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { companyContext } from '../../../app/Context/contextCompany';
 import { userContext } from '../../../app/Context/contextUser';
 import { UpdateStatusDelivered } from '../../../Utils/Firebase/Events/UpdateStatusDelivered';
@@ -28,6 +28,7 @@ function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, 
   const [filesUpload, setFilesUpload] = useState()
   const { dataUser } = useContext(userContext)
   const { dataCompany } = useContext(companyContext)
+  const fileInputRef = useRef<any>(null);
 
   const handleDrop = async (e) => {
     e.preventDefault();
@@ -60,11 +61,15 @@ function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, 
     if(filesUpload){
       UploadFilesHere()
     }
+    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[filesUpload])
 
   async function UploadFilesHere(){
     const result = await UploadFiles({ id_event:event.id, id_folder, id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise, files:filesUpload, from:'user', maxSize:dataCompany.maxSize})
+
+    fileInputRef.current.value = ''
+
     if(result?.status === 200){
       const dateNow = new Date().getTime()
 
@@ -100,7 +105,7 @@ function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, 
     <label onDrop={handleDrop} onDragOver={handleDragOver} className='xl:mt-[42px] max-xl:w-full py-[50px] px-[30px] cursor-pointer hover:bg-[#e4e4e4] bg-primary border-dashed border-[1px] border-[#9E9E9E] rounded-[12px] drop-shadow-[0_5px_5px_rgba(0,0,0,0.20)] flex flex-col items-center justify-center'>
       <UploadIcon className='text-[#9E9E9E] w-[48px] h-[56px]' />
       <p className='text-[20px] max-sm:text-[18px] text-center'>Arraste um arquivo ou <br /> faça um <span className='text-hilight underline'>upload</span></p>
-      <input onChange={(e) => OnChangeInputFiles(e.target.files)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
+      <input ref={fileInputRef} onChange={(e) => OnChangeInputFiles(e.target.files)} multiple={true} type="file" name="document" id="document" className='hidden w-full h-full' />
     </label>
   )
 }
