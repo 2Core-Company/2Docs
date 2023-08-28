@@ -205,8 +205,8 @@ function EditUser({ closedWindow, childToParentEdit, user, contextAdmin }: Props
   return (
     <>
       <div onClick={() => closedWindow()} className='w-screen h-screen left-0 top-0 fixed bg-black/30 z-10' />
-      <div className={`w-[600px] h-full z-10 max-sm:z-50 max-sm:w-screen fixed bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] right-0 duration-300 flex flex-col items-center top-0 drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
-        <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[156px] max-md:h-[135px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full'>
+      <div className={`w-[600px] z-10 max-sm:z-50 max-sm:w-screen fixed bg-[#DDDDDD] dark:bg-[#121212] min-h-screen pb-[100px] right-0 duration-300 flex flex-col items-center top-0 drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
+        <div className='bg-[#D2D2D2] dark:bg-white/10 flex justify-center items-center h-[132px] max-md:h-[117px]  max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full'>
           <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px]  max-sm:h-[35px] absolute left-[5px]' />
           <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white'>Editar</p>
         </div>

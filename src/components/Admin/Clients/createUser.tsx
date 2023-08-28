@@ -202,9 +202,9 @@ function CreateUser({ childToParentCreate, closedWindow, contextAdmin }: Props) 
   return (
     <>
       <div onClick={() => !loading && closedWindow()} className='w-screen h-screen left-0 top-0 fixed bg-black/30 z-10' />
-      <div className={`w-[600px] h-full z-10 max-sm:z-50 top-0 max-sm:w-screen fixed bg-[#DDDDDD] dark:bg-[#121212] min-h-screen right-0 flex flex-col items-center drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
-        <div className='bg-[#D2D2D2] dark:bg-white/10 flex items-center h-[153px] max-md:h-[133px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full relative'>
-          <button disabled={loading ? true : false} onClick={() => closedWindow()} className='absolute disabled:bg-[#d2d2d2]'>
+      <div className={`w-[600px] z-10 max-sm:z-50 top-0 max-sm:w-screen fixed bg-[#DDDDDD] dark:bg-[#121212] min-h-screen right-0 flex flex-col items-center drop-shadow-[0_0px_10px_rgba(0,0,0,0.50)]`}>
+        <div className='bg-[#D2D2D2] dark:bg-white/10 flex items-center h-[132px] max-md:h-[117px] max-sm:h-[80px] border-b-[2px] border-terciary dark:border-dterciary w-full relative'>
+          <button disabled={loading ? true : false} onClick={() => closedWindow()} className='absolute disabled:bg-[#-d2d2d2]'>
             <DoubleArrowRightIcon className='text-black dark:text-white cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px]' />
           </button>
           <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex dark:text-white mx-auto'>Cadastrar</p>
