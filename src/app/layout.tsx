@@ -6,6 +6,7 @@ import ContextUser from './Context/contextUser'
 import ContextLoading from './Context/contextLoading'
 import ContextCompany from './Context/contextCompany'
 import ContextAdmin from './Context/contextAdmin'
+import Head from './head';
 
 const poiretOne = Poiret_One({
   display: 'auto',
@@ -25,8 +26,7 @@ export default function RootLayout({children,}: {children: React.ReactNode}) {
   return (
     <ThemeContextProvider>
       <html lang="pt-br" className='bg-primary dark:bg-dprimary'>
-        <title>Software para auxiliar o gerenciamento dos arquivos.</title>
-        <head />
+        <Head />
         <body className={`${poiretOne.variable} ${poppins.variable} text-black font-poppins font-[400] max-w-screen`}>
           <ContextAdmin>
             <ContextUser>
