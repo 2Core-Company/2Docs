@@ -13,6 +13,7 @@ import {  DataUserContext } from '../../types/users';
 import { toast, ToastContainer } from 'react-toastify';
 import { setOnlineUsers } from '../../Utils/Firebase/Company/OnlineUsers';
 import { GetUser } from '../../Utils/Firebase/Users/GetUsers';
+import AddToHomeScreen from '@/src/components/AddToHomeScreen/AddToHomeScreen';
 
 
 export default function DashboardLayout({ children}: {children: React.ReactNode}) {
@@ -142,6 +143,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
   if(onLoad)
     return (
       <section className='flex'>
+        <AddToHomeScreen />
         <ToastContainer autoClose={3000} />
         <NavBar image={propsNavBar.urlImage} permission={propsNavBar.permission} name={propsNavBar.name}/>
         <main className='w-full px-[50px] max-md:px-[10px]'>{children}</main>

@@ -1,8 +1,13 @@
+'use client'
+import AddToHomeScreen from '@/src/components/AddToHomeScreen/AddToHomeScreen';
 import ComponentHome from '../../../components/Admin/Home'
 
-function Home(){
+function Home() {
   return (
-    <ComponentHome />
+    <>
+      <ComponentHome />
+    </>
+
   );
 };
 export default Home;
