@@ -38,22 +38,21 @@ export default function AddToHomeScreen() {
         if (addToHomeScreenPromptCookie !== 'dontShow') {
             // Only show prompt if user is on mobile and app is not installed
             if (isMobile && !isStandalone) {
-                // if (userAgent === 'Safari') {
-                //     setDisplayPrompt('safari');
-                // } else if (userAgent === 'Chrome') {
-                //     setDisplayPrompt('chrome');
-                // } else if (userAgent === 'Firefox') {
-                //     setDisplayPrompt('firefox');
-                // } else if (userAgent === 'FirefoxiOS') {
-                //     setDisplayPrompt('firefoxIos');
-                // } else if (userAgent === 'ChromeiOS') {
-                //     setDisplayPrompt('chromeIos');
-                // } else if (userAgent === 'SamsungBrowser') {
-                //     setDisplayPrompt('samsung');
-                // } else {
-                //     setDisplayPrompt('other');
-                // }
-                setDisplayPrompt('samsung');
+                if (userAgent === 'Safari') {
+                    setDisplayPrompt('safari');
+                } else if (userAgent === 'Chrome') {
+                    setDisplayPrompt('chrome');
+                } else if (userAgent === 'Firefox') {
+                    setDisplayPrompt('firefox');
+                } else if (userAgent === 'FirefoxiOS') {
+                    setDisplayPrompt('firefoxIos');
+                } else if (userAgent === 'ChromeiOS') {
+                    setDisplayPrompt('chromeIos');
+                } else if (userAgent === 'SamsungBrowser') {
+                    setDisplayPrompt('samsung');
+                } else {
+                    setDisplayPrompt('other');
+                }
             }
         } else {
         }
