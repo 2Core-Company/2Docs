@@ -4,6 +4,8 @@ export default function Head() {
       <title>2Docs</title>
       <meta content="width=device-width, initial-scale=1" name="viewport" />
       <link rel="icon" href="/favicon.ico" />
+      <link rel="apple-touch-icon" href="/logo.png" />
+      <link rel="icon" href="/favicon.ico" />
     </>
   )
 }
