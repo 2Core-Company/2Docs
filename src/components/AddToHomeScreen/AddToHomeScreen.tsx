@@ -78,7 +78,7 @@ export default function AddToHomeScreen() {
     )
 
     return (
-        <>
+        <div className='absolute'>
             {
                 displayPrompt !== ''
                     ?
@@ -86,6 +86,6 @@ export default function AddToHomeScreen() {
                     :
                     <></>
             }
-        </>
+        </div>
     );
 }
