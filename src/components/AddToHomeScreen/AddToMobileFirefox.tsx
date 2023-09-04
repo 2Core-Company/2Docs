@@ -29,8 +29,8 @@ export default function AddToMobileFirefox(props: Props) {
                 <div className="flex flex-col gap-2 items-center text-lg w-full px-4 mt-[20px]">
                     <p>Role para baixo e clique em:</p>
                     <div className="bg-zinc-400 flex justify-center items-center w-full px-3 py-2 rounded-lg ">
-                        <p>Instale</p>
                         <Image src={'/image/firefox-install.png'} alt="Firefox install icon" width={32} height={32} />
+                        <p>Instale</p>
                     </div>
                 </div>
                 <button className="border-2 p-1 mt-[20px] border-black px-[15px] rounded-md " onClick={doNotShowAgain}>Não mostrar novamente</button>

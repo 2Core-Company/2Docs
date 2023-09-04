@@ -18,7 +18,7 @@ type usersProps = {
 
 function UsersOnline() {
     const { dataCompany } = useContext(companyContext)
-    const [onlineUsers, setOnlineUsers] = useState<usersProps>({})
+    const [onlineUsers, setOnlineUsers] = useState<usersProps>()
 
     useEffect(() => {
         async function getUsers() {
@@ -28,12 +28,11 @@ function UsersOnline() {
         getUsers()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
     return (
         <div>
-            <Component.root title={'Clientes Ativos'} className='p-[30px] max-sm:p-[20px] h-[360px] overflow-y-scroll max-w-[443px]'>
+            <Component.root title={'Clientes Ativos'} className='p-[30px] max-sm:p-[20px] h-[360px] overflow-y-scroll max-w-[443px] '>
                 <div className="flex flex-wrap justify-between items-center gap-x-[25px] max-sm:gap-x-[20px] gap-y-[10px] ">
-                    {onlineUsers ?
+                    {onlineUsers ?  
                         Object.keys(onlineUsers).map((key) => {
                             return { img: onlineUsers[key].img, name: onlineUsers[key].name }
                         }).map((user, key) => {
@@ -46,7 +45,7 @@ function UsersOnline() {
                         })
                         :
                         <div className='flex text-center items-center flex-col mx-auto mt-6 gap-4'>
-                            <Image src={NoneUser} alt='Nenhum usuário online'></Image>
+                            <Image src={NoneUser} alt='Nenhum usuário online' />
                             <p className='font-poiretOne text-[28px] max-sm:text-[25px] max-lsm:text-[23px] text-[#686868] text-center max-w-[400px]'>Nenhum usuário ativo no momento.</p>
                         </div>
                     }
