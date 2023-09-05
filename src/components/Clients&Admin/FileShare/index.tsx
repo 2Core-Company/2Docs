@@ -64,8 +64,8 @@ function ShareFile({id_company, id_user, id_share}: Props) {
     return(
         <section className='px-[60px] pt-[20px]' >
             <ToastContainer autoClose={3000}/>
-            <Link href='https://www.2docs.app/' target='_blank' className='flex gap-[18px] items-center mb-[60px] select-none'>
-                <Image alt='Logo da empresa 2Docs' src={Logo2Docs} width={64} height={64}/>
+            <Link href='https://www.2docs.app/' target='_blank' className='flex gap-[18px] items-center mb-[60px] select-none w-fit'>
+                <Image alt='Logo da empresa 2Docs' src={Logo2Docs} width={64} height={64} priority/>
                 <div className='h-[41px] w-[2px] bg-black'></div>
                 <p className='text-[32px]'>2Docs</p>
             </Link>

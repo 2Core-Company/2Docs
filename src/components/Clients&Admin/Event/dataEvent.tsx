@@ -13,8 +13,8 @@ interface Props {
     files: Files[]
     event: Event
     setEvent: Function
-    childModalEvent: Function
-    childConcluedEvent: Function
+    childModalEvent?: Function
+    childConcluedEvent?: Function
     setFiles: React.Dispatch<React.SetStateAction<Files[]>>
 }
 
@@ -92,7 +92,7 @@ function DataEvent({ files, event, setEvent, childModalEvent, childConcluedEvent
                                     </Tooltip.Portal>
                                 </Tooltip.Root>
                             </Tooltip.Provider>
-                            {admin &&
+                            {admin && childModalEvent && childConcluedEvent &&
                                 <div className='ml-[5px]'>
                                     <OptionsEvent files={files} event={event} childModalEvent={childModalEvent} childConcluedEvent={childConcluedEvent} />
                                 </div>

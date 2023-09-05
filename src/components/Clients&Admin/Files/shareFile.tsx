@@ -5,6 +5,7 @@ import { Files, ShareFiles } from '../../../types/files';
 import copy from 'copy-to-clipboard';
 import tinyUrl from 'tinyurl';
 import { uuidv4 } from '@firebase/util';
+import { shortenURL } from '@/lib/shorten';
 
 interface Props{
     file: Files
@@ -95,18 +96,6 @@ async function updateFileDoc({file, sharedFileId}: updateFileDocProps) {
   } catch (error) {
     return {status: 400, message: `Ocorreu um erro enquanto atualizava um documento nos arquivos: ${error}`};
   }
-}
-
-async function shortenURL(longURL) {
-  return new Promise((resolve, reject) => {
-    tinyUrl.shorten(longURL, (shortURL) => {
-      if (shortURL) {
-        resolve(shortURL);
-      } else {
-        reject(new Error('Failed to shorten URL!'));
-      }
-    });
-  });
 }
 
 export default shareFile
