@@ -18,6 +18,7 @@ import { Notification } from '../../../types/notification';
 import CreateNotification from '../../../Utils/Firebase/Notification/CreateNotification';
 import EditEvent from '../../../Utils/Firebase/Events/EditEvent';
 import style from './modalEvent.module.css'
+import { companyContext } from '@/src/app/Context/contextCompany';
 
 
 interface interfaceOptionsUser {
@@ -36,9 +37,9 @@ interface interfaceOptionsEnterprises {
 
 interface Props {
     emailUser?: string
-    action:string
+    action: string
     event?: Event
-    defaultValue?:{label:string, value:{id_user:string}}
+    defaultValue?: { label: string, value: { id_user: string } }
     modalEvent: boolean
     setModalEvent: React.Dispatch<React.SetStateAction<boolean>>
     childModalEvent?: Function
@@ -47,6 +48,7 @@ interface Props {
 function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setModalEvent, childModalEvent }: Props) {
     registerLocale('pt-BR', pt)
     const { loading, setLoading } = useContext(loadingContext)
+    const { dataCompany } = useContext(companyContext)
     const { dataAdmin } = useContext(adminContext)
     const [optionsUser, setOptionsUser] = useState<interfaceOptionsUser[]>()
     const [optionsEnterprise, setOptionsEnterprise] = useState<interfaceOptionsEnterprises[]>()
@@ -73,18 +75,18 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
     })
 
     useEffect(() => {
-        if(!defaultValue){
+        if (!defaultValue) {
             CreateOptioOfSelectUser()
         }
 
-        var allDataEvent:Event = dataEvent
+        var allDataEvent: Event = dataEvent
 
-        if(event){
+        if (event) {
             allDataEvent = event
-        } 
-    
-        if(defaultValue){
-            allDataEvent={...allDataEvent, id_user:defaultValue.value.id_user}
+        }
+
+        if (defaultValue) {
+            allDataEvent = { ...allDataEvent, id_user: defaultValue.value.id_user }
         }
 
         setDataEvent(allDataEvent)
@@ -180,7 +182,7 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
     }
 
     async function CreateEventInFireStore() {
-        const result = await CreateEvent({ event: dataEvent, id_company: dataAdmin.id_company, email })
+        const result = await CreateEvent({ event: dataEvent, id_company: dataAdmin.id_company, email, url:dataCompany.domain })
         const response = await UpdatePendencies({ id_company: dataAdmin.id_company, id_user: dataEvent.id_user, action: 'sum' })
         // await CreateNotificationAfterCreateEvent()
     }
@@ -211,20 +213,20 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
         return newDate
     }
 
-    function SelectUser (e){
-        if(e){
-            setDataEvent({ ...dataEvent, id_user: e?.value.id, userName: e?.value.nameUser })
+    function SelectUser(e) {
+        if (e) {
+            setDataEvent({ ...dataEvent, id_user: e?.value.id, userName: e?.value.nameUser, id_enterprise: '', nameEnterprise: '', id_folder: '' })
             setEmail(e?.value.email)
         } else {
             refSelectEnterprese.current.clearValue()
-            setDataEvent({...dataEvent, id_enterprise:'', nameEnterprise:'', id_folder:''})
+            setDataEvent({ ...dataEvent, id_enterprise: '', nameEnterprise: '', id_folder: '', id_user: '', userName:'' })
         }
     }
 
     return (
         <Dialog.Root open={modalEvent} onOpenChange={setModalEvent}>
             <Dialog.Portal>
-                <Dialog.Overlay  className="bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0 z-20 " />
+                <Dialog.Overlay className="bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0 z-20 " />
                 <Dialog.Content id={style.boxModalEvent} className=" data-[state=open]:animate-contentShow fixed top-[50%] rounded-[15px] left-[50%] w-[530px] max-sm:w-[400px] max-lsm:w-[360px] overflow-hidden  translate-x-[-50%] translate-y-[-50%] focus:outline-none z-20 max-h-[95%] overflow-y-auto">
                     <div className='bg-primary rounded-[15px]'>
                         <div className='bg-blue w-full h-[15px] rounded-t-[15px]' />

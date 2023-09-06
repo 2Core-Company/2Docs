@@ -91,7 +91,8 @@ function SharedFile({ params }: { params: { id_event: string, id_company: string
         name: docSnap.data().name,
         contact: docSnap.data().contact,
         questions: docSnap.data().questions,
-        maxSize: maxSize
+        maxSize: maxSize,
+        domain:docSnap.data().domain
       })
     } else {
       setModalNotFoundEvent(true)

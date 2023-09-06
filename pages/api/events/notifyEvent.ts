@@ -4,7 +4,8 @@ import sendEmail from "@/src/Utils/Other/sendEmail";
 
 // async..await is not allowed in global scope, must use a wrapper
 export default async function notifyEvent(req, res) {
-  const { email, title, description, enterprise, dateStarted } = req.body
+  const { email, title, description, enterprise, dateStarted, url } = req.body
+
   const html = `
   <!DOCTYPE html>
   <html lang="en">
@@ -100,7 +101,7 @@ export default async function notifyEvent(req, res) {
               <td>
                   <div
                       style="padding-left: 15px; padding-right: 15px; text-align: center; margin: 40px 0 0 0; cursor: pointer;">
-                      <a href="https://2docs-2core.vercel.app/"
+                      <a href="${url}"
                           style="text-decoration: none; background-color: #d6f4e9; border: 2px solid #10b981; border-radius: 8px; padding: 10px 20px; color: #10b981; font-weight: 600; font-size: 14px;"
                           target="_blank">
                           Me leve ao 2Docs

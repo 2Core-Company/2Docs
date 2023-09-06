@@ -116,7 +116,8 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
         name:docSnap.data().name,
         contact:docSnap.data().contact, 
         questions:docSnap.data().questions,
-        maxSize:maxSize
+        maxSize:maxSize,
+        domain:docSnap.data().domain
       })
     }
   }
