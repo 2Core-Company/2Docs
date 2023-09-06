@@ -2,7 +2,7 @@
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { useState, useContext, useEffect, useRef, useReducer } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading'
-import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, browserSessionPersistence, browserLocalPersistence } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged, browserSessionPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth } from '../../../../firebase'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
@@ -10,8 +10,6 @@ import Image from 'next/image';
 import { toast, ToastContainer } from 'react-toastify'; import { signOut } from "firebase/auth";
 import { themeContext } from "../../../hooks/useTheme"
 import { stripe } from '../../../../lib/stripe'
-import Logo2CorePretoSemFundo from '../../../../public/image/Logo2CorePretoSemFundo.svg'
-import Logo2CoreBrancoSemFundo from '../../../../public/image/Logo2CoreBrancoSemFundo.svg'
 import axios from 'axios';
 import { adminContext } from '@/src/app/Context/contextAdmin';
 import { userContext } from '@/src/app/Context/contextUser';
@@ -115,7 +113,6 @@ function Signin() {
   }
 
 
-
   const contextTheme = useContext(themeContext);
 
   if (loading) { return <></> }
@@ -124,9 +121,9 @@ function Signin() {
       <ToastContainer autoClose={3000} />
 
       {contextTheme.theme == "light" ? (
-        <Image src={Logo2CorePretoSemFundo} alt="Logo da empresa" priority quality={100} className='w-[150px] h-[150px] max-lg:w-[175px] max-lg:h-[175px] max-md:w-[150px] max-md:h-[150px]' />
+        <Image src={'/image/Logo2CorePretoSemFundo.svg'} width={150} height={150} alt="Logo da empresa" priority quality={100} className='max-lg:w-[130px] max-lg:h-[130px] max-sm:w-[110px] max-sm:h-[110px]' />
       ) : (
-        <Image src={Logo2CoreBrancoSemFundo} alt="Logo da empresa" priority quality={100} className='w-[150px] h-[150px] max-lg:w-[175px] max-lg:h-[175px] max-md:w-[150px] max-md:h-[150px]' />
+        <Image src={'/image/Logo2CoreBrancoSemFundo.svg'} width={150} height={150} alt="Logo da empresa" priority quality={100} className='w-[150px] h-[150px]' />
       )}
       <div className="w-[400px] max-lsm:w-[330px] mt-[20px]" defaultValue="tab1">
         <p className="text-[40px] font-poiretOne dark:text-white">Login</p>

@@ -4,6 +4,7 @@ export interface DataCompanyContext{
     contact:Contact[],
     questions:Question[],
     maxSize:number
+    domain:string
   }
 
 export interface Contact {

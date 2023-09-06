@@ -1,6 +1,5 @@
 import { doc, updateDoc } from "firebase/firestore"
 import { db } from "../../../../firebase"
-import { Event } from "../../../types/event"
 
 interface UpdateEvent {
     id_company:string

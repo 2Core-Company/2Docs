@@ -123,9 +123,9 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
             {files.length > 0 ?
                 <DocTable.Content>
                     <DocTable.Heading className="px-[25px] max-sm:px-[15px] border-t-[0px] rounded-t-[8px] grid-cols-[minmax(100px,_1fr)_200px_200px_100px] max-lg:grid-cols-[minmax(100px,_1fr)_120px_180px_50px] max-md:grid-cols-[minmax(100px,_1fr)_120px_40px]">
-                        <DocTable.Filter label="Nome" arrow active={filter.name} className='hover:opacity-[.65] max-sm:text-[16px] max-sm:my-[15px]' onClick={() => changeFilter("name")} />
-                        <DocTable.Filter label="Tamanho" arrow active={filter.size} className="hover:opacity-[.65] max-md:hidden justify-center max-sm:my-[15px]" onClick={() => changeFilter("size")} />
-                        <DocTable.Filter label={widthPage! > 1024 ? "Data de Upload" : "Data"} className='hover:opacity-[.65] max-lg:justify-center max-sm:text-[16px] max-sm:my-[15px]' arrow active={filter.date} onClick={() => changeFilter("date")} />
+                        <DocTable.Filter label="Nome" arrow active={filter.name} colClassName='hover:opacity-[.65] max-sm:text-[16px]' onClick={() => changeFilter("name")} />
+                        <DocTable.Filter label="Tamanho" arrow active={filter.size}  colClassName="hover:opacity-[.65] max-md:hidden justify-center" onClick={() => changeFilter("size")} />
+                        <DocTable.Filter label={widthPage! > 1024 ? "Data de Upload" : "Data"} colClassName='hover:opacity-[.65] justify-center max-sm:text-[16px]' arrow active={filter.date} onClick={() => changeFilter("date")} />
                     </DocTable.Heading>
                     <DocTable.Files>
                         {files.map((file: Files, index) => {
@@ -141,7 +141,7 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
                                         <DocTable.Text>{FormatSizeFile(file.size)[0]}</DocTable.Text>
                                         <DocTable.Label>{FormatSizeFile(file.size)[1]}</DocTable.Label>
                                     </DocTable.Data>
-                                    <DocTable.Data className='max-lg:justify-center'>
+                                    <DocTable.Data className='justify-center'>
                                         <DocTable.Text className='max-sm:text-[16px]'>{widthPage! > 1024 ? FormatDate(file.created_date) : FormatDateSmall(file.created_date)}</DocTable.Text>
                                     </DocTable.Data>
                                     <DocTable.FileActions>

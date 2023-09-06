@@ -11,10 +11,11 @@ export const companyContext = createContext<{
   name:'',
   contact:[], 
   questions:[], 
-  maxSize:0}, setDataCompany:(dataCompany) => {}});
+  maxSize:0,
+  domain:''}, setDataCompany:(dataCompany) => {}});
 
 export default function Index({ children }) {
-    const [dataCompany, setDataCompany] = useState<DataCompanyContext>({id:'', name:'', contact:[], questions:[], maxSize:0})
+    const [dataCompany, setDataCompany] = useState<DataCompanyContext>({id:'', name:'', contact:[], questions:[], maxSize:0, domain:''})
   return (
     <companyContext.Provider value={{dataCompany, setDataCompany}}>
       {children}

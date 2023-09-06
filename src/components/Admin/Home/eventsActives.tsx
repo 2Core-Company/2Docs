@@ -100,9 +100,9 @@ function EventsActives() {
                 if ((((dataPages.page - 1) * 8) - 1) < index && index < (dataPages.page * 8)) {
                   return (
                     <div key={user.id} className='max-w-full py-[10px] px-[20px] grid auto-cols-auto grid-cols-[275px_60px_124px] 
-                  max-sm:grid-cols-[210px_40px_124px]
-                  max-lsm:grid-cols-[170px_30px_100px]
-                  items-center  border-t-[1px] border-t-[#D2D2D2]'>
+                      max-sm:grid-cols-[210px_40px_124px]
+                      max-lsm:grid-cols-[170px_30px_100px]
+                      items-center  border-b-[1px] border-b-[#D2D2D2]'>
                       <div className='flex items-center gap-x-[15px] max-sm:gap-x-[10px]'>
                         <Image src={user.photo_url} width={35} height={35} alt='Perfil' className='min-w-[35px] max-sm:min-w-[30px] aspect-square bg-black rounded-full' />
                         <p className='text-[20px] max-sm:text-[18px] max-lsm:text-[16px] truncate mr-[40px]'>{user.name}</p>

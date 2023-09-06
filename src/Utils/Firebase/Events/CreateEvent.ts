@@ -8,9 +8,10 @@ interface PropsCreateEvent {
     event: Event
     email: string
     id_company: string
+    url:string
 }
 
-export default async function createEvent({ event, email, id_company }: PropsCreateEvent) {
+export default async function createEvent({ event, email, id_company, url }: PropsCreateEvent) {
     try {
         const response = await setDoc(doc(db, "companies", id_company, "events", event.id), event)
         const result = await SendEmail()
@@ -21,11 +22,12 @@ export default async function createEvent({ event, email, id_company }: PropsCre
 
     async function SendEmail() {
         const data = {
-            email: email,
+            email,
             title: event.title,
             description: event.description,
             enterprise: event.nameEnterprise,
-            dateStarted: event.dateStarted
+            dateStarted: event.dateStarted,
+            url
         }
 
         const domain: string = new URL(window.location.href).origin

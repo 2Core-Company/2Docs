@@ -8,8 +8,7 @@ import { getDoc, doc } from "firebase/firestore";
 import { userContext } from '../Context/contextUser'
 import { adminContext } from '../Context/contextAdmin'
 import { companyContext } from '../Context/contextCompany';
-import { stripe } from '../../../lib/stripe'
-import {  DataUserContext } from '../../types/users';
+import { stripe } from '@/lib/stripe'
 import { toast, ToastContainer } from 'react-toastify';
 import { setOnlineUsers } from '../../Utils/Firebase/Company/OnlineUsers';
 import { GetUser } from '../../Utils/Firebase/Users/GetUsers';
@@ -34,7 +33,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
       
       const idTokenResult = await auth.currentUser?.getIdTokenResult()
 
-      const {data} = await stripe.customers.search({
+      const { data } = await stripe.customers.search({
         query: 'metadata[\'id_company\']:\'' +user.displayName+ '\'',
         limit: 1,
         expand: ['data.subscriptions']
@@ -43,7 +42,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
  
       const status = data[0]?.subscriptions.data[0]?.status
 
-      if(status != 'active' && status != 'trialing'){
+      if(status != 'active' && status != 'trialing' && data.length != 0){
         signOut(auth)
         toast.error("Você não tem um plano do 2Docs ativo.")
         return router.replace('/')
@@ -79,7 +78,6 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
     }
   }
 
-
   //Pegando credenciais dos usuários
   async function GetDataUser(user, permission){
     try{
@@ -106,6 +104,7 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
     }
   }
 
+
   async function GetDataCompanyUser({id_company, data}){
     const maxSize = await SearchCostumer({data})
     const docRef = doc(db, "companies", id_company);
@@ -117,10 +116,12 @@ export default function DashboardLayout({ children}: {children: React.ReactNode}
         name:docSnap.data().name,
         contact:docSnap.data().contact, 
         questions:docSnap.data().questions,
-        maxSize:maxSize
+        maxSize:maxSize,
+        domain:docSnap.data().domain
       })
     }
   }
+
 
   async function SearchCostumer({data}) {
     const id = data[0]?.subscriptions.data[0]?.plan.id

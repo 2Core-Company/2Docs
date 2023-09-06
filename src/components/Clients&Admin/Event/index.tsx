@@ -12,7 +12,6 @@ import { GetEvent } from '../../../Utils/Firebase/Events/GetEvents'
 import { getFilesEvent } from '../../../Utils/Firebase/Files/getFiles'
 import DataEvent from './dataEvent'
 import TableFiles from './tableFiles'
-import ModalDelete from '@/src/Utils/Other/modalDelete'
 
 function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
   const { dataCompany } = useContext(companyContext)
@@ -80,8 +79,6 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
           </Link>
           <p className='mx-[8px]'>{'>'}</p>
         </div>
-
-
 
         {event?.title &&
           <div className='flex items-center'>
