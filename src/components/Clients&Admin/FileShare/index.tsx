@@ -80,7 +80,7 @@ function ShareFile({id_company, id_user, id_share}: Props) {
 
             <p className='font-poiretOne text-[40px] mb-[42px]'>Compartilhamento de Documento</p>
             
-            <div className='flex gap-[200px] items-center justify-evenly'>
+            <div className='flex max-lg:flex-col gap-[200px] items-center justify-evenly w-fit mx-auto'>
                 <div className='flex flex-col gap-[55px] w-[357px]'>
                     <Image alt='Imagem de duas pessoas compartilhando um documento' src={FileShareImage}/>
                     <div className='text-[24px] text-[#686868]'>
@@ -95,7 +95,7 @@ function ShareFile({id_company, id_user, id_share}: Props) {
                 <div className='relative border border-[#9E9E9E] max-w-[550px] rounded-xl flex flex-col shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]'>
                     <div className='absolute w-[21px] h-[21px] rounded-full border border-[#9E9E9E] right-3 top-3' />
                     <p className='w-full text-[28px] text-[#686868] p-[20px] border-b border-b-[#9E9E9E] mb-[43px]'>Ficha do Documento</p>
-                    <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={48} height={48} className="width mx-auto mb-3 select-none"/>
+                    <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={48} height={48} className="mx-auto mb-3 select-none"/>
                     <p className='text-[20px] text-[#686868] text-center mb-[24px] px-[20px] truncate ...'>{file.fileName}</p>
                     <div className='relative rounded-lg border border-[#9E9E9E] mx-[40px] mb-[31px] max-w-[450px]'>
                         <div className='flex justify-between items-center px-3 py-[15px] border-b border-[#9E9E9E] gap-3'>
