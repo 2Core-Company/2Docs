@@ -5,6 +5,7 @@ import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 import { getMessaging } from "firebase/messaging";
+import getToken from "messagingGetToken";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -23,4 +24,8 @@ export const storage = getStorage(app);
 export const db = getFirestore(app);
 export const database = getDatabase(app);
 
-const messaging = getMessaging(app);
+if(navigator) {
+  const messaging = getMessaging(app);
+
+  getToken();
+}
