@@ -1,7 +1,7 @@
 import Storage from "./storage"
 import EventsActives from "./eventsActives"
 import UsersOnline from "./onlineUsers"
-import getToken from "messagingGetToken";
+import getToken from "@/messagingGetToken";
 
 function ComponentHome() {
   return (
