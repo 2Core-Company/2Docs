@@ -1,8 +1,9 @@
 import { getMessaging, getToken } from "firebase/messaging";
+import { app } from "firebase";
 import { toast } from "react-toastify";
 
 export default function main() {
-    const messaging = getMessaging();
+    const messaging = getMessaging(app);
 
     Notification.requestPermission().then((permission) => {
         if(permission === 'granted') {

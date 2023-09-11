@@ -18,15 +18,8 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const db = getFirestore(app);
 export const database = getDatabase(app);
-
-console.log(navigator);
-if(typeof navigator !== undefined) {
-  const messaging = getMessaging(app);
-
-  getToken();
-}
