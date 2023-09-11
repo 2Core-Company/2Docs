@@ -75,7 +75,7 @@ function TableFiles({ event, files, setFiles, setEvent }: Props) {
 
         result = await toast.promise(DeletFiles({ files, selectedFiles: selectedFiles, id_company: dataCompany.id }), { pending: "Deletando arquivos...", success: "Seus arquivos foram deletados.", error: "Não foi possível deletar os arquivos." })
         
-        if(result.length === 0){
+        if(result.length < event.tasks.filter((taks) => taks.isRequired == true).length){
             await UpdateStatusDelivered({id_company:dataCompany.id, id_event:event.id, status:false})
             setEvent({...event, delivered:false})
         }

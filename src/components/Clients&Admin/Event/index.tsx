@@ -13,6 +13,7 @@ import { getFilesEvent } from '../../../Utils/Firebase/Files/getFiles'
 import DataEvent from './dataEvent'
 import TableFiles from './tableFiles'
 import ModalDelete from '@/src/Utils/Other/modalDelete'
+import { Tasks } from './tasks'
 
 function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
   const { dataCompany } = useContext(companyContext)
@@ -81,8 +82,6 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
           <p className='mx-[8px]'>{'>'}</p>
         </div>
 
-
-
         {event?.title &&
           <div className='flex items-center'>
             <FileTextIcon className='min-w-[17px] min-h-[17px] mr-[5px]' />
@@ -90,9 +89,12 @@ function Index({ id_event, nameUser }: { id_event: string, nameUser: string }) {
           </div>
         }
       </div>
+      
       <div className='flex flex-col  items-start ml-[20px] max-sm:ml-[10px]'>
         {event && <DataEvent files={files!} event={event} setEvent={setEvent} childModalEvent={childModalEvent} childConcluedEvent={childConcluedEvent} setFiles={setFiles} />}
       </div>
+
+      {!admin && event?.tasks && event.tasks[0] ? <Tasks task={event.tasks} files={files}/> : ''}
 
       <div className='mb-[10px] ml-[20px] max-sm:ml-[10px]'>
         {event && <TableFiles event={event} files={files} setFiles={setFiles} setEvent={setEvent} />}
