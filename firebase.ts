@@ -24,8 +24,6 @@ export const storage = getStorage(app);
 export const db = getFirestore(app);
 export const database = getDatabase(app);
 
-
-
 if(typeof navigator !== undefined) {
   const messaging = getMessaging(app);
 
