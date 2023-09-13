@@ -22,9 +22,10 @@ interface Props {
   event:Event
   setEvent: Function
   setFiles:React.Dispatch<React.SetStateAction<Files[]>>
+  files: Files[]
 }
 
-function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, event, setEvent, setFiles}:Props) {
+function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, event, setEvent, setFiles, files}:Props) {
   const [filesUpload, setFilesUpload] = useState()
   const { dataUser } = useContext(userContext)
   const { dataCompany } = useContext(companyContext)
@@ -65,6 +66,22 @@ function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[filesUpload])
 
+  useEffect(() => {
+    async function update() {
+      await UpdateStatusDelivered({id_company:dataCompany.id, id_event:event.id, status:true})
+    }
+
+    if(event.delivered === false && files.length >= event.tasks.filter((task) => task.isRequired == true).length) {
+      update()
+      
+      const dateNow = new Date().getTime()
+
+      setEvent((event) => {
+        return {...event, delivered: files.length >= event.tasks.filter((task) => task.isRequired == true).length ? true : false, lastModify:dateNow}
+      })
+    }
+  }, [files])
+
   async function UploadFilesHere(){
     const result = await UploadFiles({ id_event:event.id, id_folder, id_company:dataUser.id_company, id_user:dataUser.id, id_enterprise, files:filesUpload, from:'user', maxSize:dataCompany.maxSize})
 
@@ -75,17 +92,10 @@ function UploadFile({messageDisabled, uploadDisabled, id_folder, id_enterprise, 
 
       await UpdateLastModify({id_company:dataCompany.id, id_event:event.id, date:dateNow})
 
-      if(event.delivered === false){
-        await UpdateStatusDelivered({id_company:dataCompany.id, id_event:event.id, status:true})
-        // await CreateNotificationAfterDeliveredEvent()
-      }
       setFilesUpload(undefined)
 
       setFiles((files) => {
         return result.files.concat(files)
-      })
-      setEvent((event) => {
-        return {...event, delivered:true, lastModify:dateNow}
       })
     }
   }

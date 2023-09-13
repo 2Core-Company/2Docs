@@ -15,4 +15,5 @@ export interface Event{
   limitedDelivery:boolean
   lastModify:number | null
   delivered:boolean
+  tasks: Array<{title: string, isRequired: boolean}>
 }

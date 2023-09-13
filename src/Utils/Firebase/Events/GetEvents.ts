@@ -205,6 +205,7 @@ export async function GetEvent({ id_company, id_event}: PropsGetEvent) {
       limitedDelivery: doc.data()?.limitedDelivery,
       lastModify: doc.data()?.lastModify,
       delivered:doc.data()?.delivered,
+      tasks: doc.data()?.tasks
     }
     events.push(data)
   });
