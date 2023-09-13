@@ -106,7 +106,7 @@ function Options({ loading, dataAdmin, domain, idUser, user, users, windowsActio
             }
 
             <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
-              <Link href={{ pathname: '/Dashboard/Admin/Pastas', query: { id_user: idUser } }} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+              <Link href={{pathname: '/Dashboard/Admin/Pastas', query: { id_user: idUser }}} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
                 <FileIcon width={18} height={18} />
                 Documentos
               </Link>

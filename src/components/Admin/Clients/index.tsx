@@ -6,7 +6,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 function ComponentClients() {
   return (
     <section className="bg-primary dark:bg-dprimary text-black">
-      <p  className="font-poiretOne text-[40px] dark:text-white mt-[40px]">Clientes</p>
+      <p  className="font-poiretOne text-[40px] max-sm:text-[35px] dark:text-white mt-[40px]">Clientes</p>
       <Suspense fallback={<SkeletonTableClients />}>
         <TableClients/>
       </Suspense>
