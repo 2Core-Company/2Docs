@@ -96,17 +96,8 @@ function Options({ loading, dataAdmin, domain, idUser, user, users, windowsActio
 
         <DropdownMenu.Portal >
           <DropdownMenu.Content align="end" alignOffset={-25} className="p-[3px] bg-primary dark:bg-dprimary text-[#686868] dark:text-white rounded-[6px] flex flex-col drop-shadow-[0_4px_8px_rgba(0,0,0,0.50)]" sideOffset={5}>
-            {!user.verifiedEmail &&
-              <DropdownMenu.Item className={`cursor-pointer rounded-[6px]  hover:bg-emerald-500 hover:text-[#fff] duration-100`}>
-                <button onClick={() => toast.promise(ActiveSendEmail(), toastResendEmail)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
-                  <PaperPlaneIcon width={20} height={20} />
-                  Reenviar email
-                </button>
-              </DropdownMenu.Item>
-            }
-
             <DropdownMenu.Item className="cursor-pointer rounded-[6px] hover:outline-none  hover:bg-emerald-500 hover:text-[#fff] duration-100">
-              <Link href={{pathname: '/Dashboard/Admin/Pastas', query: { id_user: idUser }}} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+              <Link href={{ pathname: '/Dashboard/Admin/Pastas', query: { id_user: idUser } }} className='cursor-pointer flex items-center gap-x-[5px] px-[10px] py-[3px]'>
                 <FileIcon width={18} height={18} />
                 Documentos
               </Link>
@@ -163,6 +154,15 @@ function Options({ loading, dataAdmin, domain, idUser, user, users, windowsActio
                 </button>
               }
             </DropdownMenu.Item>
+
+            {!user.verifiedEmail &&
+              <DropdownMenu.Item className={`cursor-pointer rounded-[6px]  hover:bg-emerald-500 hover:text-[#fff] duration-100`}>
+                <button onClick={() => toast.promise(ActiveSendEmail(), toastResendEmail)} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
+                  <PaperPlaneIcon width={20} height={20} />
+                  Reenviar email
+                </button>
+              </DropdownMenu.Item>
+            }
 
             <DropdownMenu.Item className={`cursor-pointer rounded-[6px] ${dataAdmin.permission < 2 ? 'hover:bg-none' : 'hover:bg-[#BE0000] hover:text-[#fff] hover:outline-none'} duration-100`}>
               <button disabled={dataAdmin.permission < 3} onClick={() => ConfirmationDeleteUser()} className='cursor-pointer rounded-[6px] w-full flex items-center gap-x-[5px] px-[10px] py-[3px]'>
