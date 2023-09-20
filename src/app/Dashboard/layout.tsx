@@ -142,7 +142,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     } else if (id == 'price_1MX5tXBC8E6EzctJCEiUGV4h') {
       return 5368709120
     } else {
-      return 5368709120
+      return 157286400
     }
   }
 
