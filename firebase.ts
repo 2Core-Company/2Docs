@@ -4,6 +4,8 @@ import { Auth, getAuth, Unsubscribe, User } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
+// import { getMessaging } from "firebase/messaging";
+// import getToken from "messagingGetToken";
 import { stripe } from '@/lib/stripe'
 import { toast } from "react-toastify";
 import getCompany from "./src/Utils/Firebase/Company/getCompany";
@@ -19,7 +21,7 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const db = getFirestore(app);
@@ -53,4 +55,3 @@ auth.beforeAuthStateChanged(async (user) => {
     }
   }
 });
-
