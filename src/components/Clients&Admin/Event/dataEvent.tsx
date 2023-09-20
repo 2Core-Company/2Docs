@@ -145,7 +145,7 @@ function DataEvent({ files, event, setEvent, childModalEvent, childConcluedEvent
 
 
                 {!admin && new Date().getTime() >= event.dateStarted &&
-                    <UploadFile uploadDisabled={disabledUpload} messageDisabled={messageDisabled} id_event={event.id} id_folder={event.id_folder} id_enterprise={event.id_enterprise} event={event} setEvent={setEvent} setFiles={setFiles} />}
+                    <UploadFile uploadDisabled={disabledUpload} messageDisabled={messageDisabled} id_event={event.id} id_folder={event.id_folder} id_enterprise={event.id_enterprise} event={event} setEvent={setEvent} setFiles={setFiles} files={files}/>}
             </div>
             {!admin && <div className='flex items-center justify-center gap-x-[5px] max-md:gap-x-[0px] text-[#21627e] bg-[rgba(46,134,171,0.2)] border-[1px] border-[#21627e] py-[8px] px-[10px] text-center mt-[25px] rounded-[4px]'>
                 <InfoCircledIcon className='min-w-[25px] min-h-[25px]' />

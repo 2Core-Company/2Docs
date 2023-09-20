@@ -45,7 +45,7 @@ function UsersOnline() {
                         })
                         :
                         <div className='flex text-center items-center flex-col mx-auto mt-6 gap-4'>
-                            <Image src={NoneUser} alt='Nenhum usuário online' />
+                            <Image src={NoneUser} priority alt='Nenhum usuário online' />
                             <p className='font-poiretOne text-[28px] max-sm:text-[25px] max-lsm:text-[23px] text-[#686868] text-center max-w-[400px]'>Nenhum usuário ativo no momento.</p>
                         </div>
                     }

@@ -14,11 +14,10 @@ import { Event } from '../../../types/event';
 import { v4 as uuidv4 } from 'uuid';
 import CreateEvent from '../../../Utils/Firebase/Events/CreateEvent';
 import { UpdatePendencies } from '../../../Utils/Firebase/Users/UpdatePendencies';
-import { Notification } from '../../../types/notification';
-import CreateNotification from '../../../Utils/Firebase/Notification/CreateNotification';
 import EditEvent from '../../../Utils/Firebase/Events/EditEvent';
 import style from './modalEvent.module.css'
 import { companyContext } from '@/src/app/Context/contextCompany';
+import { ChevronDownIcon, ChevronUpIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 
 
 interface interfaceOptionsUser {
@@ -55,6 +54,8 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
     const styleText = 'mt-[15px] text-[20px] max-sm:text-[18px] max-lsm:text-[16px]'
     const refSelectEnterprese = useRef<any>()
     const [email, setEmail] = useState<string>(emailUser ? emailUser : '')
+    const [advanced, setAdvanced] = useState(false)
+    const [tasks, setTasks] = useState<Array<{title: string, isRequired: boolean}>>([])
     const [dataEvent, setDataEvent] = useState<Event>({
         id: uuidv4(),
         id_user: '',
@@ -71,7 +72,8 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
         repeatMonths: false,
         limitedDelivery: false,
         lastModify: null,
-        delivered: false
+        delivered: false,
+        tasks: []
     })
 
     useEffect(() => {
@@ -182,7 +184,7 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
     }
 
     async function CreateEventInFireStore() {
-        const result = await CreateEvent({ event: dataEvent, id_company: dataAdmin.id_company, email, url:dataCompany.domain })
+        const result = await CreateEvent({ event: {...dataEvent, tasks}, id_company: dataAdmin.id_company, email,  url:dataCompany.domain })
         const response = await UpdatePendencies({ id_company: dataAdmin.id_company, id_user: dataEvent.id_user, action: 'sum' })
         // await CreateNotificationAfterCreateEvent()
     }
@@ -235,6 +237,8 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
                                 <p className='text-[26px] max-sm:text-[24px] max-lsm:text-[22px] after:w-[40px] after:h-[3px] after:block after:bg-blue after:rounded-full after:ml-[3px] after:mt-[-5px]'>
                                     {action === 'create' ? 'Criar Evento' : 'Editar Evento'}
                                 </p>
+
+                                <div className='overflow-y-auto max-h-[700px] my-4 pr-2 overflow-x-hidden'>
                                 <p className='text-[20px] max-sm:text-[18px] max-lsm:text-[16px] mt-[20px]'>Usuário Designado:</p>
                                 <Select
                                     placeholder={'Selecionar...'}
@@ -283,68 +287,111 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
 
                                 <p className={styleText}>Descrição:</p>
                                 <textarea value={dataEvent.description} maxLength={250} disabled={loading} rows={4} placeholder='Digite a mensagem do evento' onChange={(text) => setDataEvent({ ...dataEvent, description: text.target.value })} className='text-[18px] max-sm:text-[16px] resize-none mt-[4px] w-full px-[15px] py-[8px] rounded-[8px] border-[1px] border-black text-[#9E9E9E] bg-transparent focus:outline-none focus:ring-[2px] focus:ring-[#686868]' />
+                                
+                                <p className={styleText}>Tarefas:</p>
 
-                                <p className={styleText}>Prazo para Entrega:</p>
+                                {tasks.map((task, index) => {
+                                    return (
+                                        <div key={index} className='flex items-center border-b border-neutral-400 py-1 my-2'>
+                                            <input type="text" placeholder='Documento' className='bg-transparent w-full outline-none' value={task.title} onChange={(e) => {
+                                                tasks[index].title = e.target.value
+                                                setTasks([...tasks])
+                                            }}/>
+                                            <select name="importance" id="importance" className='bg-neutral-300 p-1 rounded-md hover:bg-neutral-400/60 cursor-pointer mr-2' onChange={(e) => {
+                                                if (e.target.value == '1') {
+                                                    tasks[index].isRequired = true
+                                                } else {
+                                                    tasks[index].isRequired = false
+                                                }
 
-                                <div className='mt-[4px] flex items-center text-[20px] max-sm:text-[18px] max-lsm:text-[16px] gap-x-[10px] text-[#686868]'>
-                                    <p>De</p>
-                                    <DatePicker
-                                        locale="pt-BR"
-                                        dateFormat="dd/MM/yyyy"
-                                        selected={dataEvent.dateStarted}
-                                        onChange={(date) => setDataEvent({ ...dataEvent, dateStarted: date.setHours(0, 0, 0, 0), dateEnd: null })}
-                                        minDate={new Date()}
-                                        disabled={loading}
-                                        className='w-[180px]  max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px]'
-                                        showPopperArrow={false}
-                                        popperModifiers={[
-                                            {
-                                                name: "offset",
-                                                options: {
-                                                    offset: [0, -5],
+                                                setTasks([...tasks])
+                                            }}>
+                                                <option value="1">Obrigatório</option>
+                                                <option value="2">Opcional</option>
+                                            </select>
+                                            <TrashIcon className='w-[40px] h-[30px] hover:bg-neutral-300 text-red rounded-md p-1 cursor-pointer duration-100' onClick={() => {
+                                                tasks.splice(index, 1)
+                                                setTasks([...tasks])
+                                            }}/>
+                                        </div>
+                                    )
+                                })}
+
+                                <button className='w-fit flex items-center gap-1 text-blue bg-neutral-200 hover:bg-neutral-300 duration-100 rounded-md py-1 px-2 mt-4' onClick={() => {
+                                    setTasks((state) => [...state, {title: '', isRequired: true}])
+                                }}>Adicionar novo <PlusIcon/></button>
+                                
+                                <p className='w-fit flex items-center gap-1 cursor-pointer mt-4 bg-neutral-200 py-1 px-2 rounded-md hover:bg-neutral-300 duration-100' onClick={() => {
+                                    setAdvanced((state) => !state)
+                                }}>Avançado {advanced ? <ChevronUpIcon/> : <ChevronDownIcon/>}</p>
+
+                                {advanced && 
+                                <div>
+                                    <p className={styleText}>Prazo para Entrega:</p>
+
+                                    <div className='mt-[4px] flex items-center text-[20px] max-sm:text-[18px] max-lsm:text-[16px] gap-x-[10px] text-[#686868]'>
+                                        <p>De</p>
+                                        <DatePicker
+                                            locale="pt-BR"
+                                            dateFormat="dd/MM/yyyy"
+                                            selected={dataEvent.dateStarted}
+                                            onChange={(date) => setDataEvent({ ...dataEvent, dateStarted: date.setHours(0, 0, 0, 0), dateEnd: null })}
+                                            minDate={new Date()}
+                                            disabled={loading}
+                                            className='w-[160px]  max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px]'
+                                            showPopperArrow={false}
+                                            popperModifiers={[
+                                                {
+                                                    name: "offset",
+                                                    options: {
+                                                        offset: [0, -5],
+                                                    },
                                                 },
-                                            },
-                                        ]}
-                                    />
+                                            ]}
+                                        />
 
-                                    <p>Até</p>
-                                    <DatePicker
-                                        locale="pt-BR"
-                                        dateFormat="dd/MM/yyyy"
-                                        value={dataEvent.dateEnd}
-                                        selected={dataEvent.dateEnd}
-                                        onChange={(date) => setDataEvent({ ...dataEvent, dateEnd: date.setHours(23, 59, 59, 59) })}
-                                        minDate={OrganizeMinDateEnd()}
-                                        disabled={dataEvent.definedDate ? false : true || loading}
-                                        placeholderText={dataEvent.definedDate ? '' : 'Desabilitado'}
-                                        className='w-[180px] max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px] bg-white'
-                                        showPopperArrow={false}
-                                        popperModifiers={[
-                                            {
-                                                name: "offset",
-                                                options: {
-                                                    offset: [0, -5],
+                                        <p>Até</p>
+                                        <DatePicker
+                                            locale="pt-BR"
+                                            dateFormat="dd/MM/yyyy"
+                                            value={dataEvent.dateEnd}
+                                            selected={dataEvent.dateEnd}
+                                            onChange={(date) => setDataEvent({ ...dataEvent, dateEnd: date.setHours(23, 59, 59, 59) })}
+                                            minDate={OrganizeMinDateEnd()}
+                                            disabled={dataEvent.definedDate ? false : true || loading}
+                                            placeholderText={dataEvent.definedDate ? '' : 'Desabilitado'}
+                                            className='w-[160px] max-sm:w-[140px] max-lsm:w-[120px] px-[8px] py-[5px] rounded-[8px] bg-white'
+                                            showPopperArrow={false}
+                                            popperModifiers={[
+                                                {
+                                                    name: "offset",
+                                                    options: {
+                                                        offset: [0, -5],
+                                                    },
                                                 },
-                                            },
-                                        ]}
-                                    />
-                                </div>
+                                            ]}
+                                        />
+                                    </div>
 
-                                <div className='flex items-center mt-[15px]'>
-                                    <input disabled={loading} checked={dataEvent.definedDate} onChange={(e) => setDataEvent({ ...dataEvent, definedDate: !dataEvent.definedDate, dateEnd: null })} type="checkbox" style={{ appearance: dataEvent.definedDate ? 'auto' : 'none' }} className={`  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
-                                    <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px] '>Definir data limite</p>
-                                </div>
+                                    <div className='flex items-center mt-[15px]'>
+                                        <input disabled={loading} checked={dataEvent.definedDate} onChange={(e) => setDataEvent({ ...dataEvent, definedDate: !dataEvent.definedDate, dateEnd: null })} type="checkbox" style={{ appearance: dataEvent.definedDate ? 'auto' : 'none' }} className={`  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
+                                        <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px] '>Definir data limite</p>
+                                    </div>
 
-                                {/* <div className='flex items-center mt-[10px]'>
-                            <input disabled={loading} value={dataEvent.repeatMonths.toString()} onChange={(e) => setDataEvent({...dataEvent, repeatMonths:!dataEvent.repeatMonths})} type="checkbox" className={`${dataEvent.repeatMonths? '' : 'appearance-none'}  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
-                            <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>Repetir mesmo eventos entre os meses</p>
-                        </div> */}
+                                    {/* <div className='flex items-center mt-[10px]'>
+                                    <input disabled={loading} value={dataEvent.repeatMonths.toString()} onChange={(e) => setDataEvent({...dataEvent, repeatMonths:!dataEvent.repeatMonths})} type="checkbox" className={`${dataEvent.repeatMonths? '' : 'appearance-none'}  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
+                                    <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>Repetir mesmo eventos entre os meses</p>
+                                    </div> */}
 
-                                <div className='flex items-center mt-[10px]'>
-                                    <input disabled={loading} checked={dataEvent.limitedDelivery} onChange={(e) => setDataEvent({ ...dataEvent, limitedDelivery: !dataEvent.limitedDelivery })} type="checkbox" style={{ appearance: dataEvent.limitedDelivery ? 'auto' : 'none' }} className={`${dataEvent.limitedDelivery ? '' : 'appearance-none'}  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
-                                    <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>Limitar entrega pós vencimento</p>
+                                    <div className='flex items-center mt-[10px]'>
+                                        <input disabled={loading} checked={dataEvent.limitedDelivery} onChange={(e) => setDataEvent({ ...dataEvent, limitedDelivery: !dataEvent.limitedDelivery })} type="checkbox" style={{ appearance: dataEvent.limitedDelivery ? 'auto' : 'none' }} className={`${dataEvent.limitedDelivery ? '' : 'appearance-none'}  accent-gray-600 w-[20px] h-[20px] border-[1px] border-[#686868] rounded-[3px] cursor-pointer max-sm:w-[18px] max-sm:h-[18px]`} />
+                                        <p className='ml-[5px] text-[#686868] text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>Limitar entrega pós vencimento</p>
+                                    </div>
                                 </div>
+                                }
                             </div>
+                                </div>
+                                
 
                             <div className='bg-[#D9D9D9] mt-[15px] px-[30px] max-sm:px-[15px] py-[14px] flex justify-between font-[500] rounded-b-[15px]'>
                                 <Dialog.Close disabled={loading} asChild>

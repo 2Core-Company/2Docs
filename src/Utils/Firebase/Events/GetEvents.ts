@@ -34,6 +34,7 @@ export async function GetLimitedEventsUser({ id_company, id_user, setEvents }: P
       limitedDelivery: doc.data()?.limitedDelivery,
       lastModify: doc.data()?.lastModify,
       delivered:doc.data()?.delivered,
+      tasks: doc.data()?.tasks,
     }
 
     if (data.complete) {
@@ -82,6 +83,7 @@ export async function GetEventsOpenToUser({ id_company, id_user }: PropsGetEvent
       limitedDelivery: doc.data()?.limitedDelivery,
       lastModify: doc.data()?.lastModify,
       delivered:doc.data()?.delivered,
+      tasks: doc.data()?.tasks,
     }
     events.push(data)
 
@@ -121,6 +123,7 @@ export async function GetEventLate({ id_company, id_user }: PropsGetEventLate) {
       limitedDelivery: doc.data()?.limitedDelivery,
       lastModify: doc.data()?.lastModify,
       delivered:doc.data()?.delivered,
+      tasks: doc.data()?.tasks,
     }
     events.push(data)
   });
@@ -159,6 +162,7 @@ export async function GetEventsInOneMonth({ id_company, id_user, dateMin, dateMa
         limitedDelivery: doc.data()?.limitedDelivery,
         lastModify: doc.data()?.lastModify,
         delivered:doc.data()?.delivered,
+        tasks: doc.data()?.tasks,
       }
 
       if (data.complete) {
@@ -205,6 +209,7 @@ export async function GetEvent({ id_company, id_event}: PropsGetEvent) {
       limitedDelivery: doc.data()?.limitedDelivery,
       lastModify: doc.data()?.lastModify,
       delivered:doc.data()?.delivered,
+      tasks: doc.data()?.tasks
     }
     events.push(data)
   });
