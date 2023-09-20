@@ -25,7 +25,7 @@ function Storage() {
                         style={{ background: `conic-gradient(#10b981 ${Math.round(((usage) / dataCompany.maxSize) * 100) * 3.6}deg, #EBEBEB 0deg)` }}>
                         <p className="font-[700] text-[28px] max-sm:text-[26px] max-lsm:text-[24px] z-10 rotate-[180deg] text-[#9E9E9E]">GB</p>
                     </div>
-                    <p className="text-[26px] max-sm:text-[24px]  max-lsm:text-[22px] font-[500] text-[#686868]"><span className="text-hilight font-[600]">{usage == 0 ? 0 : (usage / 1073741824).toFixed(2)}GB</span> / {(dataCompany.maxSize / 1073741824)}GB</p>
+                    <p className="text-[26px] max-sm:text-[24px]  max-lsm:text-[22px] font-[500] text-[#686868]"><span className="text-hilight font-[600]">{usage == 0 ? 0 : (usage / 1073741824).toFixed(2)}GB</span> / {dataCompany.maxSize <  1073741824 ? (dataCompany.maxSize / 1073741824).toFixed(2) : (dataCompany.maxSize / 1073741824)}GB</p>
                 </div>
             </Component.root>
         </div>

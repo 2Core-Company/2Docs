@@ -123,7 +123,7 @@ function NavBar({ permission, image, name }: Props) {
                     </button>
                 }
 
-                {
+                {/* {
                     <button onClick={() => (setMenu(true), router.push(`/Dashboard/${permission === 0 ? 'Clientes' : 'Admin'}/Portal`))} className={`${styleDivIconNavBar}`}>
                         {path?.includes('/Dashboard/Clientes/Portal') || path?.includes('/Dashboard/Admin/Portal') &&
                             <div className={styleSubLineIcon} />
@@ -134,7 +134,7 @@ function NavBar({ permission, image, name }: Props) {
                             <p className={styleTextIcons}>Portal</p>
                         </div>
                     </button>
-                }
+                } */}
 
 
                 <Popover.Root onOpenChange={actionPopOver}>
