@@ -25,6 +25,8 @@ function ErrorFirebase({message, code}:Props) {
     resultFunction = "Este usuário não foi cadastrado no 2Docs."
   } else if(code === 'auth/internal-error'){
     resultFunction = "O limite de tentativas foi excedido, tente novamente mais tarde!"
+  } else if(code === "auth/login-blocked"){
+    return
   }
   
   throw toast.error(resultFunction);
