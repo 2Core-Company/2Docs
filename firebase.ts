@@ -4,8 +4,8 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
-import { getMessaging } from "firebase/messaging";
-import getToken from "messagingGetToken";
+// import { getMessaging } from "firebase/messaging";
+// import getToken from "messagingGetToken";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
