@@ -3,16 +3,18 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { useState, useContext, useEffect, useRef, useReducer } from 'react';
 import { loadingContext } from '../../../app/Context/contextLoading'
 import { signInWithEmailAndPassword, onAuthStateChanged, browserSessionPersistence, browserLocalPersistence } from "firebase/auth";
-import { auth } from '../../../../firebase'
+import { auth, db } from '../../../../firebase'
 import ErrorFirebase from '../../../Utils/Firebase/ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toast, ToastContainer } from 'react-toastify'; import { signOut } from "firebase/auth";
 import { themeContext } from "../../../hooks/useTheme"
-import { stripe } from '../../../../lib/stripe'
+import { stripe } from '@/lib/stripe'
 import axios from 'axios';
 import { adminContext } from '@/src/app/Context/contextAdmin';
 import { userContext } from '@/src/app/Context/contextUser';
+import { doc, getDoc } from 'firebase/firestore';
+import getCompany from '@/src/Utils/Firebase/Company/getCompany';
 
 function Signin() {
   const contextLoading = useContext(loadingContext)
@@ -40,7 +42,7 @@ function Signin() {
           }
         })
       } else {
-        setLoading(false)
+    setLoading(false)
         auth.setPersistence(browserSessionPersistence)
       }
     });
@@ -65,38 +67,14 @@ function Signin() {
   //Funçaõ de login
   async function SignIn() {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, loginUser.email, loginUser.password)
-      const { data } = await stripe.customers.search({
-        query: 'metadata[\'id_company\']:\'' + userCredential.user.displayName + '\'',
-        limit: 1,
-        expand: ['data.subscriptions']
-      })
-        .catch(err => err)
-      const status = data[0]?.subscriptions.data[0]?.status
-
-      if (!userCredential.user.emailVerified) {
-        signOut(auth)
-        throw toast.error("Seu email não foi confirmado.")
-      }
-
-      if (status != 'active' && status != 'trialing') {
-        signOut(auth)
-        throw toast.error("Você não tem um plano do 2Docs ativo.")
-      }
-
-      const idTokenResult = await auth.currentUser?.getIdTokenResult()
-      if (idTokenResult?.claims.permission > 0) {
-        router.replace("/Dashboard/Admin")
-      } else {
-        router.replace("/Dashboard/Clientes")
-      }
-
+      await signInWithEmailAndPassword(auth, loginUser.email, loginUser.password)
     } catch (e) {
       contextLoading.setLoading(false)
       ErrorFirebase(e)
       throw e
     }
   }
+
 
   //Funçaõ de recuperar senha
   async function AlterPassword(email: string) {

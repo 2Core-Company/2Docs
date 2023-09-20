@@ -298,7 +298,6 @@ function ModalEvent({ emailUser, action, event, defaultValue, modalEvent, setMod
                                                 setTasks([...tasks])
                                             }}/>
                                             <select name="importance" id="importance" className='bg-neutral-300 p-1 rounded-md hover:bg-neutral-400/60 cursor-pointer mr-2' onChange={(e) => {
-                                                console.log(e.target.value)
                                                 if (e.target.value == '1') {
                                                     tasks[index].isRequired = true
                                                 } else {
